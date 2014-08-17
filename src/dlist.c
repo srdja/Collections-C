@@ -62,7 +62,7 @@ static Node *get_node(List *list, void *element);
  *
  * @return a new list if the allocation was successful, or NULL if not.
  */
-List *dlist_new()
+List *list_new()
 {
     return (List*) calloc(1, sizeof(List));
 }

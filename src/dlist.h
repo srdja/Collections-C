@@ -27,7 +27,7 @@ typedef struct dlist_s List;
 typedef struct dlist_iter_s ListIter;
 typedef struct dlist_iter_desc_s ListDIter;
 
-List *dlist_new();
+List *list_new();
 
 bool list_destroy(List *list);
 bool list_destroy_free(List *list);
