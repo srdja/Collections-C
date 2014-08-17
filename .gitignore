@@ -1,0 +1,9 @@
+.project
+.cproject
+Debug
+html
+latex
+.settings
+config
+config.bak
+*~
