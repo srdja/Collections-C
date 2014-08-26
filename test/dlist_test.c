@@ -60,7 +60,7 @@ void test_dlist_iter()
 {
     printf("Testing: dlist_iter... ");
 
-    List *dlist = dlist_new();
+    List *dlist = list_new();
 
     int a = 8;
     int b = 3;
@@ -258,7 +258,7 @@ void test_dlist_index_of()
 {
     printf("Testing: dlist_index_of... ");
 
-    List *dlist = dlist_new();
+    List *dlist = list_new();
 
     int a = 8;
     int b = 3;
@@ -283,7 +283,7 @@ void test_dlist_sort()
 {
     printf("Testing: dlist_sort... ");
 
-    List *dlist = dlist_new();
+    List *list = list_new();
 
     srand(time(NULL));
 
@@ -293,14 +293,14 @@ void test_dlist_sort()
     for (i = 0; i < size; i++) {
         int *e = malloc(sizeof(int));
         *e = rand() % 1000000;
-        list_add(dlist, e);
+        list_add(list, e);
     }
 
     struct timeval t1, t2;
     long mtime, seconds, useconds;
 
     gettimeofday(&t1, NULL);
-    list_sort(dlist, cmp);
+    list_sort(list, cmp);
     gettimeofday(&t2, NULL);
 
     seconds  = t2.tv_sec  - t1.tv_sec;
@@ -309,7 +309,7 @@ void test_dlist_sort()
 
     //printf("\nElapsed time: %ld milliseconds\n", mtime);
 
-    ListIter *iter = list_iter_new(dlist);
+    ListIter *iter = list_iter_new(list);
     int prev;
     for (prev = *((int *) list_iter_next(iter)); list_iter_has_next(iter);) {
         void *e = list_iter_next(iter);
@@ -317,7 +317,7 @@ void test_dlist_sort()
         prev = *((int *) e);
     }
 
-    list_destroy(dlist);
+    list_destroy(list);
 
     printf("OK\n");
 }
@@ -326,8 +326,8 @@ void test_dlist_new()
 {
     printf("Testing: dlist_new... ");
 
-    List *dlist  = dlist_new();
-    List *dlist2 = dlist_new();
+    List *dlist  = list_new();
+    List *dlist2 = list_new();
 
     assert(dlist != NULL);
     assert(list_get_first(dlist) == NULL); // XXX WHAT DOES IT RETURN?
@@ -345,7 +345,7 @@ void test_dlist_add()
 {
     printf("Testing: dlist_add... ");
 
-    List *dlist = dlist_new();
+    List *dlist = list_new();
 
     char *s1 = "e1", *s2 = "e2", *s3 = "e3", *s4 = "e4";
 
@@ -368,7 +368,7 @@ void test_dlist_add_last()
 {
     printf("Testing: dlist_append... ");
 
-    List *dlist = dlist_new();
+    List *dlist = list_new();
 
     int a = 8;
     int b = 3;
@@ -397,7 +397,7 @@ void test_dlist_add_first()
 {
     printf("Testing: dlist_prepend... ");
 
-    List *dlist = dlist_new();
+    List *dlist = list_new();
 
     int a = 8;
     int b = 3;
@@ -693,7 +693,7 @@ void test_dlist_contains()
 {
     printf("Testing: dlist_contains... ");
 
-    List *dlist = dlist_new();
+    List *dlist = list_new();
 
     int a = 8;
     int b = 3;
@@ -798,7 +798,7 @@ void test_dlist_destroy()
 
 List *list_1234()
 {
-    List *list = dlist_new();
+    List *list = list_new();
 
     int *a = (int*) malloc(sizeof(int));
     int *b = (int*) malloc(sizeof(int));
@@ -820,7 +820,7 @@ List *list_1234()
 
 List *list_5677()
 {
-    List *list = dlist_new();
+    List *list = list_new();
 
     int *a = (int*) malloc(sizeof(int));
     int *b = (int*) malloc(sizeof(int));

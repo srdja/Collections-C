@@ -641,7 +641,7 @@ List *list_sublist(List *list, int b, int e)
     if (b > e || b < 0 || e >= list->size)
         return NULL;
 
-    List *sub = (List*) dlist_new();
+    List *sub = (List*) list_new();
     Node *node = get_node_at(list, b);
 
     int i;
@@ -663,7 +663,7 @@ List *list_sublist(List *list, int b, int e)
  */
 List *list_copy_shallow(List *list)
 {
-    List *copy = dlist_new();
+    List *copy = list_new();
     Node *node = list->head;
 
     while (node) {
@@ -685,7 +685,7 @@ List *list_copy_shallow(List *list)
  */
 List *list_copy_deep(List *list, void *(*cp) (void *e1))
 {
-    List *copy = dlist_new();
+    List *copy = list_new();
     Node *node = list->head;
 
     while (node) {

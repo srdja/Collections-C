@@ -23,7 +23,7 @@
 
 Queue *queue_new()
 {
-    return (Queue*) dlist_new();
+    return (Queue*) list_new();
 }
 
 bool queue_destroy(Queue *queue)
