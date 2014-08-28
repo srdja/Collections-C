@@ -21,7 +21,7 @@
 #include "hashtable.h"
 #include <string.h>
 
-#define INITIAL_CAPACITY    16
+#define INITIAL_CAPACITY 16
 #define DEFAULT_LOAD_FACTOR 0.75f
 
 #define MAX_BUCKETS 0xFFFFFFFF
@@ -39,8 +39,8 @@ struct hashtable_s {
     uint32_t size;
     uint32_t inflation_threshold;
     uint32_t deflation_threshold;
-    uint32_t key_len;
     uint32_t hash_seed;
+    int      key_len;
 
     float load_factor;
     bool is_elastic;
@@ -112,6 +112,7 @@ HashTable *hashtable_new(HashTableProperties *properties)
     if (table->capacity == INITIAL_CAPACITY)
         table->deflation_threshold = 0;
     else
+        // FIXME the fundamental flaw is that when the load factor is 0.5 the table will just ping pong resize
         table->deflation_threshold = table->capacity - table->inflation_threshold;
 
     return table;
@@ -140,21 +141,23 @@ void hashtable_destroy(HashTable *table)
 }
 
 /**
- * Creates a new key-value mapping in the specified HashTable.
- *
+ * Creates a new key-value mapping in the specified HashTable. Each key in the
+ * table is unique and can only map to single value, therefore if the specified
+ * key already exists in the table, the old value that the key maps to will be
+ * replaced with the new value.
  *
  * @param[in] table the table to which this new key-value mapping is being
  *                  added to
- * @param[in] key 
- * @param[in] val
+ * @param[in] key a hash table key used to access the specified value
+ * @param[in] val a value that is being stored in the table
  */
 void hashtable_put(HashTable *table, void *key, void *val)
 {
     if (table->size >= table->inflation_threshold)
         resize(table, table->capacity << 1);
 
-    uint32_t hash  = table->hash(key, table->key_len, table->hash_seed);
-    uint32_t i     = hash & (table->capacity - 1);
+    uint32_t hash = table->hash(key, table->key_len, table->hash_seed);
+    uint32_t i    = hash & (table->capacity - 1);
 
     TableEntry *bucket = table->buckets[i];
 
@@ -235,10 +238,19 @@ void *hashtable_remove(HashTable *table, void *key)
         entry = next;
     }
 
+      // FIXME what if someone tries to call remove when there are no mappings?
     if (table->is_elastic && table->size <= table->deflation_threshold)
         resize(table, table->capacity >> 1);
 
     return NULL;
+}
+
+/**
+ * Removes all key-value mappings from the specified table.
+ */
+void hashtable_remove_all(HashTable *table)
+{
+
 }
 
 /**
@@ -422,6 +434,17 @@ bool hashtable_int_key_cmp(void *key1, void *key2)
 }
 
 /**
+ * Int key comparator function.
+ *
+ * @param[in] key1 first key
+ * @param[in] key2 second key
+ * @return true if the keys are identical
+ */
+bool hashtable_long_key_cmp(void *key1, void *key2)
+{
+    return *(long*) key1 == *(long*) key2;
+}
+/**
  * Pointer key comparator function.
  *
  * @param[in] key1 first key
@@ -434,8 +457,7 @@ bool hashtable_pointer_key_compare(void *key1, void *key2)
 }
 
 /**
- * Slightly modified djb2 hash function
- * djb2
+ * Slightly modified djb2 string hashing function
  */
 uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 {
@@ -468,7 +490,7 @@ uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 
 #define FORCE_INLINE inline __attribute__((always_inline))
 
-inline uint32_t rotl32 ( uint32_t x, int8_t r )
+inline uint32_t rotl32 (uint32_t x, int8_t r)
 {
   return (x << r) | (x >> (32 - r));
 }
@@ -481,7 +503,7 @@ inline uint32_t rotl32 ( uint32_t x, int8_t r )
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 
-FORCE_INLINE uint32_t fmix32 ( uint32_t h )
+FORCE_INLINE uint32_t fmix32 (uint32_t h)
 {
   h ^= h >> 16;
   h *= 0x85ebca6b;
@@ -492,7 +514,7 @@ FORCE_INLINE uint32_t fmix32 ( uint32_t h )
   return h;
 }
 
-uint32_t MurmurHash3_x86_32 (const void * key, int len, uint32_t seed)
+uint32_t hashtable_murmur_hash3(const void * key, int len, uint32_t seed)
 {
   const uint8_t * data = (const uint8_t*)key;
   const int nblocks = len / 4;
