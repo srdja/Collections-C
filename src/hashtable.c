@@ -597,9 +597,10 @@ void hashtable_key_iter_next(HashTableIter *iter)
 {
     TableEntry *next = iter->next_entry->next;
 
-    if (next)
+    if (next) {
         iter->next_entry = next;
-
+        return;
+    }
     int i;
     for (i = iter->bucket_index; i < iter->table->capacity; i++) {
         next = iter->table->buckets[i];
