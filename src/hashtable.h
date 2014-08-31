@@ -24,6 +24,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "list.h"
 
 #define KEY_LENGTH_VARIABLE  -1
 #define KEY_LENGTH_DOUBLE    sizeof(double)
@@ -47,9 +48,9 @@
 #define hashtable_pointer_key_cmp CMP_POINTER
 
 typedef struct hashtable_s HashTable;
+typedef struct hashtable_key_iter HashTableIter;
 
 typedef struct hashtable_init_properties_s {
-    bool     elastic;
     float    load_factor;
     uint32_t initial_capacity;
     int      key_length;
@@ -73,7 +74,7 @@ void hashtable_remove_all(HashTable *table);
 bool hashtable_contains_key(HashTable *table, void *key);
 
 List *hashtable_get_keys(HashTable *table);
-List *hashtable_get_value(HashTable *table);
+List *hashtable_get_values(HashTable *table);
 
 bool hashtable_string_key_cmp(void *key1, void *key2);
 bool hashtable_float_key_cmp(void *key1, void *key2);
@@ -87,8 +88,11 @@ bool hashtable_pointer_key_cmp(void *key1, void *key2);
 uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed);
 uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed);
 
-// XXX debug
-void hashtable_print(HashTable *talbe);
-
+HashTableIter *hashtable_iter_new(HashTable *table);
+bool hashtable_iter_hash_next(HashTableIter *iter);
+void hashtable_iter_next(HashTableIter *iter);
+void const *hashtable_iter_get_key(HashTableIter *iter);
+void *hashtable_iter_get_value(HashTableIter *iter);
+void hashtable_iter_remove(HashTableIter *iter);
 
 #endif /* HASHMAP_H_ */

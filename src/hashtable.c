@@ -21,11 +21,11 @@
 #include "hashtable.h"
 #include <string.h>
 
-#define INITIAL_CAPACITY 16
+#define DEFAULT_CAPACITY 16
 #define DEFAULT_LOAD_FACTOR 0.75f
 
 #define MAX_BUCKETS 0xFFFFFFFF
-#define MAX_POW_TWO 0x60000000
+#define MAX_POW_TWO 0x80000000
 
 typedef struct table_entry_s {
     void *key;
@@ -38,12 +38,9 @@ struct hashtable_s {
     uint32_t capacity;
     uint32_t size;
     uint32_t inflation_threshold;
-    uint32_t deflation_threshold;
     uint32_t hash_seed;
     int      key_len;
-
-    float load_factor;
-    bool is_elastic;
+    float    load_factor;
 
     TableEntry **buckets;
 
@@ -51,15 +48,24 @@ struct hashtable_s {
     bool (*key_cmp) (void *k1, void *k2);
 };
 
+struct hashtable_key_iter {
+    HashTable *table;
+    int bucket_index;
+    TableEntry *prev_entry;
+    TableEntry *next_entry;
+};
+
 static uint32_t get_table_index(HashTable *table, void *key);
-static void resize(HashTable *table, uint32_t new_capacity);
+static void resize(HashTable *t, uint32_t new_capacity);
+static uint32_t round_pow_two(uint32_t n);
 
 static void move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
         uint32_t src_size, uint32_t dest_size);
 
 /**
- * Returns a new HashTableProperties object. This object is used for
- * configuring newly created hash tables.
+ * Returns a new HashTableProperties object.
+ *
+ * @return a new HashTableProperties object
  */
 HashTableProperties *hashtable_properties_new()
 {
@@ -67,9 +73,8 @@ HashTableProperties *hashtable_properties_new()
 
     properties->hash             = hashtable_hash_string;
     properties->key_compare      = hashtable_string_key_cmp;
-    properties->initial_capacity = INITIAL_CAPACITY;
+    properties->initial_capacity = DEFAULT_CAPACITY;
     properties->load_factor      = DEFAULT_LOAD_FACTOR;
-    properties->elastic          = false;
     properties->key_length       = KEY_LENGTH_VARIABLE;
     properties->hash_seed        = 0;
 
@@ -89,8 +94,8 @@ void hashtable_properties_destroy(HashTableProperties *properties)
 /**
  * Creates a new HashTable based on the provided HashTable properties.
  *
- * @param properties a HashTableProperties object used to configure this
- *                   new HashTable instance
+ * @param properties a the HashTableProperties object used to configure this new
+ *                     HashTable
  * @return a new HashTable instance
  */
 HashTable *hashtable_new(HashTableProperties *properties)
@@ -100,20 +105,13 @@ HashTable *hashtable_new(HashTableProperties *properties)
     table->hash        = properties->hash;
     table->key_cmp     = properties->key_compare;
     table->load_factor = properties->load_factor;
-    table->capacity    = properties->initial_capacity;
+    table->capacity    = round_pow_two(properties->initial_capacity);
     table->hash_seed   = properties->hash_seed;
-    table->is_elastic  = properties->elastic;
     table->key_len     = properties->key_length;
     table->size        = 0;
 
     table->buckets = calloc(table->capacity, sizeof(TableEntry));
     table->inflation_threshold = table->capacity * table->load_factor;
-
-    if (table->capacity == INITIAL_CAPACITY)
-        table->deflation_threshold = 0;
-    else
-        // FIXME the fundamental flaw is that when the load factor is 0.5 the table will just ping pong resize
-        table->deflation_threshold = table->capacity - table->inflation_threshold;
 
     return table;
 }
@@ -183,9 +181,12 @@ void hashtable_put(HashTable *table, void *key, void *val)
  * associated with this key NULL is returned. This function might also 
  * return null if the value mapped to this key is null.
  *
- * @param[in] table
- * @param[in] key
- * @return
+ * @param[in] table the table from which the value mapped to the specified key
+ *                  is being returned
+ * @param[in] key   the key into the
+ *
+ * @return The value mapped to the specified key or null if the mapping doesn't
+ *         exit
  */
 void *hashtable_get(HashTable *table, void *key)
 {
@@ -208,89 +209,120 @@ void *hashtable_get(HashTable *table, void *key)
  * this function can resolve the ambiguity.
  *
  * @param[in] table the table from which the key-value pair is being removed
- * @param[in] key
- * @return the removed value
+ * @param[in] key the key of the value being returned
+ *
+ * @return the value associated with the removed key
  */
-void *hashtable_remove(HashTable *table, void *key)
+void *hashtable_remove(HashTable *t, void *k)
 {
-    uint32_t index = get_table_index(table, key);
+    uint32_t index = get_table_index(t, k);
 
-    TableEntry *entry = table->buckets[index];
+    TableEntry *entry = t->buckets[index];
     TableEntry *prev  = NULL;
     TableEntry *next;
 
     while (entry) {
         next = entry->next;
 
-        if (table->key_cmp(key, entry->key)) {
+        if (t->key_cmp(k, entry->key)) {
             void *value = entry->value;
 
             if (!prev)
-                table->buckets[index] = next;
+                t->buckets[index] = next;
             else
                 prev->next = next;
 
             free(entry);
-            table->size--;
+            t->size--;
             return value;
         }
         prev  = entry;
         entry = next;
     }
-
-      // FIXME what if someone tries to call remove when there are no mappings?
-    if (table->is_elastic && table->size <= table->deflation_threshold)
-        resize(table, table->capacity >> 1);
-
     return NULL;
 }
 
 /**
  * Removes all key-value mappings from the specified table.
+ *
+ * @param[in] table the table from which all mappings are being removed
  */
 void hashtable_remove_all(HashTable *table)
 {
-
+    int i;
+    for (i = 0; i < table->capacity; i++) {
+        TableEntry *entry = table[i];
+        while (entry) {
+            TableEntry *next = entry->next;
+            free(entry);
+            table->size--;
+            entry = next;
+        }
+        table[i] = NULL;
+    }
 }
 
 /**
- * Resizes the table to match the provided capacity.
+ * Resizes the table to match the provided capacity. The new capacity must be a
+ * power of two ranging from 2^0 to 2^31.
  *
  * @param[in] table the table that is being resized.
- * @param[in] new_capacity
+ * @param[in] new_capacity the new capacity to which the table should be resized
  */
-static void resize(HashTable *table, uint32_t new_capacity)
+static void resize(HashTable *t, uint32_t new_capacity)
 {
-    if (table->capacity == MAX_BUCKETS && new_capacity >= table->capacity)
+    if (t->capacity == MAX_BUCKETS)
         return;
 
-    if (table->capacity >= MAX_POW_TWO)
+    if (t->capacity >= MAX_POW_TWO)
         new_capacity = MAX_BUCKETS;
 
     TableEntry **new_buckets = calloc(new_capacity, sizeof(TableEntry));
-    TableEntry **old_buckets = table->buckets;
+    TableEntry **old_buckets = t->buckets;
 
-    move_entries(old_buckets, new_buckets, table->capacity, new_capacity);
+    move_entries(old_buckets, new_buckets, t->capacity, new_capacity);
 
-    table->buckets = new_buckets;
-    table->capacity = new_capacity;
-    table->inflation_threshold = table->load_factor * new_capacity;
-
-    if (table->capacity == INITIAL_CAPACITY)
-        table->deflation_threshold = 0;
-    else
-        table->deflation_threshold = table->capacity - table->inflation_threshold;
+    t->buckets = new_buckets;
+    t->capacity = new_capacity;
+    t->inflation_threshold = t->load_factor * new_capacity;
 
     free(old_buckets);
 }
 
 /**
+ * Rounds the integer to the nearest upper power of two.
+ *
+ * @param[in] the unsigned integer that is being rounded
+ * @return the nearest upper power of two
+ */
+static uint32_t round_pow_two(uint32_t n)
+{
+    if (n >= MAX_POW_TWO)
+        return MAX_BUCKETS;
+
+    /**
+     * taken from:
+     * http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2Float
+     */
+    n--;
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    n++;
+
+    return n;
+}
+
+/**
  * Moves all entries from one bucket array to another.
  *
- * @param[in] src_bucket
- * @param[in] dest_bucket
- * @param[in] src_size
- * @param[in] dest_size
+ * @param[in] src_bucket  the source bucket from which the entries are moved
+ * @param[in] dest_bucket the destination bucket to which the entries are being
+ *                        moved
+ * @param[in] src_size    size of the source bucket
+ * @param[in] dest_size   size of the destination bucket
  */
 static void move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
         uint32_t src_size, uint32_t dest_size)
@@ -325,7 +357,11 @@ int hashtable_size(HashTable *table)
 
 /**
  * Returns the current capacity of the table. The capacity is is the number of
- * buckets or the number of random access TODO
+ * buckets or the number of random access for table entries.
+ *
+ * @param[in] table the table whos current capacity is being returned
+ *
+ * @return the current capacity of the specified table
  */
 int hashtable_capacity(HashTable *table)
 {
@@ -353,6 +389,58 @@ bool hastable_contains_key(HashTable *table, void *key)
 }
 
 /**
+ * Returns a list of hashtable values.
+ *
+ * @param[in] table the table whos values are being returned
+ *
+ * @return a list of values
+ */
+List *hashtable_get_values(HashTable *table)
+{
+    List *values = list_new();
+
+    int i;
+    for (i = 0; i < table->capacity; i++) {
+        if (!table->buckets[i])
+            continue;
+
+        TableEntry entry = table->buckets[i];
+
+        while (entry) {
+            list_add(values, entry->value);
+            entry = entry->next;
+        }
+    }
+    return values;
+}
+
+/**
+ * Returns a list of hashtable keys.
+ *
+ * @param[in] table the table whos keys are being returned
+ *
+ * @return a list of keys
+ */
+List *hashtable_get_keys(HashTable *table)
+{
+    List *keys = list_new();
+
+    int i;
+    for (i = 0; i < table->capacity; i++) {
+        if (!table->buckets[i])
+            continue;
+
+        TableEntry entry = table->buckets[i];
+
+        while (entry) {
+            list_add(keys, entry->key);
+            entry = entry->next;
+        }
+    }
+    return keys;
+}
+
+/**
  * Returns the bucket index that maps to the specified key.
  */
 static uint32_t get_table_index(HashTable *table, void *key)
@@ -366,6 +454,7 @@ static uint32_t get_table_index(HashTable *table, void *key)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical and false if otherwise
  */
 bool hashtable_string_key_cmp(void *key1, void *key2)
@@ -378,6 +467,7 @@ bool hashtable_string_key_cmp(void *key1, void *key2)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_double_key_cmp(void *key1, void *key2)
@@ -390,6 +480,7 @@ bool hashtable_double_key_cmp(void *key1, void *key2)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_float_key_cmp(void *key1, void *key2)
@@ -402,6 +493,7 @@ bool hashtable_float_key_cmp(void *key1, void *key2)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_char_key_cmp(void *key1, void *key2)
@@ -414,6 +506,7 @@ bool hashtable_char_key_cmp(void *key1, void *key2)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_short_key_cmp(void *key1, void *key2)
@@ -426,6 +519,7 @@ bool hashtable_short_key_cmp(void *key1, void *key2)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_int_key_cmp(void *key1, void *key2)
@@ -438,17 +532,20 @@ bool hashtable_int_key_cmp(void *key1, void *key2)
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_long_key_cmp(void *key1, void *key2)
 {
     return *(long*) key1 == *(long*) key2;
 }
+
 /**
  * Pointer key comparator function.
  *
  * @param[in] key1 first key
  * @param[in] key2 second key
+ *
  * @return true if the keys are identical
  */
 bool hashtable_pointer_key_compare(void *key1, void *key2)
@@ -457,13 +554,101 @@ bool hashtable_pointer_key_compare(void *key1, void *key2)
 }
 
 /**
+ * Creats a new HashTable iterator that iterates over hashtable entries.
+ *
+ * @note The order at which the entries are returned is unspecified.
+ *
+ * @return a new HashTableIter object
+ */
+HashTableIter *hastable_iter_new(HashTable *table)
+{
+    HashTableIter *iter = calloc(1, sizeof(HashTableIter));
+    iter->table = table;
+
+    int i;
+    for (i = 0; i < table->buckets; i++) {
+        TableEntry *e = table->buckets[i];
+        if (e) {
+            iter->bucket_index = i;
+            iter->next_entry = e;
+            break;
+        }
+    }
+    return iter;
+}
+
+/**
+ * Checks whether or not the iterator has a next entry iterate over.
+ *
+ * @return true if the next entry exists or false if the iterator has reached
+ * the end of the table.
+ */
+bool hashtable_key_iter_has_next(HashTableIter *iter)
+{
+    return iter->next_entry ? true : false;
+}
+
+/**
+ * Advances the iterator.
+ *
+ * @param[in] iter the iterator that is being advanced
+ */
+void hashtable_key_iter_next(HashTableIter *iter)
+{
+    TableEntry *next = iter->next_entry->next;
+
+    if (next)
+        iter->next_entry = next;
+
+    int i;
+    for (i = iter->bucket_index; i < iter->table->capacity; i++) {
+        next = iter->table->buckets[i];
+        if (next) {
+            iter->bucket_index = i;
+            iter->next_entry = next;
+            break;
+        }
+    }
+}
+
+/**
+ * Removes the last returned table entry
+ */
+void hashtable_iter_remove(HashTableIter *iter)
+{
+    hashtable_remove(iter->table, iter->prev_entry->key);
+}
+
+/**
+ * Returns the key associated with the last returned table entry by the
+ * specified iterator.
+ *
+ * @param[in] iter the iterator on which this operation is being performed on
+ */
+void const *hashtable_iter_get_key(HashTableIter *iter)
+{
+    return iter->prev_entry->key;
+}
+
+/**
+ * Returns the value associated with the last returned table entry by the
+ * specified iterator.
+ *
+ * @param[in] iter the iterator on which this operation is being performed on
+ */
+void *hashtable_iter_get_value(HashTableIter *iter)
+{
+    return iter->prev_entry->value;
+}
+
+/**
  * Slightly modified djb2 string hashing function
  */
 uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 {
-    char *str = (char*) key;
+    char     *str = (char*) key;
     uint32_t hash = 5381;
-    int c;
+    int      c;
 
     while (c = *str++)
         hash = ((hash << 5) + hash) + c;
@@ -492,7 +677,7 @@ uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 
 inline uint32_t rotl32 (uint32_t x, int8_t r)
 {
-  return (x << r) | (x >> (32 - r));
+    return (x << r) | (x >> (32 - r));
 }
 
 #define ROTL32(x,y) rotl32(x,y)
@@ -505,62 +690,63 @@ inline uint32_t rotl32 (uint32_t x, int8_t r)
 
 FORCE_INLINE uint32_t fmix32 (uint32_t h)
 {
-  h ^= h >> 16;
-  h *= 0x85ebca6b;
-  h ^= h >> 13;
-  h *= 0xc2b2ae35;
-  h ^= h >> 16;
+    h ^= h >> 16;
+    h *= 0x85ebca6b;
+    h ^= h >> 13;
+    h *= 0xc2b2ae35;
+    h ^= h >> 16;
 
-  return h;
+    return h;
 }
 
 uint32_t hashtable_murmur_hash3(const void * key, int len, uint32_t seed)
 {
-  const uint8_t * data = (const uint8_t*)key;
-  const int nblocks = len / 4;
+    const uint8_t * data = (const uint8_t*)key;
+    const int nblocks = len / 4;
 
-  uint32_t h1 = seed;
+    uint32_t h1 = seed;
 
-  const uint32_t c1 = 0xcc9e2d51;
-  const uint32_t c2 = 0x1b873593;
+    const uint32_t c1 = 0xcc9e2d51;
+    const uint32_t c2 = 0x1b873593;
 
-  //----------
-  // body
+    //----------
+    // body
 
-  const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
+    const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
 
-  for(int i = -nblocks; i; i++) {
-    uint32_t k1 = blocks[i];
+    int i;
+    for (i = -nblocks; i; i++) {
+        uint32_t k1 = blocks[i];
 
-    k1 *= c1;
-    k1 = ROTL32(k1,15);
-    k1 *= c2;
+        k1 *= c1;
+        k1 = ROTL32(k1,15);
+        k1 *= c2;
 
-    h1 ^= k1;
-    h1 = ROTL32(h1,13);
-    h1 = h1*5+0xe6546b64;
-  }
+        h1 ^= k1;
+        h1 = ROTL32(h1,13);
+        h1 = h1*5+0xe6546b64;
+    }
 
-  //----------
-  // tail
+    //----------
+    // tail
 
-  const uint8_t * tail = (const uint8_t*)(data + nblocks*4);
+    const uint8_t * tail = (const uint8_t*)(data + nblocks*4);
 
-  uint32_t k1 = 0;
+    uint32_t k1 = 0;
 
-  switch(len & 3) {
-  case 3: k1 ^= tail[2] << 16;
-  case 2: k1 ^= tail[1] << 8;
-  case 1: k1 ^= tail[0];
-          k1 *= c1; k1 = ROTL32(k1,15); k1 *= c2; h1 ^= k1;
-  };
+    switch(len & 3) {
+    case 3: k1 ^= tail[2] << 16;
+    case 2: k1 ^= tail[1] << 8;
+    case 1: k1 ^= tail[0];
+            k1 *= c1; k1 = ROTL32(k1,15); k1 *= c2; h1 ^= k1;
+    };
 
-  //----------
-  // finalization
+    //----------
+    // finalization
 
-  h1 ^= len;
+    h1 ^= len;
 
-  h1 = fmix32(h1);
+    h1 = fmix32(h1);
 
-  return h1;
+    return h1;
 }
