@@ -583,7 +583,7 @@ HashTableIter *hastable_iter_new(HashTable *table)
  * @return true if the next entry exists or false if the iterator has reached
  * the end of the table.
  */
-bool hashtable_key_iter_has_next(HashTableIter *iter)
+bool hashtable_iter_has_next(HashTableIter *iter)
 {
     return iter->next_entry ? true : false;
 }
@@ -593,7 +593,7 @@ bool hashtable_key_iter_has_next(HashTableIter *iter)
  *
  * @param[in] iter the iterator that is being advanced
  */
-void hashtable_key_iter_next(HashTableIter *iter)
+void hashtable_iter_next(HashTableIter *iter)
 {
     TableEntry *next = iter->next_entry->next;
 
