@@ -21,9 +21,6 @@
 #ifndef HASHMAP_H_
 #define HASHMAP_H_
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include "list.h"
 
 #define KEY_LENGTH_VARIABLE  -1
@@ -34,18 +31,6 @@
 #define KEY_LENGTH_SHORT     sizeof(short)
 #define KEY_LENGHT_LONG      sizeof(long)
 #define KEY_LENGTH_POINTER   sizeof(void*)
-
-#define hashtable_string_hash  STRING_HASH
-#define hashtable_murmur_hash3 GENERAL_HASH
-
-#define hashtable_string_key_cmp  CMP_STRING
-#define hashtable_float_key_cmp   CMP_FLOAT
-#define hashtable_char_key_cmp    CMP_CHAR
-#define hasthable_short_key_cmp   CMP_SHORT
-#define hashtable_long_key_cmp    CMP_LONG
-#define hashtable_double_key_cmp  CMP_DOUBLE
-#define hashtable_int_key_cmp     CMP_INT
-#define hashtable_pointer_key_cmp CMP_POINTER
 
 typedef struct hashtable_s HashTable;
 typedef struct hashtable_key_iter HashTableIter;
@@ -87,6 +72,18 @@ bool hashtable_pointer_key_cmp(void *key1, void *key2);
 
 uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed);
 uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed);
+
+#define CMP_STRING  hashtable_string_key_cmp
+#define CMP_FLOAT   hashtable_float_key_cmp
+#define CMP_CHAR    hashtable_char_key_cmp
+#define CMP_SHORT   hasthable_short_key_cmp
+#define CMP_LONG    hashtable_long_key_cmp
+#define CMP_DOUBLE  hashtable_double_key_cmp
+#define CMP_INT     hashtable_int_key_cmp
+#define CMP_POINTER hashtable_pointer_key_cmp
+
+#define GENERAL_HASH hashtable_murmur_hash3
+#define STRING_HASH  hashtable_hash_string
 
 HashTableIter *hashtable_iter_new(HashTable *table);
 bool hashtable_iter_hash_next(HashTableIter *iter);

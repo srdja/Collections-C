@@ -70,8 +70,8 @@ HashTableProperties *hashtable_properties_new()
 {
     HashTableProperties *properties = calloc(1, sizeof(HashTableProperties));
 
-    properties->hash             = hashtable_hash_string;
-    properties->key_compare      = hashtable_string_key_cmp;
+    properties->hash             = STRING_HASH;
+    properties->key_compare      = CMP_STRING;
     properties->initial_capacity = DEFAULT_CAPACITY;
     properties->load_factor      = DEFAULT_LOAD_FACTOR;
     properties->key_length       = KEY_LENGTH_VARIABLE;
@@ -565,7 +565,7 @@ HashTableIter *hastable_iter_new(HashTable *table)
     iter->table = table;
 
     int i;
-    for (i = 0; i < table->buckets; i++) {
+    for (i = 0; i < table->size; i++) {
         TableEntry *e = table->buckets[i];
         if (e) {
             iter->bucket_index = i;
