@@ -374,7 +374,7 @@ int hashtable_capacity(HashTable *table)
  * @param[in] key the key that is being searched for
  * @return true if the table contains the key.
  */
-bool hastable_contains_key(HashTable *table, void *key)
+bool hashtable_contains_key(HashTable *table, void *key)
 {
     TableEntry *entry = table->buckets[get_table_index(table, key)];
 
