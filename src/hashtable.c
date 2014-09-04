@@ -19,7 +19,6 @@
  */
 
 #include "hashtable.h"
-#include <string.h>
 
 #define DEFAULT_CAPACITY 16
 #define DEFAULT_LOAD_FACTOR 0.75f
@@ -251,14 +250,14 @@ void hashtable_remove_all(HashTable *table)
 {
     int i;
     for (i = 0; i < table->capacity; i++) {
-        TableEntry *entry = table[i];
+        TableEntry *entry = table->buckets[i];
         while (entry) {
             TableEntry *next = entry->next;
             free(entry);
             table->size--;
             entry = next;
         }
-        table[i] = NULL;
+        table->buckets[i] = NULL;
     }
 }
 
@@ -404,7 +403,7 @@ List *hashtable_get_values(HashTable *table)
         if (!table->buckets[i])
             continue;
 
-        TableEntry entry = table->buckets[i];
+        TableEntry *entry = table->buckets[i];
 
         while (entry) {
             list_add(values, entry->value);
@@ -430,7 +429,7 @@ List *hashtable_get_keys(HashTable *table)
         if (!table->buckets[i])
             continue;
 
-        TableEntry entry = table->buckets[i];
+        TableEntry *entry = table->buckets[i];
 
         while (entry) {
             list_add(keys, entry->key);
