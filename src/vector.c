@@ -58,6 +58,16 @@ Vector *vector_new_capacity(unsigned int capacity)
 /**
  *
  * @param[in] vect
+ */
+void vector_destroy(Vector *vect)
+{
+    free(vect->buffer);
+    free(vect);
+}
+
+/**
+ *
+ * @param[in] vect
  * @param[in] element
  *
  * @return

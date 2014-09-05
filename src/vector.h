@@ -29,6 +29,8 @@ typedef struct vector_iter_s VectorIter;
 Vector *vector_new();
 Vector *vector_new_capacity(unsigned int capacity);
 
+void vector_destroy(Vector *vect);
+
 bool vector_add(Vector *vect, void *element);
 bool vector_add_at(Vector *vect, void *element, unsigned int index);
 bool vector_replace_at(Vector *vect, void *element, unsigned int index);
@@ -53,7 +55,6 @@ int vector_capacity(Vector *vect);
 int vector_index_of(Vector *vect, void *element);
 
 void vector_sort(Vector *vect, int (*cmp) (const void*, const void*));
-
 
 
 #endif /* VECTOR_H_ */
