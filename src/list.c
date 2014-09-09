@@ -18,9 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <assert.h>
-#include "dlist.h"
+#include "list.h"
 
 typedef struct node_s {
     void *data;
@@ -599,23 +597,25 @@ void *list_get(List *list, int index)
  */
 void list_reverse(List *list)
 {
-   Node *head = list->head;
-   list->head = list->tail;
-   list->tail = head;
+	Node *head_old = list->head;
+	Node *tail_old = list->tail;
 
-   Node *left  = list->head;
-   Node *right = list->tail;
+    Node *left  = list->head;
+    Node *right = list->tail;
 
-   int i;
-   for (i = 0; i < list->size / 2; i++) {
-       Node *tmpl = left->next;
-       Node *tmpr = right->prev;
+    int i;
+    for (i = 0; i < list->size / 2; i++) {
+        Node *tmpl = left->next;
+        Node *tmpr = right->prev;
 
-       swap(left, right);
+        swap(left, right);
 
-       left  = tmpl;
-       right = tmpr;
-   }
+        left  = tmpl;
+        right = tmpr;
+    }
+    
+    list->head = list->tail;
+    list->tail = list->head;
 }
 
 /**

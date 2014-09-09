@@ -21,7 +21,7 @@
 #ifndef LIST_H_
 #define LIST_H_
 
-#include <stdbool.h>
+#include "common.h"
 
 typedef struct dlist_s List;
 typedef struct dlist_iter_s ListIter;
