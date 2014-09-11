@@ -7,7 +7,7 @@ AC_CONFIG_SRCDIR([src/vector.c])
 AC_CONFIG_HEADERS([config.h])
 
 #Setup automake
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 #Libtool init
 LT_INIT([shared]) 
@@ -26,5 +26,5 @@ AC_PROG_CC
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
 AC_OUTPUT
