@@ -52,8 +52,6 @@ void test_list_iter_desc_remove();
 void test_list_iter_add();
 void test_list_iter_remove();
 
-char *am = "Assertion failure at";
-
 int main(int argc, char **argv)
 {    
     cc_set_status(PASS);
@@ -109,16 +107,16 @@ void test_list_iter_add()
     }
 
     cc_assert(list_size(list) == 5,
-              cc_msg("%s list_iter_add: Expected size was 5, but got %d", am, list_size(list)));
+              cc_msg("list_iter_add: Expected size was 5, but got %d", list_size(list)));
     
     int li3 = *((int*) list_get(list, 3));
     int li4 = *((int*) list_get(list, 4));
 
     cc_assert(li3 == ins,
-              cc_msg("%s list_iter_add: Expected element at index 3 was %d, but got %d", am, ins, li3));
+              cc_msg("list_iter_add: Expected element at index 3 was %d, but got %d", ins, li3));
 
     cc_assert(li4 == 4,
-              cc_msg("%s list_iter_add: Expected element at index 4 was 4, but got %d,", am, li4));
+              cc_msg("list_iter_add: Expected element at index 4 was 4, but got %d,", li4));
 
     list_iter_destroy(iter);
     list_destroy(list);
@@ -138,10 +136,10 @@ void test_list_iter_remove()
         }
     }
     cc_assert(list_size(list) == 3,
-              cc_msg("%s list_iter_remove: Expected size was 3, but got %d", am, list_size(list)));
+              cc_msg("list_iter_remove: Expected size was 3, but got %d", list_size(list)));
     
     cc_assert(list_contains(list, rm) == 0,
-              cc_msg("%s list_iter_remove: List contains unique element after removal", am));
+              cc_msg("list_iter_remove: List contains unique element after removal"));
 
     list_iter_destroy(iter);
     list_destroy(list);
@@ -174,20 +172,20 @@ void test_list_iter_desc_remove()
     }
     int size = list_size(list);
 
-    cc_assert(list_size(list) == 2, cc_msg("%s list_iter_desc_remove: expected size 2 but got %d", am, size));
+    cc_assert(list_size(list) == 2, cc_msg("list_iter_desc_remove: expected size 2 but got %d", size));
 
     int first = *((int*) list_get_first(list));
     int last  = *((int*) list_get_last(list));
     int i1    = *((int*) list_get(list, 1));
     
     cc_assert(first == 2, 
-              cc_msg("%s list_iter_desc_remove: expected first element was 2, but got %d", am, first));
+              cc_msg("list_iter_desc_remove: expected first element was 2, but got %d", first));
 
     cc_assert(last == 4, 
-              cc_msg("%s list_iter_desc_remove: expected last element was 4, but got %d", am, last));
+              cc_msg("list_iter_desc_remove: expected last element was 4, but got %d", last));
     
     cc_assert(i1 == 4, 
-              cc_msg("%s list_iter_desc_remove: expected element at index 1 was, but got %d", am, i1));
+              cc_msg("list_iter_desc_remove: expected element at index 1 was, but got %d", i1));
 
     list_diter_destroy(iter);
     list_destroy_free(list);
@@ -221,19 +219,19 @@ void test_list_iter_desc_add()
     int i4    = *((int*)list_get(list, 4)); 
 
     cc_assert(size == 6, 
-              cc_msg("%s list_iter_desc_add: Expected size 6, but got %d", am, size));
+              cc_msg("list_iter_desc_add: Expected size 6, but got %d", size));
 
     cc_assert(first == 1, 
-              cc_msg("%s list_iter_desc_add: Expected first 1, but got %d", am, first));
+              cc_msg("list_iter_desc_add: Expected first 1, but got %d", first));
 
     cc_assert(last == 4, 
-              cc_msg("%s list_iter_desc_add: Expected last 4, but got %d", am, last));
+              cc_msg("list_iter_desc_add: Expected last 4, but got %d", last));
 
     cc_assert(i2 == *b,
-              cc_msg("%s list_iter_desc_add: Expected element at index 2 to be %d, but got %d", am, *b, i2));
+              cc_msg("list_iter_desc_add: Expected element at index 2 to be %d, but got %d", *b, i2));
 
     cc_assert(i4 == *a,
-              cc_msg("%s list_iter_desc_add: Expected element at index 4 to be %d, but got %d", am, *a, i4));
+              cc_msg("list_iter_desc_add: Expected element at index 4 to be %d, but got %d", *a, i4));
 
     list_diter_destroy(iter);
     list_destroy_free(list);
@@ -252,13 +250,13 @@ void test_list_reverse()
     int b = *((int*)list_get(list, 2));
 
     cc_assert(a == 4, 
-              cc_msg("%s list_reverse: expected 4, but got %d", am, a));
+              cc_msg("list_reverse: expected 4, but got %d", a));
 
     cc_assert(b == 2, 
-              cc_msg("%s list_reverse: expected 2, but got %d", am, b));
+              cc_msg("list_reverse: expected 2, but got %d", b));
 
     cc_assert(list_get_first(list) == last_old,
-              cc_msg("%s list_reverse: unexpected list head after reverse", am));
+              cc_msg("list_reverse: unexpected list head after reverse"));
     
     list_destroy_free(list);
 }
@@ -270,13 +268,13 @@ void test_list_to_array()
     int **array = (int**) list_to_array(list);
 
     cc_assert(list_get(list, 0) == array[0],
-              cc_msg("%s list_to_array: Array index 0 does not match list index 0", am));
+              cc_msg("list_to_array: Array index 0 does not match list index 0"));
 
     cc_assert(list_get(list, 2) == array[2],
-              cc_msg("%s list_to_array: Array index 2 does not match list index 2", am));
+              cc_msg("list_to_array: Array index 2 does not match list index 2"));
 
     cc_assert(list_get(list, 3) == array[3],
-              cc_msg("%s list_to_array: Array index 3 does not match list index 3", am));
+              cc_msg("list_to_array: Array index 3 does not match list index 3"));
 
     free(array);
     list_destroy_free(list);
@@ -301,10 +299,10 @@ void test_list_index_of()
     int i1 = list_index_of(list, &c);
 
     cc_assert(i0 == 0,
-              cc_msg("%s list_index_of: Expected index 0, but got %d", am, i0));
+              cc_msg("list_index_of: Expected index 0, but got %d", i0));
 
     cc_assert(i1 == 2,
-              cc_msg("%s list_index_of: Expected index 2, but got %d", am, i1));
+              cc_msg("list_index_of: Expected index 2, but got %d", i1));
 
     list_destroy(list);
 }
@@ -346,7 +344,7 @@ void test_list_sort()
         void *e = list_iter_next(iter);
 
         cc_assert(prev <= *((int*) e), 
-                  cc_msg("%s list_sort: preceding elment greater than the current", am));
+                  cc_msg("list_sort: preceding elment greater than the current"));
 
         prev = *((int *) e);
     }
@@ -364,16 +362,16 @@ void test_list_new()
       goto exit;
 
     cc_assert(list_get_first(list) == NULL,
-              cc_msg("%s list_new: Expected NULL first element.", am));
+              cc_msg("list_new: Expected NULL first element."));
     
     cc_assert(list_get_last(list) == NULL,
-              cc_msg("%s list_new: Expected NULL last element.", am));
+              cc_msg("list_new: Expected NULL last element."));
 
     cc_assert(list_size(list) == 0,
-              cc_msg("%s list_new: Expected size 0, but got %d", am, list_size(list)));
+              cc_msg("list_new: Expected size 0, but got %d", list_size(list)));
 
     cc_assert(list != list2,
-              cc_msg("%s list_new: Expected a new instance", am));
+              cc_msg("list_new: Expected a new instance"));
     
 exit:
     list_destroy(list);
@@ -394,13 +392,13 @@ void test_list_add()
 
     if (r1 && r2 && r3 && r4)
          cc_assert(list_size(list) == 4,
-                   cc_msg("%s list_add: Expected size 4, but got %d", am, list_size(list)));
+                   cc_msg("list_add: Expected size 4, but got %d", list_size(list)));
 
     cc_assert(list_get_first(list) != NULL,
-              cc_msg("%s list_add: First element not expected to be NULL!", am));
+              cc_msg("list_add: First element not expected to be NULL!"));
 
     cc_assert(list_get_last(list) != NULL,
-              cc_msg("%s list_add: Last element not expected to be NULL!", am));
+              cc_msg("list_add: Last element not expected to be NULL!"));
 
     list_destroy(list);
 }
@@ -426,10 +424,10 @@ void test_list_add_last()
     int last = *((int*) list_get_last(list));
 
     cc_assert(size == 4,
-              cc_msg("%s list_add_last: Expected size was 4, but got %d!", am, size));
+              cc_msg("list_add_last: Expected size was 4, but got %d!", size));
     
     cc_assert(last == d,
-           cc_msg("%s list_add_last: Expected last element was %d, but got %d!", am, d, last));
+           cc_msg("list_add_last: Expected last element was %d, but got %d!", d, last));
 
     list_add_last(list, &append);
 
@@ -437,10 +435,10 @@ void test_list_add_last()
     last = *((int*) list_get_last(list));
 
     cc_assert(size == 5,
-              cc_msg("%s list_add_last: Expected size was 5, but got %d!", am, size));
+              cc_msg("list_add_last: Expected size was 5, but got %d!", size));
     
     cc_assert(last == append,
-              cc_msg("%s list_add_last: Expected last element was %d, but got %d!", am, append, last));
+              cc_msg("list_add_last: Expected last element was %d, but got %d!", append, last));
     
     list_destroy(list);
 }
@@ -466,10 +464,10 @@ void test_list_add_first()
     int first = *((int*) list_get_first(list));
 
     cc_assert(size == 4,
-              cc_msg("%s list_add_first: Expected size was 4, but got %d!", am, size));
+              cc_msg("list_add_first: Expected size was 4, but got %d!", size));
     
     cc_assert(first == a,
-              cc_msg("%s list_add_first: Expectd first element was %d, but got %d!", am, prepend, first));
+              cc_msg("list_add_first: Expectd first element was %d, but got %d!", prepend, first));
 
     list_add_first(list, &prepend);
 
@@ -477,10 +475,10 @@ void test_list_add_first()
     first = *((int*) list_get_first(list));
 
     cc_assert(size == 5,
-              cc_msg("%s list_add_first: Expected size was 4, but got %d!", am, size));
+              cc_msg("list_add_first: Expected size was 4, but got %d!", size));
 
     cc_assert(first == prepend,
-              cc_msg("%s list_add_first: Expected first element was %d, but got %d", am, prepend, first));
+              cc_msg("list_add_first: Expected first element was %d, but got %d", prepend, first));
 
     list_destroy(list);
 }
@@ -494,23 +492,23 @@ void test_list_splice_after()
     list_splice_after(list, list2, 1);
 
     cc_assert(list_size(list) == 8,
-              cc_msg("%s list_splice_after: Expected size was 8, but got %d!", am, list_size(list)));
+              cc_msg("list_splice_after: Expected size was 8, but got %d!", list_size(list)));
 
     cc_assert(list_size(list2) == 0,
-              cc_msg("%s list_splice_after: Expected size was 0, but got %d!", am, list_size(list2)));
+              cc_msg("list_splice_after: Expected size was 0, but got %d!", list_size(list2)));
 
     int first = *((int*) list_get_first(list));
     int last  = *((int*) list_get_last(list));
     int i2    = *((int*) list_get(list, 2));
 
     cc_assert(first == 1,
-              cc_msg("%s list_splice_after: Expected first element was 1, but got %d!", am, first));
+              cc_msg("list_splice_after: Expected first element was 1, but got %d!", first));
 
     cc_assert(last == 4,
-              cc_msg("%s list_splice_after: Expected last element was 4, but got %d!", am, last));
+              cc_msg("list_splice_after: Expected last element was 4, but got %d!", last));
 
     cc_assert(i2 == 5,
-              cc_msg("%s list_splice_after: Expected element at index 2 was 5, but got %d", am, i2));
+              cc_msg("list_splice_after: Expected element at index 2 was 5, but got %d", i2));
 
     list_destroy(list2);
     list_destroy_free(list);
@@ -525,19 +523,19 @@ void test_list_splice_before()
     list_splice_before(list, list2, 0);
 
     cc_assert(list_size(list) == 8,
-              cc_msg("%s list_splice_before: Expected size was 8, but got %d!", am, list_size(list)));
+              cc_msg("list_splice_before: Expected size was 8, but got %d!", list_size(list)));
 
     cc_assert(list_size(list2) == 0,
-              cc_msg("%s list_splice_before: Expected size was 0, but got %d!", am, list_size(list2)));
+              cc_msg("list_splice_before: Expected size was 0, but got %d!", list_size(list2)));
 
     int first = *((int*) list_get_first(list));
     int last  = *((int*) list_get_last(list));
 
     cc_assert(first == 5,
-              cc_msg("%s list_splice_before: Expected first element was 5, but got %d!", am, first));
+              cc_msg("list_splice_before: Expected first element was 5, but got %d!", first));
 
     cc_assert(last == 4,
-              cc_msg("%s list_splice_before: Expected last element was 4, but got %d!", am, last));
+              cc_msg("list_splice_before: Expected last element was 4, but got %d!", last));
 
     list_destroy(list2);
     list_destroy_free(list);
@@ -552,23 +550,23 @@ void test_list_splice()
     list_splice(list, list2);
 
     cc_assert(list_size(list) == 8,
-              cc_msg("%s list_splice: Expected size was 8, but got %d!", am, list_size(list)));
+              cc_msg("list_splice: Expected size was 8, but got %d!", list_size(list)));
 
     cc_assert(list_size(list2) == 0,
-              cc_msg("%s list_splice: Expected size was 0, but got %d!", am, list_size(list2)));
+              cc_msg("list_splice: Expected size was 0, but got %d!", list_size(list2)));
 
     int last = *((int*) list_get_last(list));
     int first = *((int*) list_get_first(list));
     int i4 = *((int*) list_get(list, 4));
     
     cc_assert(last == 7,
-              cc_msg("%s list_splice: Expected last element was 7, but got %d!", am, last));
+              cc_msg("list_splice: Expected last element was 7, but got %d!", last));
     
     cc_assert(first == 1,
-              cc_msg("%s list_splice: Expected first element was 1, but got %d!", am, first));
+              cc_msg("list_splice: Expected first element was 1, but got %d!", first));
     
     cc_assert(i4 == 5,
-              cc_msg("%s list_splice: Expected element at index 4 was 5, but got %d!", am, i4));
+              cc_msg("list_splice: Expected element at index 4 was 5, but got %d!", i4));
 
     list_destroy(list2);
     list_destroy_free(list);
@@ -583,20 +581,20 @@ void test_list_add_all_at()
     list_add_all_at(list, list2, 2);
 
     cc_assert(list_size(list2) == 4,
-              cc_msg("%s list_add_all_at: Expected size was 4, but got %d!", am, list_size(list2)));
+              cc_msg("list_add_all_at: Expected size was 4, but got %d!", list_size(list2)));
 
     cc_assert(list_size(list) == 8,
-              cc_msg("%s list_add_all_at: Expected size was 8, but got %d!", am, list_size(list)));
+              cc_msg("list_add_all_at: Expected size was 8, but got %d!", list_size(list)));
     
     int last = *((int*) list_get_last(list));
     int l1i5 = *((int*) list_get(list, 5));
     int l2i2 = *((int*) list_get(list2, 2));
     
     cc_assert(last == 4,
-              cc_msg("%s list_add_all_at: Expected last element was 4, but got %d!", am, last));
+              cc_msg("list_add_all_at: Expected last element was 4, but got %d!", last));
     
     cc_assert(l1i5 == l2i2,
-              cc_msg("%s list_add_all_at: Expected element at index 5 was %d, but got %d!", am, l1i5, l2i2));
+              cc_msg("list_add_all_at: Expected element at index 5 was %d, but got %d!", l1i5, l2i2));
 
     list_destroy(list2);
     list_destroy_free(list);
@@ -611,13 +609,13 @@ void test_list_add_all()
     list_add_all(list2, list);
 
     cc_assert(list_size(list2) == 8, 
-              cc_msg("%s list_add_all: Expected size was 8, but got %d!", am, list_size(list2)));
+              cc_msg("list_add_all: Expected size was 8, but got %d!", list_size(list2)));
     
     int l1last = *((int*) list_get_last(list));
     int l2last = *((int*) list_get_last(list2));
 
     cc_assert(l1last == l2last,
-              cc_msg("%s list_add_all: Expected last element was %d, but got %d!", am, l1last, l2last));
+              cc_msg("list_add_all: Expected last element was %d, but got %d!", l1last, l2last));
 
     list_destroy(list);
     list_destroy_free(list2);
@@ -633,12 +631,12 @@ void test_list_add_at()
     list_add_at(list, &ins, 2);
 
     cc_assert(list_size(list) == 5,
-              cc_msg("%s list_add_at: Expected size was 5, but got %d!", am, list_size(list)));
+              cc_msg("list_add_at: Expected size was 5, but got %d!", list_size(list)));
     
     int new = *((int*) list_get(list, 2));
 
     cc_assert(new == ins,
-              cc_msg("%s list_add_at: Expected element at index 2 was %d, but got %d!", am, ins, new));
+              cc_msg("list_add_at: Expected element at index 2 was %d, but got %d!", ins, new));
 
     list_remove(list, &ins);
     list_destroy_free(list);
@@ -653,10 +651,10 @@ void test_list_remove()
     list_remove(list, e);
 
     cc_assert(list_size(list) == 3,
-              cc_msg("%s list_remove: Expected size was 3, but got %d!", am, list_size(list)));
+              cc_msg("list_remove: Expected size was 3, but got %d!", list_size(list)));
 
     cc_assert(list_contains(list, e) == 0,
-              cc_msg("%s list_remove: The list still contains the removed element!", am));
+              cc_msg("list_remove: The list still contains the removed element!"));
 
     list_destroy_free(list);
 }
@@ -669,12 +667,12 @@ void test_list_remove_first()
     list_remove_first(list);
 
     cc_assert(list_size(list) == 3,
-              cc_msg("%s list_remove_first: Expected size was 3, but got %d!", am, list_size(list)));
+              cc_msg("list_remove_first: Expected size was 3, but got %d!", list_size(list)));
     
     int first = *((int*) list_get_first(list));
 
     cc_assert(first == 2,
-              cc_msg("%s list_remove_first: Expected first element was 2, but got %d!", am, first));
+              cc_msg("list_remove_first: Expected first element was 2, but got %d!", first));
 
     list_destroy_free(list);
 }
@@ -687,12 +685,12 @@ void test_list_remove_last()
     list_remove_last(list);
 
     cc_assert(list_size(list) == 3,
-              cc_msg("%s list_remove_last: Expected size was 3, but got %d!", am, list_size(list)));
+              cc_msg("list_remove_last: Expected size was 3, but got %d!", list_size(list)));
     
     int last = *((int*) list_get_last(list));
 
     cc_assert(last == 3,
-              cc_msg("%s list_remove_last: Expected last element was 3, but got %d!", am, last));
+              cc_msg("list_remove_last: Expected last element was 3, but got %d!", last));
 
     list_destroy_free(list);
 }
@@ -707,17 +705,17 @@ void test_list_remove_at()
     int e = *((int*) list_get(list, 2));
 
     cc_assert(e == 4,
-           cc_msg("%s list_remove_at: Expected element was 4, but got %d!", am, e));
+           cc_msg("list_remove_at: Expected element was 4, but got %d!", e));
 
     cc_assert(list_size(list) == 3,
-              cc_msg("%s list_remove_at: Expected size was 3, but got %d!", am, list_size(list)));
+              cc_msg("list_remove_at: Expected size was 3, but got %d!", list_size(list)));
 
     list_remove_at(list, 0);
 
     e = *((int*) list_get(list, 0));
 
     cc_assert(e == 2,
-              cc_msg("%s list_remove_at: Expected element was 2, but got %d!", am, e));
+              cc_msg("list_remove_at: Expected element was 2, but got %d!", e));
 
     list_destroy_free(list);
 }
@@ -729,7 +727,7 @@ void test_list_remove_all()
     list_remove_all(list);
 
     cc_assert(list_size(list) == 0,
-              cc_msg("%s list_remove_all: Expected size was 0, but got %d", am, list_size(list)));
+              cc_msg("list_remove_all: Expected size was 0, but got %d", list_size(list)));
 
     list_destroy_free(list);
 }
@@ -741,7 +739,7 @@ void test_list_get_first()
     int first = *((int*) list_get_first(list));
 
     cc_assert(first == 1,
-              cc_msg("%s list_get_first: Expected first element was 1, but got %d", am, first));
+              cc_msg("list_get_first: Expected first element was 1, but got %d", first));
 
     list_destroy_free(list);
 }
@@ -753,7 +751,7 @@ void test_list_get_last()
     int last = *((int*) list_get_last(list));
 
     cc_assert(last == 4,
-              cc_msg("%s list_get_last: Expected last element was 4, but got %d", am, last));
+              cc_msg("list_get_last: Expected last element was 4, but got %d", last));
 
     list_destroy_free(list);
 }
@@ -765,7 +763,7 @@ void test_list_get()
     int e = *((int*) list_get(list, 1));
 
     cc_assert(e == 2,
-              cc_msg("%s list_get: Expected element at index 1 was 2, but got %d", am, e));
+              cc_msg("list_get: Expected element at index 1 was 2, but got %d", e));
 
     list_destroy_free(list);
 }
@@ -780,7 +778,7 @@ void test_list_replace_at()
     list_replace_at(list, replacement, 2);
 
     cc_assert(list_get(list, 2) == replacement,
-              cc_msg("%s list_replace_at: Unexpected element at index 2", am));
+              cc_msg("list_replace_at: Unexpected element at index 2"));
 
     list_destroy_free(list);
 }
@@ -807,13 +805,13 @@ void test_list_contains()
     int c3 = list_contains(list, &e);
 
     cc_assert(c1 == 2,
-              cc_msg("%s list_contains: Expected number contained was 2, but got %d", am, c1));
+              cc_msg("list_contains: Expected number contained was 2, but got %d", c1));
 
     cc_assert(c2 == 1,
-              cc_msg("%s list_contains: Expected number contained was 1, but got %d", am, c2));
+              cc_msg("list_contains: Expected number contained was 1, but got %d", c2));
 
     cc_assert(c3 == 0,
-              cc_msg("%s list_contains: Expected number contained was 0, but got %d", am, c3));
+              cc_msg("list_contains: Expected number contained was 0, but got %d", c3));
 
     list_destroy(list);
 }
@@ -825,16 +823,16 @@ void test_list_copy_shallow()
     List *cp = list_copy_shallow(list);
 
     cc_assert(list_size(cp) == 4,
-              cc_msg("%s list_copy_shallow: Expected size was 4, but got %d", am, list_size(cp)));
+              cc_msg("list_copy_shallow: Expected size was 4, but got %d", list_size(cp)));
 
     cc_assert(list_get_first(cp) == list_get_first(list),
-              cc_msg("%s list_copy_shallow: First element missmatch", am));
+              cc_msg("list_copy_shallow: First element missmatch"));
 
     cc_assert(list_get_last(cp) == list_get_last(list),
-              cc_msg("%s list_copy_shallow: Last element missmatch", am));
+              cc_msg("list_copy_shallow: Last element missmatch"));
     
     cc_assert(list_get(cp, 3) == list_get(list, 3),
-              cc_msg("%s list_copy_shallow: Element at index 3 missmatch", am));
+              cc_msg("list_copy_shallow: Element at index 3 missmatch"));
     
     list_destroy_free(cp);
     list_destroy(list);
@@ -855,15 +853,15 @@ void test_list_copy_deep()
     List *cp = list_copy_deep(list, copy);
 
     cc_assert(list_size(cp) == 4,
-              cc_msg("%s list_copy_deep: Expected size was 4, but got %d", am, list_size(cp)));
+              cc_msg("list_copy_deep: Expected size was 4, but got %d", list_size(cp)));
 
     int e = *((int*) list_get(cp, 2));
     
     cc_assert(e == *((int*)list_get(list, 2)),
-              cc_msg("%s list_copy_deep: Expected element at index 2 was 3, but got %d", am, e));
+              cc_msg("list_copy_deep: Expected element at index 2 was 3, but got %d", e));
 
     cc_assert(list_get(cp, 2) != list_get(list, 2),
-              cc_msg("%s list_copy_deep: Both lists point to the same value at index 2", am));
+              cc_msg("list_copy_deep: Both lists point to the same value at index 2"));
     
     list_destroy_free(cp);
     list_destroy_free(list);
@@ -877,13 +875,13 @@ void test_list_sublist()
     List *sub = list_sublist(list, 1, 2);
 
     cc_assert(list_size(sub) == 2,
-              cc_msg("%s list_sublist: Expected size was 2 but got %d", am, list_size(sub)));
+              cc_msg("list_sublist: Expected size was 2 but got %d", list_size(sub)));
     
     int s1 = *((int*)list_get(sub, 1));
     int l2 = *((int*)list_get(list, 2));
 
     cc_assert(s1 == l2,
-              cc_msg("%s list_sublist: Expected element at index 1 was %d, but got %d", am, l2, s1));
+              cc_msg("list_sublist: Expected element at index 1 was %d, but got %d", l2, s1));
 
     list_destroy(sub);
     list_destroy_free(list);
