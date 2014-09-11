@@ -7,153 +7,162 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <stdio.h>
 #include <string.h>
-#include <time.h>
-#include <sys/time.h>
-#include "list_test.h"
 #include "../src/list.h"
+#include "test.h"
 
 List *list_1234();
 List *list_5677();
 
-void test_dlist_iter_desc_next();
-void test_dlist_iter_desc_add();
-void test_dlist_iter_desc_remove();
+void test_list_new();
+void test_list_destroy();
+void test_list_add();
+void test_list_add_last();
+void test_list_add_first();
+void test_list_add_all();
+void test_list_add_all_at();
+void test_list_add_at();
+void test_list_remove();
+void test_list_remove_first();
+void test_list_remove_last();
+void test_list_remove_at();
+void test_list_remove_all();
+void test_list_get_first();
+void test_list_get_last();
+void test_list_get();
+void test_list_index_of();
+void test_list_contains();
+void test_list_replace_at();
+void test_list_copy_shallow();
+void test_list_copy_deep();
+void test_list_sublist();
+void test_list_sort();
+void test_list_iter();
+void test_list_iter_desc();
+void test_list_reverse();
 
-void dlist_test_init()
-{
-    test_dlist_new();
-    test_dlist_destroy();
-    test_dlist_add();
-    test_dlist_add_last();
-    test_dlist_add_first();
-    test_dlist_add_all();
-    test_dlist_index_of();
-    test_dlist_add_all_at();
-    test_dlist_add_at();
-    test_dlist_remove();
-    test_dlist_remove_first();
-    test_dlist_remove_last();
-    test_dlist_remove_at();
-    test_dlist_remove_all();
-    test_dlist_get_first();
-    test_dlist_get_last();
-    test_dlist_get();
-    test_dlist_contains();
-    test_dlist_replace_at();
-    test_dlist_copy_shallow();
-    test_dlist_copy_deep();
-    test_dlist_sublist();
-    test_dlist_sort();
-    test_dlist_iter();
-    test_dlist_iter_desc();
-    test_dlist_splice();
-    test_dlist_splice_after();
-    test_dlist_splice_before();
-    test_dlist_to_array();
-    test_dlist_reverse();
+void test_list_splice();
+void test_list_splice_after();
+void test_list_splice_before();
+void test_list_to_array();
+
+void test_list_iter_desc_add();
+void test_list_iter_desc_remove();
+
+void test_list_iter_add();
+void test_list_iter_remove();
+
+char *am = "Assertion failure at";
+
+int main(int argc, char **argv)
+{	 
+	cc_set_status(PASS);
+	cc_set_exit_on_failure(false);
+
+    test_list_new();
+    test_list_destroy();
+    test_list_add();
+    test_list_add_first();
+    test_list_add_last();
+    test_list_index_of();
+    test_list_add_all_at();
+    test_list_add_at();
+	test_list_remove();
+	test_list_remove_first();
+	test_list_remove_last();
+	test_list_remove_at();
+	test_list_remove_all();
+	test_list_get_first();
+	test_list_get_last();
+	test_list_get();
+	test_list_contains();
+	test_list_replace_at();	
+	test_list_copy_shallow();
+	test_list_copy_deep();
+	test_list_sublist();
+	test_list_sort();
+	test_list_iter();
+	test_list_iter_desc();
+	test_list_splice();
+	test_list_splice_after();
+	test_list_splice_before();
+	test_list_to_array();
+	test_list_reverse();
+
+	return cc_get_status();
 }
 
-void test_dlist_iter()
+
+void test_list_iter_add()
 {
-    printf("Testing: dlist_iter... ");
-
-    List *dlist = list_new();
-
-    int a = 8;
-    int b = 3;
-    int c = 20;
-    int d = 7;
-
+	List *list = list_1234();
     int ins = 32;
 
-    list_add(dlist, &a);
-    list_add(dlist, &b);
-    list_add(dlist, &c);
-    list_add(dlist, &d);
-
-    /* Test iterator add */
-    ListIter *iter = list_iter_new(dlist);
+    ListIter *iter = list_iter_new(list);
     for (;list_iter_has_next(iter);) {
         int e = *((int*) list_iter_next(iter));
-        if (e == c) {
-            assert(list_iter_index(iter) == 2);
+
+        if (e == 3) {
+		    int i = list_iter_index(iter);
             list_iter_add(iter, &ins);
         }
     }
-    assert(list_size(dlist) == 5);
-    assert(list_get(dlist, 3) == &ins);
-    assert(list_get(dlist, 4) == &d);
-    list_iter_destroy(iter);
 
-    /* Test iterator remove */
-    iter = list_iter_new(dlist);
+    cc_assert(list_size(list) == 5,
+			  cc_msg("%s list_iter_add: Expected size was 5, but got %d", am, list_size(list)));
+	
+	int li3 = *((int*) list_get(list, 3));
+	int li4 = *((int*) list_get(list, 4));
+
+    cc_assert(li3 == ins,
+			  cc_msg("%s list_iter_add: Expected element at index 3 was %d, but got %d", am, ins, li3));
+
+    cc_assert(li4 == 4,
+			  cc_msg("%s list_iter_add: Expected element at index 4 was 4, but got %d,", am, li4));
+
+    list_iter_destroy(iter);
+	list_destroy(list);
+}
+
+void test_list_iter_remove()
+{
+    List *list = list_1234();
+	
+	int *rm = list_get(list, 2);
+
+	ListIter *iter = list_iter_new(list);
     for(;list_iter_has_next(iter);) {
         int e = *((int*) list_iter_next(iter));
-        if (e == ins) {
-            assert(list_iter_remove(iter));
-            assert(!list_iter_remove(iter));
+        if (e == 3) {
+			 list_iter_remove(iter);
         }
     }
-    assert(list_size(dlist) == 4);
-    assert(list_contains(dlist, &ins) == 0);
+    cc_assert(list_size(list) == 3,
+			  cc_msg("%s list_iter_remove: Expected size was 3, but got %d", am, list_size(list)));
+	
+    cc_assert(list_contains(list, rm) == 0,
+			  cc_msg("%s list_iter_remove: List contains unique element after removal", am));
+
     list_iter_destroy(iter);
-
-    /* Test iterator replace */
-    iter = list_iter_new(dlist);
-    for(;list_iter_has_next(iter);) {
-        list_iter_next(iter);
-        list_iter_replace(iter, &ins);
-    }
-    list_iter_destroy(iter);
-
-    int i = 0;
-    iter = list_iter_new(dlist);
-    for (;list_iter_has_next(iter);) {
-        int e = *((int*) list_iter_next(iter));
-        assert(e == ins);
-        i++;
-    }
-    assert(i == 4);
-    list_iter_destroy(iter);
-
-    list_destroy(dlist);
-
-    printf("OK\n");
+	list_destroy(list);
 }
 
-void test_dlist_iter_desc()
+void test_list_iter()
 {
-    test_dlist_iter_desc_next();
-    test_dlist_iter_desc_remove();
-    test_dlist_iter_desc_add();
+	 test_list_iter_add();
+	 test_list_iter_remove(); 
 }
 
-void test_dlist_iter_desc_next()
+
+void test_list_iter_desc()
 {
-    printf("Testing: dlist_iter_desc_next... ");
-
-    List *list = list_1234();
-
-    ListDIter *iter = list_diter_new(list);
-    int i;
-    int li = list_size(list) - 1;
-    for (;list_diter_has_next(iter);) {
-        i = *((int*) list_diter_next(iter));
-        assert(i == *((int*) list_get(list, li)));
-        li--;
-    }
-    list_diter_destroy(iter);
-    list_destroy_free(list);
-    printf("OK\n");
+    test_list_iter_desc_remove();
+    test_list_iter_desc_add();
 }
 
-void test_dlist_iter_desc_remove()
-{
-    printf("Testing: dlist_iter_desc_remove... ");
 
+void test_list_iter_desc_remove()
+{
     List *list = list_1234();
 
     ListDIter *iter = list_diter_new(list);
@@ -163,21 +172,30 @@ void test_dlist_iter_desc_remove()
         if (i == 1 || i == 3)
             list_diter_remove(iter);
     }
-    assert(list_size(list) == 2);
-    assert(*((int*)list_get_first(list)) == 2);
-    assert(*((int*)list_get_last(list)) == 4);
-    assert(*((int*)list_get(list, 0)) == 2);
-    assert(*((int*)list_get(list, 1)) == 4);
+	int size = list_size(list);
+
+    cc_assert(list_size(list) == 2, cc_msg("%s list_iter_desc_remove: expected size 2 but got %d", am, size));
+
+	int first = *((int*) list_get_first(list));
+	int last  = *((int*) list_get_last(list));
+	int i1    = *((int*) list_get(list, 1));
+	
+    cc_assert(first == 2, 
+			  cc_msg("%s list_iter_desc_remove: expected first element was 2, but got %d", am, first));
+
+    cc_assert(last == 4, 
+			  cc_msg("%s list_iter_desc_remove: expected last element was 4, but got %d", am, last));
+	
+    cc_assert(i1 == 4, 
+			  cc_msg("%s list_iter_desc_remove: expected element at index 1 was, but got %d", am, i1));
 
     list_diter_destroy(iter);
     list_destroy_free(list);
-    printf("OK\n");
 }
 
-void test_dlist_iter_desc_add()
-{
-    printf("Testing: dlist_iter_desc_add... ");
 
+void test_list_iter_desc_add()
+{
     List *list = list_1234();
 
     int *a = (int*) malloc(sizeof(int));
@@ -194,19 +212,103 @@ void test_dlist_iter_desc_add()
 
         if (i == 3)
             list_diter_add(iter, b);
-
     }
-    assert(list_size(list) == 6);
-    assert(*((int*)list_get_first(list)) == 1);
-    assert(*((int*)list_get_last(list)) == 4);
-    assert(*((int*)list_get(list, 2)) == *b);
-    assert(*((int*)list_get(list, 4)) == *a);
+
+	int size  = list_size(list);
+	int first = *((int*)list_get_first(list));
+	int last  = *((int*)list_get_last(list));
+	int i2    = *((int*)list_get(list, 2));
+	int i4    = *((int*)list_get(list, 4)); 
+
+    cc_assert(size == 6, 
+			  cc_msg("%s list_iter_desc_add: Expected size 6, but got %d", am, size));
+
+    cc_assert(first == 1, 
+			  cc_msg("%s list_iter_desc_add: Expected first 1, but got %d", am, first));
+
+    cc_assert(last == 4, 
+			  cc_msg("%s list_iter_desc_add: Expected last 4, but got %d", am, last));
+
+    cc_assert(i2 == *b,
+			  cc_msg("%s list_iter_desc_add: Expected element at index 2 to be %d, but got %d", am, *b, i2));
+
+    cc_assert(i4 == *a,
+			  cc_msg("%s list_iter_desc_add: Expected element at index 4 to be %d, but got %d", am, *a, i4));
 
     list_diter_destroy(iter);
     list_destroy_free(list);
-
-    printf("OK\n");
 }
+
+
+void test_list_reverse()
+{
+    List *list = list_1234();
+
+	int *last_old = list_get_last(list);
+
+    list_reverse(list);
+
+    int a = *((int*)list_get(list, 0));
+    int b = *((int*)list_get(list, 2));
+
+    cc_assert(a == 4, 
+			  cc_msg("%s list_reverse: expected 4, but got %d", am, a));
+
+    cc_assert(b == 2, 
+			  cc_msg("%s list_reverse: expected 2, but got %d", am, b));
+
+	cc_assert(list_get_first(list) == last_old,
+			  cc_msg("%s list_reverse: unexpected list head after reverse", am));
+	
+    list_destroy_free(list);
+}
+
+
+void test_list_to_array()
+{
+    List *list = list_1234();
+    int **array = (int**) list_to_array(list);
+
+    cc_assert(list_get(list, 0) == array[0],
+			  cc_msg("%s list_to_array: Array index 0 does not match list index 0", am));
+
+    cc_assert(list_get(list, 2) == array[2],
+			  cc_msg("%s list_to_array: Array index 2 does not match list index 2", am));
+
+    cc_assert(list_get(list, 3) == array[3],
+			  cc_msg("%s list_to_array: Array index 3 does not match list index 3", am));
+
+	free(array);
+    list_destroy_free(list);
+}
+
+
+void test_list_index_of()
+{
+    List *list = list_new();
+
+    int a = 8;
+    int b = 3;
+    int c = 20;
+    int d = 1;
+
+    list_add(list, &a);
+    list_add(list, &b);
+    list_add(list, &c);
+    list_add(list, &d);
+	
+	int i0 = list_index_of(list, &a);
+	int i1 = list_index_of(list, &c);
+
+    cc_assert(i0 == 0,
+			  cc_msg("%s list_index_of: Expected index 0, but got %d", am, i0));
+
+    cc_assert(i1 == 2,
+			  cc_msg("%s list_index_of: Expected index 2, but got %d", am, i1));
+
+    list_destroy(list);
+}
+
 
 int cmp(void *e1, void *e2)
 {
@@ -220,69 +322,9 @@ int cmp(void *e1, void *e2)
     return 1;
 }
 
-void test_dlist_reverse()
+
+void test_list_sort()
 {
-    printf("Testing: dlist_reverse... ");
-    List *list = list_1234();
-
-    list_reverse(list);
-
-    int a = *((int*)list_get(list, 0));
-    int b = *((int*)list_get(list, 1));
-    int c = *((int*)list_get(list, 2));
-    int d = *((int*)list_get(list, 3));
-
-    assert(a == 4);
-    assert(b == 3);
-    assert(c == 2);
-    assert(d == 1);
-
-    list_destroy_free(list);
-    printf("OK\n");
-}
-
-void test_dlist_to_array()
-{
-    List *list = list_1234();
-    int **array = (int**) list_to_array(list);
-
-    assert(list_get(list, 0) == array[0]);
-    assert(list_get(list, 1) == array[1]);
-    assert(list_get(list, 2) == array[2]);
-    assert(list_get(list, 3) == array[3]);
-
-    list_destroy_free(list);
-}
-
-void test_dlist_index_of()
-{
-    printf("Testing: dlist_index_of... ");
-
-    List *dlist = list_new();
-
-    int a = 8;
-    int b = 3;
-    int c = 20;
-    int d = 1;
-
-    list_add(dlist, &a);
-    list_add(dlist, &b);
-    list_add(dlist, &c);
-    list_add(dlist, &d);
-
-    assert(list_index_of(dlist, &a) == 0);
-    assert(list_index_of(dlist, &c) == 2);
-    assert(list_index_of(dlist, &d) == 3);
-
-    list_destroy(dlist);
-
-    printf("OK\n");
-}
-
-void test_dlist_sort()
-{
-    printf("Testing: dlist_sort... ");
-
     List *list = list_new();
 
     srand(time(NULL));
@@ -296,79 +338,77 @@ void test_dlist_sort()
         list_add(list, e);
     }
 
-    struct timeval t1, t2;
-    long mtime, seconds, useconds;
-
-    gettimeofday(&t1, NULL);
     list_sort(list, cmp);
-    gettimeofday(&t2, NULL);
-
-    seconds  = t2.tv_sec  - t1.tv_sec;
-    useconds = t2.tv_usec - t1.tv_usec;
-    mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
-
-    //printf("\nElapsed time: %ld milliseconds\n", mtime);
 
     ListIter *iter = list_iter_new(list);
     int prev;
     for (prev = *((int *) list_iter_next(iter)); list_iter_has_next(iter);) {
         void *e = list_iter_next(iter);
-        assert(prev <= *((int*) e));
+
+		cc_assert(prev <= *((int*) e), 
+				  cc_msg("%s list_sort: preceding elment greater than the current", am));
+
         prev = *((int *) e);
     }
 
     list_destroy(list);
-
-    printf("OK\n");
 }
 
-void test_dlist_new()
+
+void test_list_new()
 {
-    printf("Testing: dlist_new... ");
+    List *list  = list_new();
+    List *list2 = list_new();
 
-    List *dlist  = list_new();
-    List *dlist2 = list_new();
+    if (list == NULL || list2 == NULL) 
+	  goto exit;
 
-    assert(dlist != NULL);
-    assert(list_get_first(dlist) == NULL); // XXX WHAT DOES IT RETURN?
-    assert(list_get_last(dlist) == NULL);
-    assert(list_size(dlist) == 0);
-    assert(dlist != dlist2);
+    cc_assert(list_get_first(list) == NULL,
+			  cc_msg("%s list_new: Expected NULL first element.", am));
+	
+    cc_assert(list_get_last(list) == NULL,
+			  cc_msg("%s list_new: Expected NULL last element.", am));
 
-    list_destroy(dlist);
-    list_destroy(dlist2);
+    cc_assert(list_size(list) == 0,
+			  cc_msg("%s list_new: Expected size 0, but got %d", am, list_size(list)));
 
-    printf("OK\n");
+    cc_assert(list != list2,
+			  cc_msg("%s list_new: Expected a new instance", am));
+	
+exit:
+    list_destroy(list);
+    list_destroy(list2);
 }
 
-void test_dlist_add()
-{
-    printf("Testing: dlist_add... ");
 
-    List *dlist = list_new();
+void test_list_add()
+{
+    List *list = list_new();
 
     char *s1 = "e1", *s2 = "e2", *s3 = "e3", *s4 = "e4";
 
-    bool r1 = list_add(dlist, s1);
-    bool r2 = list_add(dlist, s2);
-    bool r3 = list_add(dlist, s3);
-    bool r4 = list_add(dlist, s4);
+    bool r1 = list_add(list, s1);
+    bool r2 = list_add(list, s2);
+    bool r3 = list_add(list, s3);
+    bool r4 = list_add(list, s4);
 
     if (r1 && r2 && r3 && r4)
-        assert(list_size(dlist) == 4);
+		 cc_assert(list_size(list) == 4,
+				   cc_msg("%s list_add: Expected size 4, but got %d", am, list_size(list)));
 
-    assert(list_get_first(dlist) != NULL);
-    assert(list_get_last(dlist) != NULL);
+    cc_assert(list_get_first(list) != NULL,
+			  cc_msg("%s list_add: First element not expected to be NULL!", am));
 
-    list_destroy(dlist);
-    printf("OK\n");
+    cc_assert(list_get_last(list) != NULL,
+			  cc_msg("%s list_add: Last element not expected to be NULL!", am));
+
+    list_destroy(list);
 }
 
-void test_dlist_add_last()
-{
-    printf("Testing: dlist_append... ");
 
-    List *dlist = list_new();
+void test_list_add_last()
+{
+    List *list = list_new();
 
     int a = 8;
     int b = 3;
@@ -377,27 +417,38 @@ void test_dlist_add_last()
 
     int append = 90;
 
-    list_add(dlist, &a);
-    list_add(dlist, &b);
-    list_add(dlist, &c);
-    list_add(dlist, &d);
+    list_add(list, &a);
+    list_add(list, &b);
+    list_add(list, &c);
+    list_add(list, &d);
 
-    assert(list_size(dlist) == 4);
-    assert(list_get_last(dlist) == &d);
+	int size = list_size(list);
+	int last = *((int*) list_get_last(list));
 
-    list_add_last(dlist, &append);
+    cc_assert(size == 4,
+			  cc_msg("%s list_add_last: Expected size was 4, but got %d!", am, size));
+	
+    cc_assert(last == d,
+		   cc_msg("%s list_add_last: Expected last element was %d, but got %d!", am, d, last));
 
-    assert(list_size(dlist) == 5);
-    assert(list_get_last(dlist) == &append);
+    list_add_last(list, &append);
 
-    printf("OK\n");
+	size = list_size(list);
+	last = *((int*) list_get_last(list));
+
+    cc_assert(size == 5,
+			  cc_msg("%s list_add_last: Expected size was 5, but got %d!", am, size));
+	
+    cc_assert(last == append,
+			  cc_msg("%s list_add_last: Expected last element was %d, but got %d!", am, append, last));
+	
+	list_destroy(list);
 }
 
-void test_dlist_add_first()
-{
-    printf("Testing: dlist_prepend... ");
 
-    List *dlist = list_new();
+void test_list_add_first()
+{
+    List *list = list_new();
 
     int a = 8;
     int b = 3;
@@ -406,294 +457,338 @@ void test_dlist_add_first()
 
     int prepend = 90;
 
-    list_add(dlist, &a);
-    list_add(dlist, &b);
-    list_add(dlist, &c);
-    list_add(dlist, &d);
+    list_add(list, &a);
+    list_add(list, &b);
+    list_add(list, &c);
+    list_add(list, &d);
 
-    assert(list_size(dlist) == 4);
-    assert(list_get_first(dlist) == &a);
+	int size = list_size(list);
+	int first = *((int*) list_get_first(list));
 
-    list_add_first(dlist, &prepend);
+    cc_assert(size == 4,
+			  cc_msg("%s list_add_first: Expected size was 4, but got %d!", am, size));
+	
+    cc_assert(first == a,
+			  cc_msg("%s list_add_first: Expectd first element was %d, but got %d!", am, prepend, first));
 
-    assert(list_size(dlist) == 5);
-    assert(list_get_first(dlist) == &prepend);
+    list_add_first(list, &prepend);
 
-    list_destroy(dlist);
+	size = list_size(list);
+	first = *((int*) list_get_first(list));
 
-    printf("OK\n");
+    cc_assert(size == 5,
+			  cc_msg("%s list_add_first: Expected size was 4, but got %d!", am, size));
+
+    cc_assert(first == prepend,
+			  cc_msg("%s list_add_first: Expected first element was %d, but got %d", am, prepend, first));
+
+    list_destroy(list);
 }
 
-void test_dlist_splice_after()
+
+void test_list_splice_after()
 {
-    printf("Testing: dlist_splice_after... ");
+    List *list = list_1234();
+    List *list2 = list_5677();
 
-    List *dlist = list_1234();
-    List *dlist2 = list_5677();
+    list_splice_after(list, list2, 1);
 
-    list_splice_after(dlist, dlist2, 1);
+    cc_assert(list_size(list) == 8,
+			  cc_msg("%s list_splice_after: Expected size was 8, but got %d!", am, list_size(list)));
 
-    assert(list_size(dlist) == 8);
-    assert(list_size(dlist2) == 0);
+    cc_assert(list_size(list2) == 0,
+			  cc_msg("%s list_splice_after: Expected size was 0, but got %d!", am, list_size(list2)));
 
-    assert(*((int*)list_get_first(dlist)) == 1);
-    assert(*((int*)list_get_last(dlist)) == 4);
-    assert(*((int*)list_get(dlist, 2)) == 5);
+	int first = *((int*) list_get_first(list));
+	int last  = *((int*) list_get_last(list));
+	int i2    = *((int*) list_get(list, 2));
 
-    list_destroy(dlist2);
-    list_destroy_free(dlist);
+    cc_assert(first == 1,
+			  cc_msg("%s list_splice_after: Expected first element was 1, but got %d!", am, first));
 
-    printf("OK\n");
+    cc_assert(last == 4,
+			  cc_msg("%s list_splice_after: Expected last element was 4, but got %d!", am, last));
+
+    cc_assert(i2 == 5,
+			  cc_msg("%s list_splice_after: Expected element at index 2 was 5, but got %d", am, i2));
+
+    list_destroy(list2);
+    list_destroy_free(list);
 }
 
-void test_dlist_splice_before()
+
+void test_list_splice_before()
 {
-    printf("Testing: dlist_splice_before... ");
+    List *list = list_1234();
+    List *list2 = list_5677();
 
-    List *dlist = list_1234();
-    List *dlist2 = list_5677();
+    list_splice_before(list, list2, 0);
 
-    list_splice_before(dlist, dlist2, 0);
+    cc_assert(list_size(list) == 8,
+			  cc_msg("%s list_splice_before: Expected size was 8, but got %d!", am, list_size(list)));
 
-    assert(list_size(dlist) == 8);
-    assert(list_size(dlist2) == 0);
+    cc_assert(list_size(list2) == 0,
+			  cc_msg("%s list_splice_before: Expected size was 0, but got %d!", am, list_size(list2)));
 
-    assert(*((int*)list_get_first(dlist)) == 5);
-    assert(*((int*)list_get_last(dlist)) == 4);
+	int first = *((int*) list_get_first(list));
+	int last  = *((int*) list_get_last(list));
 
-    list_destroy(dlist2);
-    list_destroy_free(dlist);
+    cc_assert(first == 5,
+			  cc_msg("%s list_splice_before: Expected first element was 5, but got %d!", am, first));
 
-    printf("OK\n");
+    cc_assert(last == 4,
+			  cc_msg("%s list_splice_before: Expected last element was 4, but got %d!", am, last));
+
+    list_destroy(list2);
+    list_destroy_free(list);
 }
 
-void test_dlist_splice()
+
+void test_list_splice()
 {
-    printf("Testing: dlist_splice... ");
+    List *list = list_1234();
+    List *list2 = list_5677();
 
-    List *dlist = list_1234();
-    List *dlist2 = list_5677();
+    list_splice(list, list2);
 
-    list_splice(dlist, dlist2);
+    cc_assert(list_size(list) == 8,
+			  cc_msg("%s list_splice: Expected size was 8, but got %d!", am, list_size(list)));
 
-    assert(list_size(dlist) == 8);
-    assert(list_size(dlist2) == 0);
+    cc_assert(list_size(list2) == 0,
+			  cc_msg("%s list_splice: Expected size was 0, but got %d!", am, list_size(list2)));
 
-    assert(*((int*)list_get_last(dlist)) == 7);
-    assert(*((int*)list_get_first(dlist)) == 1);
-    assert(*((int*)list_get(dlist, 4)) == 5);
+	int last = *((int*) list_get_last(list));
+	int first = *((int*) list_get_first(list));
+	int i4 = *((int*) list_get(list, 4));
+	
+    cc_assert(last == 7,
+			  cc_msg("%s list_splice: Expected last element was 7, but got %d!", am, last));
+	
+    cc_assert(first == 1,
+			  cc_msg("%s list_splice: Expected first element was 1, but got %d!", am, first));
+	
+    cc_assert(i4 == 5,
+			  cc_msg("%s list_splice: Expected element at index 4 was 5, but got %d!", am, i4));
 
-    list_destroy(dlist2);
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy(list2);
+    list_destroy_free(list);
 }
 
-void test_dlist_add_all()
+
+void test_list_add_all_at()
 {
-    printf("Testing: dlist_add_all... ");
+    List *list  = list_1234();
+    List *list2 = list_5677();
 
-    List *dlist  = list_1234();
-    List *dlist2 = list_5677();
+    list_add_all_at(list, list2, 2);
 
-    list_add_all_at(dlist, dlist2, 2);
+    cc_assert(list_size(list2) == 4,
+			  cc_msg("%s list_add_all_at: Expected size was 4, but got %d!", am, list_size(list2)));
 
-    assert(list_size(dlist2) == 4);
-    assert(list_size(dlist) == 8);
-    assert(*((int*)list_get_last(dlist)) == 4);
-    assert(list_get(dlist, 5) == list_get(dlist2, 2));
+    cc_assert(list_size(list) == 8,
+			  cc_msg("%s list_add_all_at: Expected size was 8, but got %d!", am, list_size(list)));
+	
+	int last = *((int*) list_get_last(list));
+	int l1i5 = *((int*) list_get(list, 5));
+	int l2i2 = *((int*) list_get(list2, 2));
+	
+    cc_assert(last == 4,
+			  cc_msg("%s list_add_all_at: Expected last element was 4, but got %d!", am, last));
+	
+    cc_assert(l1i5 == l2i2,
+			  cc_msg("%s list_add_all_at: Expected element at index 5 was %d, but got %d!", am, l1i5, l2i2));
 
-    list_destroy(dlist2);
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy(list2);
+    list_destroy_free(list);
 }
 
-void test_dlist_add_all_at()
+
+void test_list_add_all()
 {
-    printf("Testing: dlist_add_at... ");
+    List *list = list_1234();
+    List *list2 = list_5677();
 
-    List *dlist = list_1234();
-    List *dlist2 = list_5677();
+    list_add_all(list2, list);
 
-    assert(list_size(dlist2) == 4);
+    cc_assert(list_size(list2) == 8, 
+			  cc_msg("%s list_add_all: Expected size was 8, but got %d!", am, list_size(list2)));
+	
+	int l1last = *((int*) list_get_last(list));
+	int l2last = *((int*) list_get_last(list2));
 
-    list_add_all(dlist2, dlist);
+    cc_assert(l1last == l2last,
+			  cc_msg("%s list_add_all: Expected last element was %d, but got %d!", am, l1last, l2last));
 
-    assert(list_size(dlist2) == 8);
-    assert(list_get_last(dlist2) == list_get_last(dlist));
-
-    list_destroy(dlist);
-    list_destroy_free(dlist2);
-
-    printf("OK\n");
+    list_destroy(list);
+    list_destroy_free(list2);
 }
 
-void test_dlist_add_at()
-{
-    printf("Testing: dlist_add_at... ");
 
-    List *dlist = list_1234();
+void test_list_add_at()
+{
+    List *list = list_1234();
 
     int ins = 90;
 
-    assert(list_size(dlist) == 4);
+    list_add_at(list, &ins, 2);
 
-    list_add_at(dlist, &ins, 2);
+    cc_assert(list_size(list) == 5,
+			  cc_msg("%s list_add_at: Expected size was 5, but got %d!", am, list_size(list)));
+	
+	int new = *((int*) list_get(list, 2));
 
-    assert(list_size(dlist) == 5);
-    assert(list_get(dlist, 2) == &ins);
+    cc_assert(new == ins,
+			  cc_msg("%s list_add_at: Expected element at index 2 was %d, but got %d!", am, ins, new));
 
-    list_remove(dlist, &ins);
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_remove(list, &ins);
+    list_destroy_free(list);
 }
 
-void test_dlist_remove()
+
+void test_list_remove()
 {
-    printf("Testing: dlist_remove... ");
+    List *list = list_1234();
 
-    List *dlist = list_1234();
+    int *e = list_get(list, 1);
+    list_remove(list, e);
 
-    assert(list_size(dlist) == 4);
+    cc_assert(list_size(list) == 3,
+			  cc_msg("%s list_remove: Expected size was 3, but got %d!", am, list_size(list)));
 
-    int *e = list_get(dlist, 1);
-    list_remove(dlist, e);
+    cc_assert(list_contains(list, e) == 0,
+			  cc_msg("%s list_remove: The list still contains the removed element!", am));
 
-    assert(list_size(dlist) == 3);
-    assert(list_contains(dlist, e) == 0);
-
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_remove_first()
+
+void test_list_remove_first()
 {
-    printf("Testing: dlist_remove_head... ");
+    List *list = list_1234();
 
-    List *dlist = list_1234();
+    list_remove_first(list);
 
-    assert(list_size(dlist) == 4);
+    cc_assert(list_size(list) == 3,
+			  cc_msg("%s list_remove_first: Expected size was 3, but got %d!", am, list_size(list)));
+	
+	int first = *((int*) list_get_first(list));
 
-    list_remove_first(dlist);
+    cc_assert(first == 2,
+			  cc_msg("%s list_remove_first: Expected first element was 2, but got %d!", am, first));
 
-    assert(list_size(dlist) == 3);
-    assert(*((int*)list_get_first(dlist)) == 2);
-
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_remove_last()
+
+void test_list_remove_last()
 {
-    printf("Testing: dlist_remove_tail... ");
+    List *list = list_1234();
 
-    List *dlist = list_1234();
+    list_remove_last(list);
 
-    assert(list_size(dlist) == 4);
+    cc_assert(list_size(list) == 3,
+			  cc_msg("%s list_remove_last: Expected size was 3, but got %d!", am, list_size(list)));
+	
+	int last = *((int*) list_get_last(list));
 
-    list_remove_last(dlist);
+    cc_assert(last == 3,
+			  cc_msg("%s list_remove_last: Expected last element was 3, but got %d!", am, last));
 
-    assert(list_size(dlist) == 3);
-    assert(*((int*)list_get_last(dlist)) == 3);
-
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_remove_at()
+
+void test_list_remove_at()
 {
-    printf("Testing: dlist_remove_at... ");
+    List *list = list_1234();
 
-    List *dlist = list_1234();
+    list_remove_at(list, 2);
 
-    list_remove_at(dlist, 2);
+	int e = *((int*) list_get(list, 2));
 
-    assert(*((int*)list_get(dlist, 2)) == 4);
-    assert(list_size(dlist) == 3);
+    cc_assert(e == 4,
+		   cc_msg("%s list_remove_at: Expected element was 4, but got %d!", am, e));
 
-    list_remove_at(dlist, 0);
+    cc_assert(list_size(list) == 3,
+			  cc_msg("%s list_remove_at: Expected size was 3, but got %d!", am, list_size(list)));
 
-    assert(list_size(dlist) == 2);
-    assert(*((int*)list_get(dlist, 0)) == 2);
+    list_remove_at(list, 0);
 
-    list_destroy_free(dlist);
+	e = *((int*) list_get(list, 0));
 
-    printf("OK\n");
+    cc_assert(e == 2,
+			  cc_msg("%s list_remove_at: Expected element was 2, but got %d!", am, e));
+
+    list_destroy_free(list);
 }
 
-void test_dlist_remove_all()
+
+void test_list_remove_all()
 {
-    printf("Testing: dlist_remove_all... ");
+    List *list = list_1234();
+    list_remove_all(list);
 
-    List *dlist = list_1234();
-    list_remove_all(dlist);
-    assert(list_size(dlist) == 0);
-    list_destroy_free(dlist);
+    cc_assert(list_size(list) == 0,
+			  cc_msg("%s list_remove_all: Expected size was 0, but got %d", am, list_size(list)));
 
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_get_first()
+
+void test_list_get_first()
 {
-    printf("Testing: dlist_get_head... ");
+    List *list = list_1234();
+	int first = *((int*) list_get_first(list));
 
-    List *dlist = list_1234();
-    assert(*((int*)list_get_first(dlist)) == 1);
-    list_destroy_free(dlist);
+    cc_assert(first == 1,
+			  cc_msg("%s list_get_first: Expected first element was 1, but got %d", am, first));
 
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_get_last()
+
+void test_list_get_last()
 {
-    printf("Testing: dlist_get_tail... ");
+    List *list = list_1234();
+	int last = *((int*) list_get_last(list));
 
-    List *dlist = list_1234();
-    assert(*((int*)list_get_last(dlist)) == 4);
-    list_destroy_free(dlist);
+    cc_assert(last == 4,
+			  cc_msg("%s list_get_last: Expected last element was 4, but got %d", am, last));
 
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_get()
+
+void test_list_get()
 {
-    printf("Testing: dlist_get... ");
+    List *list = list_1234();
+    int e = *((int*) list_get(list, 1));
 
-    List *dlist = list_1234();
-    int e = *((int*) list_get(dlist, 1));
-    assert(e == 2);
-    list_destroy_free(dlist);
+    cc_assert(e == 2,
+			  cc_msg("%s list_get: Expected element at index 1 was 2, but got %d", am, e));
 
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_replace_at()
-{
-    printf("Testing: dlist_replace_at... ");
 
-    List *dlist = list_1234();
+void test_list_replace_at()
+{
+    List *list = list_1234();
     int *replacement = (int*) malloc(sizeof(int));
     *replacement = 32;
+	
+    list_replace_at(list, replacement, 2);
 
-    assert(*((int*)list_get(dlist, 2)) != 2);
-    list_replace_at(dlist, replacement, 2);
-    assert(list_get(dlist, 2) == replacement);
+    cc_assert(list_get(list, 2) == replacement,
+			  cc_msg("%s list_replace_at: Unexpected element at index 2", am));
 
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_contains()
-{
-    printf("Testing: dlist_contains... ");
 
-    List *dlist = list_new();
+void test_list_contains()
+{
+    List *list = list_new();
 
     int a = 8;
     int b = 3;
@@ -701,39 +796,50 @@ void test_dlist_contains()
     int d = 7;
     int e = 32;
 
-    list_add(dlist, &a);
-    list_add(dlist, &b);
-    list_add(dlist, &b);
-    list_add(dlist, &c);
-    list_add(dlist, &d);
+    list_add(list, &a);
+    list_add(list, &b);
+    list_add(list, &b);
+    list_add(list, &c);
+    list_add(list, &d);
 
-    assert(list_contains(dlist, &b) == 2);
-    assert(list_contains(dlist, &d) == 1);
-    assert(list_contains(dlist, &e) == 0);
+	int c1 = list_contains(list, &b);
+	int c2 = list_contains(list, &d);
+	int c3 = list_contains(list, &e);
 
-    list_destroy(dlist);
+    cc_assert(c1 == 2,
+			  cc_msg("%s list_contains: Expected number contained was 2, but got %d", am, c1));
 
-    printf("OK\n");
+    cc_assert(c2 == 1,
+			  cc_msg("%s list_contains: Expected number contained was 1, but got %d", am, c2));
+
+    cc_assert(c3 == 0,
+			  cc_msg("%s list_contains: Expected number contained was 0, but got %d", am, c3));
+
+    list_destroy(list);
 }
 
-void test_dlist_copy_shallow()
+
+void test_list_copy_shallow()
 {
-    printf("Testing: dlist_copy_shallow... ");
+    List *list = list_1234();
+    List *cp = list_copy_shallow(list);
 
-    List *dlist = list_1234();
-    List *cp = list_copy_shallow(dlist);
+    cc_assert(list_size(cp) == 4,
+			  cc_msg("%s list_copy_shallow: Expected size was 4, but got %d", am, list_size(cp)));
 
-    assert(list_size(cp) == 4);
-    assert(list_get_first(cp) == list_get_first(dlist));
-    assert(list_get_last(cp) == list_get_last(dlist));
-    assert(list_get(cp, 3) == list_get(dlist, 3));
-    assert(cp != dlist);
+    cc_assert(list_get_first(cp) == list_get_first(list),
+			  cc_msg("%s list_copy_shallow: First element missmatch", am));
 
+    cc_assert(list_get_last(cp) == list_get_last(list),
+			  cc_msg("%s list_copy_shallow: Last element missmatch", am));
+	
+    cc_assert(list_get(cp, 3) == list_get(list, 3),
+			  cc_msg("%s list_copy_shallow: Element at index 3 missmatch", am));
+    
     list_destroy_free(cp);
-    list_destroy(dlist);
-
-    printf("OK\n");
+    list_destroy(list);
 }
+
 
 void *copy(void *e1)
 {
@@ -742,59 +848,53 @@ void *copy(void *e1)
     return cp;
 }
 
-void test_dlist_copy_deep()
+
+void test_list_copy_deep()
 {
-    printf("Testing: dlist_copy_deep... ");
+    List *list = list_1234();
+    List *cp = list_copy_deep(list, copy);
 
-    List *dlist = list_1234();
-    List *cp = list_copy_deep(dlist, copy);
+    cc_assert(list_size(cp) == 4,
+			  cc_msg("%s list_copy_deep: Expected size was 4, but got %d", am, list_size(cp)));
 
-    assert(list_size(cp) == 4);
-    assert(list_get_first(cp) != list_get_first(dlist));
-    assert(*((int*)list_get_first(cp)) == *((int*)list_get_first(dlist)));
-    assert(list_get_last(cp) != list_get_last(dlist));
+	int e = *((int*) list_get(cp, 2));
+	
+	cc_assert(e == *((int*)list_get(list, 2)),
+			  cc_msg("%s list_copy_deep: Expected element at index 2 was 3, but got %d", am, e));
 
+	cc_assert(list_get(cp, 2) != list_get(list, 2),
+			  cc_msg("%s list_copy_deep: Both lists point to the same value at index 2", am));
+	
     list_destroy_free(cp);
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_sublist()
+
+void test_list_sublist()
 {
-    printf("Testing: dlist_subdlist... ");
+    List *list = list_1234();
 
-    List *dlist = list_1234();
+    List *sub = list_sublist(list, 1, 2);
 
-    List *sub = list_sublist(dlist, 1, 2);
+    cc_assert(list_size(sub) == 2,
+			  cc_msg("%s list_sublist: Expected size was 2 but got %d", am, list_size(sub)));
+	
+    int s1 = *((int*)list_get(sub, 1));
+	int l2 = *((int*)list_get(list, 2));
 
-    assert(list_size(sub) == 2);
-    assert(list_get(sub, 0) == list_get(dlist, 1));
-    assert(list_get(sub, 1) == list_get(dlist, 2));
+    cc_assert(s1 == l2,
+			  cc_msg("%s list_sublist: Expected element at index 1 was %d, but got %d", am, l2, s1));
 
     list_destroy(sub);
-    sub = list_sublist(dlist, 0, 3);
-
-    assert(list_size(sub) == 4);
-    assert(list_get_last(sub) == list_get_last(dlist));
-    assert(list_get_first(sub) == list_get_first(dlist));
-
-    list_destroy(sub);
-
-    list_destroy_free(dlist);
-
-    printf("OK\n");
+    list_destroy_free(list);
 }
 
-void test_dlist_destroy()
+
+void test_list_destroy()
 {
-    printf("Testing: dlist_destroy... ");
-
-    List *dlist = list_1234();
-    assert(list_destroy_free(dlist));
-
-    printf("OK\n");
+	 // Nothing to test
 }
+
 
 List *list_1234()
 {
@@ -817,6 +917,7 @@ List *list_1234()
 
     return list;
 }
+
 
 List *list_5677()
 {
