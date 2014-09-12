@@ -9,7 +9,7 @@
 #define COLLECTIONS_C_H_
 
 #include "hashtable.h"
-#include "dlist.h"
+#include "list.h"
 #include "hashset.h"
 #include "vector.h"
 #include "stack.h"
