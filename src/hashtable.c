@@ -606,20 +606,18 @@ bool hashtable_iter_has_next(HashTableIter *iter)
  */
 void hashtable_iter_next(HashTableIter *iter)
 {
-    TableEntry *next = iter->next_entry->next;
-
-    if (next) {
-        iter->prev_entry = iter->next_entry;
-        iter->next_entry = next;
+    iter->prev_entry = iter->next_entry;
+    iter->next_entry = iter->next_entry->next;
+   
+    if (iter->next_entry)
         return;
-    }
+
     int i;
     for (i = iter->bucket_index + 1; i < iter->table->capacity; i++) {
-        next = iter->table->buckets[i];
-        if (next) {
+        iter->next_entry = iter->table->buckets[i];
+
+        if (iter->next_entry) {
             iter->bucket_index = i;
-            iter->prev_entry = iter->next_entry;
-            iter->next_entry = next;
             break;
         }
     }
