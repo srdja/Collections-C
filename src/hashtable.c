@@ -299,6 +299,8 @@ static uint32_t round_pow_two(uint32_t n)
     if (n >= MAX_POW_TWO)
         return MAX_BUCKETS;
 
+    if (n == 0)
+        return 2;
     /**
      * taken from:
      * http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2Float
@@ -559,7 +561,7 @@ bool hashtable_pointer_key_compare(void *key1, void *key2)
  *
  * @return a new HashTableIter object
  */
-HashTableIter *hastable_iter_new(HashTable *table)
+HashTableIter *hashtable_iter_new(HashTable *table)
 {
     HashTableIter *iter = calloc(1, sizeof(HashTableIter));
     iter->table = table;
@@ -577,6 +579,16 @@ HashTableIter *hastable_iter_new(HashTable *table)
 }
 
 /**
+ * Destroys the specified iterator.
+ *
+ * @param[in] iter the iterator that is being destroyed.
+ */
+void hashtable_iter_destroy(HashTableIter *iter)
+{
+    free(iter);
+}
+
+/**
  * Checks whether or not the iterator has a next entry iterate over.
  *
  * @return true if the next entry exists or false if the iterator has reached
@@ -584,7 +596,7 @@ HashTableIter *hastable_iter_new(HashTable *table)
  */
 bool hashtable_iter_has_next(HashTableIter *iter)
 {
-    return iter->next_entry ? true : false;
+    return iter->next_entry != NULL ? true : false;
 }
 
 /**
@@ -597,14 +609,16 @@ void hashtable_iter_next(HashTableIter *iter)
     TableEntry *next = iter->next_entry->next;
 
     if (next) {
+        iter->prev_entry = iter->next_entry;
         iter->next_entry = next;
         return;
     }
     int i;
-    for (i = iter->bucket_index; i < iter->table->capacity; i++) {
+    for (i = iter->bucket_index + 1; i < iter->table->capacity; i++) {
         next = iter->table->buckets[i];
         if (next) {
             iter->bucket_index = i;
+            iter->prev_entry = iter->next_entry;
             iter->next_entry = next;
             break;
         }
