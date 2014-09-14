@@ -27,21 +27,23 @@ typedef struct vector_s Vector;
 typedef struct vector_iter_s VectorIter;
 
 Vector *vector_new();
-Vector *vector_new_capacity(unsigned int capacity);
+Vector *vector_new_capacity(size_t capacity);
 
 void vector_destroy(Vector *vect);
+void vector_destroy_free(Vector *vect);
 
 bool vector_add(Vector *vect, void *element);
-bool vector_add_at(Vector *vect, void *element, unsigned int index);
-bool vector_replace_at(Vector *vect, void *element, unsigned int index);
+bool vector_add_at(Vector *vect, size_t index, void *element);
+void *vector_replace_at(Vector *vect, size_t index, void *element);
 
 void *vector_remove(Vector *vect, void *element);
-void *vector_remove_at(Vector *vect, unsigned int index);
-bool vector_remove_all(Vector *vect);
+void *vector_remove_at(Vector *vect, size_t index);
+void vector_remove_all(Vector *vect);
+void vector_remove_all_free(Vector *vect);
 
-void *vector_get(Vector *vect, unsigned int index);
+void *vector_get(Vector *vect, size_t index);
 
-Vector *vector_subvector(Vector *vect, unsigned int from, unsigned int to);
+Vector *vector_subvector(Vector *vect, size_t from, size_t to);
 Vector *vector_copy_shallow(Vector *vect);
 Vector *vector_copy_deep(Vector *vect, void *(*cp) (void*));
 
@@ -49,12 +51,21 @@ void vector_reverse(Vector *vect);
 void vector_trim_capacity(Vector *vect);
 
 int vector_cointains(Vector *vect, void *element);
-int vector_size(Vector *vect);
-int vector_capacity(Vector *vect);
+size_t vector_size(Vector *vect);
+size_t vector_capacity(Vector *vect);
 
 int vector_index_of(Vector *vect, void *element);
-
 void vector_sort(Vector *vect, int (*cmp) (const void*, const void*));
 
+void vector_foreach(Vector *vect, void (*op) (void *));
 
+VectorIter *vector_iter_new(Vector *vect);
+void vector_iter_destroy(VectorIter *iter);
+bool vector_iter_has_next(VectorIter *iter);
+void *vector_iter_next(VectorIter *iter);
+void *vector_iter_remove(VectorIter *iter);
+void vector_iter_add(VectorIter *iter, void *element);
+void *vector_iter_replace(VectorIter *iter, void *element);
+size_t vector_iter_index(VectorIter *iter);
+  
 #endif /* VECTOR_H_ */
