@@ -529,8 +529,8 @@ void test_vector_sort()
 
 void test_vector_iter()
 {
-    test_vector_iter_remove();
-    test_vector_iter_add();
+     test_vector_iter_remove();
+     test_vector_iter_add();
 }
 
 void test_vector_iter_remove()
@@ -551,8 +551,9 @@ void test_vector_iter_remove()
     for (;vector_iter_has_next(iter);) {
         int *e = vector_iter_next(iter);
         
-        if (*e == c)
+        if (*e == c) {
             vector_iter_remove(iter);
+        }
     }
 
     cc_assert(vector_contains(v, &c) == 0,
