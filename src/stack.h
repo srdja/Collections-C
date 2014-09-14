@@ -34,6 +34,6 @@ void *stack_pop(Stack *stack);
 
 size_t stack_size(Stack *stack);
 
-void stack_foreach(void (*op) (const void *));
+void stack_foreach(Stack *stack, void (*op) (void *));
 
 #endif /* STACK_H_ */

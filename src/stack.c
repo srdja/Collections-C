@@ -133,7 +133,7 @@ size_t stack_size(Stack *stack)
  * @param[in] op the operation function that is to be invoked on each
  *               element of the stack
  */
-void stack_foreach(Stack *stack, void (*op) (const void *)))
+void stack_foreach(Stack *stack, void (*op) (void *))
 {
     vector_foreach(stack->v, op);
 }
