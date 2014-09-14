@@ -129,7 +129,7 @@ bool vector_add(Vector *vect, void *element)
  * Adds a new element to the vector at a specified position by shifting all
  * subsequent elemnts by one. The specified index must be within the bounds
  * of the vector, otherwise this operation will fail and false will be
- * returned to indicate the This function may also fail if the spece allocation
+ * returned to indicate failure. This function may also fail if the spece allocation
  * for the new element was unsuccessful.
  *
  * @param[in] vect the vector to which the element is being added
