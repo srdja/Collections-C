@@ -21,6 +21,19 @@
 #ifndef STACK_H_
 #define STACK_H_
 
+#include "common.h"
 
+typedef struct stack_s Stack;
+
+Stack *stack_new();
+void stack_destroy(Stack *stack);
+
+bool stack_push(Stack *stack, void *element);
+void *stack_peek(Stack *stack);
+void *stack_pop(Stack *stack);
+
+size_t stack_size(Stack *stack);
+
+void stack_foreach(void (*op) (const void *));
 
 #endif /* STACK_H_ */
