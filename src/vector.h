@@ -38,10 +38,12 @@ void *vector_replace_at(Vector *vect, size_t index, void *element);
 
 void *vector_remove(Vector *vect, void *element);
 void *vector_remove_at(Vector *vect, size_t index);
+void *vector_remove_last(Vector *vect);
 void vector_remove_all(Vector *vect);
 void vector_remove_all_free(Vector *vect);
 
 void *vector_get(Vector *vect, size_t index);
+void *vector_get_last(Vector *vect);
 
 Vector *vector_subvector(Vector *vect, size_t from, size_t to);
 Vector *vector_copy_shallow(Vector *vect);

@@ -129,8 +129,8 @@ bool vector_add(Vector *vect, void *element)
  * Adds a new element to the vector at a specified position by shifting all
  * subsequent elemnts by one. The specified index must be within the bounds
  * of the vector, otherwise this operation will fail and false will be
- * returned to indicate failure. This function may also fail if the spece allocation
- * for the new element was unsuccessful.
+ * returned to indicate failure. This function may also fail if the spece 
+ * allocation for the new element was unsuccessful.
  *
  * @param[in] vect the vector to which the element is being added
  * @param[in] element the element that is being added
@@ -141,7 +141,7 @@ bool vector_add(Vector *vect, void *element)
  */
 bool vector_add_at(Vector *vect, size_t index, void *element)
 {
-    bool alloc = true
+    bool alloc = true;
 
     if (index > (vect->size - 1))
         return false;
@@ -213,10 +213,10 @@ void *vector_remove(Vector *vect, void *element)
 }
 
 /**
- * Removes are returns a vector element from the specified index. The index must
+ * Removes and returns a vector element from the specified index. The index must
  * be within the bounds of the vector, otherwise NULL is returned. NULL may also
  * returned if the removed element was NULL. To resolve this ambiguity call
- * <code>vecto_contains()</code> before this function.
+ * <code>vector_contains()</code> before this function.
  * 
  * @param[in] vect the vector from which the element is being removed
  * @param[in] index the index of the element being removed.
@@ -237,6 +237,21 @@ void *vector_remove_at(Vector *vect, size_t index)
     vect->size--;
 
     return e;
+}
+
+/**
+ * Removes and returns a vector element from the end of the vector. Or NULL if
+ * vector is empty. NULL may also be returned if the last element of the vector
+ * is null. This ambiguity can be resolved by calling <code>vector_size()</code>
+ * before this function.
+ *
+ * @param the vector whose last element is being returned
+ *
+ * @return the last element of the vector ie. the element at the highest index
+ */
+void *vector_remove_last(Vector *vect)
+{
+    return vector_remove_at(vect, vect->size - 1);
 }
 
 /**
@@ -286,6 +301,21 @@ void *vector_get(Vector *vect, size_t index)
 }
 
 /**
+ * Returns the last element of the vector ie. the element at the highest index,
+ * or NULL if the vector is empty. Null may also be returned if the vector is
+ * empty. This ambiguity can be resolved by calling <code>vector_size()</code>
+ * before this function.
+ *
+ * @param[in] the vector whose last element is being returned
+ *
+ * @return the last element of the specified vector
+ */
+void *vector_get_last(Vector *vect)
+{
+    return vector_get(vect, vect->size - 1);
+}
+
+/**
  * Returns the index of the first occurrence of the specified vector element, or
  * -1 if the element could not be found.
  *
@@ -323,16 +353,16 @@ int vector_index_of(Vector *vect, void *element)
  */
 Vector *vector_subvector(Vector *vect, size_t b, size_t e)
 {
-    if (from > to || from < 0 || to > vect->size)
+    if (b > e || b < 0 || e > vect->size)
         return NULL;
 
     Vector *v = vector_new();
 
-    v->size = to - from + 1;
+    v->size = e - b + 1;
     v->capacity = v->size * 2;
 
     void **new_buff = calloc(v->capacity, sizeof(void*));
-    memcpy(new_buff, &(vect->buffer[from]), v->size * sizeof(void*));
+    memcpy(new_buff, &(vect->buffer[b]), v->size * sizeof(void*));
 
     v->buffer = new_buff;
 
@@ -572,9 +602,7 @@ bool vector_iter_has_next(VectorIter *iter)
  */
 void *vector_iter_next(VectorIter *iter)
 {
-    void *next = iter->vect->buffer[iter->index];
-    iter->index++;
-    return next;
+    return iter->vect->buffer[iter->index++];
 }
 
 /**
@@ -586,11 +614,8 @@ void *vector_iter_next(VectorIter *iter)
  * @return the removed element
  */
 void *vector_iter_remove(VectorIter *iter)
-{
-    void *rm = iter->vect->buffer[iter->index];
-    vector_remove_at(iter->vect, iter->index);
-    iter->index--;
-    return rm;
+{ 
+    return vector_remove_at(iter->vect, iter->index - 1);
 }
 
 /**
@@ -601,8 +626,7 @@ void *vector_iter_remove(VectorIter *iter)
  */
 void vector_iter_add(VectorIter *iter, void *element)
 {
-    vector_add_at(iter->vect, iter->index, element);
-    iter->index++;
+    vector_add_at(iter->vect, iter->index++, element);
 }
 
 /**
