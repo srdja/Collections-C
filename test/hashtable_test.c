@@ -20,9 +20,7 @@ void test_hashtable_remove_all();
 void test_hashtable_capacity();
 void test_hashtable_contains_key();
 
-void test_hashtable_pointer_keys();
 void test_hashtable_memory_chunks_as_keys();
-void test_hashtable_double_keys();
 
 void test_hashtable_iter_next();
 
