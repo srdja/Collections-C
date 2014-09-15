@@ -643,6 +643,54 @@ bool hashtable_pointer_key_compare(void *key1, void *key2)
 }
 
 /**
+ * A 'foreach loop' function that invokes the specified function on every key in
+ * the table. The operation function should not modify the key. Any modification
+ * of the key will invalidate the HashTable.
+ *
+ * @param[in] table the table on which this operation is being perfomed
+ * @param[in] op the operation function that is invoked on each key of the table
+ */
+void hashtable_foreach_key(HashTable *table, void (*op) (const void *key))
+{
+    int i;
+    for (i = 0; i <table->capacity; i++) {
+        if (!table->buckets[i])
+            continue;
+
+        Table *entry = table->buckets[i];
+
+        while (entry) {
+            op(entry->key);
+            entry = entry->next;
+        }
+    }
+}
+
+/**
+ * A 'foreach loop' function that invokes the specified function on eveery value
+ * in the table.
+ *
+ * @param[in] table the table on which this operation is being performed
+ * @param[in] op the operation function that is invoked on each value of the
+ *               table
+ */
+void hashtable_foreach_value(HashTable *table, void (*op) (void *val))
+{
+    int i;
+    for (i = 0; i <table->capacity; i++) {
+        if (!table->buckets[i])
+            continue;
+
+        Table *entry = table->buckets[i];
+
+        while (entry) {
+            op(entry->value);
+            entry = entry->next;
+        }
+    }
+}
+
+/**
  * Creats a new HashTable iterator that iterates over hashtable entries.
  *
  * @note The order at which the entries are returned is unspecified.

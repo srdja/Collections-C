@@ -85,6 +85,9 @@ uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed);
 #define GENERAL_HASH hashtable_murmur_hash3
 #define STRING_HASH  hashtable_hash_string
 
+void hashtable_foreach_key(HashTable *table, void (*op) (const void *));
+void hashtable_foreach_value(HashTable *table, void (*op) (void *));
+
 HashTableIter *hashtable_iter_new(HashTable *table);
 bool hashtable_iter_hash_next(HashTableIter *iter);
 void hashtable_iter_next(HashTableIter *iter);
