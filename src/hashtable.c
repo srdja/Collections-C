@@ -493,7 +493,7 @@ Vector *hashtable_get_values(HashTable *table)
         if (!table->buckets[i])
             continue;
 
-        Table *entry = table->buckets[i];
+        TableEntry *entry = table->buckets[i];
 
         while (entry) {
             vector_add(v, entry->value);
@@ -657,7 +657,7 @@ void hashtable_foreach_key(HashTable *table, void (*op) (const void *key))
         if (!table->buckets[i])
             continue;
 
-        Table *entry = table->buckets[i];
+        TableEntry *entry = table->buckets[i];
 
         while (entry) {
             op(entry->key);
@@ -681,7 +681,7 @@ void hashtable_foreach_value(HashTable *table, void (*op) (void *val))
         if (!table->buckets[i])
             continue;
 
-        Table *entry = table->buckets[i];
+        TableEntry *entry = table->buckets[i];
 
         while (entry) {
             op(entry->value);

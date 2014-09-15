@@ -51,7 +51,7 @@ HashTable *hashtable_new(const HashTableProperties *properties);
 void hashtable_properties_destroy(HashTableProperties *properties);
 void hashtable_destroy(HashTable *table);
 
-void hashtable_put(HashTable *table, void *key, void *val);
+bool hashtable_put(HashTable *table, void *key, void *val);
 void *hashtable_get(HashTable *table, void *key);
 void *hashtable_remove(HashTable *table, void *key);
 void hashtable_remove_all(HashTable *table);
