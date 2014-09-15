@@ -21,7 +21,7 @@
 #ifndef HASHMAP_H_
 #define HASHMAP_H_
 
-#include "list.h"
+#include "vector.h"
 
 #define KEY_LENGTH_VARIABLE  -1
 #define KEY_LENGTH_DOUBLE    sizeof(double)
@@ -46,7 +46,7 @@ typedef struct hashtable_init_properties_s {
 } HashTableProperties;
 
 HashTableProperties *hashtable_properties_new();
-HashTable *hashtable_new(HashTableProperties *properties);
+HashTable *hashtable_new(const HashTableProperties *properties);
 
 void hashtable_properties_destroy(HashTableProperties *properties);
 void hashtable_destroy(HashTable *table);
@@ -58,8 +58,8 @@ void hashtable_remove_all(HashTable *table);
 
 bool hashtable_contains_key(HashTable *table, void *key);
 
-List *hashtable_get_keys(HashTable *table);
-List *hashtable_get_values(HashTable *table);
+Vector *hashtable_get_keys(HashTable *table);
+Vector *hashtable_get_values(HashTable *table);
 
 bool hashtable_string_key_cmp(void *key1, void *key2);
 bool hashtable_float_key_cmp(void *key1, void *key2);
