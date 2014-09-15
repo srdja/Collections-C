@@ -21,6 +21,32 @@
 #ifndef HASHSET_H_
 #define HASHSET_H_
 
+#include "common.h"
+#include "hashtable.h"
 
+typedef struct hashset_s HashSet;
+typedef struct hashset_iter_s HashSetIter;
+typedef HashTableProperties HashSetProperties;
+
+HashSetProperties *hashset_properties_new();
+void hashset_properties_destroy(HashSetProperties *properties);
+
+HashSet *hashset_new(HashSetProperties *properties);
+void hashset_destroy(HashSet *set);
+
+void hashset_add(HashSet *set, void *element);
+void *hashset_remove(HashSet *set, void *element);
+void hashset_remove_all(HashSet *set);
+
+bool hashset_contains(HashSet *set, void *element);
+size_t hashset_size(HashSet *set);
+
+void hashset_foreach(HashSet *set, void (*op) (const void*));
+
+HashSetIter *hashset_iter_new(HashSet *set);
+void hashset_iter_destroy(HashSetIter *iter);
+bool hashset_iter_has_next(HashSetIter *iter);
+const void *hashset_iter_next(HashSetIter *iter);
+void *hashset_iter_remove(HashSetIter *iter);
 
 #endif /* HASHSET_H_ */
