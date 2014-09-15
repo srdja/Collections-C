@@ -55,14 +55,18 @@ struct hashtable_key_iter {
 };
 
 static uint32_t get_table_index(HashTable *table, void *key);
-static void resize(HashTable *t, uint32_t new_capacity);
+static bool resize(HashTable *t, uint32_t new_capacity);
 static uint32_t round_pow_two(uint32_t n);
 
 static void move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
         uint32_t src_size, uint32_t dest_size);
 
+static void *get_null_key(HashTable *table);
+static bool put_null_key(HashTable *table, void *val);
+
 /**
- * Returns a new HashTableProperties object.
+ * Returns a new HashTableProperties object that will, if not modified, set up 
+ * the HashTable to use string keys.
  *
  * @return a new HashTableProperties object
  */
@@ -91,13 +95,15 @@ void hashtable_properties_destroy(HashTableProperties *properties)
 }
 
 /**
- * Creates a new HashTable based on the provided HashTable properties.
+ * Creates a new HashTable based on the provided HashTable properties. The 
+ * HashTable properties object is not modified by this function, therefore it can
+ * be reused for future hash tables.
  *
  * @param properties a the HashTableProperties object used to configure this new
  *                     HashTable
- * @return a new HashTable instance
+ * @return a new HashTable object
  */
-HashTable *hashtable_new(HashTableProperties *properties)
+HashTable *hashtable_new(const HashTableProperties *properties)
 {
     HashTable *table = calloc(1, sizeof(HashTable));
 
@@ -117,7 +123,7 @@ HashTable *hashtable_new(HashTableProperties *properties)
 
 /**
  * Destroys the specified HashTable structure without destroying the the data
- * contained within it.
+ * contained within it. 
  *
  * @param[in] table HashTable to be destroyed.
  */
@@ -138,57 +144,109 @@ void hashtable_destroy(HashTable *table)
 }
 
 /**
- * Creates a new key-value mapping in the specified HashTable. Each key in the
- * table is unique and can only map to single value, therefore if the specified
- * key already exists in the table, the old value that the key maps to will be
- * replaced with the new value.
+ * Creates a new key-value mapping in the specified HashTable. If the unique key
+ * is already mapped to a value in this table, that value is replaced with the 
+ * new value. This operation may fail if the space allocation for the new entry
+ * fails.
  *
- * @param[in] table the table to which this new key-value mapping is being
- *                  added to
+ * @param[in] table the table to which this new key-value mapping is being added
  * @param[in] key a hash table key used to access the specified value
  * @param[in] val a value that is being stored in the table
+ *
+ * @return true if the operation was successful
  */
-void hashtable_put(HashTable *table, void *key, void *val)
+bool hashtable_put(HashTable *table, void *key, void *val)
 {
     if (table->size >= table->inflation_threshold)
         resize(table, table->capacity << 1);
 
+    if (!key)
+        return put_null_key(table, val);
+            
     uint32_t hash = table->hash(key, table->key_len, table->hash_seed);
-    uint32_t i    = hash & (table->capacity - 1);
+    uint32_t i = hash & (table->capacity - 1);
 
-    TableEntry *bucket = table->buckets[i];
-
-    table->size++;
-    while (bucket) {
-        if (table->key_cmp(bucket->key, key)) {
-            bucket->value = val;
-            return;
+    TableEntry *replace = table->buckets[i];
+    
+    while (replace) {
+        if (table->key_cmp(replace->key, key)) {
+            replace->value = val;
+            return true;
         }
-        bucket = bucket->next;
+        replace = replace->next;
     }
 
     TableEntry *new_entry = calloc(1, sizeof(TableEntry));
-    new_entry->key = key;
+
+    if (!new_entry)
+        return false;
+
+    new_entry->key   = key;
     new_entry->value = val;
-    new_entry->hash = hash;
-    new_entry->next = table->buckets[i];
+    new_entry->hash  = hash;
+    new_entry->next  = table->buckets[i];
+
     table->buckets[i] = new_entry;
+    table->size++;
+
+    return true;
+}
+
+/**
+ * Creates a new key-value mapping for the NULL key. This operation may fail if
+ * the space allocation for the new entry fails.
+ *
+ * @param[in] table the table into which this key value-mapping is being put in
+ * @param[in] val the value that is being mapped to the NULL key
+ *
+ * @return true if the operation was successful
+ */
+static bool put_null_key(HashTable *table, void *val)
+{
+    TableEntry *replace = table->buckets[0];
+    
+    while (replace) {
+        if (!replace->key) {
+            replace->value = val;
+            return true;
+        }
+        replace = replace->next;
+    }
+    
+    TableEntry *new_entry = calloc(1, sizeof(TableEntry));
+
+    if (!new_entry)
+        return false;
+
+    new_entry->key   = NULL;
+    new_entry->value = val;
+    new_entry->hash  = 0;
+    new_entry->next  = table->buckets[0];
+
+    table->buckets[0] = new_entry;
+    table->size++;
+
+    return true;
 }
 
 /**
  * Returns a value associated with the specified key. If there is no value 
- * associated with this key NULL is returned. This function might also 
- * return null if the value mapped to this key is null.
+ * associated with this key, NULL is returned. In the case where the provided
+ * key explicitly maps to a NULL value, calling <code>hashtable_contains_key()
+ * </code> before this function can resolve the ambiguity.
  *
  * @param[in] table the table from which the value mapped to the specified key
  *                  is being returned
  * @param[in] key   the key into the
  *
- * @return The value mapped to the specified key or null if the mapping doesn't
+ * @return the value mapped to the specified key, or null if the mapping doesn't
  *         exit
  */
 void *hashtable_get(HashTable *table, void *key)
 {
+    if (!key)
+        return get_null_key(table);
+
     uint32_t    index  = get_table_index(table, key);
     TableEntry *bucket = table->buckets[index];
 
@@ -201,38 +259,61 @@ void *hashtable_get(HashTable *table, void *key)
 }
 
 /**
+ * Returns a value associated with the NULL key. If there is not value mapped to
+ * the NULL key NULL is returned. NULL may also be returned if the NULL key 
+ * mapps to a NULL value.
+ *
+ * @param[in] table the table from which the value mapped to this key is being
+ *                  returned
+ *
+ * @return the value mapped to the NULL key, or NULL
+ */
+static void *get_null_key(HashTable *table)
+{
+    TableEntry *bucket = table->buckets[0];
+
+    while (bucket) {
+        if (bucket->key == NULL)
+            return bucket->value;
+        bucket = bucket->next;
+    }
+    return NULL;
+}
+
+/**
  * Removes a key-value mapping from the specified hash table and returns the
  * value that was mapped to the specified key. In case the key doesn't exit
  * NULL is returned. NULL might also be returned if the key maps to a null value.
- * Calling hashtable_contains_key(), to check whether the key exists, before
- * this function can resolve the ambiguity.
+ * Calling <code>hashtable_contains_key()</code> before this functin can resolve
+ * the ambiguity.
  *
  * @param[in] table the table from which the key-value pair is being removed
  * @param[in] key the key of the value being returned
  *
- * @return the value associated with the removed key
+ * @return the value associated with the removed key, or NULL if the key doesn't
+ *         exist
  */
-void *hashtable_remove(HashTable *t, void *k)
+void *hashtable_remove(HashTable *table, void *key)
 {
-    uint32_t index = get_table_index(t, k);
+    uint32_t index = get_table_index(table, key);
 
-    TableEntry *entry = t->buckets[index];
+    TableEntry *entry = table->buckets[index];
     TableEntry *prev  = NULL;
     TableEntry *next;
 
     while (entry) {
         next = entry->next;
 
-        if (t->key_cmp(k, entry->key)) {
+        if (table->key_cmp(key, entry->key)) {
             void *value = entry->value;
 
             if (!prev)
-                t->buckets[index] = next;
+                table->buckets[index] = next;
             else
                 prev->next = next;
 
             free(entry);
-            t->size--;
+            table->size--;
             return value;
         }
         prev  = entry;
@@ -268,16 +349,19 @@ void hashtable_remove_all(HashTable *table)
  * @param[in] table the table that is being resized.
  * @param[in] new_capacity the new capacity to which the table should be resized
  */
-static void resize(HashTable *t, uint32_t new_capacity)
+static bool resize(HashTable *t, uint32_t new_capacity)
 {
     if (t->capacity == MAX_BUCKETS)
-        return;
+        return false;
 
     if (t->capacity >= MAX_POW_TWO)
         new_capacity = MAX_BUCKETS;
 
     TableEntry **new_buckets = calloc(new_capacity, sizeof(TableEntry));
     TableEntry **old_buckets = t->buckets;
+
+    if (!new_buckets)
+        return false;
 
     move_entries(old_buckets, new_buckets, t->capacity, new_capacity);
 
@@ -286,12 +370,15 @@ static void resize(HashTable *t, uint32_t new_capacity)
     t->inflation_threshold = t->load_factor * new_capacity;
 
     free(old_buckets);
+
+    return true;
 }
 
 /**
  * Rounds the integer to the nearest upper power of two.
  *
  * @param[in] the unsigned integer that is being rounded
+ *
  * @return the nearest upper power of two
  */
 static uint32_t round_pow_two(uint32_t n)
@@ -303,7 +390,8 @@ static uint32_t round_pow_two(uint32_t n)
         return 2;
     /**
      * taken from:
-     * http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2Float
+     * http://graphics.stanford.edu/~seander/
+     * bithacks.html#RoundUpPowerOf2Float
      */
     n--;
     n |= n >> 1;
@@ -390,29 +478,29 @@ bool hashtable_contains_key(HashTable *table, void *key)
 }
 
 /**
- * Returns a list of hashtable values.
+ * Returns a Vector of hashtable values.
  *
  * @param[in] table the table whos values are being returned
  *
  * @return a list of values
  */
-List *hashtable_get_values(HashTable *table)
+Vector *hashtable_get_values(HashTable *table)
 {
-    List *values = list_new();
-
+    Vector *v = vector_new_capacity(table->size);
+    
     int i;
-    for (i = 0; i < table->capacity; i++) {
+    for (i = 0; i <table->capacity; i++) {
         if (!table->buckets[i])
             continue;
 
-        TableEntry *entry = table->buckets[i];
+        Table *entry = table->buckets[i];
 
         while (entry) {
-            list_add(values, entry->value);
+            vector_add(v, entry->value);
             entry = entry->next;
         }
     }
-    return values;
+    return v;
 }
 
 /**
@@ -422,9 +510,9 @@ List *hashtable_get_values(HashTable *table)
  *
  * @return a list of keys
  */
-List *hashtable_get_keys(HashTable *table)
+Vector *hashtable_get_keys(HashTable *table)
 {
-    List *keys = list_new();
+    Vector *keys = vector_new_capacity(table->size);
 
     int i;
     for (i = 0; i < table->capacity; i++) {
@@ -434,7 +522,7 @@ List *hashtable_get_keys(HashTable *table)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            list_add(keys, entry->key);
+            vector_add(keys, entry->key);
             entry = entry->next;
         }
     }
