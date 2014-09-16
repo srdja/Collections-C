@@ -155,11 +155,12 @@ bool list_add_at(List *list, void *element, int index)
 }
 
 /**
- * Adds all elements from the second list to the first.
+ * Adds all elements from the second list to the first. 
  *
- * @param[in] list1
- * @param[in] list2
- * @return returns true if the operation was successful.
+ * @param[in] list1 the list to which the elements are being added.
+ * @param[in] list2 the list from which the elements are being added.
+ *
+ * @return true if the operation was successful.
  */
 bool list_add_all(List *list1, List *list2)
 {
@@ -172,11 +173,13 @@ bool list_add_all(List *list1, List *list2)
 }
 
 /**
+ * Adds all elements from the second list to the first at the specified position.
  *
- * @param[in] list1 consumer list
- * @param[in] list2 producer list
- * @param[in] index
- * @return
+ * @param[in] list1 the list to which the elements are being added.
+ * @param[in] list2 the list from which the elements are being added.
+ * @param[in] index position in the frist list at which the element should be
+ *                  added.
+ * @return true if the operation was successful.
  */
 bool list_add_all_at(List *list1, const List *list2, int index)
 {
@@ -483,7 +486,7 @@ bool list_free_all(List *list)
     return unlink_all(list, true);
 }
 
-/*
+/**
  * Removes a list element from the specified index but keeps the data intact.
  *
  * @param[in] list list from which the element is being removed.
