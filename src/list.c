@@ -27,32 +27,37 @@ typedef struct node_s {
 } Node;
 
 struct dlist_s {
-    int size;
+    size_t size;
     Node *head;
     Node *tail;
 };
 
 struct dlist_iter_s {
-    int index;
+    size_t index;
     List *list;
     Node *last;
     Node *next;
 };
 
-struct dlist_iter_desc_s {
-    int index;
+struct dlist_iter_desc_s { 
+    size_t index;
     List *list;
     Node *last;
     Node *next;
 };
 
-static bool unlink(List *list, Node *node, bool freed);
+static void *unlink(List *list, Node *node);
 static bool unlink_all(List *list, bool free);
+
 static void link_behind(Node *node, Node *inserted);
 static void link_after(Node *base, Node *inserted);
+
 static void swap(Node *n1, Node *n2);
+static void swap_adjacent(Node *n1, Node *n2);
+
 static bool splice_between(List *list1, List *list2, Node *left, Node *right);
-static Node *get_node_at(List *list, int index);
+
+static Node *get_node_at(List *list, size_t index);
 static Node *get_node(List *list, void *element);
 
 /**
@@ -62,7 +67,7 @@ static Node *get_node(List *list, void *element);
  */
 List *list_new()
 {
-    return (List*) calloc(1, sizeof(List));
+    return calloc(1, sizeof(List));
 }
 
 /**
@@ -98,7 +103,7 @@ bool list_destroy_free(List *list)
     bool success = true;
 
     if (list->size > 0)
-        success = list_free_all(list);
+        success = list_remove_all_free(list);
 
     free(list);
     return success;
@@ -132,7 +137,7 @@ bool list_add(List *list, void *element)
  *         memory allocation for the new element fails, or if an attempt is made
  *         to insert the element into an empty list.
  */
-bool list_add_at(List *list, void *element, int index)
+bool list_add_at(List *list, void *element, size_t index)
 {
     Node *node = get_node_at(list, index);
     Node *ins  = (Node*) calloc(1, sizeof(Node));
@@ -146,11 +151,8 @@ bool list_add_at(List *list, void *element, int index)
     if (index == 0)
         list->head = ins;
 
-    if (index == list->size - 1)
-        list->tail = ins;
-
     list->size++;
-
+    
     return true;
 }
 
@@ -181,28 +183,33 @@ bool list_add_all(List *list1, List *list2)
  *                  added.
  * @return true if the operation was successful.
  */
-bool list_add_all_at(List *list1, const List *list2, int index)
+bool list_add_all_at(List *list1, List *list2, size_t index)
 {
+    // FIXME this is bad, really bad!
     Node *start = get_node_at(list1, index);
 
     if (!start)
         return false;
 
     Node *end = start->next;
-    Node *ins = list2->head;
+    Node *ins = list2->head;    
 
-    int i;
+    size_t i;
     for (i = 0; i < list2->size; i++) {
-        Node *new = (Node*) calloc(1, sizeof(Node));
+        Node *new = calloc(1, sizeof(Node));
         new->data = ins->data;
+
+        new->prev = start;
         start->next = new;
+
         start = new;
         ins = ins->next;
         list1->size++;
     }
     if (end)
-        end->prev = start;
-
+        end->prev = start;        
+    
+    // FIXME head of the list if inserted at index 0
     return true;
 }
 
@@ -293,7 +300,7 @@ bool list_splice(List *list1, List *list2)
  *            of the fist list.
  * @return true if the operation was successful
  */
-bool list_splice_before(List *list1, List *list2, int index)
+bool list_splice_before(List *list1, List *list2, size_t index)
 {
     Node *new_tail = get_node_at(list1, index);
 
@@ -317,7 +324,7 @@ bool list_splice_before(List *list1, List *list2, int index)
  *            of the first list.
  * @return true if the operation was successful
  */
-bool list_splice_after(List *list1, List *list2, int index)
+bool list_splice_after(List *list1, List *list2, size_t index)
 {
     Node *new_head = get_node_at(list1, index);
 
@@ -365,95 +372,73 @@ static bool splice_between(List *l1, List *l2, Node *left, Node *right)
 }
 
 /**
- * Removes the first occurrence of the element from the specified list. Removing
- * the element does not free the data.
+ * Removes and returns the first occurrence of the element from the specified 
+ * list. If the element is not a part of the list, NULL is returned. NULL may
+ * also be returned if the removed element was NULL.
  *
  * @param[in] list a list to which the element is being removed
  * @param[in] element element being removed
  *
- * @return true if the element was found and successfully removed or false if
- *         not.
+ * @return the removed element
+ *         
  */
-bool list_remove(List *list, void *element)
+void *list_remove(List *list, void *element)
 {
     Node *node = get_node(list, element);
-    return unlink(list, node, false);
+    
+    if (!node)
+        return NULL;
+
+    return unlink(list, node);
 }
 
 /**
- * Removes the first occurrence of the element from the specified list and frees
- * the data.
+ * Removes and returns the element at the specified index.
  *
- * @note
- * This function should not be called on a list that has some of it's elements
- * allocated on the stack.
+ * @param[in] list the list from which the element is being removed.
+ * @param[in] index Index of the element being removed. Must be be within the
+ *            index range of the list.
  *
- * @param[in] list a list to which the element is appended
- * @param[in] element element being removed.
- *
- * @return true if the element was found and successfully removed or false if
- *         not.
+ * @return the removed element, or NULL
  */
-bool list_free(List *list, void *element)
+void *list_remove_at(List *list, size_t index)
 {
-    Node *node = get_node(list, element);
-    return unlink(list, node, true);
+    Node *node = get_node_at(list, index);
+    
+    if (!node)
+        return NULL;
+
+    return unlink(list, node);
 }
 
 /**
- * Removes the head node_s from the specified list and leaves the data intact.
+ * Removes and returns the first (head) element of the list.
  *
- * @param[in] list the list from which the head node is being removed
+ * @param[in] list the list from which the first element is being removed
  *
- * @return true if the operation was successful.
+ * @return the removed element
  */
-bool list_remove_first(List *list)
+void *list_remove_first(List *list)
 {
-    return unlink(list, list->head, false);
+    if (!list->size)
+        return NULL;
+
+    return unlink(list, list->head);
 }
 
 /**
- * Removes the head node_s from the specified list and frees the data.
+ * Removes and returns the first (tail) element of the list.
  *
- * @note
- * This function should not be called on a list that has some of it's elements
- * allocated on the stack.
- *
- * @param[in]list the list from which the head node is being removed
- *
- * @return true if the operation was successful.
- */
-bool list_free_first(List *list)
-{
-    return unlink(list, list->head, true);
-}
-
-/**
- * Removes the tail node_s from the specified list and leaves the data intact.
- *
- * @param[in] list the list from which the tail node is being removed
+ * @param[in] list the list from which the last element is being removed
  *
  * @return true if the operation was successful
  */
-bool list_remove_last(List *list)
+void *list_remove_last(List *list)
 {
-    return unlink(list, list->tail, false);
-}
-
-/**
- * Removes the tail node_s from the specified list and frees the data.
- *
- * @note
- * This function should not be called on a list that has some of it's elements
- * allocated on the stack.
- *
- * @param[in] list the list from which the head node is being removed
- *
- * @return true if the operation was successful
- */
-bool list_free_last(List *list)
-{
-    return unlink(list, list->tail, true);
+    if (!list->size)
+        return NULL;
+    
+    return unlink(list, list->tail);
 }
 
 /**
@@ -470,7 +455,7 @@ bool list_remove_all(List *list)
 }
 
 /**
- * Removes all elements from the specified list and frees the data.
+ * Removes and frees the elements from the specified list.
  *
  * @note
  * This function should not be called on a list that has some of it's elements
@@ -481,66 +466,30 @@ bool list_remove_all(List *list)
  * @return true if the operation was successful and at least one element was
  *         removed or false if the list is already empty
  */
-bool list_free_all(List *list)
+bool list_remove_all_free(List *list)
 {
     return unlink_all(list, true);
 }
 
 /**
- * Removes a list element from the specified index but keeps the data intact.
- *
- * @param[in] list list from which the element is being removed.
- * @param[in] index Index of the element being removed. Must be be within the
- *            index range of the list.
- *
- * @return returns true or false depending on whether or not the removal
- *         operation was successful. False is returned if the index was out of
- *         range.
- */
-bool list_remove_at(List *list, int index)
-{
-    Node *node = get_node_at(list, index);
-    return unlink(list, node, false);
-}
-
-/**
- * Removes a list element from the specified index and frees the data.
- *
- * @note
- * This function should not be called on a list that has some of it's elements
- * allocated on the stack.
- *
- * @param[in] list list from which the element is being removed.
- * @param[in] index Index of the element being removed. Must be be within the
- *            index range of the list.
- *
- * @return returns true or false depending on whether or not the removal
- *         operation was successful. False is returned if the index was out of
- *         range.
- */
-bool list_free_at(List *list, int index)
-{
-    Node *node = get_node_at(list, index);
-    return unlink(list, node, true);
-}
-
-/**
- * Replaces a list element at the specified location.
+ * Replaces and returns an element at the specified location.
  *
  * @param[in] list the list on which this operation is performed
  * @param[in] element the replacement element
  * @param[in] index index of the element being replaced
  *
- * @return true if the operation was successful
+ * @return the replaced element
  */
-bool list_replace_at(List *list, void *element, int index)
+void *list_replace_at(List *list, void *element, size_t index)
 {
     Node *node = get_node_at(list, index);
+
     if (node) {
+        void *old = node->data;
         node->data = element;
-        return true;
+        return old;
     }
-    return false;
+    return NULL;
 }
 
 /**
@@ -555,6 +504,7 @@ void *list_get_first(List *list)
 {
     if (list->size == 0)
         return NULL;
+
     return list->head->data;
 }
 
@@ -570,6 +520,7 @@ void *list_get_last(List *list)
 {
     if (list->size == 0)
         return NULL;
+
     return list->tail->data;
 }
 
@@ -583,7 +534,7 @@ void *list_get_last(List *list)
  *
  * @return The list element at the specified index.
  */
-void *list_get(List *list, int index)
+void *list_get(List *list, size_t index)
 {
     Node *node = get_node_at(list, index);
 
@@ -592,6 +543,8 @@ void *list_get(List *list, int index)
 
     return NULL;
 }
+
+#include <stdio.h>
 
 /**
  * Reverses the specified list.
@@ -606,7 +559,7 @@ void list_reverse(List *list)
     Node *left  = list->head;
     Node *right = list->tail;
 
-    int i;
+    size_t i;
     for (i = 0; i < list->size / 2; i++) {
         Node *tmpl = left->next;
         Node *tmpr = right->prev;
@@ -616,9 +569,9 @@ void list_reverse(List *list)
         left  = tmpl;
         right = tmpr;
     }
-    
-    list->head = list->tail;
-    list->tail = list->head;
+
+    list->head = tail_old;
+    list->tail = head_old;
 }
 
 /**
@@ -639,7 +592,7 @@ void list_reverse(List *list)
  *
  * @return a new sublist or NULL if any of the indices are out of list bounds
  */
-List *list_sublist(List *list, int b, int e)
+List *list_sublist(List *list, size_t b, size_t e)
 {
     if (b > e || b < 0 || e >= list->size)
         return NULL;
@@ -647,7 +600,7 @@ List *list_sublist(List *list, int b, int e)
     List *sub = (List*) list_new();
     Node *node = get_node_at(list, b);
 
-    int i;
+    size_t i;
     for (i = b; i <= e; i++) {
         list_add(sub, node->data);
         node = node->next;
@@ -711,7 +664,7 @@ void **list_to_array(List *list)
 {
     void **array = (void**) calloc(list->size, sizeof(void*));
     Node *node = list->head;
-    int i;
+    size_t i;
     for (i = 0; i < list->size; i++) {
         array[i] = node->data;
         node = node->next;
@@ -728,10 +681,10 @@ void **list_to_array(List *list)
  *
  * @return number of found matches
  */
-int list_contains(List *list, void *element)
+size_t list_contains(List *list, void *element)
 {
-    Node *node   = list->head;
-    int  e_count = 0;
+    Node *node = list->head;
+    size_t e_count = 0;
 
     while (node) {
         if (node->data == element)
@@ -751,17 +704,17 @@ int list_contains(List *list, void *element)
  *
  * @return the index of the specified element or -1 if the element is not found.
  */
-int list_index_of(List *list, void *element)
+size_t list_index_of(List *list, void *element)
 {
     Node *node = list->head;
-    int i = 0;
+    size_t i = 0;
     while (node) {
         if (node->data == element)
             return i;
         i++;
         node = node->next;
     }
-    return -1;
+    return NO_SUCH_INDEX;
 }
 
 /**
@@ -771,13 +724,13 @@ int list_index_of(List *list, void *element)
  *
  * @return the number of the elements contained in the specified list
  */
-int list_size(List *list)
+size_t list_size(List *list)
 {
     return list->size;
 }
 
-static Node *split(List *, Node *b, int l, int (*cmp) (void *e1, void *e2));
-static void merge(Node**, Node**, int, int, int (*cmp) (void *e1, void *e2));
+static Node *split(List *, Node *b, size_t l, int (*cmp) (void *e1, void *e2));
+static void merge(Node**, Node**, size_t, size_t, int (*cmp) (void *e1, void *e2));
 
 /**
  * Sorts the given list in place.
@@ -802,18 +755,18 @@ void list_sort(List *list, int (*cmp) (void *e1, void *e2))
  *
  * @return
  */
-static Node *split(List *list, Node *b, int size, int (*cmp) (void*, void*))
+static Node *split(List *list, Node *b, size_t size, int (*cmp) (void*, void*))
 {
     if (size < 2)
         return b;
 
-    /* If the split is uneven the larger partition is on the right. */
-    int l_size = size / 2;
-    int r_size = size / 2 + (size % 2);
+    /* If the split is uneven the larger partition is on the right. */ 
+    size_t l_size = size / 2; 
+    size_t r_size = size / 2 + (size % 2);
 
-    Node *center = b;
+    Node *center = b; 
 
-    int i;
+    size_t i;
     for (i = 0; i < l_size; i++)
         center = center->next;
 
@@ -846,17 +799,17 @@ static Node *split(List *list, Node *b, int size, int (*cmp) (void*, void*))
  *@param[in]      r_size size of the right partition
  *@param[in]      cmp    the comparator function
  */
-static void merge(Node **left, Node **right, int l_size, int r_size,
+static void merge(Node **left, Node **right, size_t l_size, size_t r_size,
         int (*cmp) (void*, void*))
 {
-    int size = r_size + l_size;
-    int l    = 0; /* Number of processed elements from the left partition */
-    int r    = 0; /* NUmber of processed elements from the right partition. */
+    size_t size = r_size + l_size;
+    size_t l    = 0; /* Number of processed elements from the left partition */
+    size_t r    = 0; /* NUmber of processed elements from the right partition. */
 
     Node *l_part = *left;
     Node *r_part = *right;
 
-    int i;
+    size_t i;
     for (i = 0; i < size; i++) {
         int c = cmp(l_part->data, r_part->data);
 
@@ -906,6 +859,16 @@ static void merge(Node **left, Node **right, int l_size, int r_size,
     }
 }
 
+void list_foreach(List *list, void (*op) (void *e))
+{
+    Node *n = list->head;
+
+    while (n) {
+        op(n->data);
+        n = n->next;
+    }
+}
+
 /**
  * Returns a new ascending iterator. The ascending iterator or a forward
  * iterator, is an iterator that traverses the list from head to tail.
@@ -947,30 +910,15 @@ void list_iter_destroy(ListIter *iter)
  * @param[in] iter the iterator on which this operation is being performed.
  * @return true if the removal was successful.
  */
-bool list_iter_remove(ListIter *iter)
+void *list_iter_remove(ListIter *iter)
 {
-    bool success = unlink(iter->list, iter->last, false);
-    iter->last = NULL;
-    return success;
-}
+    if (!iter->last)
+        return NULL;
 
-/**
- * Removes and frees the last returned list element by the specified iterator.
- * Since this function removes the last returned element, it should only be
- * called after a call to <code>iter_next()</code>. Only the first call to this
- * function removes the element. Any subsequent calls will have no effect until
- * the <code>iter_next()</code> is called again.
- *
- * @note This function should only ever be called after a call to iter_next()
- *
- * @param[in] iter the iterator on which this operation is being performed.
- * @return true if the removal was successful.
- */
-bool list_iter_free(ListIter *iter)
-{
-    bool success = unlink(iter->list, iter->last, true);
+    void *e = unlink(iter->list, iter->last);
     iter->last = NULL;
-    return success;
+
+    return e;
 }
 
 /**
@@ -1002,10 +950,11 @@ bool list_iter_add(ListIter *iter, void *element)
  * @param[in] element the replacement element
  * @return true if the operation was successful
  */
-bool list_iter_replace(ListIter *iter, void *element)
+void *list_iter_replace(ListIter *iter, void *element)
 {
+    void *old = iter->last->data;
     iter->last->data = element;
-    return true;
+    return old;
 }
 
 /**
@@ -1028,7 +977,7 @@ bool list_iter_has_next(ListIter *iter)
  * @param[in] iter the iterator on which this operation is performed.
  * @return index of the previously returned element.
  */
-int list_iter_index(ListIter *iter)
+size_t list_iter_index(ListIter *iter)
 {
     return iter->index - 1;
 }
@@ -1094,23 +1043,27 @@ bool list_diter_add(ListDIter *iter, void *element)
 /**
  *
  */
-bool list_diter_remove(ListDIter *iter)
+void *list_diter_remove(ListDIter *iter)
 {
-    bool success = unlink(iter->list, iter->last, false);
+    if (!iter->last)
+        return NULL;
+
+    void *e = unlink(iter->list, iter->last);
     iter->last = NULL;
-    return success;
+    return e;
 }
 
 /**
  *
  */
-bool list_diter_replace(ListDIter *iter, void *element)
+void *list_diter_replace(ListDIter *iter, void *element)
 {
+    void *old = iter->last->data;
     iter->last->data = element;
-    return true;
+    return old;
 }
 
-int dlist_diter_index(ListDIter *iter)
+size_t dlist_diter_index(ListDIter *iter)
 {
     return iter->index - 1;
 }
@@ -1181,9 +1134,46 @@ static void link_after(Node *base, Node *ins)
 }
 
 /**
- *
+ * Swaps the two list nodes.
  */
 static void swap(Node *n1, Node *n2)
+{
+    if (n1->next == n2 || n2->next == n1) {
+        swap_adjacent(n1, n2);
+        return;
+    }
+
+    Node *n1_left  = n1->prev;
+    Node *n1_right = n1->next;
+    Node *n2_left  = n2->prev;
+    Node *n2_right = n2->next;
+
+    if (n1_left)
+        n1_left->next = n2;
+
+    n2->prev = n1_left;
+
+    if (n1_right)
+        n1_right->prev = n2;
+
+    n2->next = n1_right;
+
+    if (n2_left)
+        n2_left->next = n1;
+
+    n1->prev = n2_left;
+
+    if (n2_right)
+        n2_right->prev = n1;
+
+    n1->next = n2_right;
+}
+
+/**
+ *
+ *
+ */
+static void swap_adjacent(Node *n1, Node *n2)
 {
     if (n1->next == n2) {
         if (n2->next)
@@ -1216,43 +1206,19 @@ static void swap(Node *n1, Node *n2)
         n1->next = n2;
         return;
     }
-
-    Node *n1_left  = n1->prev;
-    Node *n1_right = n1->next;
-    Node *n2_left  = n2->prev;
-    Node *n2_right = n2->next;
-
-    if (n1_left)
-        n1_left->next = n2;
-
-    n2->prev = n1_left;
-
-    if (n1_right)
-        n1_right->prev = n2;
-
-    n2->next = n1_right;
-
-    if (n2_left)
-        n2_left->next = n1;
-
-    n1->prev = n2_left;
-
-    if (n2_right)
-        n2_right->prev = n1;
-
-    n1->next = n2_right;
 }
 
 /**
+ * Unlinks a node from the list and returns the data that was associated with it.
  *
+ * @param[in] list the list from which the node is being unlinked
+ * @param[in] node the node being unlinked
+ *
+ * @return the data that was at this node
  */
-static bool unlink(List *list, Node *node, bool freed)
+static void *unlink(List *list, Node *node)
 {
-    if (node == NULL)
-        return false;
-
-    if (freed)
-        free(node->data);
+    void *data = node->data;
 
     if (node->prev != NULL)
         node->prev->next = node->next;
@@ -1269,10 +1235,10 @@ static bool unlink(List *list, Node *node, bool freed)
     free(node);
     list->size--;
 
-    return true;
+    return data;
 }
 
-static bool unlink_all(List *list, bool free)
+static bool unlink_all(List *list, bool freed)
 {
     if (list->size <= 0)
         return false;
@@ -1281,21 +1247,25 @@ static bool unlink_all(List *list, bool free)
 
     while (node) {
         Node *tmp = node->next;
-        unlink(list, node, free);
+
+        if (freed)
+            free(node->data);
+
+        unlink(list, node);
         node = tmp;
     }
     return true;
 }
 
-static Node *get_node_at(List *list, int index)
+static Node *get_node_at(List *list, size_t index)
 {
-    if (!list || index >= list->size || index < 0)
+    if (!list || index >= list->size)
         return NULL;
 
-    int i;
+    size_t i;
     Node *node = NULL;
-
-    if (index < list->size) {
+    
+    if (index < list->size / 2) {
         node = list->head;
         for (i = 0; i < index; i++)
             node = node->next;
