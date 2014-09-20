@@ -166,12 +166,7 @@ bool list_add_at(List *list, void *element, size_t index)
  */
 bool list_add_all(List *list1, List *list2)
 {
-    Node *node = list2->head;
-    while (node) {
-        list_add_last(list1, node->data);
-        node = node->next;
-    }
-    return true;
+    return list_add_all_at(list1, list2, list1->size);
 }
 
 /**
@@ -185,31 +180,64 @@ bool list_add_all(List *list1, List *list2)
  */
 bool list_add_all_at(List *list1, List *list2, size_t index)
 {
-    // FIXME this is bad, really bad!
-    Node *start = get_node_at(list1, index);
-
-    if (!start)
+    if (list2->size == 0)
         return false;
 
-    Node *end = start->next;
-    Node *ins = list2->head;    
+    if (index >= list1->size)
+        return false;
 
+    Node *head = NULL;
+    Node *tail = NULL;
+
+    Node *insert = list2->head;
+    
     size_t i;
     for (i = 0; i < list2->size; i++) {
         Node *new = calloc(1, sizeof(Node));
-        new->data = ins->data;
+        
+        if (!new) {
+            while (head) {
+                Node *tmp = head->next;
+                free(head);
+                head = tmp;
+            }
+            return false;
+        }
 
-        new->prev = start;
-        start->next = new;
+        new->data = insert->data;
 
-        start = new;
-        ins = ins->next;
-        list1->size++;
+        if (!head) {
+            head = new;
+            tail = head;
+        } else {
+            tail->next = new;
+            new->prev = tail;
+            tail = new;
+        }
+
+        insert = insert->next;
     }
-    if (end)
-        end->prev = start;        
     
-    // FIXME head of the list if inserted at index 0
+    Node *end  = index < list1->size ? get_node_at(list1, index) : NULL;
+    Node *base = index > 0 ? end->prev : NULL;
+
+    if (!end) {
+        list1->tail->next = head;
+        head->prev = list1->tail;
+        list1->tail = tail;  
+    } else if (!base) {
+        list1->head->prev = tail;
+        tail->next = list1->head;
+        list1->head = head;
+    } else {
+        head->prev = base;
+        base->next = head;
+        tail->next = end;
+        end->prev = tail;
+    }
+
+    list1->size += list2->size;
+    
     return true;
 }
 
