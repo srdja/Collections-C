@@ -163,8 +163,8 @@ bool hashtable_put(HashTable *table, void *key, void *val)
     if (!key)
         return put_null_key(table, val);
             
-    uint32_t hash = table->hash(key, table->key_len, table->hash_seed);
-    uint32_t i = hash & (table->capacity - 1);
+    const uint32_t hash = table->hash(key, table->key_len, table->hash_seed);
+    const uint32_t i    = hash & (table->capacity - 1);
 
     TableEntry *replace = table->buckets[i];
     
@@ -176,7 +176,7 @@ bool hashtable_put(HashTable *table, void *key, void *val)
         replace = replace->next;
     }
 
-    TableEntry *new_entry = calloc(1, sizeof(TableEntry));
+    TableEntry *new_entry = malloc(sizeof(TableEntry));
 
     if (!new_entry)
         return false;
@@ -213,7 +213,7 @@ static bool put_null_key(HashTable *table, void *val)
         replace = replace->next;
     }
     
-    TableEntry *new_entry = calloc(1, sizeof(TableEntry));
+    TableEntry *new_entry = malloc(sizeof(TableEntry));
 
     if (!new_entry)
         return false;
@@ -488,6 +488,9 @@ Vector *hashtable_get_values(HashTable *table)
 {
     Vector *v = vector_new_capacity(table->size);
     
+    if (!v)
+        return NULL;
+
     int i;
     for (i = 0; i <table->capacity; i++) {
         if (!table->buckets[i])
@@ -513,6 +516,9 @@ Vector *hashtable_get_values(HashTable *table)
 Vector *hashtable_get_keys(HashTable *table)
 {
     Vector *keys = vector_new_capacity(table->size);
+
+    if (!keys)
+        return NULL;
 
     int i;
     for (i = 0; i < table->capacity; i++) {
@@ -548,7 +554,7 @@ static uint32_t get_table_index(HashTable *table, void *key)
  */
 bool hashtable_string_key_cmp(void *key1, void *key2)
 {
-    return strcmp((char *) key1, (char *) key2) == 0;
+    return strcmp((char*)key1, (char*)key2) == 0;
 }
 
 /**
@@ -626,7 +632,10 @@ bool hashtable_int_key_cmp(void *key1, void *key2)
  */
 bool hashtable_long_key_cmp(void *key1, void *key2)
 {
-    return *(long*) key1 == *(long*) key2;
+    const long *l1 = key1;
+    const long *l2 = key2;
+
+    return *l1 == *l2;
 }
 
 /**
@@ -667,7 +676,7 @@ void hashtable_foreach_key(HashTable *table, void (*op) (const void *key))
 }
 
 /**
- * A 'foreach loop' function that invokes the specified function on eveery value
+ * A 'foreach loop' function that invokes the specified function on every value
  * in the table.
  *
  * @param[in] table the table on which this operation is being performed
@@ -794,12 +803,11 @@ void *hashtable_iter_get_value(HashTableIter *iter)
  */
 uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 {
-    char     *str = (char*) key;
-    uint32_t hash = 5381;
-    int      c;
+    const char *str = key;
+    register uint32_t hash = 5381;
 
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c;
+    while (*str++)
+        hash = (hash << 5) + hash + *str;
 
     return hash;
 }
