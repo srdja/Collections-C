@@ -1,5 +1,7 @@
 lib_LTLIBRARIES = libcollectc.la
 
+libcollectc_la_CFLAGS= -O2
+
 libcollectc_la_LDFLAGS= -module -avoid-version -shared
 
 libcollectc_la_SOURCES = vector.c  stack.c      slist.c \
