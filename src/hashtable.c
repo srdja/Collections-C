@@ -712,7 +712,7 @@ HashTableIter *hashtable_iter_new(HashTable *table)
     iter->table = table;
 
     int i;
-    for (i = 0; i < table->size; i++) {
+    for (i = 0; i < table->capacity; i++) {
         TableEntry *e = table->buckets[i];
         if (e) {
             iter->bucket_index = i;
