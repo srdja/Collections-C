@@ -55,13 +55,16 @@ static void link_after(Node *base, Node *inserted);
 static void swap(Node *n1, Node *n2);
 static void swap_adjacent(Node *n1, Node *n2);
 
-static bool splice_between(List *list1, List *list2, Node *left, Node *right);
+static void splice_between(List *list1, List *list2, Node *left, Node *right);
 
 static Node *get_node_at(List *list, size_t index);
 static Node *get_node(List *list, void *element);
 
+static bool add_all_to_empty(List *l1, List *l2);
+static bool link_all_externally(List *l, Node **h, Node **t);
+
 /**
- * Returns a new empty list, or NULL if the allocation fails.
+ * Returns a new empty list, or NULL if the memory allocation fails.
  *
  * @return a new list if the allocation was successful, or NULL if not.
  */
@@ -71,7 +74,7 @@ List *list_new()
 }
 
 /**
- * Destroys the list structure, but leaves the data intact.
+ * Destroys the list structure, but leaves the data that is holds intact.
  *
  * @param[in] list a list to destroy
  *
@@ -89,21 +92,20 @@ bool list_destroy(List *list)
 }
 
 /**
- * Destroys the list structure along with all the data it points to.
+ * Destroys the list structure along with all the data it holds. This function
+ * returns true if the operation was successful, or false if the list was already
+ * empty or NULL.
  *
  * @note
  * This function should not be called on a list that has some of it's elements
  * allocated on the stack.
  *
  * @param[in] list - a list to destroy
- * \return true if the operation was successful
+ * @return true if the operation was successful
  */
 bool list_destroy_free(List *list)
 {
-    bool success = true;
-
-    if (list->size > 0)
-        success = list_remove_all_free(list);
+    bool success = list_remove_all_free(list);
 
     free(list);
     return success;
@@ -111,7 +113,8 @@ bool list_destroy_free(List *list)
 
 /**
  * Adds a new element to the list. The element is appended to the list making it
- * the last element in the list.
+ * the last element in the list. This function returns true if the addition of
+ * new element was successful.
  *
  * @param[in] list the list to which the element is being added
  * @param[in] element element being added
@@ -125,13 +128,16 @@ bool list_add(List *list, void *element)
 }
 
 /**
- * Adds a new element at the specified location in the list. This operation
- * cannot be performed on an empty list.
+ * Adds a new element at the specified location in the list and shifts all
+ * subsequent elements by one. This operation cannot be performed on an empty
+ * list. The index at which the new element is being added must be within the
+ * bounds of the list. This function returns false if either the index is out 
+ * of bounds, or if the memory allocation for the new element fails.
  *
  * @param[in] list    The list to which this element is being added.
  * @param[in] element Element being added.
- * @param[in] index   Position in the list. The index must be a positive
- *                    integer and may not exceed the list size
+ * @param[in] index   Position in the list. Must be withing the bounds of the
+ *                    list.
  *
  * @return True if the operation was successful. The operation can fail if the
  *         memory allocation for the new element fails, or if an attempt is made
@@ -139,17 +145,17 @@ bool list_add(List *list, void *element)
  */
 bool list_add_at(List *list, void *element, size_t index)
 {
-    Node *node = get_node_at(list, index);
-    Node *ins  = (Node*) calloc(1, sizeof(Node));
+    Node *base = get_node_at(list, index);
+    Node *new  = calloc(1, sizeof(Node));
 
-    if (!node || !ins)
+    if (!base || !new)
         return false;
 
-    ins->data = element;
-    link_behind(node, ins);
+    new->data = element;
+    link_behind(base, new);
 
     if (index == 0)
-        list->head = ins;
+        list->head = new;
 
     list->size++;
     
@@ -157,24 +163,64 @@ bool list_add_at(List *list, void *element, size_t index)
 }
 
 /**
- * Adds all elements from the second list to the first. 
+ * Adds all elements from the second list to the first. The elements from the 
+ * second list are added after the last element of the first list. This function
+ * returns false if no elements were added to the first list. This could be the
+ * case if either the second list is empty or if the memory allocation for the
+ * elements that are being added fails.
  *
  * @param[in] list1 the list to which the elements are being added.
- * @param[in] list2 the list from which the elements are being added.
+ * @param[in] list2 the list from which the elements are being taken.
  *
  * @return true if the operation was successful.
  */
 bool list_add_all(List *list1, List *list2)
 {
+    if (list1->size == 0)
+        return add_all_to_empty(list1, list2);
+
     return list_add_all_at(list1, list2, list1->size);
 }
 
 /**
- * Adds all elements from the second list to the first at the specified position.
+ * Adds all elements from the second list to the first by appending them to the
+ * end of the first list. This function returns false if no elements were added
+ * to the first list. This could be the case if either the second list is empty
+ * or if the memory allocation for the elements being added fails.
  *
  * @param[in] list1 the list to which the elements are being added.
- * @param[in] list2 the list from which the elements are being added.
- * @param[in] index position in the frist list at which the element should be
+ * @param[in] list2 the list from which the elements are being taken.
+ *
+ * @return true if the operation was successful
+ */
+static bool add_all_to_empty(List *list1, List *list2)
+{
+    if (list2->size == 0)
+        return false;
+
+    Node *head = NULL;
+    Node *tail = NULL;
+
+    if (!link_all_externally(list2, &head, &tail))
+        return false;
+
+    list1->head = head;
+    list1->tail = tail;
+    list1->size = list2->size;
+    return true;
+}
+
+/**
+ * Adds all elements from the second list to the first at the specified position
+ * by shifting all subsequent element by the size of the second list. The index 
+ * range at which the elements can be added ranges from 0 to max_index + 1. This 
+ * function returns false if no elements were added to the first list. This 
+ * could be the case if either the second list is empty or if the memory 
+ * allocation for the elements being added fails.
+ *
+ * @param[in] list1 the list to which the elements are being added.
+ * @param[in] list2 the list from which the elements are being taken.
+ * @param[in] index position in the first list at which the element should be
  *                  added.
  * @return true if the operation was successful.
  */
@@ -183,48 +229,26 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
     if (list2->size == 0)
         return false;
 
-    if (index >= list1->size)
+    if (index > list1->size)
         return false;
 
+    /* Link the new nodes together outside of the list so
+       that if anything goes wrong we have don't leave 
+       garbage in the actual list. */
     Node *head = NULL;
     Node *tail = NULL;
-
-    Node *insert = list2->head;
     
-    size_t i;
-    for (i = 0; i < list2->size; i++) {
-        Node *new = calloc(1, sizeof(Node));
-        
-        if (!new) {
-            while (head) {
-                Node *tmp = head->next;
-                free(head);
-                head = tmp;
-            }
-            return false;
-        }
+    if (!link_all_externally(list2, &head, &tail))
+        return false;
 
-        new->data = insert->data;
-
-        if (!head) {
-            head = new;
-            tail = head;
-        } else {
-            tail->next = new;
-            new->prev = tail;
-            tail = new;
-        }
-
-        insert = insert->next;
-    }
+    /* Now we can safely attach the new nodes. */
+    Node *end  = get_node_at(list1, index);
+    Node *base = end ? end->prev : get_node_at(list1, index - 1);
     
-    Node *end  = index < list1->size ? get_node_at(list1, index) : NULL;
-    Node *base = index > 0 ? end->prev : NULL;
-
     if (!end) {
         list1->tail->next = head;
         head->prev = list1->tail;
-        list1->tail = tail;  
+        list1->tail = tail;
     } else if (!base) {
         list1->head->prev = tail;
         tail->next = list1->head;
@@ -235,20 +259,65 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
         tail->next = end;
         end->prev = tail;
     }
-
+    
     list1->size += list2->size;
     
     return true;
 }
 
 /**
- * Prepends a new element to the list (adds a new "head").
+ * Duplicates the structure of the list without directly attaching it to a 
+ * specific list. If the operation fails the mess is cleaned up and false
+ * is returned to indicate failure.
+ * 
+ * @param[in] list the list whose structure is being duplicated
+ * @param[in, out] h the pointer to which new head will be attached
+ * @param[in, out] t the pointer to which new tail will be attached 
  *
- * @param[in] list a list to which the element is prepended
+ * @return true if the operation was successful
+ */ 
+static bool link_all_externally(List *list, Node **h, Node **t)
+{    
+    Node *insert = list->head;
+
+    size_t i;
+    for (i = 0; i < list->size; i++) {
+        Node *new = calloc(1, sizeof(Node));
+        
+        if (!new) {
+            while (*h) {
+                Node *tmp = (*h)->next;
+                free(*h);
+                *h = tmp;
+            }
+            return false;
+        }
+
+        new->data = insert->data;
+
+        if (!*h) {
+            *h = new;
+            *t = new;
+        } else {
+            (*t)->next = new;
+            new->prev = *t;
+            *t = new;
+        }
+
+        insert = insert->next;
+    }
+    return true;
+}
+
+/**
+ * Prepends a new element to the list (adds a new "head") making it the first
+ * element of the list. This function returns false if the memory allocation for
+ * the new element fails.
+ *
+ * @param[in] list a list to which the element is being prepended
  * @param[in] element element being prepended
  *
- * @return True if the operation was successful. The operation can fail if the
- *         provided list is null.
+ * @return True if the operation was successful.
  */
 bool list_add_first(List *list, void *element)
 {
@@ -272,13 +341,14 @@ bool list_add_first(List *list, void *element)
 }
 
 /**
- * Appends a new element to the list (adds an new "tail").
+ * Appends a new element to the list (adds an new "tail") making it the last
+ * element of the list. This function returns false if the memory allocation for
+ * the new element fails.
  *
- * @param[in] list a list to which the element is appended
+ * @param[in] list a list to which the element is being appended
  * @param[in] element element being appended
  *
- * @return True if the operation was successful. The operation can fail if the
- *         provided list is null.
+ * @return True if the operation was successful.
  */
 bool list_add_last(List *list, void *element)
 {
@@ -313,7 +383,8 @@ bool list_add_last(List *list, void *element)
  */
 bool list_splice(List *list1, List *list2)
 {
-    return splice_between(list1, list2, list1->tail, list1->tail->next);
+    splice_between(list1, list2, list1->tail, list1->tail->next);
+    return true;
 }
 
 /**
@@ -337,7 +408,9 @@ bool list_splice_before(List *list1, List *list2, size_t index)
 
     Node *new_head = new_tail->prev;
 
-    return splice_between(list1, list2, new_head, new_tail);
+    splice_between(list1, list2, new_head, new_tail);
+    
+    return true;
 }
 
 /**
@@ -361,7 +434,9 @@ bool list_splice_after(List *list1, List *list2, size_t index)
 
     Node *new_tail = new_head->next;
 
-    return splice_between(list1, list2, new_head, new_tail);
+    splice_between(list1, list2, new_head, new_tail);
+
+    return true;
 }
 
 /**
@@ -370,15 +445,15 @@ bool list_splice_after(List *list1, List *list2, size_t index)
  * list. Similarly if the right node is null the tail of the first list will
  * become the tail of the second list.
  *
- * @param[in, out] l1
- * @param[in, out] l2
- * @param[in] left
- * @param[in] right
+ * @param[in, out] l1 the list to which the elements are being transferred
+ * @param[in, out] l2 the list from which the elements are being transferred
+ * @param[in] left the node after which the element are being added
+ * @param[in] right the node 
  */
-static bool splice_between(List *l1, List *l2, Node *left, Node *right)
+static void splice_between(List *l1, List *l2, Node *left, Node *right)
 {
     if (l2->size == 0)
-        return true;
+        return;
 
     if (left)
         left->next = l2->head;
@@ -395,20 +470,18 @@ static bool splice_between(List *l1, List *l2, Node *left, Node *right)
     l2->head = NULL;
     l2->tail = NULL;
     l2->size = 0;
-
-    return true;
 }
 
 /**
  * Removes and returns the first occurrence of the element from the specified 
  * list. If the element is not a part of the list, NULL is returned. NULL may
- * also be returned if the removed element was NULL.
+ * also be returned if the removed element was NULL. Calling <code>
+ * list_contains()</code> before this function can resolve the ambiguity.
  *
- * @param[in] list a list to which the element is being removed
+ * @param[in] list a list from which the element is being removed
  * @param[in] element element being removed
  *
  * @return the removed element
- *         
  */
 void *list_remove(List *list, void *element)
 {
@@ -421,10 +494,14 @@ void *list_remove(List *list, void *element)
 }
 
 /**
- * Removes and returns the element at the specified index.
+ * Removes and returns the element at the specified index. The index must be 
+ * within the bounds of the list. In case the index is out of bounds this 
+ * function returns NULL. NULL may also be returned if the element at the 
+ * specified index is actually NULL. Calling <code>list_contains()</code>
+ * before this function can resolve this ambiguity.
  *
  * @param[in] list the list from which the element is being removed.
- * @param[in] index Index of the element being removed. Must be be within the
+ * @param[in] index Index of the element is being removed. Must be be within the
  *            index range of the list.
  *
  * @return the removed element, or NULL
@@ -440,7 +517,8 @@ void *list_remove_at(List *list, size_t index)
 }
 
 /**
- * Removes and returns the first (head) element of the list.
+ * Removes and returns the first (head) element of the list. If the list is
+ * empty, NULL is returned.
  *
  * @param[in] list the list from which the first element is being removed
  *
@@ -455,7 +533,8 @@ void *list_remove_first(List *list)
 }
 
 /**
- * Removes and returns the first (tail) element of the list.
+ * Removes and returns the first (tail) element of the list. If the list is 
+ * empty, NULL is returned.
  *
  * @param[in] list the list from which the last element is being removed
  *
@@ -470,9 +549,10 @@ void *list_remove_last(List *list)
 }
 
 /**
- * Removes all elements from the specified list.
+ * Removes all elements from the specified list. This function returns true if at
+ * least one element was removed, or false if the list was already empty.
  *
- * @param[in] list list that is being cleared
+ * @param[in] list the list from which all elements are being removed
  *
  * @return true if the operation was successful and at least one element was
  *         removed, or false if the list was already empty
@@ -483,13 +563,16 @@ bool list_remove_all(List *list)
 }
 
 /**
- * Removes and frees the elements from the specified list.
+ * Removes and frees all the elements from the specified list. This function
+ * returns true if at least one element was removed and freed, or false if 
+ * the list was already empty.
  *
  * @note
  * This function should not be called on a list that has some of it's elements
  * allocated on the stack.
  *
- * @param[in] list list that is being cleared
+ * @param[in] list the list from which all the elements are being removed and
+ *            freed
  *
  * @return true if the operation was successful and at least one element was
  *         removed or false if the list is already empty
@@ -500,7 +583,9 @@ bool list_remove_all_free(List *list)
 }
 
 /**
- * Replaces and returns an element at the specified location.
+ * Replaces an element at the specified location and returns the old element.
+ * The specified index must be within the bounds of the list. This function 
+ * returns false if the specified index is out of range.
  *
  * @param[in] list the list on which this operation is performed
  * @param[in] element the replacement element
@@ -521,12 +606,12 @@ void *list_replace_at(List *list, void *element, size_t index)
 }
 
 /**
- * Returns the head element from the specified list, or NULL if the list is
+ * Returns the first element from the specified list, or NULL if the list is
  * empty.
  *
- * @param[in] list the list whose head element is being returned.
+ * @param[in] list the list whose first element is being returned.
  *
- * @return the head element of the list, or NULL in case the list is empty.
+ * @return the first element of the list, or NULL in case the list is empty.
  */
 void *list_get_first(List *list)
 {
@@ -537,12 +622,12 @@ void *list_get_first(List *list)
 }
 
 /**
- * Returns the tail element from the specified list. or NULL if the list is
+ * Returns the last element from the specified list. or NULL if the list is
  * empty.
  *
- * @param[in] list list whose tail element is being returned
+ * @param[in] list list whose last element is being returned
  *
- * @return the tail element of the list, or NULL in case the list is empty.
+ * @return the last element of the list, or NULL in case the list is empty.
  */
 void *list_get_last(List *list)
 {
@@ -556,9 +641,9 @@ void *list_get_last(List *list)
  * Returns the list element from the specified index. In case the index is out
  * of bounds, this function returns NULL instead.
  *
- * @param[in] list  list from which the element is returned.
+ * @param[in] list  list from which the element is being returned.
  * @param[in] index The index of a list element being returned. The index must
- *                  be a positive integer no greater that the list size.
+ *                  be within the bound of the list.
  *
  * @return The list element at the specified index.
  */
@@ -572,15 +657,16 @@ void *list_get(List *list, size_t index)
     return NULL;
 }
 
-#include <stdio.h>
-
 /**
- * Reverses the specified list.
+ * Reverses the order of element in the specified list.
  *
  * @param[in] list list that is being reversed.
  */
 void list_reverse(List *list)
 {
+    if (list->size == 0 || list->size == 1)
+        return;
+
 	Node *head_old = list->head;
 	Node *tail_old = list->tail;
 
@@ -639,11 +725,11 @@ List *list_sublist(List *list, size_t b, size_t e)
 /**
  * Returns a shallow copy of the specified list. A shallow copy is a copy of the
  * list structure. This operation does not copy the actual data that this list
- * points to.
+ * holds.
  *
  * @param[in] list list to be copied
  *
- * @return copy of the list
+ * @return a shallow copy of the list
  */
 List *list_copy_shallow(List *list)
 {
@@ -659,7 +745,9 @@ List *list_copy_shallow(List *list)
 
 /**
  * Returns a deep copy of the specified list. This functions copies the structure
- * and all the data it points to.
+ * of the list along with all the data it holds. The element copying is done 
+ * through the specified copy function that should return a pointer to the copy 
+ * of the element passed to it.
  *
  * @param[in] list list to be copied
  * @param[in] cp   the copy function that should return a pointer to the copy of
@@ -680,13 +768,15 @@ List *list_copy_deep(List *list, void *(*cp) (void *e1))
 }
 
 /**
- * Returns an array off all the elements contained in the specified list. The
- * number of elements in the array is equal to the number of elements in the
- * list.
+ * Returns an array representation of the specified list. None of the elements
+ * are copied into the array and thus any modification of the elements within
+ * the array will affect the list elements as well. The size of the returned 
+ * array is the same as the size of the list from which this array was
+ * constructed.
  *
  * @param[in] list the list on which this operation is being performed.
  *
- * @return an array containing all the elements from the specified list
+ * @return an array representation of the specified list
  */
 void **list_to_array(List *list)
 {
@@ -704,7 +794,7 @@ void **list_to_array(List *list)
  * Returns an integer representing the number of occurrences of the specified
  * element within the list.
  *
- * @param[in] list    list on which the search is performed
+ * @param[in] list list on which the search is performed
  * @param[in] element element being looked for
  *
  * @return number of found matches
@@ -723,9 +813,9 @@ size_t list_contains(List *list, void *element)
 }
 
 /**
- * Returns the index of the specified element or -1 if the element is not found.
- * The returned index is the index of the first element found starting from the
- * head of the list.
+ * Returns the index of the specified element, or <code>NO_SUCH_INDEX</code> if 
+ * the element is not found. The returned index is the index of the first 
+ * occurrence of the element starting from the beginning of the list.
  *
  * @param[in] list    the list on which this operation is performed
  * @param[in] element the element whose index is being looked up
@@ -746,7 +836,7 @@ size_t list_index_of(List *list, void *element)
 }
 
 /**
- * Returns the number of elements from the specified list.
+ * Returns the number of elements in the specified list.
  *
  * @param[in] list whose size is being returned
  *
@@ -758,15 +848,19 @@ size_t list_size(List *list)
 }
 
 static Node *split(List *, Node *b, size_t l, int (*cmp) (void *e1, void *e2));
-static void merge(Node**, Node**, size_t, size_t, int (*cmp) (void *e1, void *e2));
+
+static void 
+merge(Node**, Node**, size_t, size_t, int (*cmp) (void *e1, void *e2));
 
 /**
- * Sorts the given list in place.
+ * Sorts the given list in place in an ascending order.
  *
- * @param[in, out] list List to be sorted
- * @param[in]      cmp  The comparator function that returns -1 if the first
- *                      element is smaller than the second; 0 if both elements
- *                      are equal and 1 if the second is larger.
+ * @param[in] list List to be sorted
+ * @param[in] cmp The comparator function that must be of type <code>
+ *                int cmp(const void e1*, const void e2*)</code> that
+ *                returns < 0 if the first element goes before the second,
+ *                0 if the elements are equal and > 0 if the second goes
+ *                before the first.
  */
 void list_sort(List *list, int (*cmp) (void *e1, void *e2))
 {
@@ -777,8 +871,8 @@ void list_sort(List *list, int (*cmp) (void *e1, void *e2))
  * Splits the list section into two partitions.
  *
  * @param[in] list the sublist
- * @param[in] b    first node in the sublist
- * @param[in] size size of the sublist
+ * @param[in] b    the head node of the sublist
+ * @param[in] size number of nodes in the sublist
  * @param[in] cmp  Comparator function.
  *
  * @return
@@ -887,6 +981,14 @@ static void merge(Node **left, Node **right, size_t l_size, size_t r_size,
     }
 }
 
+/**
+ * A 'foreach loop' function that invokes the specified function on each element
+ * in the list.
+ *
+ * @param[in] list the list on which this operation is being performed
+ * @param[in] op the operation function that is to be invoked on each list
+ *               element
+ */
 void list_foreach(List *list, void (*op) (void *e))
 {
     Node *n = list->head;
@@ -900,13 +1002,19 @@ void list_foreach(List *list, void (*op) (void *e))
 /**
  * Returns a new ascending iterator. The ascending iterator or a forward
  * iterator, is an iterator that traverses the list from head to tail.
+ * In case the memeory allocation for the new iterator fails, NULL is 
+ * returned.
  *
  * @param[in] list the list on which this iterator will operate.
+ *
  * @return a new ascending iterator.
  */
 ListIter *list_iter_new(List *list)
 {
     ListIter *iter = (ListIter*) malloc(sizeof(ListIter));
+
+    if (!iter)
+        return NULL;
 
     iter->index = 0;
     iter->list  = list;
@@ -929,14 +1037,16 @@ void list_iter_destroy(ListIter *iter)
 /**
  * Removes the last returned list element by the specified iterator. Since this
  * function removes the last returned element, it should only be called after a
- * call to <code>iter_next()</code>. Only the first call to this function
+ * call to <code>list_iter_next()</code>. Only the first call to this function
  * removes the element. Any subsequent calls will have no effect until the
- * <code>iter_next()</code> is called again.
+ * <code>list_iter_next()</code> is called again.
  *
- * @note This function should only ever be called after a call to iter_next()
+ * @note This function should only ever be called after a call to <code>
+ * list_iter_next()</code>
  *
  * @param[in] iter the iterator on which this operation is being performed.
- * @return true if the removal was successful.
+ *
+ * @return the removed element, or NULL
  */
 void *list_iter_remove(ListIter *iter)
 {
@@ -951,11 +1061,12 @@ void *list_iter_remove(ListIter *iter)
 
 /**
  * Adds a new element to the list. The element is added before the element that
- * would be returned by the next call to <code>dlist_iter_next()</code> and
+ * would be returned by the next call to <code>list_iter_next()</code> and
  * after the last returned element.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added to the list
+ *
  * @return true if the operation was successful
  */
 bool list_iter_add(ListIter *iter, void *element)
@@ -971,12 +1082,13 @@ bool list_iter_add(ListIter *iter, void *element)
 }
 
 /**
- * Replace the most recently returned element by this iterator with the new
- * element.
+ * Replaces and returns the most recently returned element by this iterator 
+ * with the new element.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
- * @return true if the operation was successful
+ *
+ * @return the replaced element
  */
 void *list_iter_replace(ListIter *iter, void *element)
 {
@@ -987,10 +1099,11 @@ void *list_iter_replace(ListIter *iter, void *element)
 
 /**
  * Checks whether or not there are more elements to be iterated over. Returns
- * true if the next element is available or false if the end of the list has
+ * true if the next element is available, or false if the end of the list has
  * been reached.
  *
  * @param[in] iter the iterator on which this operation is performed
+ *
  * @return true if there is at least one more element in the sequence or false
  * if the end of the list has been reached.
  */
@@ -1003,6 +1116,7 @@ bool list_iter_has_next(ListIter *iter)
  * Returns the index of the previously returned element.
  *
  * @param[in] iter the iterator on which this operation is performed.
+ *
  * @return index of the previously returned element.
  */
 size_t list_iter_index(ListIter *iter)
@@ -1011,12 +1125,13 @@ size_t list_iter_index(ListIter *iter)
 }
 
 /**
- * Returns the next element in the sequence and advances the iterator forward.
+ * Returns the next element in the sequence and advances the iterator.
  *
  * @note Before this function is called, one should check whether the next
- * element in the sequence exists by calling <code>dlist_iter_has_next()</code>.
+ * element in the sequence exists by calling <code>list_iter_has_next()</code>.
  *
  * @param the iterator on which this operation is being performed.
+ *
  * @return the next element in the sequence
  */
 void *list_iter_next(ListIter *iter)
@@ -1031,7 +1146,8 @@ void *list_iter_next(ListIter *iter)
 
 /**
  * Returns a new descending iterator. A descending iterator or a reverse
- * iterator, is an iterator that traverses the list from tail to head.
+ * iterator, is an iterator that traverses the list from tail to head. In
+ * case the memory allocation for the new iterator fails, NULL is returned.
  *
  * @param[in] list the list on which this iterator will operate.
  *
@@ -1041,6 +1157,9 @@ ListDIter *list_diter_new(List *list)
 {
     ListDIter *iter = (ListDIter*) malloc(sizeof(ListDIter));
 
+    if (!iter)
+        return NULL;
+
     iter->index = list->size - 1;
     iter->list  = list;
     iter->last  = NULL;
@@ -1049,13 +1168,25 @@ ListDIter *list_diter_new(List *list)
     return iter;
 }
 
+/**
+ * Destroys the specified descending interator
+ * 
+ * @param[in] iter the iterator to be destroyed
+ */
 void list_diter_destroy(ListDIter *iter)
 {
     free(iter);
 }
 
 /**
+ * Adds a new element to the list. The element is added before the element that
+ * would be returned by the next call to <code>list_diter_next()</code> and after
+ * the last returned element.
  *
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] element the element being added to the list
+ * 
+ * @return true if the operation was successful
  */
 bool list_diter_add(ListDIter *iter, void *element)
 {
@@ -1069,7 +1200,18 @@ bool list_diter_add(ListDIter *iter, void *element)
 }
 
 /**
+ * Removes the last returned list element by the specified iterator. Since this
+ * function removes the last returned element, it should only be called after a
+ * call to <code>list_diter_next()</code>. Only the first call to this function
+ * removes the element. Any subsequent calls will have no effect until the
+ * <code>list_diter_next()</code> is called again.
  *
+ * @note This function should only ever be called after a call to
+ *       <code>list_diter_next()</code>
+ *
+ * @param[in] iter the iterator on which this operation is being performed.
+ *
+ * @return the removed element, or NULL
  */
 void *list_diter_remove(ListDIter *iter)
 {
@@ -1082,7 +1224,13 @@ void *list_diter_remove(ListDIter *iter)
 }
 
 /**
+ * Replaces and returns the most recently returned element by this iterator with
+ * the new element.
  *
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] element the replacement element
+ *
+ * @return the replaced element
  */
 void *list_diter_replace(ListDIter *iter, void *element)
 {
@@ -1091,13 +1239,28 @@ void *list_diter_replace(ListDIter *iter, void *element)
     return old;
 }
 
+/**
+ * Returns the index of the last returned element by <code>list_diter_next()
+ * </code>.
+ *
+ * @param[in] iter the iterator on which this operation is being performed
+ *
+ * @return the index of the last returned element
+ */
 size_t dlist_diter_index(ListDIter *iter)
 {
     return iter->index - 1;
 }
 
 /**
+ * Checks whether or not there are more element to be iterated over. This
+ * function returns true if the next element in the sequence is available, or
+ * false if the end of the list has been reached.
  *
+ * @param[in] iter the iterator on which this operation is performed
+ *
+ * @return true if there is at least one more element in the sequence or false
+ * if the end of the list has been reached.
  */
 bool list_diter_has_next(ListDIter *iter)
 {
@@ -1105,7 +1268,14 @@ bool list_diter_has_next(ListDIter *iter)
 }
 
 /**
+ * Returns the next element in the sequence and advances the iterator.
  *
+ * @note Before this function is called, one should check whether the next 
+ * element in the sequence exists by calling <code>list_diter_has_next()</code>.
+ *
+ * @param[in] iter the iterator on which this operation is being performed.
+ *
+ * @return the next element in the sequence
  */
 void *list_diter_next(ListDIter *iter)
 {
@@ -1117,7 +1287,12 @@ void *list_diter_next(ListDIter *iter)
 }
 
 /**
+ * Links the <code>ins</code> node behind the <code>base</code> node.
  *
+ * @param[in] base the node behind which the <code>ins</code> is going to be 
+ *                 linked
+ * @param[in] ins  the node that is being linked behind the <code>base</code>
+ *                 node
  */
 static void link_behind(Node *const base, Node *ins)
 {
@@ -1141,6 +1316,14 @@ static void link_behind(Node *const base, Node *ins)
     }
 }
 
+/**
+ * Links the <code>ins</code> in front of the <code>base</code> node.
+ *
+ * @param[in] base the node in front of which the <code>ins</code> not is going
+ *                 to be linked
+ * @param[in] ins  the node that is being linked in front the <code>base</code>
+ *                 node
+ */
 static void link_after(Node *base, Node *ins)
 {
     if (ins->next)
@@ -1162,10 +1345,14 @@ static void link_after(Node *base, Node *ins)
 }
 
 /**
- * Swaps the two list nodes.
+ * Swaps the list positions of the specified nodes.
+ *
+ * @param[in] n1 the first node
+ * @param[in] n2 the second node
  */
 static void swap(Node *n1, Node *n2)
 {
+    /* A special case is when the nodes are next to each other */
     if (n1->next == n2 || n2->next == n1) {
         swap_adjacent(n1, n2);
         return;
@@ -1198,8 +1385,11 @@ static void swap(Node *n1, Node *n2)
 }
 
 /**
- *
- *
+ * Swaps two adjacent nodes. This handles the special case when the nodes 
+ * are adjacent to each other.
+ * 
+ * @param[in] n1 the first node
+ * @param[in] n2 the second node
  */
 static void swap_adjacent(Node *n1, Node *n2)
 {
@@ -1266,9 +1456,18 @@ static void *unlink(List *list, Node *node)
     return data;
 }
 
+/**
+ * Unlinks all nodes from the list and optionally frees the data at the nodes.
+ *
+ * @param[in] list the list from which all the nodes are being unlinked
+ * @param[in] freed a bool that determines whether or not the data at the nodes
+ *                  should also be freed.
+ *
+ * @return false if the list is already empty, otherwise returns true
+ */
 static bool unlink_all(List *list, bool freed)
 {
-    if (list->size <= 0)
+    if (list->size == 0)
         return false;
 
     Node *node = list->head;
@@ -1285,6 +1484,15 @@ static bool unlink_all(List *list, bool freed)
     return true;
 }
 
+/**
+ * Returns the node at the specified index. If the index is not in the bounds of
+ * the list, NULL is returned.
+ *
+ * @param[in] list the list from which the node is being returned
+ * @param[in] index the index of the node being returned
+ *
+ * @return the node at the specified index, or NULL if the index is out of bounds
+ */
 static Node *get_node_at(List *list, size_t index)
 {
     if (!list || index >= list->size)
@@ -1305,6 +1513,16 @@ static Node *get_node_at(List *list, size_t index)
     return node;
 }
 
+/**
+ * Returns the node first node from the beginning of the list that is associated
+ * with the specified element. If no node is associated with the element, NULL is
+ * returned instead.
+ * 
+ * @param[in] list the list from which the node is being returned
+ * @param[in] element the element whose list node is being returned
+ *
+ * @return the node associated with the specified element
+ */
 static Node *get_node(List *list, void *element)
 {
     Node *node = list->head;
