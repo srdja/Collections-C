@@ -42,8 +42,7 @@ void test_list_iter_desc();
 void test_list_reverse();
 
 void test_list_splice();
-void test_list_splice_after();
-void test_list_splice_before();
+void test_list_splice_at();
 void test_list_to_array();
 
 void test_list_iter_desc_add();
@@ -54,40 +53,91 @@ void test_list_iter_remove();
 
 int main(int argc, char **argv)
 {    
-    cc_set_status(PASS);
-    cc_set_exit_on_failure(false);
+     cc_set_status(PASS);
+     cc_set_exit_on_failure(false);
 
-    test_list_new();
-    test_list_destroy();
-    test_list_add();
-    test_list_add_first();
-    test_list_add_last();
-    test_list_index_of();
-    test_list_add_all_at();
-    test_list_add_at();
-    test_list_remove();
-    test_list_remove_first();
-    test_list_remove_last();
-    test_list_remove_at();
-    test_list_remove_all();
-    test_list_get_first();
-    test_list_get_last();
-    test_list_get();
-    test_list_contains();
-    test_list_replace_at(); 
-    test_list_copy_shallow();
-    test_list_copy_deep();
-    test_list_sublist();
-    test_list_sort();
-    test_list_iter();
-    test_list_iter_desc();
-    test_list_splice();
-    test_list_splice_after();
-    test_list_splice_before();
-    test_list_to_array();
-    test_list_reverse();
+     list_new();
+     test_list_destroy();
+     test_list_add();
+     test_list_add_first();
+     test_list_add_last();
+     test_list_index_of();
+     test_list_add_all_at();
+     test_list_add_at();
+     test_list_remove();
+     test_list_remove_first();
+     test_list_remove_last();
+     test_list_remove_at();
+     test_list_remove_all();
+     test_list_get_first();
+     test_list_get_last();
+     test_list_get();
+     test_list_contains();
+     test_list_replace_at(); 
+     test_list_copy_shallow();
+     test_list_copy_deep();
+     test_list_sublist();
+     test_list_sort();
+     test_list_iter();
+     test_list_iter_desc();
+     test_list_splice();
+     test_list_splice_at();
+     test_list_to_array();
+     test_list_reverse();
 
-    return cc_get_status();
+     return  cc_get_status();
+}
+
+void p(void *e)
+{
+    printf("%d \n", *((int*) e));
+}
+
+void test_list_add_at()
+{
+    List *list = list_1234();
+
+    int ins = 90;
+
+    list_add_at(list, &ins, 3);
+
+    cc_assert(list_size(list) == 5,
+              cc_msg("list_add_at: Expected size was 5, but got %d!", list_size(list)));
+    
+    int new = *((int*) list_get(list, 3));
+
+    cc_assert(new == ins,
+              cc_msg("list_add_at: Expected element at index 2 was %d, but got %d!", ins, new));
+
+    list_remove(list, &ins);
+    list_destroy_free(list);
+}
+
+void test_list_add_all_at()
+{
+    List *list  = list_1234();
+    List *list2 = list_5677();
+
+    list_add_all_at(list, list2, 2);
+
+    cc_assert(list_size(list2) == 4,
+              cc_msg("list_add_all_at: Expected size was 4, but got %d!", list_size(list2)));
+
+    cc_assert(list_size(list) == 8,
+              cc_msg("list_add_all_at: Expected size was 8, but got %d!", list_size(list)));
+    
+    int last = *((int*) list_get_last(list));
+    int l1i5 = *((int*) list_get(list, 5));
+    int l2i2 = *((int*) list_get(list2, 2));
+    
+    cc_assert(last == 4,
+              cc_msg("list_add_all_at: Expected last element was 4, but got %d!", last));
+    
+    cc_assert(l1i5 == l2i2,
+              cc_msg("list_add_all_at: Expected element at index 5 was %d, but got %d!", l1i5, l2i2));
+
+    list_destroy(list2);
+    list_destroy_free(list);
 }
 
 
@@ -237,12 +287,11 @@ void test_list_iter_desc_add()
     list_destroy_free(list);
 }
 
-
 void test_list_reverse()
 {
     List *list = list_1234();
 
-    int *last_old = list_get_last(list);
+    int *last_old = list_get_last(list);  
 
     list_reverse(list);
 
@@ -257,7 +306,7 @@ void test_list_reverse()
 
     cc_assert(list_get_first(list) == last_old,
               cc_msg("list_reverse: unexpected list head after reverse"));
-    
+
     list_destroy_free(list);
 }
 
@@ -484,12 +533,12 @@ void test_list_add_first()
 }
 
 
-void test_list_splice_after()
+void test_list_splice_at()
 {
     List *list = list_1234();
     List *list2 = list_5677();
 
-    list_splice_after(list, list2, 1);
+    list_splice_at(list, list2, 2);
 
     cc_assert(list_size(list) == 8,
               cc_msg("list_splice_after: Expected size was 8, but got %d!", list_size(list)));
@@ -513,34 +562,6 @@ void test_list_splice_after()
     list_destroy(list2);
     list_destroy_free(list);
 }
-
-
-void test_list_splice_before()
-{
-    List *list = list_1234();
-    List *list2 = list_5677();
-
-    list_splice_before(list, list2, 0);
-
-    cc_assert(list_size(list) == 8,
-              cc_msg("list_splice_before: Expected size was 8, but got %d!", list_size(list)));
-
-    cc_assert(list_size(list2) == 0,
-              cc_msg("list_splice_before: Expected size was 0, but got %d!", list_size(list2)));
-
-    int first = *((int*) list_get_first(list));
-    int last  = *((int*) list_get_last(list));
-
-    cc_assert(first == 5,
-              cc_msg("list_splice_before: Expected first element was 5, but got %d!", first));
-
-    cc_assert(last == 4,
-              cc_msg("list_splice_before: Expected last element was 4, but got %d!", last));
-
-    list_destroy(list2);
-    list_destroy_free(list);
-}
-
 
 void test_list_splice()
 {
@@ -572,35 +593,6 @@ void test_list_splice()
     list_destroy_free(list);
 }
 
-
-void test_list_add_all_at()
-{
-    List *list  = list_1234();
-    List *list2 = list_5677();
-
-    list_add_all_at(list, list2, 2);
-
-    cc_assert(list_size(list2) == 4,
-              cc_msg("list_add_all_at: Expected size was 4, but got %d!", list_size(list2)));
-
-    cc_assert(list_size(list) == 8,
-              cc_msg("list_add_all_at: Expected size was 8, but got %d!", list_size(list)));
-    
-    int last = *((int*) list_get_last(list));
-    int l1i5 = *((int*) list_get(list, 5));
-    int l2i2 = *((int*) list_get(list2, 2));
-    
-    cc_assert(last == 4,
-              cc_msg("list_add_all_at: Expected last element was 4, but got %d!", last));
-    
-    cc_assert(l1i5 == l2i2,
-              cc_msg("list_add_all_at: Expected element at index 5 was %d, but got %d!", l1i5, l2i2));
-
-    list_destroy(list2);
-    list_destroy_free(list);
-}
-
-
 void test_list_add_all()
 {
     List *list = list_1234();
@@ -619,27 +611,6 @@ void test_list_add_all()
 
     list_destroy(list);
     list_destroy_free(list2);
-}
-
-
-void test_list_add_at()
-{
-    List *list = list_1234();
-
-    int ins = 90;
-
-    list_add_at(list, &ins, 2);
-
-    cc_assert(list_size(list) == 5,
-              cc_msg("list_add_at: Expected size was 5, but got %d!", list_size(list)));
-    
-    int new = *((int*) list_get(list, 2));
-
-    cc_assert(new == ins,
-              cc_msg("list_add_at: Expected element at index 2 was %d, but got %d!", ins, new));
-
-    list_remove(list, &ins);
-    list_destroy_free(list);
 }
 
 
