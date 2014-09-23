@@ -63,6 +63,7 @@ static void move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
 
 static void *get_null_key(HashTable *table);
 static bool put_null_key(HashTable *table, void *val);
+static void *remove_null_key(HashTable *table);
 
 /**
  * Returns a new HashTableProperties object that will, if not modified, set up 
@@ -282,7 +283,7 @@ static void *get_null_key(HashTable *table)
 
 /**
  * Removes a key-value mapping from the specified hash table and returns the
- * value that was mapped to the specified key. In case the key doesn't exit
+ * value that was mapped to the specified key. In case the key doesn't exist
  * NULL is returned. NULL might also be returned if the key maps to a null value.
  * Calling <code>hashtable_contains_key()</code> before this functin can resolve
  * the ambiguity.
@@ -295,29 +296,71 @@ static void *get_null_key(HashTable *table)
  */
 void *hashtable_remove(HashTable *table, void *key)
 {
-    uint32_t index = get_table_index(table, key);
+    if (!key)
+        remove_null_key(table);
 
-    TableEntry *entry = table->buckets[index];
-    TableEntry *prev  = NULL;
-    TableEntry *next;
+    const uint32_t i = get_table_index(table, key);
 
-    while (entry) {
-        next = entry->next;
+    TableEntry *e    = table->buckets[i];
+    TableEntry *prev = NULL;
+    TableEntry *next = NULL;
 
-        if (table->key_cmp(key, entry->key)) {
-            void *value = entry->value;
+    while (e) {
+        next = e->next;
+
+        if (table->key_cmp(key, e->key)) {
+            void *value = e->value;
 
             if (!prev)
-                table->buckets[index] = next;
+                table->buckets[i] = next;
             else
                 prev->next = next;
 
-            free(entry);
+            free(e);
             table->size--;
             return value;
         }
-        prev  = entry;
-        entry = next;
+        prev = e;
+        e = next;
+    }
+    return NULL;
+}
+
+/**
+ * Removes a NULL key mapping from the specified hash table and returns the
+ * value that was mapped to the NULL key. In case the NULL key doesn't exist
+ * NULL is returned. NULL might also be returned if a NULL key is mapped to a
+ * NULL value.
+ * 
+ * @param[in] table the table from which the NULL key mapping is being removed
+ *
+ * @return the value associated with the NULL key, or NULL if the NULL key was
+ * not mapped
+ */
+void *remove_null_key(HashTable *table)
+{
+    TableEntry *e = table->buckets[0];
+
+    TableEntry *prev = NULL;
+    TableEntry *next = NULL;
+ 
+    while (e) {
+        next = e->next;
+        
+        if (e->key == NULL) {
+            void *value = e->value;
+
+            if (!prev)
+                table->buckets[0] = next;
+            else
+                prev->next = next;
+
+            free(e);
+            table->size--;
+            return value;
+        }
+        prev = e;
+        e = next;
     }
     return NULL;
 }
@@ -381,7 +424,7 @@ static bool resize(HashTable *t, uint32_t new_capacity)
  *
  * @return the nearest upper power of two
  */
-static uint32_t round_pow_two(uint32_t n)
+static INLINE uint32_t round_pow_two(uint32_t n)
 {
     if (n >= MAX_POW_TWO)
         return MAX_BUCKETS;
@@ -413,8 +456,9 @@ static uint32_t round_pow_two(uint32_t n)
  * @param[in] src_size    size of the source bucket
  * @param[in] dest_size   size of the destination bucket
  */
-static void move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
-        uint32_t src_size, uint32_t dest_size)
+static INLINE void 
+move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
+             uint32_t src_size, uint32_t dest_size)
 {
     int i;
     for (i = 0; i < src_size; i++) {
@@ -538,7 +582,7 @@ Vector *hashtable_get_keys(HashTable *table)
 /**
  * Returns the bucket index that maps to the specified key.
  */
-static uint32_t get_table_index(HashTable *table, void *key)
+static INLINE uint32_t get_table_index(HashTable *table, void *key)
 {
     uint32_t hash  = table->hash(key, table->key_len, table->hash_seed);
     return hash & (table->capacity - 1);
@@ -807,7 +851,7 @@ uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
     register uint32_t hash = 5381;
 
     while (*str++)
-        hash = (hash << 5) + hash + *str;
+        hash = ((hash << 5) + hash) ^ *str;
 
     return hash;
 }
@@ -820,16 +864,9 @@ uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 
 #if defined(_MSC_VER)
 
-#define FORCE_INLINE    __forceinline
-
 #define ROTL32(x,y) _rotl(x,y)
-#define ROTL64(x,y) _rotl64(x,y)
-
-#define BIG_CONSTANT(x) (x)
 
 #else   // defined(_MSC_VER)
-
-#define FORCE_INLINE inline __attribute__((always_inline))
 
 inline uint32_t rotl32 (uint32_t x, int8_t r)
 {
@@ -837,14 +874,13 @@ inline uint32_t rotl32 (uint32_t x, int8_t r)
 }
 
 #define ROTL32(x,y) rotl32(x,y)
-#define BIG_CONSTANT(x) (x##LLU)
 
 #endif // !defined(_MSC_VER)
 
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 
-FORCE_INLINE uint32_t fmix32 (uint32_t h)
+FORCE_INLINE uint32_t fmix32(uint32_t h)
 {
     h ^= h >> 16;
     h *= 0x85ebca6b;
