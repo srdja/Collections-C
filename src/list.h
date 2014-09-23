@@ -33,8 +33,7 @@ bool list_destroy(List *list);
 bool list_destroy_free(List *list);
 
 bool list_splice(List *list1, List *list2);
-bool list_splice_before(List *list, List *list2, size_t index);
-bool list_splice_after(List *list, List *list2, size_t index);
+bool list_splice_at(List *list, List *list2, size_t index);
 
 bool list_add(List *list, void *element);
 bool list_add_at(List *list, void *element, size_t index);

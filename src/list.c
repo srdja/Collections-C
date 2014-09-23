@@ -383,58 +383,41 @@ bool list_add_last(List *list, void *element)
  */
 bool list_splice(List *list1, List *list2)
 {
-    splice_between(list1, list2, list1->tail, list1->tail->next);
-    return true;
+    return list_splice_at(list1, list2, list1->size);
 }
 
 /**
- * Splices the second list behind an element in the first list. This function
- * moves all the elements from the second list into the first list at the
- * specified position. After this operation the second list will be left empty.
+ * Splices the two lists together at the specified index of the first list. This
+ * function moves all the element from the second list into the frist list at the
+ * position specified by the <code>index</code> parameter. After this opertaion
+ * the second list will be left empty. This function returns false if the second
+ * list is already empty or if the specified index is out of bounds.
+ * 
+ * @param[in] list1
+ * @param[in] list2
+ * @param[in] index
  *
- * @param[in] list1 The consumer list to which the elements are moved to.
- * @param[in] list2 The produces list from which the elements are moved.
- * @param[in] index position of the element in the first list behind which the
- *            second list will be inserted. The index must be within the bounds
- *            of the fist list.
- * @return true if the operation was successful
+ * @return true if at least one element was moved from the second list
  */
-bool list_splice_before(List *list1, List *list2, size_t index)
+bool list_splice_at(List *list1, List *list2, size_t index)
 {
-    Node *new_tail = get_node_at(list1, index);
-
-    if (!new_tail)
+    if (list2->size == 0)
         return false;
 
-    Node *new_head = new_tail->prev;
-
-    splice_between(list1, list2, new_head, new_tail);
-    
-    return true;
-}
-
-/**
- * Splices the second list after an element in the first list. This function
- * moves all the elements from the second list into the first list at the
- * specified position. After this operation the second list will be left empty.
- *
- * @param[in] list1 The consumer list to which the elements are moved to.
- * @param[in] list2 The produces list from which the elements are moved.
- * @index[in] index Position of the element in the first list after which the
- *            second list will be inserted. The index must be within the bounds
- *            of the first list.
- * @return true if the operation was successful
- */
-bool list_splice_after(List *list1, List *list2, size_t index)
-{
-    Node *new_head = get_node_at(list1, index);
-
-    if (!new_head)
+    if (index > list1->size)
         return false;
 
-    Node *new_tail = new_head->next;
+    if (list1->size == 0) {
+        list1->head = list2->head;
+        list1->tail = list2->tail;
+        list1->size = list2->size;
+        return;
+    }
 
-    splice_between(list1, list2, new_head, new_tail);
+    Node *end  = get_node_at(list1, index);
+    Node *base = end ? end->prev : get_node_at(list1, index - 1);
+
+    splice_between(list1, list2, base, end);
 
     return true;
 }
@@ -452,19 +435,20 @@ bool list_splice_after(List *list1, List *list2, size_t index)
  */
 static void splice_between(List *l1, List *l2, Node *left, Node *right)
 {
-    if (l2->size == 0)
-        return;
-
-    if (left)
-        left->next = l2->head;
-    else
+    if (!left) {
+        l1->head->prev = l2->tail;
+        l2->tail->next = l1->head;
         l1->head = l2->head;
-
-    if (right)
-        right->prev = l2->tail;
-    else
+    } else if (!right) {
+        l1->tail->next = l2->head;
+        l2->head->prev = l1->tail;
         l1->tail = l2->tail;
-
+    } else {
+        left->next = l2->head;
+        l2->head->prev = left;
+        right->prev = l2->tail;
+        l2->tail->next = right;
+    }
     l1->size += l2->size;
 
     l2->head = NULL;
