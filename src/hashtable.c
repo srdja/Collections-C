@@ -297,7 +297,7 @@ static void *get_null_key(HashTable *table)
 void *hashtable_remove(HashTable *table, void *key)
 {
     if (!key)
-        remove_null_key(table);
+        return remove_null_key(table);
 
     const uint32_t i = get_table_index(table, key);
 
