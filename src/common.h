@@ -13,4 +13,6 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define NO_SUCH_INDEX (size_t) - 1
+
 #endif /* COMMON_H_ */
