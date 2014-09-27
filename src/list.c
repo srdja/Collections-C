@@ -94,7 +94,7 @@ bool list_destroy(List *list)
 /**
  * Destroys the list structure along with all the data it holds. This function
  * returns true if the operation was successful, or false if the list was already
- * empty or NULL.
+ * empty.
  *
  * @note
  * This function should not be called on a list that has some of it's elements
@@ -113,14 +113,13 @@ bool list_destroy_free(List *list)
 
 /**
  * Adds a new element to the list. The element is appended to the list making it
- * the last element in the list. This function returns true if the addition of
- * new element was successful.
+ * the last element in the list. This function returns false if the memory
+ * allocation for the new element fails.
  *
  * @param[in] list the list to which the element is being added
  * @param[in] element element being added
  *
- * \return True if the operation was successful. The operation can fail if the
- *         memory allocation for the new element fails.
+ * @return true if the element was succesfuly added to the list.
  */
 bool list_add(List *list, void *element)
 {
@@ -134,21 +133,23 @@ bool list_add(List *list, void *element)
  * bounds of the list. This function returns false if either the index is out 
  * of bounds, or if the memory allocation for the new element fails.
  *
- * @param[in] list    The list to which this element is being added.
- * @param[in] element Element being added.
- * @param[in] index   Position in the list. Must be withing the bounds of the
- *                    list.
+ * @param[in] list the list to which this element is being added.
+ * @param[in] element element being added.
+ * @param[in] index the position in the list at which the new element is being
+ *                  added
  *
- * @return True if the operation was successful. The operation can fail if the
- *         memory allocation for the new element fails, or if an attempt is made
- *         to insert the element into an empty list.
+ * @return true if the element was successfully added to the list
  */
 bool list_add_at(List *list, void *element, size_t index)
 {
     Node *base = get_node_at(list, index);
-    Node *new  = calloc(1, sizeof(Node));
+    
+    if (!base)
+        return false;
 
-    if (!base || !new)
+    Node *new = calloc(1, sizeof(Node));
+
+    if (!new)
         return false;
 
     new->data = element;
@@ -212,7 +213,7 @@ static bool add_all_to_empty(List *list1, List *list2)
 
 /**
  * Adds all elements from the second list to the first at the specified position
- * by shifting all subsequent element by the size of the second list. The index 
+ * by shifting all subsequent elements by the size of the second list. The index 
  * range at which the elements can be added ranges from 0 to max_index + 1. This 
  * function returns false if no elements were added to the first list. This 
  * could be the case if either the second list is empty or if the memory 
@@ -243,7 +244,7 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
 
     /* Now we can safely attach the new nodes. */
     Node *end  = get_node_at(list1, index);
-    Node *base = end ? end->prev : get_node_at(list1, index - 1);
+    Node *base = end ? end->prev : get_node_at(list1, index - 1); // calling get node twice is not very efficient
     
     if (!end) {
         list1->tail->next = head;
@@ -267,7 +268,7 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
 
 /**
  * Duplicates the structure of the list without directly attaching it to a 
- * specific list. If the operation fails the mess is cleaned up and false
+ * specific list. If the operation fails, the mess is cleaned up and false
  * is returned to indicate failure.
  * 
  * @param[in] list the list whose structure is being duplicated
@@ -314,10 +315,10 @@ static bool link_all_externally(List *list, Node **h, Node **t)
  * element of the list. This function returns false if the memory allocation for
  * the new element fails.
  *
- * @param[in] list a list to which the element is being prepended
+ * @param[in] list the list to which the element is being added
  * @param[in] element element being prepended
  *
- * @return True if the operation was successful.
+ * @return true if the element was successfuly added to the list
  */
 bool list_add_first(List *list, void *element)
 {
@@ -345,10 +346,10 @@ bool list_add_first(List *list, void *element)
  * element of the list. This function returns false if the memory allocation for
  * the new element fails.
  *
- * @param[in] list a list to which the element is being appended
+ * @param[in] list the list to which the element is being added
  * @param[in] element element being appended
  *
- * @return True if the operation was successful.
+ * @return true if the element was successfuly added to the list
  */
 bool list_add_last(List *list, void *element)
 {
@@ -408,9 +409,14 @@ bool list_splice_at(List *list1, List *list2, size_t index)
         return false;
 
     if (list1->size == 0) {
+        // TODO move to splice_between
         list1->head = list2->head;
         list1->tail = list2->tail;
         list1->size = list2->size;
+
+        list2->head = NULL;
+        list2->tail = NULL;
+        list2->size = 0;
         return;
     }
 
@@ -651,8 +657,8 @@ void list_reverse(List *list)
     if (list->size == 0 || list->size == 1)
         return;
 
-	Node *head_old = list->head;
-	Node *tail_old = list->tail;
+    Node *head_old = list->head;
+    Node *tail_old = list->tail;
 
     Node *left  = list->head;
     Node *right = list->tail;
@@ -695,7 +701,7 @@ List *list_sublist(List *list, size_t b, size_t e)
     if (b > e || b < 0 || e >= list->size)
         return NULL;
 
-    List *sub = (List*) list_new();
+    List *sub  = list_new();
     Node *node = get_node_at(list, b);
 
     size_t i;
@@ -905,8 +911,9 @@ static Node *split(List *list, Node *b, size_t size, int (*cmp) (void*, void*))
  *@param[in]      r_size size of the right partition
  *@param[in]      cmp    the comparator function
  */
-static void merge(Node **left, Node **right, size_t l_size, size_t r_size,
-        int (*cmp) (void*, void*))
+static INLINE void
+merge(Node **left, Node **right, size_t l_size, 
+      size_t r_size, int (*cmp) (void*, void*))
 {
     size_t size = r_size + l_size;
     size_t l    = 0; /* Number of processed elements from the left partition */
@@ -1076,6 +1083,9 @@ bool list_iter_add(ListIter *iter, void *element)
  */
 void *list_iter_replace(ListIter *iter, void *element)
 {
+    if (!iter->last)
+        return NULL;
+
     void *old = iter->last->data;
     iter->last->data = element;
     return old;
@@ -1175,8 +1185,16 @@ void list_diter_destroy(ListDIter *iter)
 bool list_diter_add(ListDIter *iter, void *element)
 {
     Node *new_node = (Node*) calloc(1, sizeof(Node));
+
+    if (!new_node)
+        return false;
+
     new_node->data = element;
 
+    if (iter->index == iter->list->size - 1)
+        iter->list->head = new_node;
+
+    iter->index++;
     link_after(iter->next, new_node);
     iter->list->size++;
     iter->last = new_node;
@@ -1517,3 +1535,4 @@ static Node *get_node(List *list, void *element)
     }
     return NULL;
 }
+
