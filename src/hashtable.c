@@ -891,9 +891,9 @@ FORCE_INLINE uint32_t fmix32(uint32_t h)
     return h;
 }
 
-uint32_t hashtable_murmur_hash3(const void * key, int len, uint32_t seed)
+uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed)
 {
-    const uint8_t * data = (const uint8_t*)key;
+    const uint8_t *data = (const uint8_t*)key;
     const int nblocks = len / 4;
 
     uint32_t h1 = seed;
@@ -904,7 +904,7 @@ uint32_t hashtable_murmur_hash3(const void * key, int len, uint32_t seed)
     //----------
     // body
 
-    const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
+    const uint32_t *blocks = (const uint32_t *)(data + nblocks*4);
 
     int i;
     for (i = -nblocks; i; i++) {
@@ -938,6 +938,36 @@ uint32_t hashtable_murmur_hash3(const void * key, int len, uint32_t seed)
 
     h1 ^= len;
 
+    h1 = fmix32(h1);
+
+    return h1;
+}
+
+uint32_t hashtable_murmur_hash3_pointer_hash(const void *key, int len, uint32_t seed)
+{ 
+    const int nblocks = len / 4;
+
+    uint32_t h1 = seed;
+
+    const uint32_t c1 = 0xcc9e2d51;
+    const uint32_t c2 = 0x1b873593;
+
+    int i;
+    for (i = 0; i < nblocks; i++) {
+        uint32_t k1 = ((uintptr_t) key >> (32*i)) & 0xff;
+
+        k1 *= c1;
+        k1 = ROTL32(k1,15);
+        k1 *= c2;
+
+        h1 ^= k1;
+        h1 = ROTL32(h1,13);
+        h1 = h1*5+0xe6546b64;
+    }
+    
+    // tail - no byte tails when dealing with power of 2 lenghts
+
+    h1 ^= len;
     h1 = fmix32(h1);
 
     return h1;

@@ -72,6 +72,7 @@ bool hashtable_pointer_key_cmp(void *key1, void *key2);
 
 uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed);
 uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed);
+uint32_t hashtable_murmur_hash3_pointer_hash(const void *key, int len, uint32_t seed);
 
 #define CMP_STRING  hashtable_string_key_cmp
 #define CMP_FLOAT   hashtable_float_key_cmp
@@ -84,6 +85,7 @@ uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed);
 
 #define GENERAL_HASH hashtable_murmur_hash3
 #define STRING_HASH  hashtable_hash_string
+#define POINTER_HASH hashtable_murmur_hash3_pointer_hash
 
 void hashtable_foreach_key(HashTable *table, void (*op) (const void *));
 void hashtable_foreach_value(HashTable *table, void (*op) (void *));
