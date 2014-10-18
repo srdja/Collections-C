@@ -343,7 +343,7 @@ void test_hashtable_iter_next()
     
     HashTableIter *iter = hashtable_iter_new(t);
 
-    for (;hashtable_iter_has_next(iter);) {
+    while (hashtable_iter_has_next(iter)) {
         hashtable_iter_next(iter);
 
         char const *key = hashtable_iter_get_key(iter);
