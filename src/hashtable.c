@@ -690,7 +690,7 @@ bool hashtable_long_key_cmp(void *key1, void *key2)
  *
  * @return true if the keys are identical
  */
-bool hashtable_pointer_key_compare(void *key1, void *key2)
+bool hashtable_pointer_key_cmp(void *key1, void *key2)
 {
     return key1 == key2;
 }
