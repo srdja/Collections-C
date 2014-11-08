@@ -93,7 +93,7 @@ void test_vector_add_at()
     vector_add(v, &c);
     vector_add(v, &e);
 
-    vector_add_at(v, 1, &ins);
+    vector_add_at(v, &ins, 1);
 
     int i0 = *((int*) vector_get(v, 0));
     int i1 = *((int*) vector_get(v, 1));
@@ -131,7 +131,7 @@ void test_vector_replace_at()
     vector_add(v, &b);
     vector_add(v, &c);
 
-    vector_replace_at(v, 2, &replacement);
+    vector_replace_at(v, &replacement, 2);
 
     cc_assert(vector_get(v, 2) != &c,
               cc_msg("vector_replace_at: Unique element"

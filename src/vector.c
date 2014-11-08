@@ -139,7 +139,7 @@ bool vector_add(Vector *vect, void *element)
  *
  * @return true if the operation was successful, false if not
  */
-bool vector_add_at(Vector *vect, size_t index, void *element)
+bool vector_add_at(Vector *vect, void *element, size_t index)
 {
     bool alloc = true;
 
@@ -174,7 +174,7 @@ bool vector_add_at(Vector *vect, size_t index, void *element)
  *
  * @return the replaced element or NULL if the index was out of bounds.
  */
-void *vector_replace_at(Vector *vect, size_t index, void *element)
+void *vector_replace_at(Vector *vect, void *element, size_t index)
 {
     if (index >= vect->size)
         return NULL;
@@ -627,7 +627,7 @@ void *vector_iter_remove(VectorIter *iter)
  */
 void vector_iter_add(VectorIter *iter, void *element)
 {
-    vector_add_at(iter->vect, iter->index++, element);
+    vector_add_at(iter->vect, element, iter->index++);
 }
 
 /**
@@ -641,7 +641,7 @@ void vector_iter_add(VectorIter *iter, void *element)
  */
 void *vector_iter_replace(VectorIter *iter, void *element)
 {
-    return vector_replace_at(iter->vect, iter->index, element);
+    return vector_replace_at(iter->vect, element, iter->index);
 }
 
 /**
