@@ -21,47 +21,46 @@
 #include "list.h"
 
 typedef struct node_s {
-    void *data;
+    void          *data;
     struct node_s *next;
     struct node_s *prev;
 } Node;
 
 struct dlist_s {
-    size_t size;
-    Node *head;
-    Node *tail;
+    size_t  size;
+    Node   *head;
+    Node   *tail;
 };
 
 struct dlist_iter_s {
-    size_t index;
-    List *list;
-    Node *last;
-    Node *next;
+    size_t  index;
+    List   *list;
+    Node   *last;
+    Node   *next;
 };
 
 struct dlist_iter_desc_s { 
-    size_t index;
-    List *list;
-    Node *last;
-    Node *next;
+    size_t  index;
+    List   *list;
+    Node   *last;
+    Node   *next;
 };
 
-static void *unlink(List *list, Node *node);
-static bool unlink_all(List *list, bool free);
+static void *unlink              (List *list, Node *node);
+static bool  unlink_all          (List *list, bool free);
+static void  link_behind         (Node *node, Node *inserted);
+static void  link_after          (Node *base, Node *inserted);
 
-static void link_behind(Node *node, Node *inserted);
-static void link_after(Node *base, Node *inserted);
+static void  swap                (Node *n1, Node *n2);
+static void  swap_adjacent       (Node *n1, Node *n2);
 
-static void swap(Node *n1, Node *n2);
-static void swap_adjacent(Node *n1, Node *n2);
+static void  splice_between      (List *list1, List *list2, Node *left, Node *right);
 
-static void splice_between(List *list1, List *list2, Node *left, Node *right);
+static Node *get_node_at         (List *list, size_t index);
+static Node *get_node            (List *list, void *element);
 
-static Node *get_node_at(List *list, size_t index);
-static Node *get_node(List *list, void *element);
-
-static bool add_all_to_empty(List *l1, List *l2);
-static bool link_all_externally(List *l, Node **h, Node **t);
+static bool  add_all_to_empty    (List *l1, List *l2);
+static bool  link_all_externally (List *l, Node **h, Node **t);
 
 /**
  * Returns a new empty list, or NULL if the memory allocation fails.
@@ -124,6 +123,68 @@ bool list_destroy_free(List *list)
 bool list_add(List *list, void *element)
 {
     return list_add_last(list, element);
+}
+
+/**
+ * Prepends a new element to the list (adds a new "head") making it the first
+ * element of the list. This function returns false if the memory allocation for
+ * the new element fails.
+ *
+ * @param[in] list the list to which the element is being added
+ * @param[in] element element being prepended
+ *
+ * @return true if the element was successfuly added to the list
+ */
+bool list_add_first(List *list, void *element)
+{
+    Node *node = (Node*) calloc(1, sizeof(Node));
+
+    if (node == NULL)
+        return false;
+
+    node->data = element;
+
+    if (list->size == 0) {
+        list->head = node;
+        list->tail = node;
+    } else {
+        node->next = list->head;
+        list->head->prev = node;
+        list->head = node;
+    }
+    list->size++;
+    return true;
+}
+
+/**
+ * Appends a new element to the list (adds an new "tail") making it the last
+ * element of the list. This function returns false if the memory allocation for
+ * the new element fails.
+ *
+ * @param[in] list the list to which the element is being added
+ * @param[in] element element being appended
+ *
+ * @return true if the element was successfuly added to the list
+ */
+bool list_add_last(List *list, void *element)
+{
+    Node *node = (Node*) calloc(1, sizeof(Node));
+
+    if (node == NULL)
+        return false;
+
+    node->data = element;
+
+    if (list->size == 0) {
+        list->head = node;
+        list->tail = node;
+    } else {
+        node->prev = list->tail;
+        list->tail->next = node;
+        list->tail = node;
+    }
+    list->size++;
+    return true;
 }
 
 /**
@@ -248,17 +309,17 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
     
     if (!end) {
         list1->tail->next = head;
-        head->prev = list1->tail;
-        list1->tail = tail;
+        head->prev        = list1->tail;
+        list1->tail       = tail;
     } else if (!base) {
         list1->head->prev = tail;
-        tail->next = list1->head;
-        list1->head = head;
+        tail->next        = list1->head;
+        list1->head       = head;
     } else {
-        head->prev = base;
-        base->next = head;
-        tail->next = end;
-        end->prev = tail;
+        head->prev        = base;
+        base->next        = head;
+        tail->next        = end;
+        end->prev         = tail;
     }
     
     list1->size += list2->size;
@@ -272,8 +333,8 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
  * is returned to indicate failure.
  * 
  * @param[in] list the list whose structure is being duplicated
- * @param[in, out] h the pointer to which new head will be attached
- * @param[in, out] t the pointer to which new tail will be attached 
+ * @param[in, out] h the pointer to which the new head will be attached
+ * @param[in, out] t the pointer to which the new tail will be attached 
  *
  * @return true if the operation was successful
  */ 
@@ -301,8 +362,8 @@ static bool link_all_externally(List *list, Node **h, Node **t)
             *t = new;
         } else {
             (*t)->next = new;
-            new->prev = *t;
-            *t = new;
+            new->prev  = *t;
+            *t         = new;
         }
 
         insert = insert->next;
@@ -311,76 +372,14 @@ static bool link_all_externally(List *list, Node **h, Node **t)
 }
 
 /**
- * Prepends a new element to the list (adds a new "head") making it the first
- * element of the list. This function returns false if the memory allocation for
- * the new element fails.
- *
- * @param[in] list the list to which the element is being added
- * @param[in] element element being prepended
- *
- * @return true if the element was successfuly added to the list
- */
-bool list_add_first(List *list, void *element)
-{
-    Node *node = (Node*) calloc(1, sizeof(Node));
-
-    if (node == NULL)
-        return false;
-
-    node->data = element;
-
-    if (list->size == 0) {
-        list->head = node;
-        list->tail = node;
-    } else {
-        node->next = list->head;
-        list->head->prev = node;
-        list->head = node;
-    }
-    list->size++;
-    return true;
-}
-
-/**
- * Appends a new element to the list (adds an new "tail") making it the last
- * element of the list. This function returns false if the memory allocation for
- * the new element fails.
- *
- * @param[in] list the list to which the element is being added
- * @param[in] element element being appended
- *
- * @return true if the element was successfuly added to the list
- */
-bool list_add_last(List *list, void *element)
-{
-    Node *node = (Node*) calloc(1, sizeof(Node));
-
-    if (node == NULL)
-        return false;
-
-    node->data = element;
-
-    if (list->size == 0) {
-        list->head = node;
-        list->tail = node;
-    } else {
-        node->prev = list->tail;
-        list->tail->next = node;
-        list->tail = node;
-    }
-    list->size++;
-    return true;
-}
-
-/**
  * Splices the two doubly linked lists together by appending the second list to
  * the first. This function moves all the elements from the second list into
- * the first list, leaving second list empty.
+ * the first list, leaving the second list empty.
  *
- * @param[in] list1 The consumer list to which the elements are moved to.
- * @param[in] list2 The produces list from which the elements are moved.
+ * @param[in] list1 The consumer list to which the elements are moved.
+ * @param[in] list2 The producer list from which the elements are moved.
  *
- * @return returns true if the operation was successful
+ * @return true if the operation was successful
  */
 bool list_splice(List *list1, List *list2)
 {
@@ -394,9 +393,10 @@ bool list_splice(List *list1, List *list2)
  * the second list will be left empty. This function returns false if the second
  * list is already empty or if the specified index is out of bounds.
  * 
- * @param[in] list1
- * @param[in] list2
- * @param[in] index
+ * @param[in] list1 the consumer list to which the elements are moved
+ * @param[in] list2 the producer list from which the elements are moved
+ * @param[in] index the index in the first list after which the elements from the
+ *                  second list should be inserted
  *
  * @return true if at least one element was moved from the second list
  */
@@ -437,22 +437,22 @@ bool list_splice_at(List *list1, List *list2, size_t index)
  * @param[in, out] l1 the list to which the elements are being transferred
  * @param[in, out] l2 the list from which the elements are being transferred
  * @param[in] left the node after which the element are being added
- * @param[in] right the node 
+ * @param[in] right the node behind which the elements are being added
  */
 static void splice_between(List *l1, List *l2, Node *left, Node *right)
 {
     if (!left) {
         l1->head->prev = l2->tail;
         l2->tail->next = l1->head;
-        l1->head = l2->head;
+        l1->head       = l2->head;
     } else if (!right) {
         l1->tail->next = l2->head;
         l2->head->prev = l1->tail;
-        l1->tail = l2->tail;
+        l1->tail       = l2->tail;
     } else {
-        left->next = l2->head;
+        left->next     = l2->head;
         l2->head->prev = left;
-        right->prev = l2->tail;
+        right->prev    = l2->tail;
         l2->tail->next = right;
     }
     l1->size += l2->size;
@@ -588,7 +588,7 @@ void *list_replace_at(List *list, void *element, size_t index)
     Node *node = get_node_at(list, index);
 
     if (node) {
-        void *old = node->data;
+        void *old  = node->data;
         node->data = element;
         return old;
     }
@@ -770,12 +770,12 @@ List *list_copy_deep(List *list, void *(*cp) (void *e1))
  */
 void **list_to_array(List *list)
 {
-    void **array = (void**) calloc(list->size, sizeof(void*));
-    Node *node = list->head;
-    size_t i;
+    void   **array = (void**) calloc(list->size, sizeof(void*));
+    Node    *node  = list->head;
+    size_t   i;
     for (i = 0; i < list->size; i++) {
         array[i] = node->data;
-        node = node->next;
+        node     = node->next;
     }
     return array;
 }
@@ -791,8 +791,8 @@ void **list_to_array(List *list)
  */
 size_t list_contains(List *list, void *element)
 {
-    Node *node = list->head;
-    size_t e_count = 0;
+    Node   *node    = list->head;
+    size_t  e_count = 0;
 
     while (node) {
         if (node->data == element)
@@ -810,7 +810,8 @@ size_t list_contains(List *list, void *element)
  * @param[in] list    the list on which this operation is performed
  * @param[in] element the element whose index is being looked up
  *
- * @return the index of the specified element or -1 if the element is not found.
+ * @return the index of the specified element or <code>NO_SUCH_INDEX</code> if 
+ *         the element is not found.
  */
 size_t list_index_of(List *list, void *element)
 {
@@ -1307,14 +1308,14 @@ static void link_behind(Node *const base, Node *ins)
 
     /* link behind */
     if (base->prev == NULL) {
-        ins->prev = NULL;
-        ins->next = base;
-        base->prev = ins;
+        ins->prev       = NULL;
+        ins->next       = base;
+        base->prev      = ins;
     } else {
-        ins->prev = base->prev;
+        ins->prev       = base->prev;
         ins->prev->next = ins;
-        ins->next = base;
-        base->prev = ins;
+        ins->next       = base;
+        base->prev      = ins;
     }
 }
 
@@ -1335,14 +1336,14 @@ static void link_after(Node *base, Node *ins)
         ins->prev->next = ins->next;
 
     if (!base->next) {
-        ins->prev = base;
-        base->next = ins;
-        ins->next = NULL;
+        ins->prev       = base;
+        base->next      = ins;
+        ins->next       = NULL;
     } else {
-        ins->next = base->next;
+        ins->next       = base->next;
         ins->next->prev = ins;
-        ins->prev = base;
-        base->next = ins;
+        ins->prev       = base;
+        base->next      = ins;
     }
 }
 
