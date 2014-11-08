@@ -32,11 +32,11 @@ struct slist_s {
 };
 
 struct slist_iter_s {
-    size_t index;
-    SList *list;
-    Node  *next;
-    Node  *current;
-    Node  *prev;
+    size_t  index;
+    SList  *list;
+    Node   *next;
+    Node   *current;
+    Node   *prev;
 };
 
 static void* unlink              (SList *list, Node *node, Node *prev);
@@ -154,11 +154,11 @@ bool slist_add_last(SList *list, void *element)
     node->data = element;
 
     if (list->size == 0) {
-        list->head = node;
-        list->tail = node;
+        list->head       = node;
+        list->tail       = node;
     } else {
         list->tail->next = node;
-        list->tail = node;
+        list->tail       = node;
     }
     list->size++;
     return true;
@@ -827,30 +827,21 @@ void **slist_to_array(SList *list)
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void slist_sort(SList *list, int (*cmp) (void *e1, void *e2))
+void slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
 {
     if (list->size == 1)
         return;
 
-    void **elements = malloc(list->size * sizeof(void*));
+    void **elements = slist_to_array(list);
     Node  *node     = list->head;
-    
-    size_t i;
-    for (i = 0; i < list->size; i++) {
-        elements[i] = node->data;
-        node  = node->next;
-    }
     
     qsort(elements, list->size, sizeof(void*), cmp);
 
-    node = list->head;
+    size_t i;
     for (i = 0; i < list->size; i++) {
         node->data = elements[i];
-        node  = node->next;
+        node       = node->next;
     }
-
-    list->head = elements[0];
-    list->tail = elements[list->size - 1];
 
     free(elements);
 }
