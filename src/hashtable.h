@@ -32,7 +32,7 @@
 #define KEY_LENGHT_LONG      sizeof(long)
 #define KEY_LENGTH_POINTER   sizeof(void*)
 
-typedef struct hashtable_s HashTable;
+typedef struct hashtable_s        HashTable;
 typedef struct hashtable_key_iter HashTableIter;
 
 typedef struct hashtable_init_properties_s {
@@ -46,33 +46,34 @@ typedef struct hashtable_init_properties_s {
 } HashTableProperties;
 
 HashTableProperties *hashtable_properties_new();
-HashTable *hashtable_new(const HashTableProperties *properties);
+HashTable           *hashtable_new           (const HashTableProperties *properties);
 
-void hashtable_properties_destroy(HashTableProperties *properties);
-void hashtable_destroy(HashTable *table);
 
-bool hashtable_put(HashTable *table, void *key, void *val);
-void *hashtable_get(HashTable *table, void *key);
-void *hashtable_remove(HashTable *table, void *key);
-void hashtable_remove_all(HashTable *table);
+void     hashtable_properties_destroy        (HashTableProperties *properties);
+void     hashtable_destroy                   (HashTable *table);
 
-bool hashtable_contains_key(HashTable *table, void *key);
+bool     hashtable_put                       (HashTable *table, void *key, void *val);
+void    *hashtable_get                       (HashTable *table, void *key);
+void    *hashtable_remove                    (HashTable *table, void *key);
+void     hashtable_remove_all                (HashTable *table);
 
-Vector *hashtable_get_keys(HashTable *table);
-Vector *hashtable_get_values(HashTable *table);
+bool     hashtable_contains_key              (HashTable *table, void *key);
 
-bool hashtable_string_key_cmp(void *key1, void *key2);
-bool hashtable_float_key_cmp(void *key1, void *key2);
-bool hashtable_char_key_cmp(void *key1, void *key2);
-bool hasthable_short_key_cmp(void *key1, void *key2);
-bool hashtable_double_key_cmp(void *key1, void *key2);
-bool hashtable_int_key_cmp(void *key1, void *key2);
-bool hashtable_long_key_cmp(void *key1, void *key2);
-bool hashtable_pointer_key_cmp(void *key1, void *key2);
+Vector  *hashtable_get_keys                  (HashTable *table);
+Vector  *hashtable_get_values                (HashTable *table);
 
-uint32_t hashtable_hash_string(const void *key, int len, uint32_t seed);
-uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed);
-uint32_t hashtable_murmur_hash3_pointer_hash(const void *key, int len, uint32_t seed);
+bool     hashtable_string_key_cmp            (void *key1, void *key2);
+bool     hashtable_float_key_cmp             (void *key1, void *key2);
+bool     hashtable_char_key_cmp              (void *key1, void *key2);
+bool     hasthable_short_key_cmp             (void *key1, void *key2);
+bool     hashtable_double_key_cmp            (void *key1, void *key2);
+bool     hashtable_int_key_cmp               (void *key1, void *key2);
+bool     hashtable_long_key_cmp              (void *key1, void *key2);
+bool     hashtable_pointer_key_cmp           (void *key1, void *key2);
+
+uint32_t hashtable_hash_string               (const void *key, int len, uint32_t seed);
+uint32_t hashtable_murmur_hash3              (const void *key, int len, uint32_t seed);
+uint32_t hashtable_murmur_hash3_pointer_hash (const void *key, int len, uint32_t seed);
 
 #define CMP_STRING  hashtable_string_key_cmp
 #define CMP_FLOAT   hashtable_float_key_cmp
@@ -87,14 +88,14 @@ uint32_t hashtable_murmur_hash3_pointer_hash(const void *key, int len, uint32_t 
 #define STRING_HASH  hashtable_hash_string
 #define POINTER_HASH hashtable_murmur_hash3_pointer_hash
 
-void hashtable_foreach_key(HashTable *table, void (*op) (const void *));
-void hashtable_foreach_value(HashTable *table, void (*op) (void *));
+void           hashtable_foreach_key    (HashTable *table, void (*op) (const void *));
+void           hashtable_foreach_value  (HashTable *table, void (*op) (void *));
 
-HashTableIter *hashtable_iter_new(HashTable *table);
-bool hashtable_iter_hash_next(HashTableIter *iter);
-void hashtable_iter_next(HashTableIter *iter);
-void const *hashtable_iter_get_key(HashTableIter *iter);
-void *hashtable_iter_get_value(HashTableIter *iter);
-void hashtable_iter_remove(HashTableIter *iter);
+HashTableIter *hashtable_iter_new       (HashTable *table);
+bool           hashtable_iter_hash_next (HashTableIter *iter);
+void           hashtable_iter_next      (HashTableIter *iter);
+void const    *hashtable_iter_get_key   (HashTableIter *iter);
+void          *hashtable_iter_get_value (HashTableIter *iter);
+void           hashtable_iter_remove    (HashTableIter *iter);
 
 #endif /* HASHMAP_H_ */
