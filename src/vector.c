@@ -558,7 +558,7 @@ void vector_foreach(Vector *vect, void (*op) (void *e))
 /**
  * Returns a new vector iterator.
  *
- * @param[in] vect the vector to iterated over
+ * @param[in] vect the vector to iterate over
  *
  * @return a new vector iterator
  */
@@ -623,6 +623,7 @@ void *vector_iter_remove(VectorIter *iter)
  * <code>vector_iter_next()</code> without invalidating the iterator.
  *
  * @param[in] iter the iterator on which this operation is being performed
+ * @parma[in] element the element being added
  */
 void vector_iter_add(VectorIter *iter, void *element)
 {
@@ -631,7 +632,7 @@ void vector_iter_add(VectorIter *iter, void *element)
 
 /**
  * Replaces the last returned element by <code>vector_iter_next()</code>
- * vector element with the specified replacement element.
+ * with the specified replacement element.
  * 
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
@@ -644,7 +645,7 @@ void *vector_iter_replace(VectorIter *iter, void *element)
 }
 
 /**
- * Returns the index of the last returned element by <code>vector_iter_new()
+ * Returns the index of the last returned element by <code>vector_iter_next()
  * </code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
