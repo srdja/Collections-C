@@ -21,12 +21,12 @@
 #include "slist.h"
 
 typedef struct node_s {
-    void *data;
+    void          *data;
     struct node_s *next;
 } Node;
 
 struct slist_s {
-    int size;
+    int   size;
     Node *head;
     Node *tail;
 };
@@ -34,9 +34,9 @@ struct slist_s {
 struct slist_iter_s {
     size_t index;
     SList *list;
-    Node *next;
-    Node *current;
-    Node *prev;
+    Node  *next;
+    Node  *current;
+    Node  *prev;
 };
 
 static void* unlink              (SList *list, Node *node, Node *prev);
@@ -60,7 +60,7 @@ SList *slist_new()
  * Destroys the list structure, but leaves the data that is holds intact
  *
  * @param[in] list a list to destroy
- *
+  *
  * @return true if the operation was successful
  */
 bool slist_destroy(SList *list)
@@ -142,7 +142,7 @@ bool slist_add_first(SList *list, void *element)
  * @param[in] list the list to which the element is being added
  * @param[in] element element being added
  *
- * @return true if the element was successfuly added to the list
+ * @return true if the element was successfully added to the list
  */
 bool slist_add_last(SList *list, void *element)
 {
@@ -168,7 +168,7 @@ bool slist_add_last(SList *list, void *element)
  * Adds a new element at the specified location in the list and shifts all
  * subsequent elements by one. This operation cannot be performed on an empty
  * list. The index at which the new element is being added must be within the 
- * bounds of the list. This function returns false if either the indes is out
+ * bounds of the list. This function returns false if either the index is out
  * of bounds, or if the memory allocation for the new element fails.
  *
  * @param[in] list the list to which this element is being added
@@ -194,12 +194,12 @@ bool slist_add_at(SList *list, void *element, size_t index)
     new->data = element;
 
     if (!prev) {
-        new->next = list->head;
+        new->next  = list->head;
         list->head = new;
     } else {
-        Node *tmp = prev->next;
+        Node *tmp  = prev->next;
         prev->next = new;
-        new->next = tmp;
+        new->next  = tmp;
     }
 
     list->size++;
@@ -216,7 +216,7 @@ bool slist_add_at(SList *list, void *element, size_t index)
  * @param[in] list1 the list to which the elements are being added
  * @param[in] list2 the list from which the elements are being taken. 
  *
- * @return true if the elemetns were successfully added
+ * @return true if the elements were successfully added
  */
 bool slist_add_all(SList *list1, SList *list2)
 {
@@ -254,7 +254,7 @@ bool slist_add_all(SList *list1, SList *list2)
  * @param[in] index position in the first list at which the elements should be
  *                  added
  *
- * @return true if the elements were successfully addded
+ * @return true if the elements were successfully added
  */
 bool slist_add_all_at(SList *list1, SList *list2, size_t index)
 {
@@ -274,7 +274,7 @@ bool slist_add_all_at(SList *list1, SList *list2, size_t index)
         return false;
 
     if (!prev) {
-        tail->next = node;
+        tail->next  = node;
         list1->head = head;
     } else {
         prev->next = head;
@@ -287,8 +287,15 @@ bool slist_add_all_at(SList *list1, SList *list2, size_t index)
 }
 
 /**
+ * Duplicates the structure of the list without directly attaching it to a 
+ * specific list. If the operation fails, everything is cleaned up and false
+ * is returned to indicate the failure.
  *
+ * @param[in] list the list whose structure is being duplicated
+ * @param[in, out] h the pointer to which the new head will be attached 
+ * @param[in, out] t the pointer to which the new tail will be attached
  *
+ * @return true if the operation was successful
  */
 static bool link_all_externally(SList *list, Node **h, Node **t)
 {
@@ -323,8 +330,14 @@ static bool link_all_externally(SList *list, Node **h, Node **t)
 }
 
 /**
- * Splices the two singly 
+ * Splices the two singly linked lists together by appending the second list to
+ * the first. This function moves all the elements from the second list into
+ * the first list, leaving the second list empty.
  *
+ * @param[in] list1 The consumer list to which the elements are moved.
+ * @param[in] list2 The producer list from which the elements are moved.
+ *
+ * @return true if the operation was successful
  */
 bool slist_splice(SList *list1, SList *list2)
 {
@@ -346,9 +359,18 @@ bool slist_splice(SList *list1, SList *list2)
 }
 
 /**
+ * Splices the two singly lists together at the specified index of the first list.
+ * this function moves all the elements from the second list into the first list 
+ * at the position specified by the <code>index</code> parameter. After this 
+ * operation the second list will be left empty. This function returns false if the 
+ * second list is already empty or if the specified index is out of bounds.
  *
+ * @param[in] list1 the consumer list to which the elements are moved
+ * @param[in] list2 the producer list from which the elements are moved
+ * @param[in] index the index in the first list after which the elements from the
+ *                  second list should be inserted
  *
- *
+ * @return true if at least one element was moved from the second list
  */
 bool slist_splice_at(SList *list1, SList *list2, size_t index)
 {
@@ -370,8 +392,15 @@ bool slist_splice_at(SList *list1, SList *list2, size_t index)
 }
 
 /**
+ * Inserts the second list between the two nodes of the first list. If the left
+ * node is NULL the head of the second list will be become the head of the first
+ * list. Similarly if the right node is null the tail of the first list will
+ * become the tail of the second list.
  *
- *
+ * @param[in, out] l1 the consumer list
+ * @param[in, out] l2 the producer list
+ * @param[in] left the node after which the elements are being added
+ * @param[in] right the node behind which the elements are being added
  */
 static INLINE void splice_between(SList *l1, SList *l2, Node *base, Node *end)
 {
@@ -393,8 +422,15 @@ static INLINE void splice_between(SList *l1, SList *l2, Node *base, Node *end)
 }
 
 /**
+ * Removes and returns the first occurrence of the element from the specified
+ * list. If the element if not a part of the list, NULL is returned instead.
+ * NULL may also be returned if the removed element was NULL. Calling <code>
+ * slist_contains()</code> before this function can resolve the ambiguity.
  *
+ * @param[in] list a list from which the element is being removed
+ * @param[in] element element being removed
  *
+ * @return the removed element
  */
 void *slist_remove(SList *list, void *element)
 {
@@ -408,7 +444,17 @@ void *slist_remove(SList *list, void *element)
 }
 
 /**
+ * Removes and returns the element at the specified index. The index must be 
+ * within the bounds of the list. In case the index is out of bounds this 
+ * function returns NULL. NULL may also be returned if the element at the 
+ * specified index is actually NULL. Calling <code>slist_contains()</code>
+ * before this function can resolve this ambiguity.
  *
+ * @param[in] list the list from which the element is being removed.
+ * @param[in] index Index of the element is being removed. Must be be within the
+ *            index range of the list.
+ *
+ * @return the removed element, or NULL
  *
  */
 void *slist_remove_at(SList *list, size_t index)
@@ -423,8 +469,12 @@ void *slist_remove_at(SList *list, size_t index)
 }
 
 /**
+ * Removes and returns the first (head) element of the list. If the list is
+ * empty, NULL is returned instead.
  *
+ * @param[in] list the list from which the first element is being removed
  *
+ * @return the removed element, or NULL
  */
 void *slist_remove_first(SList *list)
 {
@@ -435,8 +485,12 @@ void *slist_remove_first(SList *list)
 }
 
 /**
+ * Removes and returns the last (tail) element of the list. If the list is
+ * empty, NULL is returned instead.
+ * 
+ * @param[in] list the list from which the last element is being removed
  *
- *
+ * @return the removed element, or NULL
  */
 void *slist_remove_last(SList *list)
 {
@@ -452,8 +506,13 @@ void *slist_remove_last(SList *list)
 }
 
 /**
+ * Removes all elements from the specified list. This function returns true if at
+ * least one element was removed, or false if the list was already empty.
  *
+ * @param[in] list the list from which all elements are being removed
  *
+ * @return true if the operation was successful and at least one element was
+ *         removed, or false if the list was already empty
  */
 bool slist_remove_all(SList *list)
 {
@@ -461,8 +520,19 @@ bool slist_remove_all(SList *list)
 }
 
 /**
+ * Removes and frees all the elements from the specified list. This function
+ * returns true if at least one element was removed and freed, or false if 
+ * the list was already empty.
  *
+ * @note
+ * This function should not be called on a list that has some of it's elements
+ * allocated on the stack.
  *
+ * @param[in] list the list from which all the elements are being removed and
+ *            freed
+ *
+ * @return true if the operation was successful and at least one element was
+ *         removed or false if the list is already empty
  */
 bool slist_remove_all_free(SList *list)
 {
@@ -470,8 +540,15 @@ bool slist_remove_all_free(SList *list)
 }
 
 /**
+ * Replaces an element at the specified location and returns the old element.
+ * The specified index must be within the bounds of the list. This function 
+ * returns false if the specified index is out of range.
  *
+ * @param[in] list the list on which this operation is performed
+ * @param[in] element the replacement element
+ * @param[in] index index of the element being replaced
  *
+ * @return the replaced element
  */
 void *slist_replace_at(SList *list, void *element, size_t index)
 {
@@ -487,8 +564,12 @@ void *slist_replace_at(SList *list, void *element, size_t index)
 }
 
 /**
+ * Returns the first element from the specified list, or NULL if the list is
+ * empty.
  *
+ * @param[in] list the list whose first element is being returned.
  *
+ * @return the first element of the list, or NULL in case the list is empty.
  */
 void *slist_get_first(SList *list)
 {
@@ -499,8 +580,12 @@ void *slist_get_first(SList *list)
 }
 
 /**
+ * Returns the last element from the specified list. or NULL if the list is
+ * empty.
  *
+ * @param[in] list list whose last element is being returned
  *
+ * @return the last element of the list, or NULL in case the list is empty.
  */
 void *slist_get_last(SList *list)
 {
@@ -511,8 +596,14 @@ void *slist_get_last(SList *list)
 }
 
 /**
+ * Returns the list element from the specified index. In case the index is out
+ * of bounds, this function returns NULL instead.
  *
+ * @param[in] list  list from which the element is being returned.
+ * @param[in] index The index of a list element being returned. The index must
+ *                  be within the bound of the list.
  *
+ * @return The list element at the specified index.
  */
 void *slist_get(SList *list, size_t index)
 {
@@ -526,8 +617,11 @@ void *slist_get(SList *list, size_t index)
 }
 
 /**
+ * Returns the number of elements in the specified list.
  *
+ * @param[in] list whose size is being returned
  *
+ * @return the number of the elements contained in the specified list
  */
 size_t slist_size(SList *list)
 {
@@ -535,8 +629,9 @@ size_t slist_size(SList *list)
 }
 
 /**
+ * Reverses the order of elements in the specified list.
  *
- *
+ * @param[in] list the list that is being reversed
  */
 void slist_reverse(SList *list)
 {
@@ -562,8 +657,22 @@ void slist_reverse(SList *list)
 }
 
 /**
+ * Returns a sublist of the specified list. The returned sublist contains all
+ * the elements from the list that are contained between the two indices
+ * including the elements at the indices. For example if a list contains 5
+ * elements [5, 6, 7, 8, 9], a sublist from index 1 to 3 will will be a new
+ * list of length 3, containing [6, 7, 8]. The returned sublist is only a copy of
+ * the original lists structure, meaning the data it points to is not copied.
  *
+ * @param[in] list the list from which the sublist is taken
+ * @param[in] b    The beginning index, ie., the first element to be included.
+ *                 Must be a positive integer and may not exceed the list size
+ *                 or the end index.
+ * @param[in] e    The ending index, ie., the last element to be included. Must
+ *                 be a positive integer no greater that the list size and no
+ *                 smaller that the beginning index.
  *
+ * @return a new sublist or NULL if any of the indices are out of list bounds
  */
 SList *slist_sublist(SList *list, size_t from, size_t to)
 {
@@ -586,8 +695,13 @@ SList *slist_sublist(SList *list, size_t from, size_t to)
 }
 
 /**
+ * Returns a shallow copy of the specified list. A shallow copy is a copy of the
+ * list structure. This operation does not copy the actual data that this list
+ * holds.
  *
- *
+ * @param[in] list list to be copied
+ * 
+ * @return a shallow copy of the list
  */
 SList *slist_copy_shallow(SList *list)
 {
@@ -602,8 +716,16 @@ SList *slist_copy_shallow(SList *list)
 }
 
 /**
+ * Returns a deep copy of the specified list. This function copies the structure
+ * of the list along with all the data it holds. The element copying is done
+ * through the specified copy function that should return a pointer to the copy
+ * of the element passed to it.
  *
+ * @param[in] list list to be copied
+ * @parama[in] cp  the copy function that should return a pointer to the copy of
+ *                 the data.
  *
+ * @return a deep copy of the list 
  */
 SList *slist_copy_deep(SList *list, void *(*cp) (void*))
 {
@@ -618,8 +740,13 @@ SList *slist_copy_deep(SList *list, void *(*cp) (void*))
 }
 
 /**
+ * Returns an integer representing the number of occurrences of the specified
+ * element within the list.
  *
+ * @param[in] list list on which the search is performed
+ * @param[in] element element being looked for
  *
+ * @return number of found matches
  */
 size_t slist_contains(SList *list, void *element)
 {
@@ -636,8 +763,15 @@ size_t slist_contains(SList *list, void *element)
 }
 
 /**
+ * Returns the index of the specified element, or <code>NO_SUCH_INDEX</code> if 
+ * the element is not found. The returned index is the index of the first 
+ * occurrence of the element starting from the beginning of the list.
  *
+ * @param[in] list    the list on which this operation is performed
+ * @param[in] element the element whose index is being looked up
  *
+ * @return the index of the specified element or <code>NO_SUCH_INDEX</code> if 
+ *         the element is not found.
  */
 size_t slist_index_of(SList *list, void *element)
 {
@@ -654,8 +788,14 @@ size_t slist_index_of(SList *list, void *element)
 }
 
 /**
+ * Returns an array representation of the specified list. None of the elements
+ * are copied into the array and thus any modification of the elements within
+ * the array will affect the list elements as well. The size of the returned
+ * array is the same as the size of the list from which the array was constructed.
  *
- *
+ * @param[in] list the list on which this operation is being performed
+ * 
+ * @return an array representation of the specified list
  */
 void **slist_to_array(SList *list)
 {
@@ -670,7 +810,23 @@ void **slist_to_array(SList *list)
     return array;
 }
 
-
+/**
+ * Sorts the specified list. This function makes no guaranties that the 
+ * sort will be performed in place or in a stable way.
+ *
+ * @note
+ * Pointers passed to the comparator function will be pointers to the list 
+ * elements that are of type (void*) ie. void**. So an extra step of 
+ * dereferencing will be required before the data can be used for comparison:
+ * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
+ *
+ * @param[in] list list to be sorted
+ * @param[in] cmp the comparator function that must be of type <code>
+ *                int cmp(const void e1*, const void e2*)</code> that
+ *                returns < 0 if the first element goes before the second,
+ *                0 if the elements are equal and > 0 if the second goes
+ *                before the first.
+ */
 void slist_sort(SList *list, int (*cmp) (void *e1, void *e2))
 {
     if (list->size == 1)
@@ -700,8 +856,12 @@ void slist_sort(SList *list, int (*cmp) (void *e1, void *e2))
 }
 
 /**
+ * A 'foreach loop' function that invokes the specified function on each element
+ * in the list.
  *
- *
+ * @param[in] list the list on which this operation is being performed
+ * @param[in] op the operation function that is to be invoked on each list
+ *               element
  */
 void slist_foreach(SList *list, void (*op) (void *))
 {
@@ -714,8 +874,11 @@ void slist_foreach(SList *list, void (*op) (void *))
 }
 
 /**
+ * Returns a new list iterator.
  *
- *
+ * @param[in] list the list to iterate over
+ * 
+ * @return a new list iterator
  */
 SListIter *slist_iter_new(SList *list)
 {
@@ -734,8 +897,9 @@ SListIter *slist_iter_new(SList *list)
 }
 
 /**
- *
- *
+ * Destroys the specified list iterator.
+ * 
+ * @param[in] iter the list iterator to be destroyed
  */
 void slist_iter_destroy(SListIter *iter)
 {
@@ -743,8 +907,12 @@ void slist_iter_destroy(SListIter *iter)
 }
 
 /**
+ * Removes and returns the last returned element by <code>slist_iter_next()
+ * </code> function without invalidating the iterator.
  *
- *
+ * @param[in] iter the iterator on which this operation is being performed
+ * 
+ * @return the removed element
  */
 void *slist_iter_remove(SListIter *iter)
 {
@@ -759,8 +927,12 @@ void *slist_iter_remove(SListIter *iter)
 }
 
 /**
+ * Adds a new element to the list after the last returned element by 
+ * <code>slist_iter_next()</code> function without invalidating the 
+ * iterator.
  *
- *
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] element the element being added
  */
 bool slist_iter_add(SListIter *iter, void *element)
 {
@@ -784,8 +956,13 @@ bool slist_iter_add(SListIter *iter, void *element)
 }
 
 /**
+ * Replaces the last returned element by <code>slist_iter_next()</code>
+ * with the specified element.
+ * 
+ * @param[in] iter the iterator on which this operation is being pefromed
+ * @param[in] element the replacement element
  *
- *
+ * @return the replaced element
  */
 void *slist_iter_replace(SListIter *iter, void *element)
 {
@@ -798,8 +975,11 @@ void *slist_iter_replace(SListIter *iter, void *element)
 }
 
 /**
+ * Returns the next element in the sequence and advances the iterator.
+ * 
+ * @param[in] iter the iterator that is being advanced
  *
- *
+ * @return the next element in the sequence
  */
 void *slist_iter_next(SListIter *iter)
 {
@@ -816,8 +996,12 @@ void *slist_iter_next(SListIter *iter)
 }
 
 /**
+ * Return s the index of the last returned element by <code>slist_iter_next()
+ * </code>.
  *
- *
+ * @param[in] iter the iterator on which this operation is being performed
+ * 
+ * @return the index
  */
 size_t slist_iter_index(SListIter *iter)
 {
@@ -825,8 +1009,11 @@ size_t slist_iter_index(SListIter *iter)
 }
 
 /**
+ * Checks whether or not the iterator has reached the end of the list
+ * 
+ * @param[in] iter iterator whose position is being checked
  *
- *
+ * @return true if there are more element to be iterated over, or false if not
  */
 bool slist_iter_has_next(SListIter *iter)
 {
@@ -834,8 +1021,13 @@ bool slist_iter_has_next(SListIter *iter)
 }
 
 /**
+ * Unlinks the node from the list and returns the data tat was associated with it.
  *
+ * @param[in] list the list from which the node is being unlinked
+ * @parma[in] node the node being unlinked 
+ * @param[in] prev the node that immediately precedes the node that is being unlinked
  *
+ * @return the data that was at this node
  */
 static void *unlink(SList *list, Node *node, Node *prev)
 {
@@ -855,8 +1047,13 @@ static void *unlink(SList *list, Node *node, Node *prev)
 }
 
 /**
+ * Unlinks all nodes from the list and optionally frees the data at the nodes.
+ * 
+ * @param[in] list the list from which all nodes are being unlinked
+ * @param[in] freed specified whether or not the data at the nodes should also 
+ *                  be deallocated.
  *
- *
+ * @return false if the list is already y empty, otherwise returns true
  */
 static bool unlink_all(SList *list, bool freed)
 {
@@ -878,8 +1075,16 @@ static bool unlink_all(SList *list, bool freed)
 }
 
 /**
+ * Finds the node at the specified index. If the index is not in the bounds
+ * of the list, NULL is returned instead.
  *
+ * @param[in] list the list from which the node is being returned
+ * @param[in] index the index of the node
+ * @param[out] node the node at the specified index
+ * @param[out] prev the node that immediately precedes the node at the 
+ *                  specified index
  *
+ * @return true if the operation was successful 
  */
 static bool 
 get_node_at(SList *list, size_t index, Node **node, Node **prev)
@@ -899,8 +1104,17 @@ get_node_at(SList *list, size_t index, Node **node, Node **prev)
 }
 
 /**
+ * Finds the first node from the beginning of the list that is associated
+ * with the specified element. If no node is associated with the element, 
+ * NULL is returned instead.
  *
+ * @param[in] list the list from which the node is being returned
+ * @param[in] element the element whose list node is being returned
+ * @param[out] node the node associated with the data
+ * @param[out] prev the node that immediately precedes the node at the
+ *                  specified index
  *
+ * @return true if a node containing the specified data was found
  */
 static bool 
 get_node(SList *list, void *element, Node **node, Node **prev)
