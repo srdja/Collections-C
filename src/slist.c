@@ -41,9 +41,12 @@ struct slist_iter_s {
 
 static void* unlink              (SList *list, Node *node, Node *prev);
 static bool  unlink_all          (SList *list, bool freed);
+
 static void  splice_between      (SList *list1, SList *list2, Node *base, Node *end);
+
 static bool  get_node_at         (SList *list, size_t index, Node **node, Node **prev);
 static bool  get_node            (SList *list, void *element, Node **node, Node **prev);
+
 static bool  link_all_externally (SList *list, Node **h, Node **t);
 
 /**
