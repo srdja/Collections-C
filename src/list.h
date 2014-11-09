@@ -64,7 +64,8 @@ size_t     list_index_of        (List *list, void *element);
 void**     list_to_array        (List *list);
 
 void       list_reverse         (List *list);
-void       list_sort            (List *list, int (*cmp) (void*, void*));
+void       list_sort            (List *list, int (*cmp) (void const*, void const*));
+void       list_sort_in_place   (List *list, int (*cmp) (void const*, void const*));
 size_t     list_size            (List *list);
 
 void       list_foreach         (List *list, void (*op) (void *));

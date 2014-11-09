@@ -838,22 +838,58 @@ size_t list_size(List *list)
     return list->size;
 }
 
-static Node *split(List *, Node *b, size_t l, int (*cmp) (void *e1, void *e2));
-
-static void 
-merge(Node**, Node**, size_t, size_t, int (*cmp) (void *e1, void *e2));
-
 /**
- * Sorts the given list in place in an ascending order.
+ * Sorts the specified list. This function makes no guaranties that the 
+ * sort will be performed in place or in a stable way.
  *
- * @param[in] list List to be sorted
- * @param[in] cmp The comparator function that must be of type <code>
+ * @note
+ * Pointers passed to the comparator function will be pointers to the list 
+ * elements that are of type (void*) ie. void**. So an extra step of 
+ * dereferencing will be required before the data can be used for comparison:
+ * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
+ *
+ * @param[in] list list to be sorted
+ * @param[in] cmp the comparator function that must be of type <code>
  *                int cmp(const void e1*, const void e2*)</code> that
  *                returns < 0 if the first element goes before the second,
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void list_sort(List *list, int (*cmp) (void *e1, void *e2))
+void list_sort(List *list, int (*cmp) (void const *e1, void const *e2))
+{
+    void **elements = list_to_array(list);
+    Node  *node     = list->head;
+
+    qsort(elements, list->size, sizeof(void*), cmp);
+
+    size_t i;
+    for (i = 0; i < list->size; i++) {
+        node->data = elements[i];
+        node       = node->next;
+    }
+    free(elements);
+}
+
+static Node *split(List *, Node *b, size_t l, int (*cmp) (void const *e1, void const *e2));
+static void  merge(Node**, Node**, size_t, size_t, int (*cmp) (void const *e1, void const *e2));
+
+/**
+ * Sorts the specified list in place in a stable way.
+ *
+ * @note
+ * Pointers passed to the comparator function will be pointers to the list 
+ * elements that are of type (void*) ie. void**. So an extra step of 
+ * dereferencing will be required before the data can be used for comparison:
+ * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
+ *
+ * @param[in] list list to be sorted
+ * @param[in] cmp the comparator function that must be of type <code>
+ *                int cmp(const void e1*, const void e2*)</code> that
+ *                returns < 0 if the first element goes before the second,
+ *                0 if the elements are equal and > 0 if the second goes
+ *                before the first.
+ */
+void list_sort_in_place(List *list, int (*cmp) (void const *e1, void const *e2))
 {
     split(list, list->head, list->size, cmp);
 }
@@ -868,12 +904,11 @@ void list_sort(List *list, int (*cmp) (void *e1, void *e2))
  *
  * @return
  */
-static Node *split(List *list, Node *b, size_t size, int (*cmp) (void*, void*))
+static Node *split(List *list, Node *b, size_t size, int (*cmp) (void const*, void const*))
 {
     if (size < 2)
         return b;
 
-    /* If the split is uneven the larger partition is on the right. */ 
     size_t l_size = size / 2; 
     size_t r_size = size / 2 + (size % 2);
 
@@ -895,8 +930,8 @@ static Node *split(List *list, Node *b, size_t size, int (*cmp) (void*, void*))
 }
 
 /**
- * Merges the two partitions together in an stable way. The left partition
- * starts at the "left" node and ends "l_size" nodes to the right of it.
+ * Merges the two partitions together in place in an stable way. The left 
+ * partition starts at the "left" node and ends "l_size" nodes to the right of it.
  * Similarly the right partition starts at the "right" and ends "r_size" nodes
  * to the right. Both "left" and "right" parameters are used for input and
  * output. As an output parameter the "left" parameter will be assigned as the
@@ -912,9 +947,8 @@ static Node *split(List *list, Node *b, size_t size, int (*cmp) (void*, void*))
  *@param[in]      r_size size of the right partition
  *@param[in]      cmp    the comparator function
  */
-static INLINE void
-merge(Node **left, Node **right, size_t l_size, 
-      size_t r_size, int (*cmp) (void*, void*))
+static INLINE void merge(Node **left, Node **right, size_t l_size, 
+                        size_t r_size, int (*cmp) (void const*, void const*))
 {
     size_t size = r_size + l_size;
     size_t l    = 0; /* Number of processed elements from the left partition */
@@ -925,7 +959,7 @@ merge(Node **left, Node **right, size_t l_size,
 
     size_t i;
     for (i = 0; i < size; i++) {
-        int c = cmp(l_part->data, r_part->data);
+        int c = cmp(&(l_part->data), &(r_part->data));
 
         if ((c == -1 || c == 0)) {
             /* The two partitions are already sorted. */

@@ -623,14 +623,14 @@ void test_list_index_of()
 }
 
 
-int cmp(void *e1, void *e2)
+int cmp(void const *e1, void const *e2)
 {
-    int *i = (int *) e1;
-    int *j = (int *) e2;
+    int i = *(*((int**) e1));
+    int j = *(*((int**) e2));
 
-    if (*i < *j)
+    if (i < j)
         return -1;
-    if (*i == *j)
+    if (i == j)
         return 0;
     return 1;
 }
@@ -651,7 +651,7 @@ void test_list_sort()
         list_add(list, e);
     }
 
-    list_sort(list, cmp);
+    list_sort_in_place(list, cmp);
 
     ListIter *iter = list_iter_new(list);
     int prev;
