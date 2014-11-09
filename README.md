@@ -7,35 +7,46 @@ A collections library for C.
 ##Contents
 ### Examples:
 - [List](#list)
+- [HashTable] (#hashtable)
+- [Vector] (#vector)
+- [Stack] (#stack)
+- [Queue] (#queue)
+- [Deque] (#deque)
+- [HashSet] (#hashset)
 
 #### List
 
-Creating a new list:
+##### Creating a new list:
 ```c
 List *mylist = list_new();
 ```
-
-Destroying a list:
-```c
-list_destroy(mylist); // this frees the list structure but keeps all the data it points to
-
-// to free the list and all the data use
-list_destroy_free(mylist); // note that this should not be used if some of the elements are allocated on the stack
-```
-
-Adding elements to the list:
+##### Adding elements to the list:
 ```c
 list_add(mylist, &my_list_element);
 ```
-Removing element from the list:
+##### Removing element from the list:
 ```c
 list_remove(mylist, &my_list_element);
-
-// or from a specific splace
-
+```
+or from a specific splace
+```c
 list_remove_at(mylist, elmenet_index);
 ```
-Iterating over the list in an ascending order:
+##### Iterating over the list with foreach:
+
+For example, if we had a list of strings and we simply wanted to print every item, we could do it like this:
+
+First we define our callback function that will be called on each list element
+```c
+void print(void *e) {
+    printf("%s\n", (char*) e);
+}
+```
+and then we call the `list_foreach()` with our callback
+```c
+list_foreach(mylist, print);
+```
+##### Iterating over the list with an iterator object
 
 ```c
 ListIter *iter = list_iter_new(list);
@@ -80,3 +91,25 @@ int cmp(void *e1, void *e2)
 // Now you can sort your list of integers
 list_sort(mylist, cmp);
 ```
+
+Destroying the list structure:
+```c
+list_destroy(mylist);
+```
+
+```c
+// to free the list and all the data use
+list_destroy_free(mylist); // note that this should not be used if some of the elements are allocated on the stack
+```
+
+#### HashTable
+
+#### Vector
+
+#### Stack
+
+#### Queue
+
+#### HashSet
+
+#### Deque
