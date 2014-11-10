@@ -21,8 +21,8 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
-#include "dlist.h"
-#include <stdbool.h>
+#include "common.h"
+#include "list.h"
 
 typedef List Queue;
 typedef ListIter QueueIter;
