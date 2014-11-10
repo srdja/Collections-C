@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 AC_INIT([libcollectc], [0.0.0], [srdjan.panic@ymail.com])
 AC_CONFIG_SRCDIR([src/vector.c])
 AC_CONFIG_HEADERS([config.h])
