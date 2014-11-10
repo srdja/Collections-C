@@ -23,8 +23,8 @@
 
 #include "common.h"
 
-typedef struct deque_s      Deque
-typedef struct deque_iter_s DequeIter
+typedef struct deque_s      Deque;
+typedef struct deque_iter_s DequeIter;
 
 Deque*     deque_new             ();
 Deque*     deque_new_capacity    (size_t capacity);
@@ -32,12 +32,12 @@ Deque*     deque_new_capacity    (size_t capacity);
 void       deque_destroy         (Deque *deque);
 void       deque_destroy_free    (Deque *deque);
 
-void       deque_add             (Deque *deque, void *element);
-void       deque_add_first       (Deque *deque, void *element);
-void       deque_add_last        (Deque *deque, void *element);
+bool       deque_add             (Deque *deque, void *element);
+bool       deque_add_first       (Deque *deque, void *element);
+bool       deque_add_last        (Deque *deque, void *element);
 
-void       deque_remove_first    (Deque *deque);
-void       deque_remove_last     (Deque *deque);
+void*      deque_remove_first    (Deque *deque);
+void*      deque_remove_last     (Deque *deque);
 void       deque_remove_all      (Deque *deque);
 void       deque_remove_all_free (Deque *deque);
 
