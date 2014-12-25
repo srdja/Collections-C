@@ -24,14 +24,14 @@
 #define DEFAULT_EXPANSION_FACTOR 2
 
 struct vector_s {
-    int size;
-    int capacity;
+    int    size;
+    int    capacity;
     void **buffer;
 };
 
 struct vector_iter_s {
     Vector *vect;
-    int index;
+    int     index;
 };
 
 static bool expand_capacity(Vector *vect);
@@ -316,6 +316,20 @@ void *vector_get_last(Vector *vect)
 }
 
 /**
+ * Returns the underlying vector buffer.
+ *
+ * @note Any direct modification of the buffer may invalidate the vector.
+ *
+ * @param[in] vect the vector whose underlying buffer is being returned
+ *
+ * @return the buffer
+ */
+const void **vector_get_buffer(Vector *vect)
+{
+    return vect->buffer;
+}
+
+/**
  * Returns the index of the first occurrence of the specified vector element, or
  * -1 if the element could not be found.
  *
@@ -356,15 +370,15 @@ Vector *vector_subvector(Vector *vect, size_t b, size_t e)
     if (b > e || b < 0 || e > vect->size)
         return NULL;
 
-    Vector *v = vector_new();
+    Vector *v   = vector_new();
 
-    v->size = e - b + 1;
+    v->size     = e - b + 1;
     v->capacity = v->size * 2;
 
     void **new_buff = calloc(v->capacity, sizeof(void*));
     memcpy(new_buff, &(vect->buffer[b]), v->size * sizeof(void*));
 
-    v->buffer = new_buff;
+    v->buffer   = new_buff;
 
     return v;
 }
@@ -379,10 +393,11 @@ Vector *vector_subvector(Vector *vect, size_t b, size_t e)
  */
 Vector *vector_copy_shallow(Vector *vect)
 {
-    Vector *v = malloc(sizeof(Vector));
-    v->size = vect->size;
+    Vector *v   = malloc(sizeof(Vector));
+    
+    v->size     = vect->size;
     v->capacity = vect->capacity;
-    v->buffer = calloc(v->capacity, sizeof(void*));
+    v->buffer   = calloc(v->capacity, sizeof(void*));
 
     memcpy(v->buffer, vect->buffer, v->size * sizeof(void*));
 
@@ -400,10 +415,11 @@ Vector *vector_copy_shallow(Vector *vect)
  */
 Vector *vector_copy_deep(Vector *vect, void *(*cp) (void *))
 {
-    Vector *v = malloc(sizeof(Vector));
-    v->size = vect->size;
+    Vector *v   = malloc(sizeof(Vector));
+    
+    v->size     = vect->size;
     v->capacity = vect->capacity;
-    v->buffer = calloc(v->capacity, sizeof(void*));
+    v->buffer   = calloc(v->capacity, sizeof(void*));
 
     int i;
     for (i = 0; i < v->size; i++)
