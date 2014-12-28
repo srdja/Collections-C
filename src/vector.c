@@ -27,14 +27,19 @@ struct vector_s {
     int    size;
     int    capacity;
     void **buffer;
+
+    void *(*mem_alloc)  (size_t size);
+    void *(*mem_calloc) (size_t blocks, size_t size);
+    void  (*mem_free)   (void *block);
 };
 
 struct vector_iter_s {
-    Vector *vect;
+    Vector *vec;
     int     index;
 };
 
-static bool expand_capacity(Vector *vect);
+static bool expand_capacity(Vector *vec);
+
 
 /**
  * Returns a new empty vector, or NULL if the allocation fails.
@@ -43,30 +48,47 @@ static bool expand_capacity(Vector *vect);
  */
 Vector *vector_new()
 {
-    return vector_new_capacity(DEFAULT_CAPACITY);
+    VectorConf c;
+    vector_conf_init(&c);
+    return vector_new_conf(&c);
 }
 
 /**
- * Returns a new empty vector with the specified initial capacity, or NULL if it
- * was not.
- * 
- * @param[in] capacity the initial capacity of the vector
- * 
- * @return a new vector if the allocation was successful, or NULL if it was not.
+ * Returns a new empty vector. The vector is allocated using the allocators
+ * specified in the VectorConf struct. 
+ *
+ * @param[in] conf Vector configuration struct. All fields must be initialized to
+ *                 appropriate values.
+ *
+ * @return a new vector if the allocation was successful, or NULL if not.
  */
-Vector *vector_new_capacity(size_t capacity)
+Vector *vector_new_conf(VectorConf *conf)
 {
-    Vector *v = calloc(1, sizeof(Vector));
+    Vector *vec = conf->mem_calloc(1, sizeof(Vector));
 
-    if (v == NULL)
+    if (vec == NULL)
         return NULL;
+    
+    vec->capacity   = conf->capacity;
+    vec->mem_alloc  = conf->mem_alloc;
+    vec->mem_calloc = conf->mem_calloc;
+    vec->mem_free   = conf->mem_free;
+    vec->buffer     = vec->mem_calloc(vec->capacity, sizeof(void*));
 
-    size_t c = capacity == 0 ? 1 : capacity;
+    return vec;
+}
 
-    v->capacity = c;
-    v->buffer   = calloc(c, sizeof(void*));
-
-    return v;
+/**
+ * Initializes the fields of the VectorConf struct to default values.
+ *
+ * @param[in, out] conf the struct that is being initialized
+ */ 
+void vector_conf_init(VectorConf *conf)
+{
+    conf->capacity   = DEFAULT_CAPACITY;
+    conf->mem_alloc  = malloc;
+    conf->mem_calloc = calloc;
+    conf->mem_free   = free;
 }
 
 /**
@@ -74,10 +96,10 @@ Vector *vector_new_capacity(size_t capacity)
  *
  * @param[in] vect the vector that is being destroyed.
  */
-void vector_destroy(Vector *vect)
+void vector_destroy(Vector *vec)
 {
-    free(vect->buffer);
-    free(vect);
+    vec->mem_free(vec->buffer);
+    vec->mem_free(vec);
 }
 
 /**
@@ -89,13 +111,13 @@ void vector_destroy(Vector *vect)
  * 
  * @param[in] vect the vector that is being destroyed.
  */
-void vector_destroy_free(Vector *vect)
+void vector_destroy_free(Vector *vec)
 {
     int i;
-    for (i = 0; i < vect->size; i++)
-        free(vect->buffer[i]);
+    for (i = 0; i < vec->size; i++)
+        vec->mem_free(vec->buffer[i]);
     
-    vector_destroy(vect);
+    vector_destroy(vec);
 }
 
 /**
@@ -109,18 +131,18 @@ void vector_destroy_free(Vector *vect)
  *
  * @return true if the operation was successful.
  */
-bool vector_add(Vector *vect, void *element)
+bool vector_add(Vector *vec, void *element)
 {
     bool alloc = true;
 
-    if (vect->size >= vect->capacity)
-        alloc = expand_capacity(vect);
+    if (vec->size >= vec->capacity)
+        alloc = expand_capacity(vec);
 
     if (!alloc)
         return false;
 
-    vect->buffer[vect->size] = element;
-    vect->size++;
+    vec->buffer[vec->size] = element;
+    vec->size++;
 
     return true;
 }
@@ -139,24 +161,24 @@ bool vector_add(Vector *vect, void *element)
  *
  * @return true if the operation was successful, false if not
  */
-bool vector_add_at(Vector *vect, void *element, size_t index)
+bool vector_add_at(Vector *vec, void *element, size_t index)
 {
     bool alloc = true;
 
-    if (index > (vect->size - 1))
+    if (index > (vec->size - 1))
         return false;
 
-    if (vect->size == vect->capacity)
-       alloc = expand_capacity(vect);
+    if (vec->size == vec->capacity)
+       alloc = expand_capacity(vec);
 
     if (!alloc)
         return false;
     
-    size_t shift = (vect->size - index) * sizeof(void*);
-    memmove(&(vect->buffer[index + 1]), &(vect->buffer[index]), shift);
+    size_t shift = (vec->size - index) * sizeof(void*);
+    memmove(&(vec->buffer[index + 1]), &(vec->buffer[index]), shift);
 
-    vect->buffer[index] = element;
-    vect->size++;
+    vec->buffer[index] = element;
+    vec->size++;
 
     return true;
 }
@@ -174,13 +196,13 @@ bool vector_add_at(Vector *vect, void *element, size_t index)
  *
  * @return the replaced element or NULL if the index was out of bounds.
  */
-void *vector_replace_at(Vector *vect, void *element, size_t index)
+void *vector_replace_at(Vector *vec, void *element, size_t index)
 {
-    if (index >= vect->size)
+    if (index >= vec->size)
         return NULL;
 
-    void *old_e = vect->buffer[index];
-    vect->buffer[index] = element;
+    void *old_e = vec->buffer[index];
+    vec->buffer[index] = element;
 
     return old_e;
 }
@@ -196,18 +218,18 @@ void *vector_replace_at(Vector *vect, void *element, size_t index)
  *
  * @return the removed element, or NULL if the operation has failed
  */
-void *vector_remove(Vector *vect, void *element)
+void *vector_remove(Vector *vec, void *element)
 {
-    int index = vector_index_of(vect, element);
+    int index = vector_index_of(vec, element);
 
     if (index == -1)
         return NULL;
 
-    if (index != vect->size - 1) {
-        size_t block_size = (vect->size - index) * sizeof(void*);
-        memmove(&(vect->buffer[index]), &(vect->buffer[index + 1]), block_size);
+    if (index != vec->size - 1) {
+        size_t block_size = (vec->size - index) * sizeof(void*);
+        memmove(&(vec->buffer[index]), &(vec->buffer[index + 1]), block_size);
     }
-    vect->size--;
+    vec->size--;
 
     return element;
 }
@@ -223,18 +245,18 @@ void *vector_remove(Vector *vect, void *element)
  *
  * @return the removed element, or NULL if the operation fails
  */
-void *vector_remove_at(Vector *vect, size_t index)
+void *vector_remove_at(Vector *vec, size_t index)
 {
-    if (index >= vect->size)
+    if (index >= vec->size)
         return NULL;
 
-    void *e = vect->buffer[index];
+    void *e = vec->buffer[index];
 
-    if (index != vect->size - 1) {
-        int block_size = (vect->size - index) * sizeof(void*);
-        memmove(&(vect->buffer[index]), &(vect->buffer[index + 1]), block_size);
+    if (index != vec->size - 1) {
+        int block_size = (vec->size - index) * sizeof(void*);
+        memmove(&(vec->buffer[index]), &(vec->buffer[index + 1]), block_size);
     }
-    vect->size--;
+    vec->size--;
 
     return e;
 }
@@ -249,9 +271,9 @@ void *vector_remove_at(Vector *vect, size_t index)
  *
  * @return the last element of the vector ie. the element at the highest index
  */
-void *vector_remove_last(Vector *vect)
+void *vector_remove_last(Vector *vec)
 {
-    return vector_remove_at(vect, vect->size - 1);
+    return vector_remove_at(vec, vec->size - 1);
 }
 
 /**
@@ -260,9 +282,9 @@ void *vector_remove_last(Vector *vect)
  *
  * @param[in] vect the vector from which all elements are to be removed
  */
-void vector_remove_all(Vector *vect)
+void vector_remove_all(Vector *vec)
 {
-    vect->size = 0;
+    vec->size = 0;
 }
 
 /**
@@ -271,13 +293,13 @@ void vector_remove_all(Vector *vect)
  *
  * @param[in] vect the vector from which all elements are to be removed
  */
-void vector_remove_all_free(Vector *vect)
+void vector_remove_all_free(Vector *vec)
 {
     int i;
-    for (i = 0; i < vect->size; i++)
-        free(vect->buffer[i]);
+    for (i = 0; i < vec->size; i++)
+        free(vec->buffer[i]);
 
-    vector_remove_all(vect);
+    vector_remove_all(vec);
 }
 
 /**
@@ -292,12 +314,12 @@ void vector_remove_all_free(Vector *vect)
  * @return vector element at the specified index, or NULL if the operation has
  *         failed
  */
-void *vector_get(Vector *vect, size_t index)
+void *vector_get(Vector *vec, size_t index)
 {
-    if (index >= vect->size)
+    if (index >= vec->size)
         return NULL;
 
-    return vect->buffer[index];
+    return vec->buffer[index];
 }
 
 /**
@@ -310,9 +332,9 @@ void *vector_get(Vector *vect, size_t index)
  *
  * @return the last element of the specified vector
  */
-void *vector_get_last(Vector *vect)
+void *vector_get_last(Vector *vec)
 {
-    return vector_get(vect, vect->size - 1);
+    return vector_get(vec, vec->size - 1);
 }
 
 /**
@@ -324,10 +346,15 @@ void *vector_get_last(Vector *vect)
  *
  * @return the buffer
  */
-const void **vector_get_buffer(Vector *vect)
+const void **vector_get_buffer(Vector *vec)
 {
-    return vect->buffer;
+    return (const void**) vec->buffer;
 }
+
+
+
+// XXX XXX 
+// BROKEN
 
 /**
  * Returns the index of the first occurrence of the specified vector element, or
@@ -338,11 +365,11 @@ const void **vector_get_buffer(Vector *vect)
  *
  * @return the index of the specified element, or -1 if the element is not found
  */
-int vector_index_of(Vector *vect, void *element)
+int vector_index_of(Vector *vec, void *element)
 {
     int i;
-    for (i = 0; i < vect->size; i++) {
-        if (vect->buffer[i] == element)
+    for (i = 0; i < vec->size; i++) {
+        if (vec->buffer[i] == element)
             return i;
     }
     return -1;
@@ -355,7 +382,9 @@ int vector_index_of(Vector *vect, void *element)
  * must be greater or equal to the <code>b</code> index. If these conditions
  * not met, NULL is returned.
  *
- * @param[in] vect the vector from which the subvector is being returned
+ * @note The new vector is allocated using the original vectors allocators.
+ *
+ * @param[in] vec the vector from which the subvector is being returned
  * @param[in] b the beginning index (inclusive) of the subvector that must be
  *              within the bounds of the vector and must not exceed the 
  *              the end index
@@ -365,22 +394,22 @@ int vector_index_of(Vector *vect, void *element)
  *
  * @return a subvector of the specified vector, or NULL
  */
-Vector *vector_subvector(Vector *vect, size_t b, size_t e)
+Vector *vector_subvector(Vector *vec, size_t b, size_t e)
 {
-    if (b > e || b < 0 || e > vect->size)
+    if (b > e || b < 0 || e > vec->size)
         return NULL;
 
-    Vector *v   = vector_new();
+    Vector *sub_vec     = vec->mem_calloc(1, sizeof(Vector));
+    sub_vec->mem_alloc  = vec->mem_alloc;
+    sub_vec->mem_calloc = vec->mem_calloc;
+    sub_vec->mem_free   = vec->mem_free;
+    sub_vec->size       = e - b + 1;
+    sub_vec->capacity   = sub_vec->size;
+    sub_vec->buffer     = vec->mem_alloc(sub_vec->capacity * sizeof(void*));
+    
+    memcpy(sub_vec->buffer, &(vec->buffer[b]), sub_vec->size * sizeof(void*));
 
-    v->size     = e - b + 1;
-    v->capacity = v->size * 2;
-
-    void **new_buff = calloc(v->capacity, sizeof(void*));
-    memcpy(new_buff, &(vect->buffer[b]), v->size * sizeof(void*));
-
-    v->buffer   = new_buff;
-
-    return v;
+    return sub_vec;
 }
 
 /**
@@ -391,17 +420,20 @@ Vector *vector_subvector(Vector *vect, size_t b, size_t e)
  *
  * @return a shallow copy of the specified vector
  */
-Vector *vector_copy_shallow(Vector *vect)
+Vector *vector_copy_shallow(Vector *vec)
 {
-    Vector *v   = malloc(sizeof(Vector));
+    Vector *copy = vec->mem_alloc(sizeof(Vector));
     
-    v->size     = vect->size;
-    v->capacity = vect->capacity;
-    v->buffer   = calloc(v->capacity, sizeof(void*));
+    copy->size       = vec->size;
+    copy->capacity   = vec->capacity;
+    copy->buffer     = vec->mem_calloc(copy->capacity, sizeof(void*));
+    copy->mem_alloc  = vec->mem_alloc;
+    copy->mem_calloc = vec->mem_calloc;
+    copy->mem_free   = vec->mem_free;
 
-    memcpy(v->buffer, vect->buffer, v->size * sizeof(void*));
+    memcpy(copy->buffer, vec->buffer, copy->size * sizeof(void*));
 
-    return v;
+    return copy;
 }
 
 /**
@@ -413,19 +445,22 @@ Vector *vector_copy_shallow(Vector *vect)
  *
  * @return a deep copy of the specified vector
  */
-Vector *vector_copy_deep(Vector *vect, void *(*cp) (void *))
+Vector *vector_copy_deep(Vector *vec, void *(*cp) (void *))
 {
-    Vector *v   = malloc(sizeof(Vector));
+    Vector *copy   = vec->mem_alloc(sizeof(Vector));
     
-    v->size     = vect->size;
-    v->capacity = vect->capacity;
-    v->buffer   = calloc(v->capacity, sizeof(void*));
+    copy->size       = vec->size;
+    copy->capacity   = vec->capacity;
+    copy->buffer     = vec->mem_calloc(copy->capacity, sizeof(void*));
+    copy->mem_alloc  = vec->mem_alloc;
+    copy->mem_calloc = vec->mem_calloc;
+    copy->mem_free   = vec->mem_free;
 
     int i;
-    for (i = 0; i < v->size; i++)
-        v->buffer[i] = cp(vect->buffer[i]);
+    for (i = 0; i < copy->size; i++)
+        copy->buffer[i] = cp(vec->buffer[i]);
 
-    return v;
+    return copy;
 }
 
 /**
@@ -433,14 +468,14 @@ Vector *vector_copy_deep(Vector *vect, void *(*cp) (void *))
  *
  * @param[in] vect the vector that is being reversed.
  */
-void vector_reverse(Vector *vect)
+void vector_reverse(Vector *vec)
 {
     int i;
     int j;
-    for (i = 0, j = vect->size - 1; i < (vect->size - 1) / 2; i++, j--) {
-        void *tmp = vect->buffer[i];
-        vect->buffer[i] = vect->buffer[j];
-        vect->buffer[j] = tmp;
+    for (i = 0, j = vec->size - 1; i < (vec->size - 1) / 2; i++, j--) {
+        void *tmp = vec->buffer[i];
+        vec->buffer[i] = vec->buffer[j];
+        vec->buffer[j] = tmp;
     }
 }
 
@@ -451,19 +486,19 @@ void vector_reverse(Vector *vect)
  *
  * @param[in] vect the vector whose capacity is being trimmed.
  */
-void vector_trim_capacity(Vector *vect)
+void vector_trim_capacity(Vector *vec)
 {
-    if (vect->size == vect->capacity)
+    if (vec->size == vec->capacity)
         return;
 
-    void **new_buff = calloc(vect->size, sizeof(void*));
-
-    size_t size = vect->size < 1 ? 1 : vect->size;
+    void   **new_buff = vec->mem_calloc(vec->size, sizeof(void*));
+    size_t   size     = vec->size < 1 ? 1 : vec->size;
     
-    memcpy(new_buff, vect->buffer, size * sizeof(void*));
-    free(vect->buffer);
-    vect->buffer = new_buff;
-    vect->capacity= vect->size;
+    memcpy(new_buff, vec->buffer, size * sizeof(void*));    
+    vec->mem_free(vec->buffer);
+    
+    vec->buffer   = new_buff;
+    vec->capacity = vec->size;
 }
 
 /**
@@ -474,12 +509,12 @@ void vector_trim_capacity(Vector *vect)
  *
  * @return the number of occurrences of the element
  */
-int vector_contains(Vector *vect, void *element)
+int vector_contains(Vector *vec, void *element)
 {
     int o = 0;
     int i;
-    for (i = 0; i < vect->size; i++) {
-        if (element == vect->buffer[i])
+    for (i = 0; i < vec->size; i++) {
+        if (element == vec->buffer[i])
             o++;
     }
     return o;
@@ -493,9 +528,9 @@ int vector_contains(Vector *vect, void *element)
  *
  * @return the the number of element within the vector
  */
-size_t vector_size(Vector *vect)
+size_t vector_size(Vector *vec)
 {
-    return vect->size;
+    return vec->size;
 }
 
 /**
@@ -506,9 +541,9 @@ size_t vector_size(Vector *vect)
  *
  * @return the capacity of the vector
  */
-size_t vector_capacity(Vector *vect)
+size_t vector_capacity(Vector *vec)
 {
-    return vect->capacity;
+    return vec->capacity;
 }
 
 /**
@@ -527,9 +562,9 @@ size_t vector_capacity(Vector *vect)
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void vector_sort(Vector *vect, int (*cmp) (const void*, const void*))
+void vector_sort(Vector *vec, int (*cmp) (const void*, const void*))
 {
-    qsort(vect->buffer, vect->size, sizeof(void*), cmp);
+    qsort(vec->buffer, vec->size, sizeof(void*), cmp);
 }
 
 /**
@@ -537,21 +572,26 @@ void vector_sort(Vector *vect, int (*cmp) (const void*, const void*))
  *
  * @param[in] vect vector whose capacity is being expanded
  */
-static bool expand_capacity(Vector *vect)
+static bool expand_capacity(Vector *vec)
 {
-    // FIXME limit to max size to avoid integer overflow
-    size_t new_capacity = vect->capacity * DEFAULT_EXPANSION_FACTOR;
-    void **new_buff  = calloc(new_capacity, sizeof(void*));
+    size_t new_capacity;
+    
+    if (new_capacity >= MAX_ELEMENTS / 2)
+        new_capacity = MAX_ELEMENTS;
+    else
+        new_capacity = vec->capacity * DEFAULT_EXPANSION_FACTOR;
+    
+    void **new_buff = vec->mem_alloc(new_capacity * sizeof(void*));
 
     if (new_buff == NULL)
         return false;
 
-    memcpy(new_buff, vect->buffer, vect->size * sizeof(void*));
+    memcpy(new_buff, vec->buffer, vec->size * sizeof(void*));
 
-    free(vect->buffer);
+    vec->mem_free(vec->buffer);
 
-    vect->capacity = new_capacity;
-    vect->buffer = new_buff;
+    vec->capacity = new_capacity;
+    vec->buffer   = new_buff;
 
     return true;
 }
@@ -564,11 +604,11 @@ static bool expand_capacity(Vector *vect)
  * @param[in] op the operation function that is to be invoked on each vector 
  *               element
  */
-void vector_foreach(Vector *vect, void (*op) (void *e))
+void vector_foreach(Vector *vec, void (*op) (void *e))
 {
     int i;
-    for (i = 0; i < vect->size; i++)
-        op(vect->buffer[i]);
+    for (i = 0; i < vec->size; i++)
+        op(vec->buffer[i]);
 }
 
 /**
@@ -578,11 +618,11 @@ void vector_foreach(Vector *vect, void (*op) (void *e))
  *
  * @return a new vector iterator
  */
-VectorIter *vector_iter_new(Vector *vect)
+VectorIter *vector_iter_new(Vector *vec)
 {
-    VectorIter *iter = calloc(1, sizeof(VectorIter));
+    VectorIter *iter = vec->mem_calloc(1, sizeof(VectorIter));
 
-    iter->vect = vect;
+    iter->vec = vec;
 
     return iter;
 }
@@ -594,7 +634,7 @@ VectorIter *vector_iter_new(Vector *vect)
  */
 void vector_iter_destroy(VectorIter *iter)
 {
-    free(iter);
+    iter->vec->mem_free(iter);
 }
 
 /**
@@ -606,7 +646,7 @@ void vector_iter_destroy(VectorIter *iter)
  */
 bool vector_iter_has_next(VectorIter *iter)
 {
-    return iter->index < iter->vect->size;
+    return iter->index < iter->vec->size;
 }
 
 /**
@@ -618,7 +658,7 @@ bool vector_iter_has_next(VectorIter *iter)
  */
 void *vector_iter_next(VectorIter *iter)
 {
-    return iter->vect->buffer[iter->index++];
+    return iter->vec->buffer[iter->index++];
 }
 
 /**
@@ -631,7 +671,7 @@ void *vector_iter_next(VectorIter *iter)
  */
 void *vector_iter_remove(VectorIter *iter)
 { 
-    return vector_remove_at(iter->vect, iter->index - 1);
+    return vector_remove_at(iter->vec, iter->index - 1);
 }
 
 /**
@@ -643,7 +683,7 @@ void *vector_iter_remove(VectorIter *iter)
  */
 void vector_iter_add(VectorIter *iter, void *element)
 {
-    vector_add_at(iter->vect, element, iter->index++);
+    vector_add_at(iter->vec, element, iter->index++);
 }
 
 /**
@@ -657,7 +697,7 @@ void vector_iter_add(VectorIter *iter, void *element)
  */
 void *vector_iter_replace(VectorIter *iter, void *element)
 {
-    return vector_replace_at(iter->vect, element, iter->index);
+    return vector_replace_at(iter->vec, element, iter->index);
 }
 
 /**

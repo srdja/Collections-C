@@ -26,8 +26,17 @@
 typedef struct vector_s      Vector;
 typedef struct vector_iter_s VectorIter;
 
+typedef struct vector_conf_s {
+    size_t capacity;
+    
+    void *(*mem_alloc)  (size_t size);
+    void *(*mem_calloc) (size_t blocks, size_t size);
+    void  (*mem_free)   (void *block);
+} VectorConf;
+
 Vector*       vector_new             ();
-Vector*       vector_new_capacity    (size_t capacity);
+Vector*       vector_new_conf        (VectorConf *conf);
+void          vector_conf_init       (VectorConf *conf);
 
 void          vector_destroy         (Vector *vect);
 void          vector_destroy_free    (Vector *vect);
