@@ -26,6 +26,7 @@
 struct vector_s {
     int    size;
     int    capacity;
+    int    exp_factor;
     void **buffer;
 
     void *(*mem_alloc)  (size_t size);
@@ -33,16 +34,11 @@ struct vector_s {
     void  (*mem_free)   (void *block);
 };
 
-struct vector_iter_s {
-    Vector *vec;
-    int     index;
-};
-
 static bool expand_capacity(Vector *vec);
 
 
 /**
- * Returns a new empty vector, or NULL if the allocation fails.
+ * Returns a new empty vector, or NULL if the allocation fails. 
  *
  * @return a new vector if the allocation was successful, or NULL if it was not.
  */
@@ -69,6 +65,16 @@ Vector *vector_new_conf(VectorConf *conf)
     if (vec == NULL)
         return NULL;
     
+    if (conf->exp_factor <= 1)
+        vec->exp_factor = DEFAULT_EXPANSION_FACTOR;
+    
+    /* Needed to avoid an integer overflow on the first resize and
+     * to easily check for any future oveflows. */
+    else if (conf->exp_factor >= MAX_ELEMENTS / conf->capacity)
+        return NULL;
+    else
+        vec->exp_factor = conf->exp_factor;
+    
     vec->capacity   = conf->capacity;
     vec->mem_alloc  = conf->mem_alloc;
     vec->mem_calloc = conf->mem_calloc;
@@ -85,6 +91,7 @@ Vector *vector_new_conf(VectorConf *conf)
  */ 
 void vector_conf_init(VectorConf *conf)
 {
+    conf->exp_factor = DEFAULT_EXPANSION_FACTOR;
     conf->capacity   = DEFAULT_CAPACITY;
     conf->mem_alloc  = malloc;
     conf->mem_calloc = calloc;
@@ -423,7 +430,8 @@ Vector *vector_subvector(Vector *vec, size_t b, size_t e)
 Vector *vector_copy_shallow(Vector *vec)
 {
     Vector *copy = vec->mem_alloc(sizeof(Vector));
-    
+
+    copy->exp_factor = vec->exp_factor;
     copy->size       = vec->size;
     copy->capacity   = vec->capacity;
     copy->buffer     = vec->mem_calloc(copy->capacity, sizeof(void*));
@@ -448,7 +456,8 @@ Vector *vector_copy_shallow(Vector *vec)
 Vector *vector_copy_deep(Vector *vec, void *(*cp) (void *))
 {
     Vector *copy   = vec->mem_alloc(sizeof(Vector));
-    
+
+    copy->exp_factor = vec->exp_factor;
     copy->size       = vec->size;
     copy->capacity   = vec->capacity;
     copy->buffer     = vec->mem_calloc(copy->capacity, sizeof(void*));
@@ -568,18 +577,29 @@ void vector_sort(Vector *vec, int (*cmp) (const void*, const void*))
 }
 
 /**
- * Expands the vector capacity.
+ * Expands the vector capacity. This might fail if the the new buffer 
+ * cannot be allocated. In case the expansion would overflow the index 
+ * range, a maximum capacity buffer is allocated instead. If the capacity
+ * is already at the maximum capacity, no new buffer is allocated and 
+ * false is returned to indicate the failure.
  *
  * @param[in] vect vector whose capacity is being expanded
+ *
+ * @return 
  */
 static bool expand_capacity(Vector *vec)
 {
-    size_t new_capacity;
+    if (vec->capacity == MAX_ELEMENTS)
+        return false;
     
-    if (new_capacity >= MAX_ELEMENTS / 2)
-        new_capacity = MAX_ELEMENTS;
+    size_t new_capacity = vec->capacity * vec->exp_factor;
+    
+    /* As long as the capacity is greater that the expansion factor
+     * at the point of overflow, this is check is valid. */
+    if (new_capacity <= vec->capacity)
+        vec->capacity = MAX_ELEMENTS;
     else
-        new_capacity = vec->capacity * DEFAULT_EXPANSION_FACTOR;
+        vec->capacity = new_capacity;
     
     void **new_buff = vec->mem_alloc(new_capacity * sizeof(void*));
 
@@ -589,9 +609,7 @@ static bool expand_capacity(Vector *vec)
     memcpy(new_buff, vec->buffer, vec->size * sizeof(void*));
 
     vec->mem_free(vec->buffer);
-
-    vec->capacity = new_capacity;
-    vec->buffer   = new_buff;
+    vec->buffer = new_buff;
 
     return true;
 }
