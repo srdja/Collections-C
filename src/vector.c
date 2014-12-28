@@ -630,29 +630,15 @@ void vector_foreach(Vector *vec, void (*op) (void *e))
 }
 
 /**
- * Returns a new vector iterator.
+ * Initializes the iterator.
  *
- * @param[in] vect the vector to iterate over
- *
- * @return a new vector iterator
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] vec the vector to iterate over
  */
-VectorIter *vector_iter_new(Vector *vec)
+void *vector_iter_init(VectorIter *iter, Vector *vec)
 {
-    VectorIter *iter = vec->mem_calloc(1, sizeof(VectorIter));
-
-    iter->vec = vec;
-
-    return iter;
-}
-
-/**
- * Destroys the specified iterator
- *
- * @param[in] iter iterator to be destroyed
- */
-void vector_iter_destroy(VectorIter *iter)
-{
-    iter->vec->mem_free(iter);
+    iter->vec   = vec;
+    iter->index = 0;
 }
 
 /**

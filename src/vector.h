@@ -23,11 +23,16 @@
 
 #include "common.h"
 
-typedef struct vector_s      Vector;
-typedef struct vector_iter_s VectorIter;
+typedef struct vector_s Vector;
+
+typedef struct vector_iter_s {
+    Vector *vec;
+    size_t  index;
+} VectorIter;
 
 typedef struct vector_conf_s {
     size_t capacity;
+    size_t exp_factor;
     
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
@@ -71,8 +76,7 @@ void          vector_sort            (Vector *vect, int (*cmp) (const void*, con
 
 void          vector_foreach         (Vector *vect, void (*op) (void *));
 
-VectorIter*   vector_iter_new        (Vector *vect);
-void          vector_iter_destroy    (VectorIter *iter);
+void          vector_iter_init       (VectorIter *iter, Vector *vec);
 bool          vector_iter_has_next   (VectorIter *iter);
 void*         vector_iter_next       (VectorIter *iter);
 void*         vector_iter_remove     (VectorIter *iter);
