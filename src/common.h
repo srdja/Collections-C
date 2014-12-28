@@ -26,18 +26,34 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define NO_SUCH_INDEX (size_t) - 1
+#ifdef ARCH_64
+
+#define uintcc_t uint64_t
+#define  intcc_t  int64_t
+
+#else
+
+#define uintcc_t uint32_t
+#define  intcc_t  int32_t
+
+#endif /* ARCH_64 */
+
+
+#define NO_SUCH_INDEX (uintcc_t) - 1
+#define MAX_ELEMENTS (uintcc_t) - 1
+
 
 #if defined(_MSC_VER)
 
-#define INLINE __inline
+#define       INLINE __inline
 #define FORCE_INLINE __forceinline
 
 #else
 
-#define INLINE inline
+#define       INLINE inline
 #define FORCE_INLINE inline __attribute__((always_inline))
 
 #endif /* _MSC_VER */
+
 
 #endif /* COMMON_H_ */
