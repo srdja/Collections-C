@@ -31,16 +31,20 @@
 #define uintcc_t uint64_t
 #define  intcc_t  int64_t
 
+#define MAX_POW_TWO (((uintcc_t) 1) << 63)
+
 #else
 
 #define uintcc_t uint32_t
 #define  intcc_t  int32_t
 
+#define MAX_POW_TWO (((uintcc_t) 1) << 31)
+
 #endif /* ARCH_64 */
 
 
 #define NO_SUCH_INDEX (uintcc_t) - 1
-#define MAX_ELEMENTS (uintcc_t) - 1
+#define MAX_ELEMENTS  (uintcc_t) - 2
 
 
 #if defined(_MSC_VER)
