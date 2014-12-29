@@ -50,12 +50,15 @@ Vector *vector_new()
 }
 
 /**
- * Returns a new empty vector. The vector is allocated using the allocators
- * specified in the VectorConf struct. The allocation may fail if underlying
- * allocator fails. 
+ * Returns a new empty vector based on the specified VectorConf struct. 
+ *
+ * The vector is allocated using the allocators specified in the VectorConf 
+ * struct. The allocation may fail if underlying allocator fails. It may also
+ * fail if the values of exp_factor and capacity in the VectorConf do not meet 
+ * the following condition: <code>exp_factor < (MAX_ELEMENTS / capacity)</code>.
  *
  * @param[in] conf Vector configuration struct. All fields must be initialized to
- *                 appropriate values.
+ *                 appropriate values. 
  *
  * @return a new vector if the allocation was successful, or NULL if not.
  */
@@ -102,7 +105,7 @@ void vector_conf_init(VectorConf *conf)
 /**
  * Destroys the vector structure, but leaves the data it used to hold, intact.
  *
- * @param[in] vect the vector that is being destroyed.
+ * @param[in] vect the vector that is to be destroyed.
  */
 void vector_destroy(Vector *vec)
 {
@@ -131,7 +134,7 @@ void vector_destroy_free(Vector *vec)
 /**
  * Adds a new element to the vector. The element is appended to the vector making
  * it the last element (the one with the highest index) of the vector. This
- * function returns true or false based on whether or not the space allocation 
+ * function returns a <code>bool</code> based on whether or not the space allocation 
  * for the new element was successful or not.
  *
  * @param[in] vect the vector to which the element is being added
@@ -394,7 +397,8 @@ size_t vector_index_of(Vector *vec, void *element)
  * must be greater or equal to the <code>b</code> index. If these conditions
  * not met, NULL is returned.
  *
- * @note The new vector is allocated using the original vectors allocators.
+ * @note The new vector is allocated using the original vectors allocators
+ *       and also inherits the configuration of the original vector.
  *
  * @param[in] vec the vector from which the subvector is being returned
  * @param[in] b the beginning index (inclusive) of the subvector that must be
@@ -430,6 +434,9 @@ Vector *vector_subvector(Vector *vec, size_t b, size_t e)
  * Returns a shallow copy of the specified vector. A shallow copy is a copy of
  * the vector structure, but not the elements it holds.
  *
+ * @note The new vector is allocated using the original vectors allocators
+ *       and also inherits the configuration of the original vector.
+ *
  * @param[in] vect the vector to be copied
  *
  * @return a shallow copy of the specified vector
@@ -456,6 +463,9 @@ Vector *vector_copy_shallow(Vector *vec)
 /**
  * Returns a deep copy of the specified vector. A deep copy is a copy of
  * both the vector structure and the data it holds.
+ *
+ * @note The new vector is allocated using the original vectors allocators
+ *       and also inherits the configuration of the original vector.
  *
  * @param[in] vect the vector to be copied
  * @param[in] cp the copy function that returns a copy of a vector element
@@ -594,7 +604,7 @@ void vector_sort(Vector *vec, int (*cmp) (const void*, const void*))
  *
  * @param[in] vect vector whose capacity is being expanded
  *
- * @return 
+ * @return true if the operation was successful
  */
 static bool expand_capacity(Vector *vec)
 {

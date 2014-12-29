@@ -31,9 +31,14 @@ typedef struct vector_iter_s {
 } VectorIter;
 
 typedef struct vector_conf_s {
+    /* The initial capacity of the vector */
     size_t capacity;
+
+    /* The rate at which the buffer expands (capacity * exp_factor). */
     float  exp_factor;
-    
+
+    /* Memory allocators used to allocate the Vector structure and the 
+     * underlying data buffers. */
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
