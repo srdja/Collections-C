@@ -34,6 +34,11 @@ struct vector_s {
     void  (*mem_free)   (void *block);
 };
 
+struct vector_iter_s {
+    Vector *vec;
+    size_t  index;
+};
+
 static bool expand_capacity(Vector *vec);
 
 

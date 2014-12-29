@@ -24,11 +24,7 @@
 #include "common.h"
 
 typedef struct vector_s Vector;
-
-typedef struct vector_iter_s {
-    Vector *vec;
-    size_t  index;
-} VectorIter;
+typedef struct vector_iter_s VectorIter;
 
 typedef struct vector_conf_s {
     /* The initial capacity of the vector */
