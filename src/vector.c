@@ -149,12 +149,7 @@ void vector_destroy_free(Vector *vec)
  */
 bool vector_add(Vector *vec, void *element)
 {
-    bool alloc = true;
-
-    if (vec->size >= vec->capacity)
-        alloc = expand_capacity(vec);
-
-    if (!alloc)
+    if (vec->size >= vec->capacity && !expand_capacity(vec))
         return false;
 
     vec->buffer[vec->size] = element;
@@ -181,14 +176,9 @@ bool vector_add_at(Vector *vec, void *element, size_t index)
 {
     if (index > (vec->size - 1))
         return false;
-
-    bool alloc = true;
     
-    if (vec->size == vec->capacity)
-       alloc = expand_capacity(vec);
-
-    if (!alloc)
-        return alloc;
+    if (vec->size == vec->capacity && !expand_capacity(vec))
+        return false;
     
     size_t shift = (vec->size - index) * sizeof(void*);
     
