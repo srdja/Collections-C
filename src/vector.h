@@ -32,7 +32,7 @@ typedef struct vector_iter_s {
 
 typedef struct vector_conf_s {
     size_t capacity;
-    size_t exp_factor;
+    float  exp_factor;
     
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);

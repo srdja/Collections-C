@@ -26,7 +26,7 @@
 struct vector_s {
     size_t   size;
     size_t   capacity;
-    size_t   exp_factor;
+    float    exp_factor;
     void   **buffer;
 
     void *(*mem_alloc)  (size_t size);
@@ -38,7 +38,7 @@ static bool expand_capacity(Vector *vec);
 
 
 /**
- * Returns a new empty vector, or NULL if the allocation fails. 
+ * Returns a new empty vector, or NULL if the allocation fails.
  *
  * @return a new vector if the allocation was successful, or NULL if it was not.
  */
@@ -51,7 +51,8 @@ Vector *vector_new()
 
 /**
  * Returns a new empty vector. The vector is allocated using the allocators
- * specified in the VectorConf struct. 
+ * specified in the VectorConf struct. The allocation may fail if underlying
+ * allocator fails. 
  *
  * @param[in] conf Vector configuration struct. All fields must be initialized to
  *                 appropriate values.
@@ -170,19 +171,22 @@ bool vector_add(Vector *vec, void *element)
  */
 bool vector_add_at(Vector *vec, void *element, size_t index)
 {
-    bool alloc = true;
-
     if (index > (vec->size - 1))
         return false;
 
+    bool alloc = true;
+    
     if (vec->size == vec->capacity)
        alloc = expand_capacity(vec);
 
     if (!alloc)
-        return false;
+        return alloc;
     
     size_t shift = (vec->size - index) * sizeof(void*);
-    memmove(&(vec->buffer[index + 1]), &(vec->buffer[index]), shift);
+    
+    memmove(&(vec->buffer[index + 1]),
+            &(vec->buffer[index]),
+            shift);
 
     vec->buffer[index] = element;
     vec->size++;
@@ -234,7 +238,10 @@ void *vector_remove(Vector *vec, void *element)
 
     if (index != vec->size - 1) {
         size_t block_size = (vec->size - index) * sizeof(void*);
-        memmove(&(vec->buffer[index]), &(vec->buffer[index + 1]), block_size);
+        
+        memmove(&(vec->buffer[index]),
+                &(vec->buffer[index + 1]),
+                block_size);
     }
     vec->size--;
 
@@ -261,7 +268,10 @@ void *vector_remove_at(Vector *vec, size_t index)
 
     if (index != vec->size - 1) {
         size_t block_size = (vec->size - index) * sizeof(void*);
-        memmove(&(vec->buffer[index]), &(vec->buffer[index + 1]), block_size);
+        
+        memmove(&(vec->buffer[index]),
+                &(vec->buffer[index + 1]),
+                block_size);
     }
     vec->size--;
 
@@ -409,7 +419,9 @@ Vector *vector_subvector(Vector *vec, size_t b, size_t e)
     sub_vec->capacity   = sub_vec->size;
     sub_vec->buffer     = vec->mem_alloc(sub_vec->capacity * sizeof(void*));
     
-    memcpy(sub_vec->buffer, &(vec->buffer[b]), sub_vec->size * sizeof(void*));
+    memcpy(sub_vec->buffer,
+           &(vec->buffer[b]),
+           sub_vec->size * sizeof(void*));
 
     return sub_vec;
 }
@@ -434,7 +446,9 @@ Vector *vector_copy_shallow(Vector *vec)
     copy->mem_calloc = vec->mem_calloc;
     copy->mem_free   = vec->mem_free;
 
-    memcpy(copy->buffer, vec->buffer, copy->size * sizeof(void*));
+    memcpy(copy->buffer,
+           vec->buffer,
+           copy->size * sizeof(void*));
 
     return copy;
 }
