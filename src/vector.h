@@ -67,11 +67,11 @@ Vector*       vector_copy_deep       (Vector *vect, void *(*cp) (void*));
 void          vector_reverse         (Vector *vect);
 void          vector_trim_capacity   (Vector *vect);
 
-int           vector_cointains       (Vector *vect, void *element);
+size_t        vector_cointains       (Vector *vect, void *element);
 size_t        vector_size            (Vector *vect);
 size_t        vector_capacity        (Vector *vect);
 
-int           vector_index_of        (Vector *vect, void *element);
+size_t        vector_index_of        (Vector *vect, void *element);
 void          vector_sort            (Vector *vect, int (*cmp) (const void*, const void*));
 
 void          vector_foreach         (Vector *vect, void (*op) (void *));

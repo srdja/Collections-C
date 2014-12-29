@@ -24,10 +24,10 @@
 #define DEFAULT_EXPANSION_FACTOR 2
 
 struct vector_s {
-    int    size;
-    int    capacity;
-    int    exp_factor;
-    void **buffer;
+    size_t   size;
+    size_t   capacity;
+    size_t   exp_factor;
+    void   **buffer;
 
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
@@ -227,7 +227,7 @@ void *vector_replace_at(Vector *vec, void *element, size_t index)
  */
 void *vector_remove(Vector *vec, void *element)
 {
-    int index = vector_index_of(vec, element);
+    size_t index = vector_index_of(vec, element);
 
     if (index == -1)
         return NULL;
@@ -260,7 +260,7 @@ void *vector_remove_at(Vector *vec, size_t index)
     void *e = vec->buffer[index];
 
     if (index != vec->size - 1) {
-        int block_size = (vec->size - index) * sizeof(void*);
+        size_t block_size = (vec->size - index) * sizeof(void*);
         memmove(&(vec->buffer[index]), &(vec->buffer[index + 1]), block_size);
     }
     vec->size--;
@@ -302,7 +302,7 @@ void vector_remove_all(Vector *vec)
  */
 void vector_remove_all_free(Vector *vec)
 {
-    int i;
+    size_t i;
     for (i = 0; i < vec->size; i++)
         free(vec->buffer[i]);
 
@@ -358,28 +358,23 @@ const void **vector_get_buffer(Vector *vec)
     return (const void**) vec->buffer;
 }
 
-
-
-// XXX XXX 
-// BROKEN
-
 /**
  * Returns the index of the first occurrence of the specified vector element, or
- * -1 if the element could not be found.
+ * NO_SUCH_INDEX if the element could not be found.
  *
  * @param[in] vect vector being searched
  * @param[in] element the element whose index is being looked up
  *
- * @return the index of the specified element, or -1 if the element is not found
+ * @return the index of the specified element, or NO_SUCH_INDEX if the element is not found
  */
-int vector_index_of(Vector *vec, void *element)
+size_t vector_index_of(Vector *vec, void *element)
 {
-    int i;
+    size_t i;
     for (i = 0; i < vec->size; i++) {
         if (vec->buffer[i] == element)
             return i;
     }
-    return -1;
+    return NO_SUCH_INDEX;
 }
 
 /**
@@ -465,7 +460,7 @@ Vector *vector_copy_deep(Vector *vec, void *(*cp) (void *))
     copy->mem_calloc = vec->mem_calloc;
     copy->mem_free   = vec->mem_free;
 
-    int i;
+    size_t i;
     for (i = 0; i < copy->size; i++)
         copy->buffer[i] = cp(vec->buffer[i]);
 
@@ -479,8 +474,8 @@ Vector *vector_copy_deep(Vector *vec, void *(*cp) (void *))
  */
 void vector_reverse(Vector *vec)
 {
-    int i;
-    int j;
+    size_t i;
+    size_t j;
     for (i = 0, j = vec->size - 1; i < (vec->size - 1) / 2; i++, j--) {
         void *tmp = vec->buffer[i];
         vec->buffer[i] = vec->buffer[j];
@@ -518,10 +513,10 @@ void vector_trim_capacity(Vector *vec)
  *
  * @return the number of occurrences of the element
  */
-int vector_contains(Vector *vec, void *element)
+size_t vector_contains(Vector *vec, void *element)
 {
-    int o = 0;
-    int i;
+    size_t o = 0;
+    size_t i;
     for (i = 0; i < vec->size; i++) {
         if (element == vec->buffer[i])
             o++;
@@ -624,7 +619,7 @@ static bool expand_capacity(Vector *vec)
  */
 void vector_foreach(Vector *vec, void (*op) (void *e))
 {
-    int i;
+    size_t i;
     for (i = 0; i < vec->size; i++)
         op(vec->buffer[i]);
 }
