@@ -23,47 +23,43 @@
 #define DEFAULT_CAPACITY 16
 #define DEFAULT_LOAD_FACTOR 0.75f
 
-#define MAX_BUCKETS 0xFFFFFFFF
-#define MAX_POW_TWO 0x80000000
-
 typedef struct table_entry_s {
-    void *key;
-    void *value;
-    uint32_t hash;
+    void     *key;
+    void     *value;
+    uintcc_t  hash;
+    
     struct table_entry_s *next;
 } TableEntry;
 
 struct hashtable_s {
-    uint32_t capacity;
-    uint32_t size;
-    uint32_t inflation_threshold;
-    uint32_t hash_seed;
-    int      key_len;
-    float    load_factor;
-
+    uint32_t     capacity;
+    uint32_t     size;
+    uint32_t     inflation_threshold;
+    uint32_t     hash_seed;
+    int          key_len;
+    float        load_factor;
+    
     TableEntry **buckets;
 
-    uint32_t (*hash) (const void *key, int l, uint32_t seed);
-    bool (*key_cmp) (void *k1, void *k2);
+    uint32_t (*hash)    (const void *key, int l, uint32_t seed);
+    bool     (*key_cmp) (void *k1, void *k2);
 };
 
 struct hashtable_key_iter {
-    HashTable *table;
-    int bucket_index;
+    HashTable  *table;
+    int         bucket_index;
     TableEntry *prev_entry;
     TableEntry *next_entry;
 };
 
-static uint32_t get_table_index(HashTable *table, void *key);
-static bool resize(HashTable *t, uint32_t new_capacity);
-static uint32_t round_pow_two(uint32_t n);
-
-static void move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
-        uint32_t src_size, uint32_t dest_size);
-
-static void *get_null_key(HashTable *table);
-static bool put_null_key(HashTable *table, void *val);
-static void *remove_null_key(HashTable *table);
+static uint32_t  get_table_index  (HashTable *table, void *key);
+static bool      resize           (HashTable *t, uint32_t new_capacity);
+static uint32_t  round_pow_two    (uint32_t n);
+static void     *get_null_key     (HashTable *table);
+static bool      put_null_key     (HashTable *table, void *val);
+static void     *remove_null_key  (HashTable *table);
+static void      move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
+                                   uint32_t src_size, uint32_t dest_size);
 
 /**
  * Returns a new HashTableProperties object that will, if not modified, set up 
@@ -387,18 +383,15 @@ void hashtable_remove_all(HashTable *table)
 
 /**
  * Resizes the table to match the provided capacity. The new capacity must be a
- * power of two ranging from 2^0 to 2^31.
+ * power of two.
  *
  * @param[in] table the table that is being resized.
  * @param[in] new_capacity the new capacity to which the table should be resized
  */
 static bool resize(HashTable *t, uint32_t new_capacity)
 {
-    if (t->capacity == MAX_BUCKETS)
+    if (t->capacity == MAX_POW_TWO)
         return false;
-
-    if (t->capacity >= MAX_POW_TWO)
-        new_capacity = MAX_BUCKETS;
 
     TableEntry **new_buckets = calloc(new_capacity, sizeof(TableEntry));
     TableEntry **old_buckets = t->buckets;
@@ -408,8 +401,8 @@ static bool resize(HashTable *t, uint32_t new_capacity)
 
     move_entries(old_buckets, new_buckets, t->capacity, new_capacity);
 
-    t->buckets = new_buckets;
-    t->capacity = new_capacity;
+    t->buckets             = new_buckets;
+    t->capacity            = new_capacity;
     t->inflation_threshold = t->load_factor * new_capacity;
 
     free(old_buckets);
@@ -458,7 +451,7 @@ static INLINE uint32_t round_pow_two(uint32_t n)
  */
 static INLINE void 
 move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
-             uint32_t src_size, uint32_t dest_size)
+             uint32_t     src_size,   uint32_t     dest_size)
 {
     int i;
     for (i = 0; i < src_size; i++) {
@@ -943,6 +936,10 @@ uint32_t hashtable_murmur_hash3(const void *key, int len, uint32_t seed)
     return h1;
 }
 
+/**  
+ * 
+ *
+ */
 uint32_t hashtable_murmur_hash3_pointer_hash(const void *key, int len, uint32_t seed)
 { 
     const int nblocks = len / 4;
