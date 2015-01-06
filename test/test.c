@@ -1,19 +1,20 @@
 #include "test.h"
 
-int test_status = PASS;
+int  test_status     = PASS;
 bool exit_on_failure = false;
 
 const size_t msg_size = 256;
+
 char msg_buff[256];
 char *assert_msg = "Assertion failure at ";
 
 void cc_assert(bool exp, char *msg)
 {
     if (!exp) {
-		  test_status = FAIL;
-		  printf("%s%s\n", assert_msg, msg);
-		  if (exit_on_failure)
-              exit(FAIL);
+        test_status = FAIL;
+        printf("%s%s\n", assert_msg, msg);
+        if (exit_on_failure)
+            exit(FAIL);
     }
 }
 
