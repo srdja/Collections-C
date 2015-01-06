@@ -34,11 +34,6 @@ struct vector_s {
     void  (*mem_free)   (void *block);
 };
 
-struct vector_iter_s {
-    Vector *vec;
-    size_t  index;
-};
-
 static bool expand_capacity(Vector *vec);
 
 
@@ -649,7 +644,7 @@ void vector_foreach(Vector *vec, void (*op) (void *e))
  * @param[in] iter the iterator that is being initialized
  * @param[in] vec the vector to iterate over
  */
-void *vector_iter_init(VectorIter *iter, Vector *vec)
+void vector_iter_init(VectorIter *iter, Vector *vec)
 {
     iter->vec   = vec;
     iter->index = 0;

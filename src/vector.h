@@ -40,6 +40,11 @@ typedef struct vector_conf_s {
     void  (*mem_free)   (void *block);
 } VectorConf;
 
+struct vector_iter_s {
+    Vector *vec;
+    size_t  index;
+};
+
 Vector*       vector_new             ();
 Vector*       vector_new_conf        (VectorConf *conf);
 void          vector_conf_init       (VectorConf *conf);
