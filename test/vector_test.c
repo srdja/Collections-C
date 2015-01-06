@@ -79,7 +79,11 @@ void test_vector_add()
 
 void test_vector_add_at()
 {
-    Vector *v = vector_new_capacity(20);
+    VectorConf vc;
+    vector_conf_init(&vc);
+    vc.capacity = 20;
+    
+    Vector *v = vector_new_conf(&vc);
     
     int a = 5;
     int b = 12;
@@ -407,7 +411,11 @@ void test_vector_reverse()
 
 void test_vector_trim_capacity()
 {
-    Vector *v = vector_new_capacity(20);
+    VectorConf vc;
+    vector_conf_init(&vc);
+    vc.capacity = 20;
+    
+    Vector *v = vector_new_conf(&vc);
 
     int a = 5;
     int b = 12;
@@ -466,7 +474,11 @@ void test_vector_contains()
 
 void test_vector_capacity()
 {
-    Vector *v = vector_new_capacity(1);
+    VectorConf vc;
+    vector_conf_init(&vc);
+    vc.capacity = 1;
+    
+    Vector *v = vector_new_conf(&vc);
 
     int a = 5;
     int b = 12;
@@ -476,12 +488,14 @@ void test_vector_capacity()
     vector_add(v, &a);
     
     cc_assert(vector_capacity(v) == 1,
-              cc_msg("vector_capacity: Expected capacity was 1, but got %d", vector_capacity(v)));
+              cc_msg("vector_capacity: Expected capacity was 1, but got %d",
+                     vector_capacity(v)));
 
     vector_add(v, &b);
 
     cc_assert(vector_capacity(v) == 2,
-              cc_msg("vector_capacity: Expected capacity was 2, but got %d", vector_capacity(v)));
+              cc_msg("vector_capacity: Expected capacity was 2, but got %d",
+                     vector_capacity(v)));
     
     vector_destroy(v);
 }
@@ -547,19 +561,20 @@ void test_vector_iter_remove()
     vector_add(v, &c);
     vector_add(v, &d);
 
-    VectorIter *iter = vector_iter_new(v);
-    for (;vector_iter_has_next(iter);) {
-        int *e = vector_iter_next(iter);
+    VectorIter iter;
+    vector_iter_init(&iter, v);
+
+    for (;vector_iter_has_next(&iter);) {
+        int *e = vector_iter_next(&iter);
         
         if (*e == c) {
-            vector_iter_remove(iter);
+            vector_iter_remove(&iter);
         }
     }
 
     cc_assert(vector_contains(v, &c) == 0,
               cc_msg("vector_iter_remove: Element still present after removal"));
 
-    vector_iter_destroy(iter);
     vector_destroy(v);
 }
 
@@ -579,18 +594,19 @@ void test_vector_iter_add()
     vector_add(v, &c);
     vector_add(v, &d);
 
-    VectorIter *iter = vector_iter_new(v);
-    for (;vector_iter_has_next(iter);) {
-        int *e = vector_iter_next(iter);
+    VectorIter iter;
+    vector_iter_init(&iter, v);
+    
+    for (;vector_iter_has_next(&iter);) {
+        int *e = vector_iter_next(&iter);
         
-        if (vector_iter_index(iter) == 2)
-            vector_iter_add(iter, &new);      
+        if (vector_iter_index(&iter) == 2)
+            vector_iter_add(&iter, &new);      
     }
 
     cc_assert(vector_contains(v, &new) == 1,
               cc_msg("vector_iter_add: Element not present after being added"));
 
-    vector_iter_destroy(iter);
     vector_destroy(v);
 }
 
