@@ -26,22 +26,22 @@
 typedef struct table_entry_s {
     void     *key;
     void     *value;
-    uintcc_t  hash;
+    size_t    hash;
     
     struct table_entry_s *next;
 } TableEntry;
 
 struct hashtable_s {
-    uint32_t     capacity;
-    uint32_t     size;
-    uint32_t     inflation_threshold;
+    size_t       capacity;
+    size_t       size;
+    size_t       inflation_threshold;
     uint32_t     hash_seed;
     int          key_len;
     float        load_factor;
     
     TableEntry **buckets;
 
-    uint32_t (*hash)    (const void *key, int l, uint32_t seed);
+    size_t   (*hash)    (const void *key, int l, uint32_t seed);
     bool     (*key_cmp) (void *k1, void *k2);
 };
 
@@ -52,14 +52,14 @@ struct hashtable_key_iter {
     TableEntry *next_entry;
 };
 
-static uint32_t  get_table_index  (HashTable *table, void *key);
-static bool      resize           (HashTable *t, uint32_t new_capacity);
-static uint32_t  round_pow_two    (uint32_t n);
-static void     *get_null_key     (HashTable *table);
-static bool      put_null_key     (HashTable *table, void *val);
-static void     *remove_null_key  (HashTable *table);
-static void      move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
-                                   uint32_t src_size, uint32_t dest_size);
+static size_t  get_table_index  (HashTable *table, void *key);
+static bool    resize           (HashTable *t, size_t new_capacity);
+static size_t  round_pow_two    (size_t n);
+static void   *get_null_key     (HashTable *table);
+static bool    put_null_key     (HashTable *table, void *val);
+static void   *remove_null_key  (HashTable *table);
+static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
+                                 size_t src_size, size_t dest_size);
 
 /**
  * Returns a new HashTableProperties object that will, if not modified, set up 
@@ -160,8 +160,8 @@ bool hashtable_put(HashTable *table, void *key, void *val)
     if (!key)
         return put_null_key(table, val);
             
-    const uint32_t hash = table->hash(key, table->key_len, table->hash_seed);
-    const uint32_t i    = hash & (table->capacity - 1);
+    const size_t hash = table->hash(key, table->key_len, table->hash_seed);
+    const size_t i    = hash & (table->capacity - 1);
 
     TableEntry *replace = table->buckets[i];
     
@@ -244,7 +244,7 @@ void *hashtable_get(HashTable *table, void *key)
     if (!key)
         return get_null_key(table);
 
-    uint32_t    index  = get_table_index(table, key);
+    size_t      index  = get_table_index(table, key);
     TableEntry *bucket = table->buckets[index];
 
     while (bucket) {
@@ -295,7 +295,7 @@ void *hashtable_remove(HashTable *table, void *key)
     if (!key)
         return remove_null_key(table);
 
-    const uint32_t i = get_table_index(table, key);
+    const size_t i = get_table_index(table, key);
 
     TableEntry *e    = table->buckets[i];
     TableEntry *prev = NULL;
@@ -388,7 +388,7 @@ void hashtable_remove_all(HashTable *table)
  * @param[in] table the table that is being resized.
  * @param[in] new_capacity the new capacity to which the table should be resized
  */
-static bool resize(HashTable *t, uint32_t new_capacity)
+static bool resize(HashTable *t, size_t new_capacity)
 {
     if (t->capacity == MAX_POW_TWO)
         return false;
@@ -417,10 +417,10 @@ static bool resize(HashTable *t, uint32_t new_capacity)
  *
  * @return the nearest upper power of two
  */
-static INLINE uint32_t round_pow_two(uint32_t n)
+static INLINE size_t round_pow_two(size_t n)
 {
     if (n >= MAX_POW_TWO)
-        return MAX_BUCKETS;
+        return MAX_POW_TWO;
 
     if (n == 0)
         return 2;
@@ -451,7 +451,7 @@ static INLINE uint32_t round_pow_two(uint32_t n)
  */
 static INLINE void 
 move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
-             uint32_t     src_size,   uint32_t     dest_size)
+             size_t       src_size,   size_t       dest_size)
 {
     int i;
     for (i = 0; i < src_size; i++) {
@@ -459,7 +459,7 @@ move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
 
         while (entry) {
             TableEntry *next  = entry->next;
-            uint32_t    index = entry->hash & (dest_size - 1);
+            size_t    index = entry->hash & (dest_size - 1);
 
             entry->next = dest_bucket[index];
             dest_bucket[index] = entry;
@@ -476,7 +476,7 @@ move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
  * @param[in] table the table whose size is being returned
  * @return the size of the table
  */
-int hashtable_size(HashTable *table)
+size_t hashtable_size(HashTable *table)
 {
     return table->size;
 }
@@ -489,7 +489,7 @@ int hashtable_size(HashTable *table)
  *
  * @return the current capacity of the specified table
  */
-int hashtable_capacity(HashTable *table)
+size_t hashtable_capacity(HashTable *table)
 {
     return table->capacity;
 }
@@ -523,7 +523,11 @@ bool hashtable_contains_key(HashTable *table, void *key)
  */
 Vector *hashtable_get_values(HashTable *table)
 {
-    Vector *v = vector_new_capacity(table->size);
+    VectorConf vc;
+    vector_conf_init(&vc);
+    vc.capacity = table->size;
+    
+    Vector *v = vector_new_conf(&vc);
     
     if (!v)
         return NULL;
@@ -552,7 +556,11 @@ Vector *hashtable_get_values(HashTable *table)
  */
 Vector *hashtable_get_keys(HashTable *table)
 {
-    Vector *keys = vector_new_capacity(table->size);
+    VectorConf vc;
+    vector_conf_init(&vc);
+    vc.capacity = table->size;
+    
+    Vector *keys = vector_new_conf(&vc);
 
     if (!keys)
         return NULL;
@@ -575,9 +583,9 @@ Vector *hashtable_get_keys(HashTable *table)
 /**
  * Returns the bucket index that maps to the specified key.
  */
-static INLINE uint32_t get_table_index(HashTable *table, void *key)
+static INLINE size_t get_table_index(HashTable *table, void *key)
 {
-    uint32_t hash  = table->hash(key, table->key_len, table->hash_seed);
+    size_t hash  = table->hash(key, table->key_len, table->hash_seed);
     return hash & (table->capacity - 1);
 }
 
@@ -836,7 +844,6 @@ void *hashtable_iter_get_value(HashTableIter *iter)
 }
 
 
-
 /*******************************************************************************
  *
  *
@@ -845,7 +852,7 @@ void *hashtable_iter_get_value(HashTableIter *iter)
  *
  ******************************************************************************/
 
-size_t hashtable_hash_string(const void *key, int len, size_t seed)
+size_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 {
     const    char   *str  = key;
     register size_t  hash = 5381;
@@ -1062,7 +1069,7 @@ FORCE_INLINE uint32_t fmix32(uint32_t h)
 /**
  * MurmurHash3 the 32bit variant.
  */
-uint32_t hashtable_hash(const void *key, int len, uint32_t seed)
+size_t hashtable_hash(const void *key, int len, uint32_t seed)
 {
     const uint8_t *data    = (const uint8_t*)key;
     const int      nblocks = len / 4;
@@ -1104,13 +1111,13 @@ uint32_t hashtable_hash(const void *key, int len, uint32_t seed)
     h1 ^= len;
     h1  = fmix32(h1);
 
-    return h1;
+    return (size_t) h1;
 }
 
 /*
  * MurmurHash3 the 32bit variant that hashes the pointer itself
  */
-uint32_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
+size_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
 { 
     const int nblocks = len / 4;
 
@@ -1138,7 +1145,7 @@ uint32_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
     h1 ^= len;
     h1  = fmix32(h1);
 
-    return h1;
+    return (size_t) h1;
 }
 
 #endif /* ARCH_64 */
