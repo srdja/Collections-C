@@ -342,12 +342,13 @@ void test_hashtable_iter_next()
     int four  = 0;
     int five  = 0;
     
-    HashTableIter *iter = hashtable_iter_new(t);
+    HashTableIter iter;
+    hashtable_iter_init(&iter, t);
 
-    while (hashtable_iter_has_next(iter)) {
-        hashtable_iter_next(iter);
+    while (hashtable_iter_has_next(&iter)) {
+        TableEntry *entry = hashtable_iter_next(&iter);
 
-        char const *key = hashtable_iter_get_key(iter);
+        char const *key = entry->key;
 
         if (!strcmp(key, "one"))
             one++;
@@ -363,16 +364,15 @@ void test_hashtable_iter_next()
 
         if (!strcmp(key, "five"))
             five++;
-
     }
 
-    bool asrt = (one == 1) && (two == 1) &&
-        (three == 1) && (four == 1) && (five == 1);
+    bool asrt = (one   == 1) && (two  == 1)  &&
+                (three == 1) && (four == 1) &&
+                (five  == 1);
 
     cc_assert(asrt,
               cc_msg("hashtable_iter_next: Unexpected number"
                      " of entries returned"));
 
-    hashtable_iter_destroy(iter);
     hashtable_destroy(t);
 }
