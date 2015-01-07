@@ -23,8 +23,20 @@
 
 #include "common.h"
 
-typedef struct dlist_s            List;
-typedef struct dlist_iter_s       ListIter;
+typedef struct list_s List;
+
+typedef struct node_s {
+    void          *data;
+    struct node_s *next;
+    struct node_s *prev;
+} Node;
+
+typedef struct list_iter_s {
+    size_t  index;
+    List   *list;
+    Node   *last;
+    Node   *next;
+} ListIter;
 
 typedef struct list_conf_s {
     void  *(*mem_alloc)  (size_t size);
