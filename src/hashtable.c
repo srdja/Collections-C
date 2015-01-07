@@ -729,15 +729,15 @@ void hashtable_foreach_value(HashTable *table, void (*op) (void *val))
 }
 
 /**
- * Creats a new HashTable iterator that iterates over hashtable entries.
- *
+ * Initializes the HashTableIter.
+ * 
  * @note The order at which the entries are returned is unspecified.
  *
- * @return a new HashTableIter object
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] table the table over whose entries the iterator is going to iterate
  */
-HashTableIter *hashtable_iter_new(HashTable *table)
+void hashtable_iter_init(HashTableIter *iter, HashTable *table)
 {
-    HashTableIter *iter = calloc(1, sizeof(HashTableIter));
     iter->table = table;
 
     int i;
@@ -745,21 +745,11 @@ HashTableIter *hashtable_iter_new(HashTable *table)
         TableEntry *e = table->buckets[i];
         if (e) {
             iter->bucket_index = i;
-            iter->next_entry = e;
+            iter->next_entry   = e;
+            iter->prev_entry   = NULL;
             break;
         }
     }
-    return iter;
-}
-
-/**
- * Destroys the specified iterator.
- *
- * @param[in] iter the iterator that is being destroyed.
- */
-void hashtable_iter_destroy(HashTableIter *iter)
-{
-    free(iter);
 }
 
 /**
@@ -774,17 +764,17 @@ bool hashtable_iter_has_next(HashTableIter *iter)
 }
 
 /**
- * Advances the iterator.
+ * Advances the iterator and returns a table entry.
  *
  * @param[in] iter the iterator that is being advanced
  */
-void hashtable_iter_next(HashTableIter *iter)
+TableEntry *hashtable_iter_next(HashTableIter *iter)
 {
     iter->prev_entry = iter->next_entry;
     iter->next_entry = iter->next_entry->next;
    
     if (iter->next_entry)
-        return;
+        return iter->prev_entry;
 
     int i;
     for (i = iter->bucket_index + 1; i < iter->table->capacity; i++) {
@@ -792,39 +782,19 @@ void hashtable_iter_next(HashTableIter *iter)
 
         if (iter->next_entry) {
             iter->bucket_index = i;
-            break;
+            return iter->prev_entry;
         }
     }
 }
 
 /**
  * Removes the last returned table entry
+ *
+ * @param[in] The iterator on which this operation is performed
  */
 void hashtable_iter_remove(HashTableIter *iter)
 {
     hashtable_remove(iter->table, iter->prev_entry->key);
-}
-
-/**
- * Returns the key associated with the last returned table entry by the
- * specified iterator.
- *
- * @param[in] iter the iterator on which this operation is being performed on
- */
-void const *hashtable_iter_get_key(HashTableIter *iter)
-{
-    return iter->prev_entry->key;
-}
-
-/**
- * Returns the value associated with the last returned table entry by the
- * specified iterator.
- *
- * @param[in] iter the iterator on which this operation is being performed on
- */
-void *hashtable_iter_get_value(HashTableIter *iter)
-{
-    return iter->prev_entry->value;
 }
 
 

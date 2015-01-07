@@ -104,11 +104,9 @@ size_t hashtable_hash_ptr                  (const void *key, int len, uint32_t s
 void           hashtable_foreach_key    (HashTable *table, void (*op) (const void *));
 void           hashtable_foreach_value  (HashTable *table, void (*op) (void *));
 
-HashTableIter *hashtable_iter_new       (HashTable *table);
-bool           hashtable_iter_hash_next (HashTableIter *iter);
-void           hashtable_iter_next      (HashTableIter *iter);
-void const    *hashtable_iter_get_key   (HashTableIter *iter);
-void          *hashtable_iter_get_value (HashTableIter *iter);
+void           hashtable_iter_init      (HashTableIter *iter, HashTable *table);
+bool           hashtable_iter_has_next  (HashTableIter *iter);
+TableEntry    *hashtable_iter_next      (HashTableIter *iter);
 void           hashtable_iter_remove    (HashTableIter *iter);
 
 #endif /* HASHMAP_H_ */
