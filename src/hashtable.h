@@ -19,7 +19,7 @@
  */
 
 #ifndef __HASHTABLE_H__
-#define __HASHTABE_H__
+#define __HASHTABLE_H__
 
 #include "vector.h"
 
