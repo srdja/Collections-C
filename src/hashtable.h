@@ -18,8 +18,8 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HASHMAP_H_
-#define HASHMAP_H_
+#ifndef __HASHTABLE_H__
+#define __HASHTABE_H__
 
 #include "vector.h"
 
@@ -58,35 +58,49 @@ typedef struct hashtable_conf_s {
     
     size_t (*hash)        (const void *key, int l, uint32_t seed);
     bool   (*key_compare) (void *key1, void *key2);
+
+    /* Memory allocators used to allocate the Vector structure and the 
+     * underlying data buffers. */
+    void  *(*mem_alloc)   (size_t size);
+    void  *(*mem_calloc)  (size_t blocks, size_t size);
+    void   (*mem_free)    (void *block);
 } HashTableConf;
 
 
-void       hashtable_conf_init               (HashTableConf *conf);
-HashTable *hashtable_new                     ();
-HashTable *hashtable_new_conf                (HashTableConf *conf);
+void        hashtable_conf_init       (HashTableConf *conf);
+HashTable  *hashtable_new             (void);
+HashTable  *hashtable_new_conf        (HashTableConf *conf);
 
-void     hashtable_destroy                   (HashTable *table);
-bool     hashtable_put                       (HashTable *table, void *key, void *val);
-void    *hashtable_get                       (HashTable *table, void *key);
-void    *hashtable_remove                    (HashTable *table, void *key);
-void     hashtable_remove_all                (HashTable *table);
-bool     hashtable_contains_key              (HashTable *table, void *key);
+void        hashtable_destroy         (HashTable *table);
+bool        hashtable_put             (HashTable *table, void *key, void *val);
+void       *hashtable_get             (HashTable *table, void *key);
+void       *hashtable_remove          (HashTable *table, void *key);
+void        hashtable_remove_all      (HashTable *table);
+bool        hashtable_contains_key    (HashTable *table, void *key);
 
-Vector  *hashtable_get_keys                  (HashTable *table);
-Vector  *hashtable_get_values                (HashTable *table);
+Vector     *hashtable_get_keys        (HashTable *table);
+Vector     *hashtable_get_values      (HashTable *table);
 
-bool     hashtable_string_key_cmp            (void *key1, void *key2);
-bool     hashtable_float_key_cmp             (void *key1, void *key2);
-bool     hashtable_char_key_cmp              (void *key1, void *key2);
-bool     hasthable_short_key_cmp             (void *key1, void *key2);
-bool     hashtable_double_key_cmp            (void *key1, void *key2);
-bool     hashtable_int_key_cmp               (void *key1, void *key2);
-bool     hashtable_long_key_cmp              (void *key1, void *key2);
-bool     hashtable_pointer_key_cmp           (void *key1, void *key2);
+bool        hashtable_string_key_cmp  (void *key1, void *key2);
+bool        hashtable_float_key_cmp   (void *key1, void *key2);
+bool        hashtable_char_key_cmp    (void *key1, void *key2);
+bool        hasthable_short_key_cmp   (void *key1, void *key2);
+bool        hashtable_double_key_cmp  (void *key1, void *key2);
+bool        hashtable_int_key_cmp     (void *key1, void *key2);
+bool        hashtable_long_key_cmp    (void *key1, void *key2);
+bool        hashtable_pointer_key_cmp (void *key1, void *key2);
 
-size_t hashtable_hash_string               (const void *key, int len, uint32_t seed);
-size_t hashtable_hash                      (const void *key, int len, uint32_t seed);
-size_t hashtable_hash_ptr                  (const void *key, int len, uint32_t seed);
+size_t      hashtable_hash_string     (const void *key, int len, uint32_t seed);
+size_t      hashtable_hash            (const void *key, int len, uint32_t seed);
+size_t      hashtable_hash_ptr        (const void *key, int len, uint32_t seed);
+
+void        hashtable_foreach_key     (HashTable *table, void (*op) (const void *));
+void        hashtable_foreach_value   (HashTable *table, void (*op) (void *));
+
+void        hashtable_iter_init       (HashTableIter *iter, HashTable *table);
+bool        hashtable_iter_has_next   (HashTableIter *iter);
+TableEntry *hashtable_iter_next       (HashTableIter *iter);
+void        hashtable_iter_remove     (HashTableIter *iter);
 
 #define CMP_STRING  hashtable_string_key_cmp
 #define CMP_FLOAT   hashtable_float_key_cmp
@@ -101,12 +115,5 @@ size_t hashtable_hash_ptr                  (const void *key, int len, uint32_t s
 #define STRING_HASH  hashtable_hash_string
 #define POINTER_HASH hashtable_hash_ptr
 
-void           hashtable_foreach_key    (HashTable *table, void (*op) (const void *));
-void           hashtable_foreach_value  (HashTable *table, void (*op) (void *));
 
-void           hashtable_iter_init      (HashTableIter *iter, HashTable *table);
-bool           hashtable_iter_has_next  (HashTableIter *iter);
-TableEntry    *hashtable_iter_next      (HashTableIter *iter);
-void           hashtable_iter_remove    (HashTableIter *iter);
-
-#endif /* HASHMAP_H_ */
+#endif /* __HASHTABLE_H__ */

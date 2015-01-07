@@ -26,15 +26,17 @@
 struct hashtable_s {
     size_t       capacity;
     size_t       size;
-    size_t       inflation_threshold;
+    size_t       threshold;
     uint32_t     hash_seed;
     int          key_len;
-    float        load_factor;
-    
+    float        load_factor;   
     TableEntry **buckets;
 
-    size_t   (*hash)    (const void *key, int l, uint32_t seed);
-    bool     (*key_cmp) (void *k1, void *k2);
+    size_t  (*hash)       (const void *key, int l, uint32_t seed);
+    bool    (*key_cmp)    (void *k1, void *k2);
+    void   *(*mem_alloc)  (size_t size);
+    void   *(*mem_calloc) (size_t blocks, size_t size);
+    void    (*mem_free)   (void *block);
 };
 
 static size_t  get_table_index  (HashTable *table, void *key);
@@ -71,7 +73,7 @@ HashTable *hashtable_new()
  */
 HashTable *hashtable_new_conf(HashTableConf *conf)
 {
-    HashTable *table   = calloc(1, sizeof(HashTable));
+    HashTable *table   = conf->mem_calloc(1, sizeof(HashTable));
 
     table->hash        = conf->hash;
     table->key_cmp     = conf->key_compare;
@@ -80,9 +82,11 @@ HashTable *hashtable_new_conf(HashTableConf *conf)
     table->hash_seed   = conf->hash_seed;
     table->key_len     = conf->key_length;
     table->size        = 0;
-
-    table->buckets = calloc(table->capacity, sizeof(TableEntry));
-    table->inflation_threshold = table->capacity * table->load_factor;
+    table->mem_alloc   = conf->mem_alloc;
+    table->mem_calloc  = conf->mem_calloc;
+    table->mem_free    = conf->mem_free;
+    table->buckets     = conf->mem_calloc(table->capacity, sizeof(TableEntry));
+    table->threshold   = table->capacity * table->load_factor;
 
     return table;
 }
@@ -100,6 +104,9 @@ void hashtable_conf_init(HashTableConf *conf)
     conf->load_factor      = DEFAULT_LOAD_FACTOR;
     conf->key_length       = KEY_LENGTH_VARIABLE;
     conf->hash_seed        = 0;
+    conf->mem_alloc        = malloc;
+    conf->mem_calloc       = calloc;
+    conf->mem_free         = free;
 }
 
 /**
@@ -116,12 +123,12 @@ void hashtable_destroy(HashTable *table)
 
         while (next) {
             TableEntry *tmp = next->next;
-            free(next);
+            table->mem_free(next);
             next = tmp;
         }
     }
-    free(table->buckets);
-    free(table);
+    table->mem_free(table->buckets);
+    table->mem_free(table);
 }
 
 /**
@@ -138,7 +145,7 @@ void hashtable_destroy(HashTable *table)
  */
 bool hashtable_put(HashTable *table, void *key, void *val)
 {
-    if (table->size >= table->inflation_threshold)
+    if (table->size >= table->threshold)
         resize(table, table->capacity << 1);
 
     if (!key)
@@ -157,7 +164,7 @@ bool hashtable_put(HashTable *table, void *key, void *val)
         replace = replace->next;
     }
 
-    TableEntry *new_entry = malloc(sizeof(TableEntry));
+    TableEntry *new_entry = table->mem_alloc(sizeof(TableEntry));
 
     if (!new_entry)
         return false;
@@ -194,7 +201,7 @@ static bool put_null_key(HashTable *table, void *val)
         replace = replace->next;
     }
     
-    TableEntry *new_entry = malloc(sizeof(TableEntry));
+    TableEntry *new_entry = table->mem_alloc(sizeof(TableEntry));
 
     if (!new_entry)
         return false;
@@ -296,7 +303,7 @@ void *hashtable_remove(HashTable *table, void *key)
             else
                 prev->next = next;
 
-            free(e);
+            table->mem_free(e);
             table->size--;
             return value;
         }
@@ -335,7 +342,7 @@ void *remove_null_key(HashTable *table)
             else
                 prev->next = next;
 
-            free(e);
+            table->mem_free(e);
             table->size--;
             return value;
         }
@@ -357,7 +364,7 @@ void hashtable_remove_all(HashTable *table)
         TableEntry *entry = table->buckets[i];
         while (entry) {
             TableEntry *next = entry->next;
-            free(entry);
+            table->mem_free(entry);
             table->size--;
             entry = next;
         }
@@ -377,7 +384,7 @@ static bool resize(HashTable *t, size_t new_capacity)
     if (t->capacity == MAX_POW_TWO)
         return false;
 
-    TableEntry **new_buckets = calloc(new_capacity, sizeof(TableEntry));
+    TableEntry **new_buckets = t->mem_calloc(new_capacity, sizeof(TableEntry));
     TableEntry **old_buckets = t->buckets;
 
     if (!new_buckets)
@@ -385,11 +392,11 @@ static bool resize(HashTable *t, size_t new_capacity)
 
     move_entries(old_buckets, new_buckets, t->capacity, new_capacity);
 
-    t->buckets             = new_buckets;
-    t->capacity            = new_capacity;
-    t->inflation_threshold = t->load_factor * new_capacity;
+    t->buckets   = new_buckets;
+    t->capacity  = new_capacity;
+    t->threshold = t->load_factor * new_capacity;
 
-    free(old_buckets);
+    t->mem_free(old_buckets);
 
     return true;
 }
@@ -443,7 +450,7 @@ move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
 
         while (entry) {
             TableEntry *next  = entry->next;
-            size_t    index = entry->hash & (dest_size - 1);
+            size_t      index = entry->hash & (dest_size - 1);
 
             entry->next = dest_bucket[index];
             dest_bucket[index] = entry;
@@ -509,7 +516,11 @@ Vector *hashtable_get_values(HashTable *table)
 {
     VectorConf vc;
     vector_conf_init(&vc);
-    vc.capacity = table->size;
+    
+    vc.capacity   = table->size;
+    vc.mem_alloc  = table->mem_alloc;
+    vc.mem_calloc = table->mem_calloc;
+    vc.mem_free   = table->mem_free;
     
     Vector *v = vector_new_conf(&vc);
     
@@ -542,7 +553,11 @@ Vector *hashtable_get_keys(HashTable *table)
 {
     VectorConf vc;
     vector_conf_init(&vc);
-    vc.capacity = table->size;
+
+    vc.capacity   = table->size;
+    vc.mem_alloc  = table->mem_alloc;
+    vc.mem_calloc = table->mem_calloc;
+    vc.mem_free   = table->mem_free;
     
     Vector *keys = vector_new_conf(&vc);
 
@@ -569,7 +584,7 @@ Vector *hashtable_get_keys(HashTable *table)
  */
 static INLINE size_t get_table_index(HashTable *table, void *key)
 {
-    size_t hash  = table->hash(key, table->key_len, table->hash_seed);
+    size_t hash = table->hash(key, table->key_len, table->hash_seed);
     return hash & (table->capacity - 1);
 }
 
