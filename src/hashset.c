@@ -25,30 +25,15 @@ struct hashset_s {
     int *dummy;
 };
 
-struct hashset_iter_s {
-    HashTableIter *iter;
-};
-
-
 /**
  * Returns a new HashTableProperties object that is by default configured for
  * string elements.
  *
  * @return a new HashTableProperties object.
  */
-HashSetProperties *hashset_properties_new()
+void hashset_conf_init(HashSetConf *conf)
 {
-    return  hashtable_properties_new();
-}
-
-/**
- * Destroys a HashSetProperties object.
- *
- * @param[in] properties the properties object to be destroyed
- */
-void hashset_properties_destroy(HashSetProperties *properties)
-{
-    hashtable_properties_destroy(properties);
+    hashtable_conf_init(conf);
 }
 
 /**
@@ -59,17 +44,27 @@ void hashset_properties_destroy(HashSetProperties *properties)
  *
  * @return a new empty HashSet
  */
-HashSet *hashset_new(HashSetProperties *properties)
+HashSet *hashset_new()
+{
+    HashSetConf hsc;
+    hashset_conf_init(&hsc);
+    return hashset_new_conf(&hsc);
+}
+
+/**
+ * 
+ *
+ */
+HashSet *hashset_new_conf(HashSetConf *conf)
 {
     HashSet *set = calloc(1, sizeof(HashSet));
-    set->table = hashtable_new(properties);
+    set->table = hashtable_new_conf(conf);
 
     /* A dummy pointer that is never actually dereferenced 
     *  that must not be null.*/
     set->dummy = (int*) 1;
-    return set;
+    return set;    
 }
-
 /**
  * Destroys the specified HashSet.
  *
@@ -159,28 +154,14 @@ void hashset_foreach(HashSet *set, void (*op) (const void *e))
 }
 
 /**
- * Creates a new hash set iterator.
+ * Initializes the iterator
  * 
+ * @param[in] iter the iterator that is being initialized
  * @param[in] set the set on which this iterator will operate
- *
- * @return the new set iterator
  */
-HashSetIter *hashset_iter_new(HashSet *set)
+void hashset_iter_init(HashSetIter *iter, HashSet *set)
 {
-    HashSetIter *iter = calloc(1, sizeof(HashSetIter));
-    iter->iter = hashtable_iter_new(set->table);
-    return iter;
-}
-
-/**
- * Destroys the sepecified iterator.
- *
- * @param[in] iter the iterator to be destroyed
- */
-void hashset_iter_destroy(HashSetIter *iter)
-{
-    hashtable_iter_destroy(iter->iter);
-    free(iter);
+    hashtable_iter_init(iter->iter, set->table);
 }
 
 /**
@@ -204,8 +185,8 @@ bool hashset_iter_has_next(HashSetIter *iter)
  */
 const void *hashset_iter_next(HashSetIter *iter)
 {
-    hashtable_iter_next(iter->iter);
-    return hashtable_iter_get_key(iter->iter);
+    TableEntry *entry = hashtable_iter_next(iter->iter);
+    return (const void*) entry->key;
 }
 
 /**
@@ -218,7 +199,7 @@ const void *hashset_iter_next(HashSetIter *iter)
  */
 void *hashset_iter_remove(HashSetIter *iter)
 {
-    void *element = (void*) hashtable_iter_get_key(iter->iter);
+    void *element = iter->iter->prev_entry->key;
     hashtable_iter_remove(iter->iter);
     return element;
 }
