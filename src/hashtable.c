@@ -61,35 +61,14 @@ static void   *remove_null_key  (HashTable *table);
 static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
                                  size_t src_size, size_t dest_size);
 
-/**
- * Returns a new HashTableProperties object that will, if not modified, set up 
- * the HashTable to use string keys.
- *
- * @return a new HashTableProperties object
- */
-HashTableProperties *hashtable_properties_new()
+HashTable *hashtable_new()
 {
-    HashTableProperties *properties = calloc(1, sizeof(HashTableProperties));
-
-    properties->hash             = STRING_HASH;
-    properties->key_compare      = CMP_STRING;
-    properties->initial_capacity = DEFAULT_CAPACITY;
-    properties->load_factor      = DEFAULT_LOAD_FACTOR;
-    properties->key_length       = KEY_LENGTH_VARIABLE;
-    properties->hash_seed        = 0;
-
-    return properties;
+    HashTableConf htc;
+    hashtable_conf_init(&htc);
+    return hashtable_new_conf(&htc);
 }
 
-/**
- * Destroys a HashTableProperties object.
- *
- * @param[in] properties HashTableProperties object to be destroyed.
- */
-void hashtable_properties_destroy(HashTableProperties *properties)
-{
-    free(properties);
-}
+// Creates a new configured hash table.
 
 /**
  * Creates a new HashTable based on the provided HashTable properties. The 
@@ -100,22 +79,36 @@ void hashtable_properties_destroy(HashTableProperties *properties)
  *                     HashTable
  * @return a new HashTable object
  */
-HashTable *hashtable_new(const HashTableProperties *properties)
+HashTable *hashtable_new_conf(HashTableConf *conf)
 {
     HashTable *table = calloc(1, sizeof(HashTable));
 
-    table->hash        = properties->hash;
-    table->key_cmp     = properties->key_compare;
-    table->load_factor = properties->load_factor;
-    table->capacity    = round_pow_two(properties->initial_capacity);
-    table->hash_seed   = properties->hash_seed;
-    table->key_len     = properties->key_length;
+    table->hash        = conf->hash;
+    table->key_cmp     = conf->key_compare;
+    table->load_factor = conf->load_factor;
+    table->capacity    = round_pow_two(conf->initial_capacity);
+    table->hash_seed   = conf->hash_seed;
+    table->key_len     = conf->key_length;
     table->size        = 0;
 
     table->buckets = calloc(table->capacity, sizeof(TableEntry));
     table->inflation_threshold = table->capacity * table->load_factor;
 
     return table;
+}
+
+/**
+ *
+ *
+ */
+void hashtable_conf_init(HashTableConf *conf)
+{
+    conf->hash             = STRING_HASH;
+    conf->key_compare      = CMP_STRING;
+    conf->initial_capacity = DEFAULT_CAPACITY;
+    conf->load_factor      = DEFAULT_LOAD_FACTOR;
+    conf->key_length       = KEY_LENGTH_VARIABLE;
+    conf->hash_seed        = 0;
 }
 
 /**

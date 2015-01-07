@@ -35,28 +35,25 @@
 typedef struct hashtable_s        HashTable;
 typedef struct hashtable_key_iter HashTableIter;
 
-typedef struct hashtable_init_properties_s {
+typedef struct hashtable_conf_s {
     float    load_factor;
     size_t   initial_capacity;
     int      key_length;
     uint32_t hash_seed;
+    
+    size_t (*hash)        (const void *key, int l, uint32_t seed);
+    bool   (*key_compare) (void *key1, void *key2);
+} HashTableConf;
 
-    size_t   (*hash)        (const void *key, int l, uint32_t seed);
-    bool     (*key_compare) (void *key1, void *key2);
-} HashTableProperties;
+void       hashtable_conf_init               (HashTableConf *conf);
+HashTable *hashtable_new                     ();
+HashTable *hashtable_new_conf                (HashTableConf *conf);
 
-HashTableProperties *hashtable_properties_new();
-HashTable           *hashtable_new           (const HashTableProperties *properties);
-
-
-void     hashtable_properties_destroy        (HashTableProperties *properties);
 void     hashtable_destroy                   (HashTable *table);
-
 bool     hashtable_put                       (HashTable *table, void *key, void *val);
 void    *hashtable_get                       (HashTable *table, void *key);
 void    *hashtable_remove                    (HashTable *table, void *key);
 void     hashtable_remove_all                (HashTable *table);
-
 bool     hashtable_contains_key              (HashTable *table, void *key);
 
 Vector  *hashtable_get_keys                  (HashTable *table);
