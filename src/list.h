@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -27,7 +27,16 @@ typedef struct dlist_s            List;
 typedef struct dlist_iter_s       ListIter;
 typedef struct dlist_iter_desc_s  ListDIter;
 
-List*      list_new             ();
+typedef struct list_conf_s {
+    void  *(*mem_alloc)  (size_t size);
+    void  *(*mem_calloc) (size_t blocks, size_t size);
+    void   (*mem_free)   (void *block);
+} ListConf;
+
+void       list_conf_init       (ListConf *conf);
+
+List*      list_new             (void);
+List*      list_new_conf        (ListConf *conf);
 bool       list_destroy         (List *list);
 bool       list_destroy_free    (List *list);
 

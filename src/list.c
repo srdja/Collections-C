@@ -30,6 +30,10 @@ struct dlist_s {
     size_t  size;
     Node   *head;
     Node   *tail;
+
+    void  *(*mem_alloc)  (size_t size);
+    void  *(*mem_calloc) (size_t blocks, size_t size);
+    void   (*mem_free)   (void *block);
 };
 
 struct dlist_iter_s {
@@ -63,13 +67,36 @@ static bool  add_all_to_empty    (List *l1, List *l2);
 static bool  link_all_externally (List *l, Node **h, Node **t);
 
 /**
+ * 
+ */
+void list_conf_init(ListConf *conf)
+{
+    conf->mem_alloc  = malloc;
+    conf->mem_calloc = calloc;
+    conf->mem_free   = free;
+}
+
+/**
  * Returns a new empty list, or NULL if the memory allocation fails.
  *
  * @return a new list if the allocation was successful, or NULL if not.
  */
 List *list_new()
 {
-    return calloc(1, sizeof(List));
+    ListConf lc;
+    list_conf_init(&lc);
+    return list_new_conf(&lc);
+}
+
+List *list_new_conf(ListConf *conf)
+{
+    List *list = lc->mem_calloc(1, sizeof(List));
+
+    list->mem_alloc  = lc->mem_alloc;
+    list->mem_calloc = lc->mem_calloc;
+    list->mem_free   = lc->mem_free;
+
+    return list;
 }
 
 /**
@@ -86,7 +113,7 @@ bool list_destroy(List *list)
     if (list->size > 0)
         success = list_remove_all(list);
 
-    free(list);
+    list->mem_free(list);
     return success;
 }
 
@@ -106,7 +133,7 @@ bool list_destroy_free(List *list)
 {
     bool success = list_remove_all_free(list);
 
-    free(list);
+    list->mem_free(list);
     return success;
 }
 
@@ -137,7 +164,7 @@ bool list_add(List *list, void *element)
  */
 bool list_add_first(List *list, void *element)
 {
-    Node *node = (Node*) calloc(1, sizeof(Node));
+    Node *node = list->mem_calloc(1, sizeof(Node));
 
     if (node == NULL)
         return false;
@@ -168,7 +195,7 @@ bool list_add_first(List *list, void *element)
  */
 bool list_add_last(List *list, void *element)
 {
-    Node *node = (Node*) calloc(1, sizeof(Node));
+    Node *node = list->mem_calloc(1, sizeof(Node));
 
     if (node == NULL)
         return false;
@@ -208,7 +235,7 @@ bool list_add_at(List *list, void *element, size_t index)
     if (!base)
         return false;
 
-    Node *new = calloc(1, sizeof(Node));
+    Node *new = list->mem_calloc(1, sizeof(Node));
 
     if (!new)
         return false;
@@ -344,12 +371,12 @@ static bool link_all_externally(List *list, Node **h, Node **t)
 
     size_t i;
     for (i = 0; i < list->size; i++) {
-        Node *new = calloc(1, sizeof(Node));
+        Node *new = list->mem_calloc(1, sizeof(Node));
         
         if (!new) {
             while (*h) {
                 Node *tmp = (*h)->next;
-                free(*h);
+                list->mem_free(*h);
                 *h = tmp;
             }
             return false;
@@ -701,7 +728,13 @@ List *list_sublist(List *list, size_t b, size_t e)
     if (b > e || b < 0 || e >= list->size)
         return NULL;
 
-    List *sub  = list_new();
+    ListConf conf;
+
+    conf->mem_alloc  = list->mem_alloc;
+    conf->mem_calloc = list->mem_calloc;
+    conf->mem_free   = list->mem_free;
+    
+    List *sub  = list_new_conf(&conf);
     Node *node = get_node_at(list, b);
 
     size_t i;
@@ -723,7 +756,13 @@ List *list_sublist(List *list, size_t b, size_t e)
  */
 List *list_copy_shallow(List *list)
 {
-    List *copy = list_new();
+    ListConf conf;
+
+    conf->mem_alloc  = list->mem_alloc;
+    conf->mem_calloc = list->mem_calloc;
+    conf->mem_free   = list->mem_free;        
+    
+    List *copy = list_new_conf(&conf);
     Node *node = list->head;
 
     while (node) {
@@ -747,7 +786,13 @@ List *list_copy_shallow(List *list)
  */
 List *list_copy_deep(List *list, void *(*cp) (void *e1))
 {
-    List *copy = list_new();
+    ListConf conf;
+
+    conf->mem_alloc  = list->mem_alloc;
+    conf->mem_calloc = list->mem_calloc;
+    conf->mem_free   = list->mem_free;
+    
+    List *copy = list_new_conf(&conf);
     Node *node = list->head;
 
     while (node) {
@@ -770,8 +815,9 @@ List *list_copy_deep(List *list, void *(*cp) (void *e1))
  */
 void **list_to_array(List *list)
 {
-    void   **array = (void**) calloc(list->size, sizeof(void*));
+    void   **array = list->mem_calloc(list->size, sizeof(void*));
     Node    *node  = list->head;
+    
     size_t   i;
     for (i = 0; i < list->size; i++) {
         array[i] = node->data;
@@ -815,8 +861,9 @@ size_t list_contains(List *list, void *element)
  */
 size_t list_index_of(List *list, void *element)
 {
-    Node *node = list->head;
-    size_t i = 0;
+    Node   *node = list->head;
+    size_t  i    = 0;
+    
     while (node) {
         if (node->data == element)
             return i;
@@ -867,7 +914,7 @@ void list_sort(List *list, int (*cmp) (void const *e1, void const *e2))
         node->data = elements[i];
         node       = node->next;
     }
-    free(elements);
+    list->mem_free(elements);
 }
 
 static Node *split(List *, Node *b, size_t l, int (*cmp) (void const *e1, void const *e2));
@@ -1037,7 +1084,7 @@ void list_foreach(List *list, void (*op) (void *e))
  */
 ListIter *list_iter_new(List *list)
 {
-    ListIter *iter = (ListIter*) malloc(sizeof(ListIter));
+    ListIter *iter = list->mem_alloc(sizeof(ListIter));
 
     if (!iter)
         return NULL;
@@ -1057,7 +1104,7 @@ ListIter *list_iter_new(List *list)
  */
 void list_iter_destroy(ListIter *iter)
 {
-    free(iter);
+    iter->list->mem_free(iter);
 }
 
 /**
@@ -1097,7 +1144,7 @@ void *list_iter_remove(ListIter *iter)
  */
 bool list_iter_add(ListIter *iter, void *element)
 {
-    Node *new_node = (Node*) calloc(1, sizeof(Node));
+    Node *new_node = iter->list->mem_calloc(1, sizeof(Node));
     new_node->data = element;
 
     link_behind(iter->next, new_node);
@@ -1184,7 +1231,7 @@ void *list_iter_next(ListIter *iter)
  */
 ListDIter *list_diter_new(List *list)
 {
-    ListDIter *iter = (ListDIter*) malloc(sizeof(ListDIter));
+    ListDIter *iter = list->mem_alloc(sizeof(ListDIter));
 
     if (!iter)
         return NULL;
@@ -1204,7 +1251,7 @@ ListDIter *list_diter_new(List *list)
  */
 void list_diter_destroy(ListDIter *iter)
 {
-    free(iter);
+    iter->list->mem_free(iter);
 }
 
 /**
@@ -1219,7 +1266,7 @@ void list_diter_destroy(ListDIter *iter)
  */
 bool list_diter_add(ListDIter *iter, void *element)
 {
-    Node *new_node = (Node*) calloc(1, sizeof(Node));
+    Node *new_node = iter->list->mem_calloc(1, sizeof(Node));
 
     if (!new_node)
         return false;
@@ -1487,7 +1534,7 @@ static void *unlink(List *list, Node *node)
     if (node->next != NULL)
         node->next->prev = node->prev;
 
-    free(node);
+    list->mem_free(node);
     list->size--;
 
     return data;
@@ -1513,7 +1560,7 @@ static bool unlink_all(List *list, bool freed)
         Node *tmp = node->next;
 
         if (freed)
-            free(node->data);
+            list->mem_free(node->data);
 
         unlink(list, node);
         node = tmp;
