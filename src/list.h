@@ -90,8 +90,7 @@ size_t     list_size            (List *list);
 
 void       list_foreach         (List *list, void (*op) (void *));
 
-ListIter*  list_iter_new        (List *list);
-void       list_iter_destroy    (ListIter *iter);
+void       list_iter_init       (ListIter *iter, List *list);
 void*      list_iter_remove     (ListIter *iter);
 bool       list_iter_add        (ListIter *iter,  void *element);
 void*      list_iter_replace    (ListIter *iter, void *element);
@@ -99,8 +98,7 @@ bool       list_iter_has_next   (ListIter *iter);
 size_t     list_iter_index      (ListIter *iter);
 void*      list_iter_next       (ListIter *iter);
 
-ListIter*  list_diter_new       (List *list);
-void       list_diter_destroy   (ListIter *iter);
+void       list_diter_init      (ListIter *iter, List *list);
 void*      list_diter_remove    (ListIter *iter);
 bool       list_diter_add       (ListIter *iter, void *element);
 void*      list_diter_replace   (ListIter *iter, void *element);

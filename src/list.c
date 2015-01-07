@@ -20,12 +20,6 @@
 
 #include "list.h"
 
-typedef struct node_s {
-    void          *data;
-    struct node_s *next;
-    struct node_s *prev;
-} Node;
-
 struct list_s {
     size_t  size;
     Node   *head;
@@ -34,13 +28,6 @@ struct list_s {
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
     void   (*mem_free)   (void *block);
-};
-
-struct list_iter_s {
-    size_t  index;
-    List   *list;
-    Node   *last;
-    Node   *next;
 };
 
 static void *unlink              (List *list, Node *node);
@@ -1066,38 +1053,15 @@ void list_foreach(List *list, void (*op) (void *e))
 }
 
 /**
- * Returns a new ascending iterator. The ascending iterator or a forward
- * iterator, is an iterator that traverses the list from head to tail.
- * In case the memeory allocation for the new iterator fails, NULL is 
- * returned.
  *
- * @param[in] list the list on which this iterator will operate.
  *
- * @return a new ascending iterator.
  */
-ListIter *list_iter_new(List *list)
+void list_iter_init(ListIter *iter, List *list)
 {
-    ListIter *iter = list->mem_alloc(sizeof(ListIter));
-
-    if (!iter)
-        return NULL;
-
     iter->index = 0;
     iter->list  = list;
     iter->last  = NULL;
     iter->next  = list->head;
-
-    return iter;
-}
-
-/**
- * Destroys the specified iterator.
- *
- * @param[in] iter the iterator that is being destroyed.
- */
-void list_iter_destroy(ListIter *iter)
-{
-    iter->list->mem_free(iter);
 }
 
 /**
@@ -1222,29 +1186,12 @@ void *list_iter_next(ListIter *iter)
  *
  * @return a new descending iterator.
  */
-ListIter *list_diter_new(List *list)
+void list_diter_init(ListIter *iter, List *list)
 {
-    ListIter *iter = list->mem_alloc(sizeof(ListIter));
-
-    if (!iter)
-        return NULL;
-
     iter->index = list->size - 1;
     iter->list  = list;
     iter->last  = NULL;
     iter->next  = list->tail;
-
-    return iter;
-}
-
-/**
- * Destroys the specified descending interator
- * 
- * @param[in] iter the iterator to be destroyed
- */
-void list_diter_destroy(ListIter *iter)
-{
-    iter->list->mem_free(iter);
 }
 
 /**
