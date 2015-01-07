@@ -9,7 +9,7 @@
 #include "test.h"
 #include <string.h>
 
-static HashTableProperties *properties;
+static HashTableConf conf;
 
 void test_hashtable_new();
 void test_hashtable_put();
@@ -25,7 +25,7 @@ void test_hashtable_memory_chunks_as_keys();
 void test_hashtable_iter_next();
 
 /* a dummy hash function used to force collisions */
-static uint32_t collision_hash(const void *k, int l, uint32_t s)
+static size_t collision_hash(const void *k, int l, uint32_t s)
 {
     return 1;
 }
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 {
     cc_set_exit_on_failure(false);
     
-    properties = hashtable_properties_new();
+    hashtable_conf_init(&conf);
     
     test_hashtable_new();
     test_hashtable_size();
@@ -47,7 +47,6 @@ int main(int argc, char **argv)
     test_hashtable_contains_key();
 
     test_hashtable_memory_chunks_as_keys();
-
     test_hashtable_iter_next();
 
     return cc_get_status();
@@ -56,29 +55,27 @@ int main(int argc, char **argv)
 
 void test_hashtable_new()
 {
-    HashTableProperties *p = hashtable_properties_new();
-
-    p->initial_capacity = 7;
+    hashtable_conf_init(&conf);    
+    conf.initial_capacity = 7;
     
-    HashTable *table = hashtable_new(p);
+    HashTable *table = hashtable_new_conf(&conf);
 
     cc_assert(hashtable_size(table) == 0,
               cc_msg("hashtable_new: Initial size not 0"));
 
-    int capacity = hashtable_capacity(table);
+    size_t capacity = hashtable_capacity(table);
     
     /* power of 2 rounding */
     cc_assert(capacity == 8,
-              cc_msg("hashtable_new: Expected capactity was 8, but got %d", capacity));
-
-    hashtable_properties_destroy(p);
+              cc_msg("hashtable_new: Expected capactity was 8, but got %d",
+                     capacity));
+    
     hashtable_destroy(table);
 }
 
 void test_hashtable_put()
-{
-
-    HashTable *table = hashtable_new(properties);
+{    
+    HashTable *table = hashtable_new();
 
     char *a = "value";
     char *b = "cookies";
@@ -101,10 +98,10 @@ void test_hashtable_put()
     /*
      * test collision handling 
      */
-    HashTableProperties *p = hashtable_properties_new();
-    p->hash = collision_hash;
+    hashtable_conf_init(&conf);
+    conf.hash = collision_hash;
 
-    table = hashtable_new(p);
+    table = hashtable_new_conf(&conf);
 
     hashtable_put(table, "key", a);
     hashtable_put(table, "randomstring", c);
@@ -117,14 +114,13 @@ void test_hashtable_put()
     cc_assert(hashtable_get(table, "randomstring") == c,
               cc_msg("hashtable_put: Expected 'm31' to be retrieved, but got %s", c));
 
-    hashtable_properties_destroy(p);
     hashtable_destroy(table);   
 }
 
 
 void test_hashtable_remove()
 {
-    HashTable *table = hashtable_new(properties);
+    HashTable *table = hashtable_new();
 
     char *a = "value";
     char *b = "cookies";
@@ -134,59 +130,64 @@ void test_hashtable_remove()
     hashtable_put(table, "randomstring", b);
     hashtable_put(table, "5", c);
        
-    char *rm = hashtable_remove(table, "randomstring");
-    int size = hashtable_size(table);
+    char   *rm   = hashtable_remove(table, "randomstring");
+    size_t  size = hashtable_size(table);
 
     cc_assert(size == 2,
-              cc_msg("hashtable_remove: Expected size was 2, but got %d", size));
+              cc_msg("hashtable_remove: Expected size was 2, but got %d",
+                     size));
 
     cc_assert(hashtable_get(table, "randomstring") == NULL,
-              cc_msg("hashtable_remove: 'randomstring' key still mapped after removal"));
+              cc_msg("hashtable_remove: 'randomstring' key"
+                     " still mapped after removal"));
 
     hashtable_destroy(table);
 
     /*
      * test collision handling 
      */
-    HashTableProperties *p = hashtable_properties_new();
-    p->hash = collision_hash;
+    hashtable_conf_init(&conf);
+    conf.hash = collision_hash;
 
-    table = hashtable_new(p);
+    table = hashtable_new_conf(&conf);
 
     hashtable_put(table, "key", a);
     hashtable_put(table, "randomstring", c);
     hashtable_put(table, "5", c);
        
     rm = hashtable_remove(table, "randomstring");
-
     size = hashtable_size(table);
 
     cc_assert(size == 2,
-              cc_msg("hashtable_remove: Expected size was 2, but got %d", size));
+              cc_msg("hashtable_remove: Expected size was 2, but got %d",
+                     size));
 
     cc_assert(hashtable_get(table, "randomstring") == NULL,
-              cc_msg("hashtable_remove: Expected 'm31' to be retrieved, but got %s", c));
+              cc_msg("hashtable_remove: Expected 'm31' to"
+                     " be retrieved, but got %s", c));
 
-    hashtable_properties_destroy(p);
     hashtable_destroy(table);   
 }
 
 
 void test_hashtable_remove_all()
 {
-    HashTable *table = hashtable_new(properties);
+    HashTable *table = hashtable_new();
 
     hashtable_put(table, "key", "value");
     hashtable_put(table, "randomkey", "randomvalue");    
 
     hashtable_remove_all(table);
-    int size = hashtable_size(table);
+    size_t size = hashtable_size(table);
 
     cc_assert(size == 0,
-              cc_msg("hashtable_remove_all: Table size %d, when it should be 0", size));
+              cc_msg("hashtable_remove_all: Table size %d,"
+                     " when it should be 0",
+                     size));
 
     cc_assert(hashtable_get(table, "key") == NULL,
-              cc_msg("hashtable_remove_all: Value still accecible after removal"));
+              cc_msg("hashtable_refmove_all: Value still"
+                     " accecible after removal"));
 
     hashtable_destroy(table);
 }
@@ -194,7 +195,7 @@ void test_hashtable_remove_all()
 
 void test_hashtable_get()
 {
-    HashTable *table = hashtable_new(properties);
+    HashTable *table = hashtable_new();
 
     char *val = "567";
 
@@ -204,22 +205,24 @@ void test_hashtable_get()
     char *ret = hashtable_get(table, "123");
     
     cc_assert(ret == val,
-              cc_msg("hashtable_get: Incorrect value returned. Expected %s, but got %s", val, ret));
+              cc_msg("hashtable_get: Incorrect value returned."
+                     " Expected %s, but got %s", val, ret));
 }
 
 
 void test_hashtable_size()
 {
-    HashTable *table = hashtable_new(properties);
+    HashTable *table = hashtable_new();
 
     hashtable_put(table, "key", "value");
     hashtable_put(table, "randomstring", "cookies");
     hashtable_put(table, "5", "asdf");
 
-    int size = hashtable_size(table);
+    size_t size = hashtable_size(table);
 
     cc_assert(size == 3,
-              cc_msg("hashtable_size: Expected size was 3, but got %d", size));
+              cc_msg("hashtable_size: Expected size was 3, but got %d",
+                     size));
 
     hashtable_destroy(table);
 }
@@ -227,12 +230,12 @@ void test_hashtable_size()
 
 void test_hashtable_capacity()
 {
-    HashTableProperties *p = hashtable_properties_new();
+    hashtable_conf_init(&conf);
 
-    p->load_factor = 0.5f;
-    p->initial_capacity = 2;
+    conf.load_factor      = 0.5f;
+    conf.initial_capacity = 2;
     
-    HashTable *t = hashtable_new(p);
+    HashTable *t = hashtable_new_conf(&conf);
 
     hashtable_put(t, "a", NULL);
 
@@ -253,14 +256,13 @@ void test_hashtable_capacity()
               cc_msg("hashtable_capacity: Expected capacity was 16, but got %d", 
                      hashtable_capacity(t)));
 
-    hashtable_properties_destroy(p);
     hashtable_destroy(t);
 }
 
 
 void test_hashtable_contains_key()
 {
-    HashTable *table = hashtable_new(properties);
+    HashTable *table = hashtable_new();
 
     hashtable_put(table, "key", "value");
     hashtable_put(table, "randomstring", "cookies");
@@ -299,13 +301,13 @@ void test_hashtable_memory_chunks_as_keys()
     int array2[] = {34,1,4,1111,456,234,0};
     int array3[] = {0,9,8,7,6,5,4};
 
-    HashTableProperties *p = hashtable_properties_new();
+    hashtable_conf_init(&conf);
     
-    p->hash = GENERAL_HASH;
-    p->key_length = sizeof(int) * 7;
-    p->key_compare = cmp_k;
+    conf.hash        = GENERAL_HASH;
+    conf.key_length  = sizeof(int) * 7;
+    conf.key_compare = cmp_k;
     
-    HashTable *t = hashtable_new(p);
+    HashTable *t = hashtable_new_conf(&conf);
 
     hashtable_put(t, array1, "one");
     hashtable_put(t, array2, "two");
@@ -321,13 +323,12 @@ void test_hashtable_memory_chunks_as_keys()
                      " Expected value 'three', but got %s",
                      hashtable_get(t, array3)));
 
-    hashtable_properties_destroy(p);
     hashtable_destroy(t);
 }
 
 void test_hashtable_iter_next()
 {    
-    HashTable *t = hashtable_new(properties);
+    HashTable *t = hashtable_new();
     
     hashtable_put(t, "one", "1");
     hashtable_put(t, "two", "2");
@@ -369,7 +370,8 @@ void test_hashtable_iter_next()
         (three == 1) && (four == 1) && (five == 1);
 
     cc_assert(asrt,
-              cc_msg("hashtable_iter_next: Unexpected number of entries returned"));
+              cc_msg("hashtable_iter_next: Unexpected number"
+                     " of entries returned"));
 
     hashtable_iter_destroy(iter);
     hashtable_destroy(t);
