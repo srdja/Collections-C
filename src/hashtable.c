@@ -23,14 +23,6 @@
 #define DEFAULT_CAPACITY 16
 #define DEFAULT_LOAD_FACTOR 0.75f
 
-typedef struct table_entry_s {
-    void     *key;
-    void     *value;
-    size_t    hash;
-    
-    struct table_entry_s *next;
-} TableEntry;
-
 struct hashtable_s {
     size_t       capacity;
     size_t       size;
@@ -45,13 +37,6 @@ struct hashtable_s {
     bool     (*key_cmp) (void *k1, void *k2);
 };
 
-struct hashtable_key_iter {
-    HashTable  *table;
-    int         bucket_index;
-    TableEntry *prev_entry;
-    TableEntry *next_entry;
-};
-
 static size_t  get_table_index  (HashTable *table, void *key);
 static bool    resize           (HashTable *t, size_t new_capacity);
 static size_t  round_pow_two    (size_t n);
@@ -61,6 +46,11 @@ static void   *remove_null_key  (HashTable *table);
 static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
                                  size_t src_size, size_t dest_size);
 
+/**
+ * 
+ *
+ * @return a new HashTable
+ */
 HashTable *hashtable_new()
 {
     HashTableConf htc;
@@ -81,7 +71,7 @@ HashTable *hashtable_new()
  */
 HashTable *hashtable_new_conf(HashTableConf *conf)
 {
-    HashTable *table = calloc(1, sizeof(HashTable));
+    HashTable *table   = calloc(1, sizeof(HashTable));
 
     table->hash        = conf->hash;
     table->key_cmp     = conf->key_compare;
@@ -98,8 +88,9 @@ HashTable *hashtable_new_conf(HashTableConf *conf)
 }
 
 /**
+ * Initializes the fields HashTableConf structs field to default values.
  *
- *
+ * @param[in] conf the struct that is being initialized
  */
 void hashtable_conf_init(HashTableConf *conf)
 {

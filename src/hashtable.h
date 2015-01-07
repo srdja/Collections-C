@@ -35,6 +35,21 @@
 typedef struct hashtable_s        HashTable;
 typedef struct hashtable_key_iter HashTableIter;
 
+typedef struct table_entry_s {
+    void     *key;
+    void     *value;
+    size_t    hash;
+    
+    struct table_entry_s *next;
+} TableEntry;
+
+struct hashtable_key_iter {
+    HashTable  *table;
+    size_t      bucket_index;
+    TableEntry *prev_entry;
+    TableEntry *next_entry;
+};
+
 typedef struct hashtable_conf_s {
     float    load_factor;
     size_t   initial_capacity;
@@ -44,6 +59,7 @@ typedef struct hashtable_conf_s {
     size_t (*hash)        (const void *key, int l, uint32_t seed);
     bool   (*key_compare) (void *key1, void *key2);
 } HashTableConf;
+
 
 void       hashtable_conf_init               (HashTableConf *conf);
 HashTable *hashtable_new                     ();
