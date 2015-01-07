@@ -26,7 +26,7 @@ typedef struct node_s {
     struct node_s *prev;
 } Node;
 
-struct dlist_s {
+struct list_s {
     size_t  size;
     Node   *head;
     Node   *tail;
@@ -36,7 +36,7 @@ struct dlist_s {
     void   (*mem_free)   (void *block);
 };
 
-struct dlist_iter_s {
+struct list_iter_s {
     size_t  index;
     List   *list;
     Node   *last;
