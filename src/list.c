@@ -43,13 +43,6 @@ struct dlist_iter_s {
     Node   *next;
 };
 
-struct dlist_iter_desc_s { 
-    size_t  index;
-    List   *list;
-    Node   *last;
-    Node   *next;
-};
-
 static void *unlink              (List *list, Node *node);
 static bool  unlink_all          (List *list, bool free);
 static void  link_behind         (Node *node, Node *inserted);
@@ -90,11 +83,11 @@ List *list_new()
 
 List *list_new_conf(ListConf *conf)
 {
-    List *list = lc->mem_calloc(1, sizeof(List));
+    List *list = conf->mem_calloc(1, sizeof(List));
 
-    list->mem_alloc  = lc->mem_alloc;
-    list->mem_calloc = lc->mem_calloc;
-    list->mem_free   = lc->mem_free;
+    list->mem_alloc  = conf->mem_alloc;
+    list->mem_calloc = conf->mem_calloc;
+    list->mem_free   = conf->mem_free;
 
     return list;
 }
@@ -730,9 +723,9 @@ List *list_sublist(List *list, size_t b, size_t e)
 
     ListConf conf;
 
-    conf->mem_alloc  = list->mem_alloc;
-    conf->mem_calloc = list->mem_calloc;
-    conf->mem_free   = list->mem_free;
+    conf.mem_alloc  = list->mem_alloc;
+    conf.mem_calloc = list->mem_calloc;
+    conf.mem_free   = list->mem_free;
     
     List *sub  = list_new_conf(&conf);
     Node *node = get_node_at(list, b);
@@ -758,9 +751,9 @@ List *list_copy_shallow(List *list)
 {
     ListConf conf;
 
-    conf->mem_alloc  = list->mem_alloc;
-    conf->mem_calloc = list->mem_calloc;
-    conf->mem_free   = list->mem_free;        
+    conf.mem_alloc  = list->mem_alloc;
+    conf.mem_calloc = list->mem_calloc;
+    conf.mem_free   = list->mem_free;        
     
     List *copy = list_new_conf(&conf);
     Node *node = list->head;
@@ -788,9 +781,9 @@ List *list_copy_deep(List *list, void *(*cp) (void *e1))
 {
     ListConf conf;
 
-    conf->mem_alloc  = list->mem_alloc;
-    conf->mem_calloc = list->mem_calloc;
-    conf->mem_free   = list->mem_free;
+    conf.mem_alloc  = list->mem_alloc;
+    conf.mem_calloc = list->mem_calloc;
+    conf.mem_free   = list->mem_free;
     
     List *copy = list_new_conf(&conf);
     Node *node = list->head;
@@ -1229,9 +1222,9 @@ void *list_iter_next(ListIter *iter)
  *
  * @return a new descending iterator.
  */
-ListDIter *list_diter_new(List *list)
+ListIter *list_diter_new(List *list)
 {
-    ListDIter *iter = list->mem_alloc(sizeof(ListDIter));
+    ListIter *iter = list->mem_alloc(sizeof(ListIter));
 
     if (!iter)
         return NULL;
@@ -1249,7 +1242,7 @@ ListDIter *list_diter_new(List *list)
  * 
  * @param[in] iter the iterator to be destroyed
  */
-void list_diter_destroy(ListDIter *iter)
+void list_diter_destroy(ListIter *iter)
 {
     iter->list->mem_free(iter);
 }
@@ -1264,7 +1257,7 @@ void list_diter_destroy(ListDIter *iter)
  * 
  * @return true if the operation was successful
  */
-bool list_diter_add(ListDIter *iter, void *element)
+bool list_diter_add(ListIter *iter, void *element)
 {
     Node *new_node = iter->list->mem_calloc(1, sizeof(Node));
 
@@ -1297,7 +1290,7 @@ bool list_diter_add(ListDIter *iter, void *element)
  *
  * @return the removed element, or NULL
  */
-void *list_diter_remove(ListDIter *iter)
+void *list_diter_remove(ListIter *iter)
 {
     if (!iter->last)
         return NULL;
@@ -1316,7 +1309,7 @@ void *list_diter_remove(ListDIter *iter)
  *
  * @return the replaced element
  */
-void *list_diter_replace(ListDIter *iter, void *element)
+void *list_diter_replace(ListIter *iter, void *element)
 {
     void *old = iter->last->data;
     iter->last->data = element;
@@ -1331,7 +1324,7 @@ void *list_diter_replace(ListDIter *iter, void *element)
  *
  * @return the index of the last returned element
  */
-size_t dlist_diter_index(ListDIter *iter)
+size_t dlist_diter_index(ListIter *iter)
 {
     return iter->index - 1;
 }
@@ -1346,7 +1339,7 @@ size_t dlist_diter_index(ListDIter *iter)
  * @return true if there is at least one more element in the sequence or false
  * if the end of the list has been reached.
  */
-bool list_diter_has_next(ListDIter *iter)
+bool list_diter_has_next(ListIter *iter)
 {
     return iter->next != NULL;
 }
@@ -1361,7 +1354,7 @@ bool list_diter_has_next(ListDIter *iter)
  *
  * @return the next element in the sequence
  */
-void *list_diter_next(ListDIter *iter)
+void *list_diter_next(ListIter *iter)
 {
     void *data = iter->next->data;
     iter->last = iter->next;

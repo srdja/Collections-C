@@ -25,7 +25,6 @@
 
 typedef struct dlist_s            List;
 typedef struct dlist_iter_s       ListIter;
-typedef struct dlist_iter_desc_s  ListDIter;
 
 typedef struct list_conf_s {
     void  *(*mem_alloc)  (size_t size);
@@ -88,13 +87,13 @@ bool       list_iter_has_next   (ListIter *iter);
 size_t     list_iter_index      (ListIter *iter);
 void*      list_iter_next       (ListIter *iter);
 
-ListDIter* list_diter_new       (List *list);
-void       list_diter_destroy   (ListDIter *iter);
-void*      list_diter_remove    (ListDIter *iter);
-bool       list_diter_add       (ListDIter *iter, void *element);
-void*      list_diter_replace   (ListDIter *iter, void *element);
-bool       list_diter_has_next  (ListDIter *iter);
+ListIter*  list_diter_new       (List *list);
+void       list_diter_destroy   (ListIter *iter);
+void*      list_diter_remove    (ListIter *iter);
+bool       list_diter_add       (ListIter *iter, void *element);
+void*      list_diter_replace   (ListIter *iter, void *element);
+bool       list_diter_has_next  (ListIter *iter);
 size_t     list_iter_index      (ListIter *iter);
-void*      list_diter_next      (ListDIter *iter);
+void*      list_diter_next      (ListIter *iter);
 
 #endif /* LIST_H_ */
