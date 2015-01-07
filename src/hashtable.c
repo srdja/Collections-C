@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -49,9 +49,11 @@ static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_buck
                                  size_t src_size, size_t dest_size);
 
 /**
- * 
+ * Allocates a new HashTable object using the standard allocators. The newly 
+ * created HashTable will work with string keys. NULL may be returned if the
+ * underlying memory allocators fail.
  *
- * @return a new HashTable
+ * @return a new HashTable or NULL if the memory allocation fails.
  */
 HashTable *hashtable_new()
 {
@@ -60,16 +62,16 @@ HashTable *hashtable_new()
     return hashtable_new_conf(&htc);
 }
 
-// Creates a new configured hash table.
-
 /**
- * Creates a new HashTable based on the provided HashTable properties. The 
- * HashTable properties object is not modified by this function, therefore it can
- * be reused for future hash tables.
+ * Allocates a new configured HashTable based on the provided HashTableConf object.
+ * The table is allocated using the memory allocators specified in the HashTableConf
+ * object. In case the allocation of the table structure fails, NULL is returned.
+ * The HashTableConf object is not modified by this function and can therefore 
+ * be used for other tables.
  *
- * @param properties a the HashTableProperties object used to configure this new
- *                     HashTable
- * @return a new HashTable object
+ * @param conf the HashTableConf object used to configure this new HashTable
+ *
+ * @return a new HashTable or NULL if the memory allocation fails.
  */
 HashTable *hashtable_new_conf(HashTableConf *conf)
 {
@@ -92,7 +94,7 @@ HashTable *hashtable_new_conf(HashTableConf *conf)
 }
 
 /**
- * Initializes the fields HashTableConf structs field to default values.
+ * Initializes the fields HashTableConf structs fields to default values.
  *
  * @param[in] conf the struct that is being initialized
  */
@@ -111,7 +113,8 @@ void hashtable_conf_init(HashTableConf *conf)
 
 /**
  * Destroys the specified HashTable structure without destroying the the data
- * contained within it. 
+ * contained within it. In other words the keys and the values are not freed,
+ * but only the table structure.
  *
  * @param[in] table HashTable to be destroyed.
  */
@@ -374,10 +377,13 @@ void hashtable_remove_all(HashTable *table)
 
 /**
  * Resizes the table to match the provided capacity. The new capacity must be a
- * power of two.
+ * power of two. This function returns true if the resize was successfull or false
+ * if not.
  *
  * @param[in] table the table that is being resized.
  * @param[in] new_capacity the new capacity to which the table should be resized
+ *
+ * @return true if the resize was successfull
  */
 static bool resize(HashTable *t, size_t new_capacity)
 {
@@ -506,11 +512,13 @@ bool hashtable_contains_key(HashTable *table, void *key)
 }
 
 /**
- * Returns a Vector of hashtable values.
+ * Returns a Vector of hashtable values. The returned Vector is allocated
+ * using the same memory allocators used by the HashTable. NULL may be 
+ * returned if the memory allocation of the Vector structure fails.
  *
- * @param[in] table the table whos values are being returned
+ * @param[in] table the table whose values are being returned
  *
- * @return a list of values
+ * @return a Vector of values or NULL
  */
 Vector *hashtable_get_values(HashTable *table)
 {
@@ -543,11 +551,13 @@ Vector *hashtable_get_values(HashTable *table)
 }
 
 /**
- * Returns a list of hashtable keys.
+ * Returns a Vector of hashtable keys. The returned Vector is allocated
+ * using the same memory allocators used by the HashTable. NULL may be
+ * returned if the memory allocation of the Vector structure fails.
  *
  * @param[in] table the table whos keys are being returned
  *
- * @return a list of keys
+ * @return a Vector of keys or NULL
  */
 Vector *hashtable_get_keys(HashTable *table)
 {
@@ -744,7 +754,7 @@ void hashtable_foreach_value(HashTable *table, void (*op) (void *val))
 }
 
 /**
- * Initializes the HashTableIter.
+ * Initializes the HashTableIter structure.
  * 
  * @note The order at which the entries are returned is unspecified.
  *
