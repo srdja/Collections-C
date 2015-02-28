@@ -50,15 +50,15 @@ Vector *vector_new()
 }
 
 /**
- * Returns a new empty vector based on the specified VectorConf struct. 
+ * Returns a new empty vector based on the specified VectorConf struct.
  *
- * The vector is allocated using the allocators specified in the VectorConf 
+ * The vector is allocated using the allocators specified in the VectorConf
  * struct. The allocation may fail if underlying allocator fails. It may also
- * fail if the values of exp_factor and capacity in the VectorConf do not meet 
+ * fail if the values of exp_factor and capacity in the VectorConf do not meet
  * the following condition: <code>exp_factor < (MAX_ELEMENTS / capacity)</code>.
  *
  * @param[in] conf Vector configuration struct. All fields must be initialized to
- *                 appropriate values. 
+ *                 appropriate values.
  *
  * @return a new vector if the allocation was successful, or NULL if not.
  */
@@ -68,17 +68,17 @@ Vector *vector_new_conf(VectorConf *conf)
 
     if (vec == NULL)
         return NULL;
-    
+
     if (conf->exp_factor <= 1)
         vec->exp_factor = DEFAULT_EXPANSION_FACTOR;
-    
+
     /* Needed to avoid an integer overflow on the first resize and
      * to easily check for any future oveflows. */
     else if (conf->exp_factor >= MAX_ELEMENTS / conf->capacity)
         return NULL;
     else
         vec->exp_factor = conf->exp_factor;
-    
+
     vec->capacity   = conf->capacity;
     vec->mem_alloc  = conf->mem_alloc;
     vec->mem_calloc = conf->mem_calloc;
@@ -92,7 +92,7 @@ Vector *vector_new_conf(VectorConf *conf)
  * Initializes the fields of the VectorConf struct to default values.
  *
  * @param[in, out] conf the struct that is being initialized
- */ 
+ */
 void vector_conf_init(VectorConf *conf)
 {
     conf->exp_factor = DEFAULT_EXPANSION_FACTOR;
@@ -117,24 +117,24 @@ void vector_destroy(Vector *vec)
  * Destroys the vector structure along with all the data it holds.
  *
  * @note
- * This functions should not be called on a vector that has some of it's elements
+ * This function should not be called on a vector that has some of its elements
  * allocated on the stack.
- * 
- * @param[in] vect the vector that is being destroyed.
+ *
+ * @param[in] vect the vector that is being destroyed
  */
 void vector_destroy_free(Vector *vec)
 {
     int i;
     for (i = 0; i < vec->size; i++)
         vec->mem_free(vec->buffer[i]);
-    
+
     vector_destroy(vec);
 }
 
 /**
  * Adds a new element to the vector. The element is appended to the vector making
  * it the last element (the one with the highest index) of the vector. This
- * function returns a <code>bool</code> based on whether or not the space allocation 
+ * function returns a <code>bool</code> based on whether or not the space allocation
  * for the new element was successful or not.
  *
  * @param[in] vect the vector to which the element is being added
@@ -157,7 +157,7 @@ bool vector_add(Vector *vec, void *element)
  * Adds a new element to the vector at a specified position by shifting all
  * subsequent elemnts by one. The specified index must be within the bounds
  * of the vector, otherwise this operation will fail and false will be
- * returned to indicate failure. This function may also fail if the space 
+ * returned to indicate failure. This function may also fail if the space
  * allocation for the new element was unsuccessful.
  *
  * @param[in] vect the vector to which the element is being added
@@ -171,12 +171,12 @@ bool vector_add_at(Vector *vec, void *element, size_t index)
 {
     if (index > (vec->size - 1))
         return false;
-    
+
     if (vec->size == vec->capacity && !expand_capacity(vec))
         return false;
-    
+
     size_t shift = (vec->size - index) * sizeof(void*);
-    
+
     memmove(&(vec->buffer[index + 1]),
             &(vec->buffer[index]),
             shift);
@@ -231,7 +231,7 @@ void *vector_remove(Vector *vec, void *element)
 
     if (index != vec->size - 1) {
         size_t block_size = (vec->size - index) * sizeof(void*);
-        
+
         memmove(&(vec->buffer[index]),
                 &(vec->buffer[index + 1]),
                 block_size);
@@ -246,7 +246,7 @@ void *vector_remove(Vector *vec, void *element)
  * be within the bounds of the vector, otherwise NULL is returned. NULL may also
  * returned if the removed element was NULL. To resolve this ambiguity call
  * <code>vector_contains()</code> before this function.
- * 
+ *
  * @param[in] vect the vector from which the element is being removed
  * @param[in] index the index of the element being removed.
  *
@@ -261,7 +261,7 @@ void *vector_remove_at(Vector *vec, size_t index)
 
     if (index != vec->size - 1) {
         size_t block_size = (vec->size - index) * sizeof(void*);
-        
+
         memmove(&(vec->buffer[index]),
                 &(vec->buffer[index + 1]),
                 block_size);
@@ -274,10 +274,10 @@ void *vector_remove_at(Vector *vec, size_t index)
 /**
  * Removes and returns a vector element from the end of the vector. Or NULL if
  * vector is empty. NULL may also be returned if the last element of the vector
- * is null. This ambiguity can be resolved by calling <code>vector_size()</code>
- * before this function.
+ * is NULL value. This ambiguity can be resolved by calling <code>vector_size()
+ * </code>before this function.
  *
- * @param the vector whose last element is being returned
+ * @param[in] the vector whose last element is being removed
  *
  * @return the last element of the vector ie. the element at the highest index
  */
@@ -314,7 +314,7 @@ void vector_remove_all_free(Vector *vec)
 
 /**
  * Returns a vector element from the specified index. The specified index must be
- * within the bounds of the vector, otherwise NULL is returned. NULL can also be 
+ * within the bounds of the vector, otherwise NULL is returned. NULL can also be
  * returned if the element at the specified index is NULL. This ambiguity can be
  * resolved by calling <code>vector_contains()</code> before this function.
  *
@@ -334,9 +334,9 @@ void *vector_get(Vector *vec, size_t index)
 
 /**
  * Returns the last element of the vector ie. the element at the highest index,
- * or NULL if the vector is empty. Null may also be returned if the vector is
- * empty. This ambiguity can be resolved by calling <code>vector_size()</code>
- * before this function.
+ * or NULL if the vector is empty. Null may also be returned if the last element
+ * of the vector is NULL. This ambiguity can be resolved by calling <code>
+ * vector_size()</code> before this function.
  *
  * @param[in] the vector whose last element is being returned
  *
@@ -392,7 +392,7 @@ size_t vector_index_of(Vector *vec, void *element)
  *
  * @param[in] vec the vector from which the subvector is being returned
  * @param[in] b the beginning index (inclusive) of the subvector that must be
- *              within the bounds of the vector and must not exceed the 
+ *              within the bounds of the vector and must not exceed the
  *              the end index
  * @param[in] e the end index (inclusive) of the subvector that must be within
  *              the bounds of the vector and must be greater or equal to the
@@ -412,7 +412,7 @@ Vector *vector_subvector(Vector *vec, size_t b, size_t e)
     sub_vec->size       = e - b + 1;
     sub_vec->capacity   = sub_vec->size;
     sub_vec->buffer     = vec->mem_alloc(sub_vec->capacity * sizeof(void*));
-    
+
     memcpy(sub_vec->buffer,
            &(vec->buffer[b]),
            sub_vec->size * sizeof(void*));
@@ -511,10 +511,10 @@ void vector_trim_capacity(Vector *vec)
 
     void   **new_buff = vec->mem_calloc(vec->size, sizeof(void*));
     size_t   size     = vec->size < 1 ? 1 : vec->size;
-    
-    memcpy(new_buff, vec->buffer, size * sizeof(void*));    
+
+    memcpy(new_buff, vec->buffer, size * sizeof(void*));
     vec->mem_free(vec->buffer);
-    
+
     vec->buffer   = new_buff;
     vec->capacity = vec->size;
 }
@@ -523,7 +523,7 @@ void vector_trim_capacity(Vector *vec)
  * Returns the number of occurrences of the element within the specified vector.
  *
  * @param[in] vect the vector that is being searched
- * @param[in] element the elment that is being searched for
+ * @param[in] element the element that is being searched for
  *
  * @return the number of occurrences of the element
  */
@@ -568,8 +568,8 @@ size_t vector_capacity(Vector *vec)
  * Sorts the specified vector.
  *
  * @note
- * Pointers passed to the comparator function will be pointers to the vector 
- * elements that are of type (void*) ie. void**. So an extra step of 
+ * Pointers passed to the comparator function will be pointers to the vector
+ * elements that are of type (void*) ie. void**. So an extra step of
  * dereferencing will be required before the data can be used for comparison:
  * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
  *
@@ -586,10 +586,10 @@ void vector_sort(Vector *vec, int (*cmp) (const void*, const void*))
 }
 
 /**
- * Expands the vector capacity. This might fail if the the new buffer 
- * cannot be allocated. In case the expansion would overflow the index 
+ * Expands the vector capacity. This might fail if the the new buffer
+ * cannot be allocated. In case the expansion would overflow the index
  * range, a maximum capacity buffer is allocated instead. If the capacity
- * is already at the maximum capacity, no new buffer is allocated and 
+ * is already at the maximum capacity, no new buffer is allocated and
  * false is returned to indicate the failure.
  *
  * @param[in] vect vector whose capacity is being expanded
@@ -600,16 +600,16 @@ static bool expand_capacity(Vector *vec)
 {
     if (vec->capacity == MAX_ELEMENTS)
         return false;
-    
+
     size_t new_capacity = vec->capacity * vec->exp_factor;
-    
+
     /* As long as the capacity is greater that the expansion factor
      * at the point of overflow, this is check is valid. */
     if (new_capacity <= vec->capacity)
         vec->capacity = MAX_ELEMENTS;
     else
         vec->capacity = new_capacity;
-    
+
     void **new_buff = vec->mem_alloc(new_capacity * sizeof(void*));
 
     if (new_buff == NULL)
@@ -628,7 +628,7 @@ static bool expand_capacity(Vector *vec)
  * in the vector.
  *
  * @param[in] vect the vector on which this operation is performed
- * @param[in] op the operation function that is to be invoked on each vector 
+ * @param[in] op the operation function that is to be invoked on each vector
  *               element
  */
 void vector_foreach(Vector *vec, void (*op) (void *e))
@@ -683,7 +683,7 @@ void *vector_iter_next(VectorIter *iter)
  * @return the removed element
  */
 void *vector_iter_remove(VectorIter *iter)
-{ 
+{
     return vector_remove_at(iter->vec, iter->index - 1);
 }
 
@@ -702,7 +702,7 @@ void vector_iter_add(VectorIter *iter, void *element)
 /**
  * Replaces the last returned element by <code>vector_iter_next()</code>
  * with the specified replacement element.
- * 
+ *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
  *
@@ -725,4 +725,3 @@ size_t vector_iter_index(VectorIter *iter)
 {
     return iter->index;
 }
-
