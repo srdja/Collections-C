@@ -29,7 +29,7 @@ struct hashtable_s {
     size_t       threshold;
     uint32_t     hash_seed;
     int          key_len;
-    float        load_factor;   
+    float        load_factor;
     TableEntry **buckets;
 
     size_t  (*hash)       (const void *key, int l, uint32_t seed);
@@ -49,7 +49,7 @@ static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_buck
                                  size_t src_size, size_t dest_size);
 
 /**
- * Allocates a new HashTable object using the standard allocators. The newly 
+ * Allocates a new HashTable object using the standard allocators. The newly
  * created HashTable will work with string keys. NULL may be returned if the
  * underlying memory allocators fail.
  *
@@ -66,7 +66,7 @@ HashTable *hashtable_new()
  * Allocates a new configured HashTable based on the provided HashTableConf object.
  * The table is allocated using the memory allocators specified in the HashTableConf
  * object. In case the allocation of the table structure fails, NULL is returned.
- * The HashTableConf object is not modified by this function and can therefore 
+ * The HashTableConf object is not modified by this function and can therefore
  * be used for other tables.
  *
  * @param conf the HashTableConf object used to configure this new HashTable
@@ -76,6 +76,9 @@ HashTable *hashtable_new()
 HashTable *hashtable_new_conf(HashTableConf *conf)
 {
     HashTable *table   = conf->mem_calloc(1, sizeof(HashTable));
+
+    if (table == NULL)
+        return NULL;
 
     table->hash        = conf->hash;
     table->key_cmp     = conf->key_compare;
@@ -136,7 +139,7 @@ void hashtable_destroy(HashTable *table)
 
 /**
  * Creates a new key-value mapping in the specified HashTable. If the unique key
- * is already mapped to a value in this table, that value is replaced with the 
+ * is already mapped to a value in this table, that value is replaced with the
  * new value. This operation may fail if the space allocation for the new entry
  * fails.
  *
@@ -153,12 +156,12 @@ bool hashtable_put(HashTable *table, void *key, void *val)
 
     if (!key)
         return put_null_key(table, val);
-            
+
     const size_t hash = table->hash(key, table->key_len, table->hash_seed);
     const size_t i    = hash & (table->capacity - 1);
 
     TableEntry *replace = table->buckets[i];
-    
+
     while (replace) {
         if (table->key_cmp(replace->key, key)) {
             replace->value = val;
@@ -195,7 +198,7 @@ bool hashtable_put(HashTable *table, void *key, void *val)
 static bool put_null_key(HashTable *table, void *val)
 {
     TableEntry *replace = table->buckets[0];
-    
+
     while (replace) {
         if (!replace->key) {
             replace->value = val;
@@ -203,7 +206,7 @@ static bool put_null_key(HashTable *table, void *val)
         }
         replace = replace->next;
     }
-    
+
     TableEntry *new_entry = table->mem_alloc(sizeof(TableEntry));
 
     if (!new_entry)
@@ -221,7 +224,7 @@ static bool put_null_key(HashTable *table, void *val)
 }
 
 /**
- * Returns a value associated with the specified key. If there is no value 
+ * Returns a value associated with the specified key. If there is no value
  * associated with this key, NULL is returned. In the case where the provided
  * key explicitly maps to a NULL value, calling <code>hashtable_contains_key()
  * </code> before this function can resolve the ambiguity.
@@ -251,7 +254,7 @@ void *hashtable_get(HashTable *table, void *key)
 
 /**
  * Returns a value associated with the NULL key. If there is not value mapped to
- * the NULL key NULL is returned. NULL may also be returned if the NULL key 
+ * the NULL key NULL is returned. NULL may also be returned if the NULL key
  * mapps to a NULL value.
  *
  * @param[in] table the table from which the value mapped to this key is being
@@ -321,7 +324,7 @@ void *hashtable_remove(HashTable *table, void *key)
  * value that was mapped to the NULL key. In case the NULL key doesn't exist
  * NULL is returned. NULL might also be returned if a NULL key is mapped to a
  * NULL value.
- * 
+ *
  * @param[in] table the table from which the NULL key mapping is being removed
  *
  * @return the value associated with the NULL key, or NULL if the NULL key was
@@ -333,10 +336,10 @@ void *remove_null_key(HashTable *table)
 
     TableEntry *prev = NULL;
     TableEntry *next = NULL;
- 
+
     while (e) {
         next = e->next;
-        
+
         if (e->key == NULL) {
             void *value = e->value;
 
@@ -446,7 +449,7 @@ static INLINE size_t round_pow_two(size_t n)
  * @param[in] src_size    size of the source bucket
  * @param[in] dest_size   size of the destination bucket
  */
-static INLINE void 
+static INLINE void
 move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
              size_t       src_size,   size_t       dest_size)
 {
@@ -513,7 +516,7 @@ bool hashtable_contains_key(HashTable *table, void *key)
 
 /**
  * Returns a Vector of hashtable values. The returned Vector is allocated
- * using the same memory allocators used by the HashTable. NULL may be 
+ * using the same memory allocators used by the HashTable. NULL may be
  * returned if the memory allocation of the Vector structure fails.
  *
  * @param[in] table the table whose values are being returned
@@ -524,14 +527,14 @@ Vector *hashtable_get_values(HashTable *table)
 {
     VectorConf vc;
     vector_conf_init(&vc);
-    
+
     vc.capacity   = table->size;
     vc.mem_alloc  = table->mem_alloc;
     vc.mem_calloc = table->mem_calloc;
     vc.mem_free   = table->mem_free;
-    
+
     Vector *v = vector_new_conf(&vc);
-    
+
     if (!v)
         return NULL;
 
@@ -568,7 +571,7 @@ Vector *hashtable_get_keys(HashTable *table)
     vc.mem_alloc  = table->mem_alloc;
     vc.mem_calloc = table->mem_calloc;
     vc.mem_free   = table->mem_free;
-    
+
     Vector *keys = vector_new_conf(&vc);
 
     if (!keys)
@@ -755,7 +758,7 @@ void hashtable_foreach_value(HashTable *table, void (*op) (void *val))
 
 /**
  * Initializes the HashTableIter structure.
- * 
+ *
  * @note The order at which the entries are returned is unspecified.
  *
  * @param[in] iter the iterator that is being initialized
@@ -797,7 +800,7 @@ TableEntry *hashtable_iter_next(HashTableIter *iter)
 {
     iter->prev_entry = iter->next_entry;
     iter->next_entry = iter->next_entry->next;
-   
+
     if (iter->next_entry)
         return iter->prev_entry;
 
@@ -878,7 +881,7 @@ inline uint64_t rotl64(uint64_t x, int8_t r)
 /*****************************************************************************
  *
  *                            -- 64bit --
- * 
+ *
  ****************************************************************************/
 #ifdef ARCH_64
 
@@ -918,7 +921,7 @@ uint64_t hashtable_hash(const void *key, int len, uint32_t seed)
         h1  = ROTL64(h1,27);
         h1 += h2;
         h1  = h1 * 5 + 0x52dce729;
-        
+
         k2 *= c2;
         k2  = ROTL64(k2,33);
         k2 *= c1;
@@ -927,7 +930,7 @@ uint64_t hashtable_hash(const void *key, int len, uint32_t seed)
         h2 += h1;
         h2  = h2 * 5 + 0x38495ab5;
     }
-    
+
     const uint8_t *tail = (const uint8_t*)(data + nblocks*16);
 
     uint64_t k1 = 0;
@@ -999,7 +1002,7 @@ uint64_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
         h1  = ROTL64(h1,27);
         h1 += h2;
         h1  = h1 * 5 + 0x52dce729;
-  
+
         k2 *= c2;
         k2  = ROTL64(k2,33);
         k2 *= c1;
@@ -1009,9 +1012,9 @@ uint64_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
         h2  = h2 * 5 + 0x38495ab5;
     }
 
-    /* Since the pointers are power of two length 
+    /* Since the pointers are power of two length
      * we don't need a tail mix */
-    
+
     h1 ^= len; h2 ^= len;
 
     h1 += h2;
@@ -1023,14 +1026,14 @@ uint64_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
     h1 += h2;
     h2 += h1;
 
-    return h1;   
+    return h1;
 }
 
 
 /*****************************************************************************
  *
  *                            -- 32bit --
- * 
+ *
  ****************************************************************************/
 #else
 
@@ -1057,7 +1060,7 @@ size_t hashtable_hash(const void *key, int len, uint32_t seed)
 
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
-    
+
     const uint32_t *blocks = (const uint32_t *)(data + nblocks*4);
 
     int i;
@@ -1097,7 +1100,7 @@ size_t hashtable_hash(const void *key, int len, uint32_t seed)
  * MurmurHash3 the 32bit variant that hashes the pointer itself
  */
 size_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
-{ 
+{
     const int nblocks = len / 4;
 
     uint32_t h1 = seed;
@@ -1118,9 +1121,9 @@ size_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
         h1 = h1*5+0xe6546b64;
     }
 
-    /* Since the pointers are power of two length 
+    /* Since the pointers are power of two length
      * we don't need a tail mix */
-    
+
     h1 ^= len;
     h1  = fmix32(h1);
 
