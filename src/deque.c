@@ -203,7 +203,15 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
  */
 void *deque_replace_at(Deque *deque, void *element, size_t index)
 {
+    if (index >= deque->size)
+        return NULL;
 
+    size_t  i   = (deque->first + index) & (deque->capacity - 1);
+    void   *old = deque->buffer[i];
+
+    deque->buffer[i] = element;
+
+    return old;
 }
 
 /**
@@ -526,7 +534,7 @@ static void copy_buffer(Deque *deque, void **buff, void *(*cp) (void *))
             memcpy(&(buff[e]), deque->buffer, l * sizeof(void*));
         }
     } else {
-        int i;
+        size_t i;
         for (i = 0; i < deque->size; i++) {
             size_t p = (deque->first + i) & (deque->capacity - 1);
             buff[i]  = cp(deque->buffer[p]);
