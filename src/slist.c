@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -41,12 +41,9 @@ struct slist_iter_s {
 
 static void* unlink              (SList *list, Node *node, Node *prev);
 static bool  unlink_all          (SList *list, bool freed);
-
 static void  splice_between      (SList *list1, SList *list2, Node *base, Node *end);
-
 static bool  get_node_at         (SList *list, size_t index, Node **node, Node **prev);
 static bool  get_node            (SList *list, void *element, Node **node, Node **prev);
-
 static bool  link_all_externally (SList *list, Node **h, Node **t);
 
 /**
@@ -845,7 +842,6 @@ void slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
         node->data = elements[i];
         node       = node->next;
     }
-
     free(elements);
 }
 
@@ -935,10 +931,9 @@ bool slist_iter_add(SListIter *iter, void *element)
     if (!new_node)
         return false;
 
-    new_node->data = element;
-    new_node->next = iter->next;
-
-    iter->prev = iter->current;
+    new_node->data      = element;
+    new_node->next      = iter->next;
+    iter->prev          = iter->current;
     iter->current->next = new_node;
     
     if (iter->index == iter->list->size - 1)
