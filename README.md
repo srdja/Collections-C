@@ -1,7 +1,7 @@
 Collections-C
 =============
 
-A collections library for C.
+A library of common container types including lists, vectors, hashtables, deques etc..
 
 
 ## Contents
