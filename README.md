@@ -1,8 +1,7 @@
 Collections-C
 =============
 
-A library of common container types including lists, vectors, hashtables, deques etc..
-
+A library of common container types including a list, vector, hashtable, deque etc..
 
 ## Contents
 - [Getting started](#gettingstarted)
@@ -12,9 +11,7 @@ A library of common container types including lists, vectors, hashtables, deques
 - [Setting up the environment](#evn)
 - [Building the project](#project)
 
-##### Setting up the environment
-- [GNU/Linux] (#gnulinux)
-- [Windows] (#windows)
+#### Setting up the environment
 
 ##### GNU/Linux
 In order to successfully build the project, the following packages must installed first:
@@ -33,12 +30,12 @@ These packages can usually be installed through your distributions package manag
 ##### Windows
 Building on windows requires MinGW which provides all the tools needed to build the project and it can be downloaded from the [MinGW website](http://mingw.org).
 
-##### Building the project
+#### Building the project
 Using the therminal emulator navigate to the project directory
 ```
 cd /path/to/project/Collections-C
 ```
-once there run
+once there, run the autogen script
 ```
 ./autogen.sh
 ```
@@ -60,11 +57,6 @@ make check
 ### Examples
 - [List](#list)
 - [HashTable](#hashtable)
-- [Vector](#vector)
-- [Stack](#stack)
-- [Queue](#queue)
-- [Deque](#deque)
-- [HashSet](#hashset)
 
 #### List
 * * *
@@ -80,7 +72,7 @@ list_add(mylist, &my_list_element);
 ```c
 list_remove(mylist, &my_list_element);
 ```
-or from a specific splace
+or from a specific place
 ```c
 list_remove_at(mylist, elmenet_index);
 ```
@@ -98,29 +90,7 @@ and then we could call the `list_foreach()` with our callback to print the entir
 ```c
 list_foreach(mylist, print);
 ```
-##### Iterating over the list with an iterator object
-While the foreach function is handy when we simply want to go over each list element, it does have limitations.
-For instance we could not edit the list during iteration (insert or remove elements). This is where the List Iterator
-comes into play. 
 
-We first create a new iterator object that will work with our list
-```c
-ListIter *iter = list_iter_new(mylist);
-```
-Now we can iterate over the list using the `list_iter_has_next()` and `list_iter_next()` functions.
-The `list_iter_has_next()` function checks whether there are any more elements in the sequence, while the
-`list_iter_next()` returns the next element and advances the iterator.
-```c
-while (list_iter_has_next(iter)) {
-    MyType *e = list_iter_next(iter);
-}
-```
-Any editing of the list structure should be done through the iterator functions `list_iter_remove(iter)` or `list_iter_add(iter, &new_element)`, otherwise the iterator will be invalidated.
-
-After we are done, we can destroy the iterator.
-```c
-list_iter_destroy(iter);
-```
 ##### Getting a specific element from the list:
 
 ```c
@@ -136,20 +106,12 @@ list_destroy(mylist);
 * * *
 ##### Creating a new HashTable
 
-Before we can create a new HashTable we first need to create a HashTableProperties object that will be used 
-in the creation of the new HashTable.
-
 ```c
-HashTableProperties *p = hashtable_properties_new();
+HashTable *table = hashtable_new();
 ```
-The fields `hash`, `key_length` and `key_compare` determine the hash function, key length in bytes and the key
-comparator function. By default the HashTableProperties object is configured for string `(char*)` keys. So if we
-want to use strings as keys, we don't have to modify anything.
+By default the hashtable is configured to work with string keys, however, it can be configured to work
+with other types of keys by 
 
-Now that have a HashTableProperties object we can create a new HashTable:
-```c
-HashTable *table = hashtable_new(p);
-```
 ##### Adding new mappings
 ```c
 hashtable_put(table, "key", "value");
@@ -209,12 +171,3 @@ After we are done, we can destroy the iterator:
 ```c
 hashtable_iter_destroy(iter);
 ```
-#### Vector
-
-#### Stack
-
-#### Queue
-
-#### HashSet
-
-#### Deque
