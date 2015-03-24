@@ -180,17 +180,95 @@ bool deque_add_last(Deque *deque, void *element)
 }
 
 /**
+ * Adds a new element to the specified position within the deque. The position
+ * must be within the range of the deque, otherwise this operation will fail and
+ * return false to indicate the failure. This function may also fail if the
+ * memory allocation for the new element was not successful.
  *
+ * @param[in] deque the deque to which this new element is being added
+ * @param[in] element the element that is being added
+ * @param[in] index the position within the dequeu at which this new element is
+ *                  is being added
  *
- * @param[in] deque
- * @param[in] element
- * @param[in] index
- *
- * @return
+ * @return true if the the operation was successful or false if not
  */
 bool deque_add_at(Deque *deque, void *element, size_t index)
 {
+    if (deque->capacity == deque->size && !expand_capacity(deque))
+        return false;
 
+    if (index > deque->size)
+        return false;
+
+    const size_t c = deque->capacity - 1;
+    const size_t l = deque->last & c;
+    const size_t f = deque->first & c;
+    const size_t p = (deque->first + index) & c;
+
+    if (index == 0)
+        return deque_add_first(deque, element);
+
+    if (index == c)
+        return deque_add_last(deque, element);
+
+    /* Make sure we move the lest possible number of elements */
+    if (index < (deque->size / 2)) {
+        /* Check if the elemement position is to the right. */
+        if (p < f || f == 0) {
+            /* The number of elements from the end of the buffer
+               that need to be moved to the left by one. */
+            const size_t r_move = (f != 0) ? c - f : 0;
+
+            /* The number of elements from the beginning of the
+               that need to be moved to the left by one. This
+               is discluding the first element of the buffer.*/
+            const size_t l_move = p - 1; // FIXME POSSIBLY WRONG OFF BY ONE
+
+            /* Frist element from the beginning of the buffer */
+            void *first_element = deque->buffer[0];
+
+            memmove(&(deque->buffer[c - 1]),
+                    &(deque->buffer[c]),
+                    r_move * sizeof(void*));
+
+            memmove(&(deque->buffer[p]),
+                    &(deque->buffer[0]),
+                    l_move * sizeof(void*));
+
+            deque->buffer[c] = first_element;
+        } else {
+            const size_t e_move = index * sizeof(void*);
+
+            memmove(&(deque->buffer[f - 1]),
+                    &(deque->buffer[f]),
+                    e_move);
+        }
+    } else {
+        if (p > l || l == c) {
+            const size_t r_move = (c - p - 1) * sizeof(void*); // FIXME segfault maybe
+            const size_t l_move = (l + 1) * sizeof(void*);
+
+            void* e_last = deque->buffer[c];
+
+            memmove(&(deque->buffer[p + 1]),
+                    &(deque->buffer[p]),
+                    r_move);
+
+            memmove(&(deque->buffer[1]),
+                    &(deque->buffer[0]),
+                    l_move);
+
+            deque->buffer[c] = e_last;
+        } else {
+            const size_t e_move = (deque->size - index) * sizeof(void*);
+
+            memmove(&(deque->buffer[p + 1]),
+                    &(deque->buffer[p]),
+                    e_move);
+        }
+    }
+    deque->buffer[index] = element;
+    return true;
 }
 
 /**
