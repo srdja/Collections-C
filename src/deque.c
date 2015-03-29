@@ -236,15 +236,12 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
                         l_move * sizeof(void*));
             }
             deque->buffer[c] = e_first;
-            deque->first = (deque->first - 1) & c;
         } else {
-            const size_t e_move = index * sizeof(void*);
-
             memmove(&(deque->buffer[f - 1]),
                     &(deque->buffer[f]),
-                    e_move);
-            deque->last = (deque->last + 1) & c;
+                    index * sizeof(void*));
         }
+        deque->first = (deque->first - 1) & c;
     } else {
         if (p > l || l == c) {
             /* _________________________________
@@ -254,29 +251,23 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
              *
              * Circular right shift from (p)
              */
-            const size_t r_move = (c - p) * sizeof(void*);
-            const size_t l_move = (l + 1) * sizeof(void*);
-
             void* e_last = deque->buffer[c];
 
             memmove(&(deque->buffer[p + 1]),
                     &(deque->buffer[p]),
-                    r_move);
+                    (c - p) * sizeof(void*));
 
             memmove(&(deque->buffer[1]),
                     &(deque->buffer[0]),
-                    l_move);
+                    (l + 1) * sizeof(void*));
 
             deque->buffer[0] = e_last;
-            deque->last = (deque->last + 1) & c;
         } else {
-            const size_t e_move = (deque->size - index) * sizeof(void*);
-
             memmove(&(deque->buffer[p + 1]),
                     &(deque->buffer[p]),
-                    e_move);
-            deque->last = (deque->last + 1) & c;
+                    (deque->size - index) * sizeof(void*));
         }
+        deque->last = (deque->last + 1) & c;
     }
     deque->buffer[p] = element;
     deque->size++;
@@ -314,7 +305,7 @@ void *deque_replace_at(Deque *deque, void *element, size_t index)
  */
 void *deque_remove(Deque *deque, void *element)
 {
-    size_t index = deque_index_of(element);
+    size_t index = deque_index_of(deque, element);
 
     if (index == NO_SUCH_INDEX)
         return NULL;
@@ -339,6 +330,8 @@ void *deque_remove_at(Deque *deque, size_t index)
     const size_t f = deque->first & c;
     const size_t p = (deque->first + index) & c;
 
+    void *removed  = deque->buffer[index];
+
     if (index == 0)
         return deque_remove_first(deque);
 
@@ -347,17 +340,48 @@ void *deque_remove_at(Deque *deque, size_t index)
 
     if (index < (deque->size / 2)) {
         if (p < f) {
+            void *e = deque->buffer[c];
 
+            if (f != c) {
+                memmove(&(deque->buffer[f + 1]),
+                        &(deque->buffer[f]),
+                        (c - f) * sizeof(void*));
+            }
+            if (p != 0) {
+                memmove(&(deque->buffer[1]),
+                        &(deque->buffer[0]),
+                        p * sizeof(void*));
+            }
+            deque->buffer[0] = e;
         } else {
-
+            memmove(&(deque->buffer[f + 1]),
+                    &(deque->buffer[f]),
+                    index * sizeof(void*));
         }
+        deque->first = (deque->first + 1) & c;
     } else {
-        if () {
+        if (p > l) {
+            void *e = deque->buffer[0];
 
+            memmove(&(deque->buffer[p]),
+                    &(deque->buffer[p + 1]),
+                    (c - p) * sizeof(void*));
+
+            memmove(&(deque->buffer[1]),
+                    &(deque->buffer[0]),
+                    l * sizeof(void*));
+
+            deque->buffer[c] = e;
         } else {
-
+            memmove(&(deque->buffer[p]),
+                    &(deque->buffer[p + 1]),
+                    (l - p) * sizeof(void*));
         }
+        deque->last = (deque->last- 1) & c;
     }
+    deque->size--;
+
+    return removed;
 }
 
 /**
