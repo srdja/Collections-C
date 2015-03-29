@@ -211,41 +211,50 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
     if (index == c)
         return deque_add_last(deque, element);
 
-    /* Make sure we move the lest possible number of elements */
     if (index < (deque->size / 2)) {
-        /* Check if the elemement position is to the right. */
         if (p < f || f == 0) {
-            /* The number of elements from the end of the buffer
-               that need to be moved to the left by one. */
-            const size_t r_move = (f != 0) ? c - f : 0;
+            /* _________________________________
+             * | 1 | 2 | 3 | 4 | 5 | . | . | 6 |
+             * ---------------------------------
+             *  (p) <--          L           F
+             *
+             * Left circular shift from (p)
+             */
+            const size_t r_move = (f != 0) ? c - f + 1 : 0;
+            const size_t l_move = p;
 
-            /* The number of elements from the beginning of the
-               that need to be moved to the left by one. This
-               is discluding the first element of the buffer.*/
-            const size_t l_move = p - 1; // FIXME POSSIBLY WRONG OFF BY ONE
+            void *e_first = deque->buffer[0];
 
-            /* Frist element from the beginning of the buffer */
-            void *first_element = deque->buffer[0];
-
-            memmove(&(deque->buffer[c - 1]),
-                    &(deque->buffer[c]),
-                    r_move * sizeof(void*));
-
-            memmove(&(deque->buffer[p]),
-                    &(deque->buffer[0]),
-                    l_move * sizeof(void*));
-
-            deque->buffer[c] = first_element;
+            if (f != 0) {
+                memmove(&(deque->buffer[f - 1]),
+                        &(deque->buffer[f]),
+                        r_move * sizeof(void*));
+            }
+            if (p != 0) {
+                memmove(&(deque->buffer[0]),
+                        &(deque->buffer[1]),
+                        l_move * sizeof(void*));
+            }
+            deque->buffer[c] = e_first;
+            deque->first = (deque->first - 1) & c;
         } else {
             const size_t e_move = index * sizeof(void*);
 
             memmove(&(deque->buffer[f - 1]),
                     &(deque->buffer[f]),
                     e_move);
+            deque->last = (deque->last + 1) & c;
         }
     } else {
         if (p > l || l == c) {
-            const size_t r_move = (c - p - 1) * sizeof(void*); // FIXME segfault maybe
+            /* _________________________________
+             * | 1 | . | . | 6 | 5 | 4 | 3 | 2 |
+             * ---------------------------------
+             *   L           F          (p) -->
+             *
+             * Circular right shift from (p)
+             */
+            const size_t r_move = (c - p) * sizeof(void*);
             const size_t l_move = (l + 1) * sizeof(void*);
 
             void* e_last = deque->buffer[c];
@@ -258,16 +267,20 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
                     &(deque->buffer[0]),
                     l_move);
 
-            deque->buffer[c] = e_last;
+            deque->buffer[0] = e_last;
+            deque->last = (deque->last + 1) & c;
         } else {
             const size_t e_move = (deque->size - index) * sizeof(void*);
 
             memmove(&(deque->buffer[p + 1]),
                     &(deque->buffer[p]),
                     e_move);
+            deque->last = (deque->last + 1) & c;
         }
     }
-    deque->buffer[index] = element;
+    deque->buffer[p] = element;
+    deque->size++;
+
     return true;
 }
 
