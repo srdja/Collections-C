@@ -314,7 +314,12 @@ void *deque_replace_at(Deque *deque, void *element, size_t index)
  */
 void *deque_remove(Deque *deque, void *element)
 {
+    size_t index = deque_index_of(element);
 
+    if (index == NO_SUCH_INDEX)
+        return NULL;
+
+    return deque_remove_at(deque, index);
 }
 
 /**
@@ -326,7 +331,33 @@ void *deque_remove(Deque *deque, void *element)
  */
 void *deque_remove_at(Deque *deque, size_t index)
 {
+    if (index >= deque->size || index == NO_SUCH_INDEX)
+        return NULL;
 
+    const size_t c = deque->capacity - 1;
+    const size_t l = deque->last & c;
+    const size_t f = deque->first & c;
+    const size_t p = (deque->first + index) & c;
+
+    if (index == 0)
+        return deque_remove_first(deque);
+
+    if (index == c)
+        return deque_remove_last(deque);
+
+    if (index < (deque->size / 2)) {
+        if (p < f) {
+
+        } else {
+
+        }
+    } else {
+        if () {
+
+        } else {
+
+        }
+    }
 }
 
 /**
@@ -539,6 +570,27 @@ size_t deque_contains(Deque *deque, void *element)
             o++;
     }
     return o;
+}
+
+/**
+ *
+ *
+ * @param[in] deque
+ * @param[in] element
+ *
+ * @return
+ */
+size_t deque_index_of(Deque *deque, void *element)
+{
+    size_t i;
+    size_t p;
+
+    for (i = 0; i < deque->size; i++) {
+        p = (deque->first + i) & (deque->capacity - 1);
+        if (deque->buffer[p] == element)
+            return i;
+    }
+    return NO_SUCH_INDEX;
 }
 
 /**
