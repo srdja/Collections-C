@@ -774,7 +774,8 @@ static INLINE size_t upper_pow_two(size_t n)
  */
 void deque_iter_init(DequeIter *iter, Deque *deque)
 {
-
+    iter->deque = deque;
+    iter->index = 0;
 }
 
 /**
@@ -785,7 +786,13 @@ void deque_iter_init(DequeIter *iter, Deque *deque)
  */
 bool deque_iter_has_next(DequeIter *iter)
 {
+    const size_t last = (iter->deque->last) &
+                        (iter->deque->capacity - 1);
 
+    if (iter->index < last) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -796,7 +803,12 @@ bool deque_iter_has_next(DequeIter *iter)
  */
 void *deque_iter_next(DequeIter *iter)
 {
+    const size_t i = iter->index & (iter->deque->capacity - 1);
+    void        *e = iter->deque->buffer[iter->index];
 
+    iter->index++;
+
+    return e;
 }
 
 /**
@@ -807,7 +819,7 @@ void *deque_iter_next(DequeIter *iter)
  */
 void *deque_iter_remove(DequeIter *iter)
 {
-
+    return deque_remove_at(iter->deque, iter->index);
 }
 
 /**
@@ -819,7 +831,7 @@ void *deque_iter_remove(DequeIter *iter)
  */
 bool deque_iter_add(DequeIter *iter, void *element)
 {
-
+    return deque_add_at(iter->deque, element, iter->index);
 }
 
 /**
@@ -831,5 +843,5 @@ bool deque_iter_add(DequeIter *iter, void *element)
  */
 void *deque_iter_replace(DequeIter *iter, void *replacement)
 {
-
+    return deque_replace_at(iter->deque, replacement, iter->index);
 }
