@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -19,37 +19,195 @@
  */
 
 #include "queue.h"
-#include <stdlib.h>
 
+struct queue_s {
+    Deque *d;
+};
+
+/**
+ * Initializes the fields of the QueueConf struct to default values.
+ * @param[in, out] conf the configuration object that is being initialized
+ */
+void queue_conf_init(QueueConf *conf)
+{
+    deque_conf_init(conf);
+}
+
+/**
+ * Returns a new empty queue, or NULL if the allocation fails.
+ *
+ * @return a new queue if the allocation was successful, or NULL.
+ */
 Queue *queue_new()
 {
-    return (Queue*) list_new();
+    QueueConf conf;
+    queue_conf_init(&conf);
+    return queue_new_conf(&conf);
 }
 
-bool queue_destroy(Queue *queue)
+/**
+ * Returns a new empty queue based on the specified QueueConf object.
+ * The queue is allocated using the allocatord specified by the Queue
+ * conf object. The allocation may fail if the underlying allocator
+ * fails.
+ *
+ * @param[in] conf Queue configuration object. All firlds must be initialized.
+ *
+ * @return a new queue if the allocation was successful, or NULL.
+ */
+Queue *queue_new_conf(QueueConf *conf)
 {
-    return list_destroy(queue);
+    Queue *queue = conf->mem_calloc(1, sizeof(Queue));
+    queue->d = deque_new_conf(conf);
+
+    return queue;
 }
 
+/**
+ * Destroys the queue structure, but leaves the data it used to hold intact.
+ *
+ * @param[in] queue the queue that is to be destroyed
+ */
+void queue_destroy(Queue *queue)
+{
+    deque_destroy(queue->d);
+    free(queue);
+}
+
+/**
+ * Destroys the queue structure along with all the data it holds.
+ *
+ * @note
+ * This function should not be called on a queue that has some of its elements
+ * allocated on the stack.
+ *
+ * @param[in] queue the queue that is to be destroyed.
+ */
 bool queue_destroy_free(Queue *queue)
 {
-    return list_destroy(queue);
+    deque_destroy_free(queue->d);
+    free(queue);
 }
 
+/**
+ * Returns the element at the front of the queue.
+ *
+ * @param[in] queue the queue whose element is being returned
+ *
+ * @return the element at the front of the queue
+ */
 void *queue_peek(Queue *queue)
 {
-    return list_get_first(queue);
+    return deque_get_last(queue->d);
 }
 
+/**
+ * Returns and removes the element at the front of the queue.
+ *
+ * @param[in] queue the queue on which this operation is performed
+ *
+ * @return the element that was at the front of the queue
+ */
 void *queue_poll(Queue *queue)
 {
-    void *data = list_get_first(queue);
-    list_remove_first(queue);
-    return data;
+    return deque_remove_last(queue->d);
 }
 
+/**
+ * Appends an element to the back of the queue. This operation may
+ * fail if the memory allocation for the new elmenet fails.
+ *
+ * @param[in] queue the queue on which this operation is performed
+ * @param[in] element the element being enqueued
+ *
+ * @return true if the operation was successful
+ */
 bool queue_enqueue(Queue *queue, void *element)
 {
-    return list_add(queue, element);
+    return deque_add_first(queue->d, element);
 }
 
+/**
+ * A 'foreach loop' function that invokes the specified function on each element
+ * in the queue.
+ *
+ * @param[in] queue the queue on which this operation is performed
+ * @param[in] op the operation function thatis to be invoked on each queue element
+ */
+void queue_foreach(Queue *queue, void (*op) (void*))
+{
+    deque_foreach(queue->d, op);
+}
+
+/**
+ * Initializs the iterator.
+ *
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] queue the queue to iterate over
+ */
+void queue_iter_init(QueueIter *iter, Queue *queue)
+{
+    deque_iter_init(iter, queue-d);
+}
+
+/**
+ * Checks whether or not the iterator has reached the end of the queue.
+ *
+ * @param[in] iter iterator whose position is being checked
+ *
+ * @return true if the are more elements to be iterated over
+ */
+bool queue_iter_has_next(QueueIter *iter)
+{
+    return deque_iter_has_next(iter);
+}
+
+/**
+ * Retruns the next element in the sequence and advances the iterator.
+ *
+ * @param[in] iter the iterator that is being advanced
+ *
+ * @return the next element in the sequence
+ */
+void* queue_iter_next(QueueIter *iter)
+{
+    return deque_iter_next(iter);
+}
+
+/**
+ * Removes and returns the last returned element by <code>queue_iter_next()</code> without invalidating the iterator.
+ *
+ * @param[in] iter the iterator on which this operation is being performed
+ *
+ * @return the removed element
+ */
+void* queue_iter_remove(QueueIter *iter)
+{
+    return deque_iter_remove(iter);
+}
+
+/**
+ * Adds a new element to the queue after the last returned element.
+ *
+ * @param[in] iter the iterator on which this operation is being performed.
+ * @param[in] element the element being added
+ *
+ * @return true if the operation was successful
+ */
+bool queue_iter_add(QueueIter *iter, void *element)
+{
+    return deque_iter_add(iter, element);
+}
+
+/**
+ * Replaces the last returned element by the specified iterator.
+ *
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] replacement the replacement element
+ *
+ * @return the old element that was replaced
+ */
+void* queue_iter_replace(QueueIter *iter, void *replacement)
+{
+    deque_iter_replace(iter, replacement);
+}

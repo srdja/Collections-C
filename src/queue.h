@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -22,17 +22,33 @@
 #define QUEUE_H_
 
 #include "common.h"
-#include "list.h"
+#include "deque.h"
 
-typedef List Queue;
-typedef ListIter QueueIter;
+typedef struct queue_s   Queue;
+typedef        DequeConf QueueConf;
 
-Queue *queue_new();
-bool queue_destroy(Queue *queue);
-bool queue_destroy_free(Queue *queue);
+typedef struct queue_iter_s {
+    DequeIter *i;
+} QueueIter;
 
-void *queue_peek(Queue *queue);
-void *queue_poll(Queue *queue);
-bool queue_enqueue(Queue *queue, void *element);
+void   queue_conf_init    (QueueConf *conf);
+
+Queue *queue_new          ();
+Queue *queue_new_conf     (QueueConf *conf);
+void   queue_destroy      (Queue *queue);
+void   queue_destroy_free (Queue *queue);
+
+void  *queue_peek         (Queue *queue);
+void  *queue_poll         (Queue *queue);
+bool   queue_enqueue      (Queue *queue, void *element);
+
+void   queue_foreach      (Queue *queue, void (*op) (void*));
+
+void   queue_iter_init    (QueueIter *iter, Queue *queue);
+bool   queue_iter_has_next(QueueIter *iter);
+void*  queue_iter_next    (QueueIter *iter);
+void*  queue_iter_remove  (QueueIter *iter);
+bool   queue_iter_add     (QueueIter *iter, void *element);
+void*  queue_iter_replace (QueueIter *iter, void *replacement);
 
 #endif /* QUEUE_H_ */
