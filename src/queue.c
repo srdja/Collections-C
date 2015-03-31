@@ -26,6 +26,7 @@ struct queue_s {
 
 /**
  * Initializes the fields of the QueueConf struct to default values.
+ *
  * @param[in, out] conf the configuration object that is being initialized
  */
 void queue_conf_init(QueueConf *conf)
@@ -175,7 +176,8 @@ void* queue_iter_next(QueueIter *iter)
 }
 
 /**
- * Removes and returns the last returned element by <code>queue_iter_next()</code> without invalidating the iterator.
+ * Removes and returns the last returned element by <code>queue_iter_next()
+ * </code> without invalidating the iterator.
  *
  * @param[in] iter the iterator on which this operation is being performed
  *
