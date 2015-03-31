@@ -42,7 +42,6 @@ typedef struct deque_conf_s {
 struct deque_iter_s {
     Deque *deque;
     size_t index;
-    // some other fields
 };
 
 Deque*     deque_new             ();
