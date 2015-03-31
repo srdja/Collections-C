@@ -257,7 +257,7 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
                         &(deque->buffer[p]),
                         (c - p) * sizeof(void*));
             }
-            if (p == 0) {
+            if (l != c) {
                 memmove(&(deque->buffer[1]),
                         &(deque->buffer[0]),
                         (l + 1) * sizeof(void*));
