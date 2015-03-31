@@ -24,16 +24,16 @@
 #include "common.h"
 #include "hashtable.h"
 
-typedef struct hashset_s HashSet;
+typedef struct hashset_s      HashSet;
 typedef struct hashset_iter_s HashSetIter;
-typedef HashTableConf HashSetConf;
+typedef        HashTableConf  HashSetConf;
 
 struct hashset_iter_s {
     HashTableIter *iter;
 };
 
 void        hashset_conf_init     (HashSetConf *conf);
- 
+
 HashSet    *hashset_new           (void);
 HashSet    *hashset_new_conf      (HashSetConf *properties);
 void        hashset_destroy       (HashSet *set);

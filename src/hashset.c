@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -52,19 +52,24 @@ HashSet *hashset_new()
 }
 
 /**
- * 
+ * Returns a new empty HashSet based on the specified HashSetConf object.
  *
+ * The hashset is allocated using the allocators specified in the HashSetConf
+ * object. The allocation may fail if the underlying allocator fails.
+ *
+ * @param[in] conf The hashset configuration object. All fields must be initialized.
  */
 HashSet *hashset_new_conf(HashSetConf *conf)
 {
     HashSet *set = calloc(1, sizeof(HashSet));
     set->table = hashtable_new_conf(conf);
 
-    /* A dummy pointer that is never actually dereferenced 
+    /* A dummy pointer that is never actually dereferenced
     *  that must not be null.*/
     set->dummy = (int*) 1;
-    return set;    
+    return set;
 }
+
 /**
  * Destroys the specified HashSet.
  *
@@ -77,7 +82,7 @@ void hashset_destroy(HashSet *set)
 }
 
 /**
- * Adds a new element to the set. 
+ * Adds a new element to the set.
  *
  * @param[in] set the set to which the element is being added
  * @param[in] element the element being added
@@ -95,10 +100,10 @@ void hashset_add(HashSet *set, void *element)
  * @param[in] set the set from which the element is being removed
  * @param[in] element the element being removed
  *
- * @return the removed element, or NULL if the element was not found 
+ * @return the removed element, or NULL if the element was not found
  */
 void *hashset_remove(HashSet *set, void *element)
-{    
+{
     /* Since the value is never null, a returned null can only
      * mean that the element is not present */
     return hashtable_remove(set->table, element) == NULL ? NULL : element;
@@ -116,11 +121,11 @@ void hashset_remove_all(HashSet *set)
 
 /**
  * Checks whether an element is a part of the specified set.
- * 
+ *
  * @param[in] set the set being searched for the specified element
  * @parma[in] element the element being seached for
  *
- * @return true if the specified element is an element of the set 
+ * @return true if the specified element is an element of the set
  */
 bool hashset_contains(HashSet *set, void *element)
 {
@@ -155,7 +160,7 @@ void hashset_foreach(HashSet *set, void (*op) (const void *e))
 
 /**
  * Initializes the iterator
- * 
+ *
  * @param[in] iter the iterator that is being initialized
  * @param[in] set the set on which this iterator will operate
  */
@@ -190,7 +195,7 @@ const void *hashset_iter_next(HashSetIter *iter)
 }
 
 /**
- * Removes the last element returned by <code>hashset_iter_next()</code> and 
+ * Removes the last element returned by <code>hashset_iter_next()</code> and
  * returns that element.
  *
  * @param[in] iter the iterator from which the element is being removed
