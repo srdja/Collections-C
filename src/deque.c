@@ -252,14 +252,16 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
              */
             void* e_last = deque->buffer[c];
 
-            memmove(&(deque->buffer[p + 1]),
-                    &(deque->buffer[p]),
-                    (c - p) * sizeof(void*));
-
-            memmove(&(deque->buffer[1]),
-                    &(deque->buffer[0]),
-                    (l + 1) * sizeof(void*));
-
+            if (p != c) {
+                memmove(&(deque->buffer[p + 1]),
+                        &(deque->buffer[p]),
+                        (c - p) * sizeof(void*));
+            }
+            if (p == 0) {
+                memmove(&(deque->buffer[1]),
+                        &(deque->buffer[0]),
+                        (l + 1) * sizeof(void*));
+            }
             deque->buffer[0] = e_last;
         } else {
             memmove(&(deque->buffer[p + 1]),
@@ -375,14 +377,16 @@ void *deque_remove_at(Deque *deque, size_t index)
         if (p > l) {
             void *e = deque->buffer[0];
 
-            memmove(&(deque->buffer[p]),
-                    &(deque->buffer[p + 1]),
-                    (c - p) * sizeof(void*));
-
-            memmove(&(deque->buffer[1]),
-                    &(deque->buffer[0]),
-                    l * sizeof(void*));
-
+            if (p != c) {
+                memmove(&(deque->buffer[p]),
+                        &(deque->buffer[p + 1]),
+                        (c - p) * sizeof(void*));
+            }
+            if (p != 0) {
+                memmove(&(deque->buffer[1]),
+                        &(deque->buffer[0]),
+                        l * sizeof(void*));
+            }
             deque->buffer[c] = e;
         } else {
             memmove(&(deque->buffer[p]),
