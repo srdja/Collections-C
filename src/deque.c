@@ -180,9 +180,8 @@ bool deque_add_last(Deque *deque, void *element)
 }
 
 /**
- * Adds a new element to the specified position within the deque. The position
- * must be within the range of the deque, otherwise this operation will fail and
- * return false to indicate the failure. This function may also fail if the
+ * Inserts a new element at the specified index within the deque. The index
+ * must be within the range of the deque. This function may also fail if the
  * memory allocation for the new element was not successful.
  *
  * @param[in] deque the deque to which this new element is being added
@@ -190,7 +189,7 @@ bool deque_add_last(Deque *deque, void *element)
  * @param[in] index the position within the dequeu at which this new element is
  *                  is being added
  *
- * @return true if the the operation was successful or false if not
+ * @return true if the the operation was successful
  */
 bool deque_add_at(Deque *deque, void *element, size_t index)
 {
@@ -276,12 +275,17 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
 }
 
 /**
+ * Replaces a deque element at the specified index and returns the replaced
+ * element. The specified index must be within the bounds of the deque,
+ * otherwise NULL is returned. NULL may also be returned if the replaced element
+ * was NULL. In this case calling <code>deque_contains()</code> before this
+ * function can resolve this ambiguity.
  *
- * @param[in] deque
- * @param[in] element
- * @param[in] index
+ * @param[in] deque the deque whose element is being replaced
+ * @param[in] element the replacement element
+ * @param[in] index the index at which the replacement element should be inserted
  *
- * @return
+ * @return replaced element, or NULL if the index was out of bounds.
  */
 void *deque_replace_at(Deque *deque, void *element, size_t index)
 {
@@ -297,11 +301,15 @@ void *deque_replace_at(Deque *deque, void *element, size_t index)
 }
 
 /**
+ * Removes and returns the specified element from the deque if such element
+ * exists. In case the element doesn't exist NULL is retruned. NULL may also
+ * be returned if the specified element is NULL. In this case calling <code>
+ * deque_contains()</code> before this function can resolve the ambiguity.
  *
- * @param[in] deque
- * @param[in] element
+ * @param[in] deque the deque from which the element is being removed
+ * @param[in] element the element being removed
  *
- * @return
+ * @return removed element, or NULL if the operation fails
  */
 void *deque_remove(Deque *deque, void *element)
 {
@@ -314,11 +322,15 @@ void *deque_remove(Deque *deque, void *element)
 }
 
 /**
+ * Removes and returns a deque element from the specified index. The index must
+ * be within the bounds of the deque, otherwise NULL is returned. NULL may also
+ * be returned if the removed element was NULL. To resolve this ambiguity call
+ * <code>deque_contains()</code> before this function.
  *
- * @param[in] deque
- * @param[in] index
+ * @param[in] deque the deque from which the element is being removed
+ * @param[in] index the index of the element being removed
  *
- * @return
+ * @return the removed element, or NULL if the operation fails
  */
 void *deque_remove_at(Deque *deque, size_t index)
 {
@@ -597,12 +609,14 @@ size_t deque_contains(Deque *deque, void *element)
 }
 
 /**
+ * Returns the index of the first occurence of the specified deque element, or
+ * NO_SUCH_INDEX if the element could not be found.
  *
+ * @param[in] deque deque being searched
+ * @param[in] element the element whose index is being looked up
  *
- * @param[in] deque
- * @param[in] element
- *
- * @return
+ * @return the index of the specified element, or NO_SUCH_INDEX if the element is
+ *         not found
  */
 size_t deque_index_of(Deque *deque, void *element)
 {
@@ -665,7 +679,6 @@ void **deque_get_buffer(Deque *deque)
  * @param[in] deque the deque on which this operation is performed
  * @param[in] op    the operation function that is to be invoked on each deque
  *                  element
- *
  */
 void deque_foreach(Deque *deque, void (*op) (void *))
 {
@@ -768,9 +781,10 @@ static INLINE size_t upper_pow_two(size_t n)
 }
 
 /**
+ * Initializes the iterator.
  *
- * @param[in] iter
- * @param[in] deque
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] deque the vector to iterate over
  */
 void deque_iter_init(DequeIter *iter, Deque *deque)
 {
@@ -779,10 +793,11 @@ void deque_iter_init(DequeIter *iter, Deque *deque)
 }
 
 /**
+ * Checks wheteher or not the iterator has reached the end of the deque
  *
- * @param[in] iter
+ * @param[in] iter iterator whose position is being checked
  *
- * @return
+ * @return true if there are more elemnets to be iterated over
  */
 bool deque_iter_has_next(DequeIter *iter)
 {
@@ -796,26 +811,26 @@ bool deque_iter_has_next(DequeIter *iter)
 }
 
 /**
+ * Returns the next element in the sequence and advances the iterator.
  *
- * @param[in] iter
+ * @param[in] iter the iterator that is being advanced
  *
- * @return
+ * @return the next element in the sequence
  */
 void *deque_iter_next(DequeIter *iter)
 {
     const size_t i = iter->index & (iter->deque->capacity - 1);
-    void        *e = iter->deque->buffer[iter->index];
-
     iter->index++;
-
-    return e;
+    return iter->deque->buffer[i];
 }
 
 /**
+ * Removes and returns the last returned element by <code>deque_iter_next()
+ * </code> without invalidating the iterator.
  *
- * @param[in] iter
+ * @param[in] iter the iterator on which this operation is being perfrormed
  *
- * @return
+ * @return the removed element
  */
 void *deque_iter_remove(DequeIter *iter)
 {
@@ -823,23 +838,28 @@ void *deque_iter_remove(DequeIter *iter)
 }
 
 /**
+ * Adds a new element tothe deque after the last returned element by
+ * <code>deque_iter_next()</code> without invalidating the iterator.
  *
- * @param[in] iter
- * @param[in] element
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] element the element being added
  *
- * @return
+ * @return true if the elmenet was successfully added or false if the allocation
+ *         for the new element failed.
  */
 bool deque_iter_add(DequeIter *iter, void *element)
 {
-    return deque_add_at(iter->deque, element, iter->index);
+    return deque_add_at(iter->deque, element, iter->index++);
 }
 
 /**
+ * Replaces the last returned element by <code>deque_iter_next()</code>
+ * with the specified replacement element.
  *
- * @param[in] iter
- * @param[in] replacemenet
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] replacemenet the replacement element
  *
- * @return
+ * @return the old element that was replaced
  */
 void *deque_iter_replace(DequeIter *iter, void *replacement)
 {
