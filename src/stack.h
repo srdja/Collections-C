@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -25,15 +25,15 @@
 
 typedef struct stack_s Stack;
 
-Stack *stack_new();
-void stack_destroy(Stack *stack);
+Stack  *stack_new     ();
+void    stack_destroy (Stack *stack);
 
-bool stack_push(Stack *stack, void *element);
-void *stack_peek(Stack *stack);
-void *stack_pop(Stack *stack);
+bool    stack_push    (Stack *stack, void *element);
+void   *stack_peek    (Stack *stack);
+void   *stack_pop     (Stack *stack);
 
-size_t stack_size(Stack *stack);
+size_t  stack_size    (Stack *stack);
 
-void stack_foreach(Stack *stack, void (*op) (void *));
+void    stack_foreach (Stack *stack, void (*op) (void *));
 
 #endif /* STACK_H_ */
