@@ -244,7 +244,7 @@ void *vector_remove(Vector *vec, void *element)
 /**
  * Removes and returns a vector element from the specified index. The index must
  * be within the bounds of the vector, otherwise NULL is returned. NULL may also
- * returned if the removed element was NULL. To resolve this ambiguity call
+ * be returned if the removed element was NULL. To resolve this ambiguity call
  * <code>vector_contains()</code> before this function.
  *
  * @param[in] vect the vector from which the element is being removed
@@ -693,10 +693,13 @@ void *vector_iter_remove(VectorIter *iter)
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @parma[in] element the element being added
+ *
+ * @return true if the element was successfully added or false if the allocation
+ *         for the new element failed.
  */
-void vector_iter_add(VectorIter *iter, void *element)
+bool vector_iter_add(VectorIter *iter, void *element)
 {
-    vector_add_at(iter->vec, element, iter->index++);
+    return vector_add_at(iter->vec, element, iter->index++);
 }
 
 /**

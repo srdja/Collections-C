@@ -33,7 +33,7 @@ typedef struct vector_conf_s {
     /* The rate at which the buffer expands (capacity * exp_factor). */
     float  exp_factor;
 
-    /* Memory allocators used to allocate the Vector structure and the 
+    /* Memory allocators used to allocate the Vector structure and the
      * underlying data buffers. */
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
@@ -86,8 +86,8 @@ void          vector_iter_init       (VectorIter *iter, Vector *vec);
 bool          vector_iter_has_next   (VectorIter *iter);
 void*         vector_iter_next       (VectorIter *iter);
 void*         vector_iter_remove     (VectorIter *iter);
-void          vector_iter_add        (VectorIter *iter, void *element);
+bool          vector_iter_add        (VectorIter *iter, void *element);
 void*         vector_iter_replace    (VectorIter *iter, void *element);
 size_t        vector_iter_index      (VectorIter *iter);
-  
+
 #endif /* VECTOR_H_ */
