@@ -193,10 +193,10 @@ bool deque_add_last(Deque *deque, void *element)
  */
 bool deque_add_at(Deque *deque, void *element, size_t index)
 {
-    if (deque->capacity == deque->size && !expand_capacity(deque))
+    if (index >= deque->size)
         return false;
 
-    if (index > deque->size)
+    if (deque->capacity == deque->size && !expand_capacity(deque))
         return false;
 
     const size_t c = deque->capacity - 1;
@@ -210,7 +210,7 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
     if (index == c)
         return deque_add_last(deque, element);
 
-    if (index < (deque->size / 2)) {
+    if (index <= (deque->size / 2) - 1) {
         if (p < f || f == 0) {
             /* _________________________________
              * | 1 | 2 | 3 | 4 | 5 | . | . | 6 |
@@ -352,7 +352,7 @@ void *deque_remove_at(Deque *deque, size_t index)
     if (index == c)
         return deque_remove_last(deque);
 
-    if (index < (deque->size / 2)) {
+    if (index <= (deque->size / 2) - 1) {
         if (p < f) {
             void *e = deque->buffer[c];
 
