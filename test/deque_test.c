@@ -17,7 +17,7 @@ void test_deque_copy_deep();
 void test_deque_contains();
 void test_deque_size();
 void test_deque_capacity();
-void test_deque_foreach();
+void test_deque_trim_capacity();
 
 int main(int argc, char **argv)
 {
@@ -38,6 +38,7 @@ int main(int argc, char **argv)
     test_deque_contains();
     test_deque_size();
     test_deque_capacity();
+    test_deque_trim_capacity();
 
     return cc_get_status();
 }
@@ -803,6 +804,37 @@ void test_deque_capacity()
 
     cc_assert(deque_capacity(deque) == 4,
               cc_msg("deque_capacity: Unexpected capacity. Expected 4"));
+
+    deque_destroy(deque);
+}
+
+
+void test_deque_trim_capacity()
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+
+    size_t capacity = deque_capacity(deque);
+
+    cc_assert(capacity == 8,
+              cc_msg("deque_trim_capacity"
+                     " Unexpected capacity."
+                     " Expected 8, but got %d", capacity));
+
+    deque_trim_capacity(deque);
+
+    capacity = deque_capacity(deque);
+    cc_assert(capacity == 4,
+              cc_msg("deque_trim_capacity"
+                     " Unexpected capacity."
+                     " Expected 4, but got %d", capacity));
 
     deque_destroy(deque);
 }
