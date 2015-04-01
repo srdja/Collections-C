@@ -525,6 +525,9 @@ void* deque_get_first(Deque *deque)
  */
 void* deque_get_last(Deque *deque)
 {
+    if (deque->size == 0)
+        return NULL;
+
     size_t last = (deque->last - 1) & (deque->capacity - 1);
     return deque->buffer[last];
 }
