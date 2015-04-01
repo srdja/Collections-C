@@ -9,7 +9,6 @@ void test_deque_add_at();
 void test_deque_remove_first();
 void test_deque_remove_last();
 void test_deque_remove_all();
-void test_deque_remove_all_free();
 void test_deque_get();
 void test_deque_get_first();
 void test_deque_get_last();
@@ -28,10 +27,9 @@ int main(int argc, char **argv)
     test_deque_add_last();
     test_deque_buffer_expansion();
     test_deque_add_at();
-/*    test_deque_remove_first();
+    test_deque_remove_first();
     test_deque_remove_last();
     test_deque_remove_all();
-    test_deque_remove_all_free();
     test_deque_get();
     test_deque_get_first();
     test_deque_get_last();
@@ -40,9 +38,16 @@ int main(int argc, char **argv)
     test_deque_contains();
     test_deque_size();
     test_deque_capacity();
-    test_deque_foreach(); */
 
     return cc_get_status();
+}
+
+void *cpy(void *e)
+{
+    int  o = *((int*) e);
+    int *c = malloc(sizeof(int));
+    *c = o;
+    return (void*) c;
 }
 
 void test_deque_add_first()
@@ -300,7 +305,7 @@ void test_deque_add_at_case2()
 
 void test_deque_add_at_case3()
 {
-    /* index >= deque->size && index_raw > last_raw */
+    /* index >= size / 2 && index_raw > last_raw */
 
     int a = 1;
     int b = 2;
@@ -406,11 +411,53 @@ void test_deque_add_at_case4()
 void test_deque_add_at_case5()
 {
     /* f == 0*/
-}
 
-void test_deque_add_at_case6()
-{
-    /*   l == c */
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+    int g = 7;
+
+    Deque *deque = deque_new();
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+
+    deque_add_at(deque, &g, 1);
+
+    void **buff = deque_get_buffer(deque);
+    int    elem = *((int*) buff[7]);
+
+    cc_assert(elem == a,
+              cc_msg("deque_add_at [case 5]: "
+                     "Expected element %d at index 7, but "
+                     "got %d", a, elem));
+
+    elem = *((int*) buff[0]);
+    cc_assert(elem == b,
+              cc_msg("deque_add_at [case 5]: "
+                     "Expected element %d at index 7, but "
+                     "got %d", b, elem));
+
+    elem = *((int*) buff[5]);
+    cc_assert(elem == f,
+              cc_msg("deque_add_at [case 5]: "
+                     "Expected element %d at index 7, but "
+                     "got %d", f, elem));
+
+    elem = *((int*) buff[1]);
+    cc_assert(elem == g,
+              cc_msg("deque_add_at [case 5]: "
+                     "Expected element %d at index 7, but "
+                     "got %d", g, elem));
+
+    deque_destroy(deque);
 }
 
 void test_deque_add_at()
@@ -421,83 +468,341 @@ void test_deque_add_at()
     test_deque_add_at_case3();
     test_deque_add_at_case4();
     test_deque_add_at_case5();
-    test_deque_add_at_case6();
 }
 
 
 void test_deque_remove_first()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
 
+    Deque *deque = deque_new();
+
+    deque_add_first(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+
+    int first = *((int*) deque_get_first(deque));
+    cc_assert(first == a,
+              cc_msg("deque_remove_first: "
+                     "Expected first element was %d, but "
+                     "got %d", a, first));
+
+    int removed = *((int*) deque_remove_first(deque));
+    cc_assert(removed == a,
+              cc_msg("deque_remove_first: "
+                     "Expected removed element was %d, but "
+                     "got %d", a, removed));
+
+    first = *((int*) deque_get_first(deque));
+    cc_assert(first == b,
+              cc_msg("deque_remove_first: "
+                     "Expected first element was %d, but "
+                     "got %d", b, first));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_remove_last()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
 
+    Deque *deque = deque_new();
+
+    deque_add_first(deque, &a);
+    deque_add_first(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+
+    int last = *((int*) deque_get_last(deque));
+    cc_assert(last == d,
+              cc_msg("deque_remove_last: "
+                     "Expected last element was %d, but "
+                     "got %d", d, last));
+
+    int removed = *((int*) deque_remove_last(deque));
+    cc_assert(removed == d,
+              cc_msg("deque_remove_last: "
+                     "Expected removed element was %d, but "
+                     "got %d", d, removed));
+
+    last = *((int*) deque_get_last(deque));
+    cc_assert(last == c,
+              cc_msg("deque_remove_last: "
+                     "Expected last element was %d, but "
+                     "got %d", c, last));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_remove_all()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
 
-}
+    Deque *deque = deque_new();
 
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
 
-void test_deque_remove_all_free()
-{
+    deque_remove_all(deque);
 
+    void *first = deque_get_first(deque);
+    void *last  = deque_get_last(deque);
+
+    cc_assert(first == NULL && last == NULL,
+              cc_msg("deque_remove_all: "
+                     "First and last elements still reachable "
+                     "after the deque has been cleared"));
+
+    cc_assert(deque_size(deque) == 0,
+              cc_msg("deque_remove_all: "
+                     "Deque size not 0 after the deque has "
+                     "been cleared"));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_get()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
 
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+
+    void *e = deque_get(deque, 1);
+    void *n = deque_get(deque, 42);
+
+    cc_assert(*((int*) e) == b,
+              cc_msg("deque_get: "
+                     "Expected returned element was %d, but"
+                     " got %d instead", b, *((int*) e)));
+
+    cc_assert(n == NULL,
+              cc_msg("deque_get: "
+                     "Expected element from a OOB index was NULL."));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_get_first()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
 
+    Deque *deque = deque_new();
+
+    deque_add_first(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_first(deque, &c);
+
+    int first = *((int*) deque_get_first(deque));
+
+    cc_assert(first == c,
+              cc_msg("deque_get_first: "
+                     "Expected first element was %d, but got %d instead",
+                     c, first));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_get_last()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
 
+    Deque *deque = deque_new();
+
+    deque_add_first(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_first(deque, &c);
+
+    int last = *((int*) deque_get_last(deque));
+
+    cc_assert(last == b,
+              cc_msg("deque_get_last: "
+                     "Expected last element was %d, but got %d instead",
+                     b, last));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_copy_shallow()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    Deque *deque = deque_new();
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+
+    Deque *copy = deque_copy_shallow(deque);
+
+    int size = deque_size(copy);
+
+    cc_assert(size == 3,
+              cc_msg("deque_copy_shallow: "
+                     "Unexpected size of the copy. Expected %d,"
+                     "but got %d", 3, size));
+
+    int ca = *((int*) deque_get(copy, 0));
+    int cb = *((int*) deque_get(copy, 1));
+    int cc = *((int*) deque_get(copy, 2));
+
+    cc_assert(ca == a && cb == b && cc == c,
+              cc_msg("deque_copy_shallow: "
+                     "Structure missmatch"));
+
+    deque_destroy(deque);
+    deque_destroy(copy);
 
 }
 
 
 void test_deque_copy_deep()
 {
+    int *a = malloc(sizeof(int));
+    int *b = malloc(sizeof(int));
+    int *c = malloc(sizeof(int));
 
+    *a = 1;
+    *b = 2;
+    *c = 3;
+
+    Deque *deque = deque_new();
+
+    deque_add_last(deque, a);
+    deque_add_last(deque, b);
+    deque_add_last(deque, c);
+
+    Deque *copy = deque_copy_deep(deque, cpy);
+
+    int size = deque_size(copy);
+
+    cc_assert(size == 3,
+              cc_msg("deque_copy_deep: "
+                     "Unexpected size of the copy. Expected %d,"
+                     "but got %d", 3, size));
+
+    int ca = *((int*) deque_get(copy, 0));
+    int cb = *((int*) deque_get(copy, 1));
+    int cc = *((int*) deque_get(copy, 2));
+
+    cc_assert(ca == 1 && cb == 2 && cc == 3,
+              cc_msg("deque_copy_deep: "
+                     "Structure missmatch"));
+
+    deque_destroy(deque);
+    deque_destroy_free(copy);
 }
 
 
 void test_deque_contains()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+    int g = 7;
 
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+    deque_add(deque, &d);
+    deque_add(deque, &e);
+    deque_add(deque, &f);
+    deque_add(deque, &a);
+
+    cc_assert(deque_contains(deque, &a) == 2,
+              cc_msg("deque_contains: ",
+                     "Unexpected number of elements found"));
+
+    cc_assert(deque_contains(deque, &g) == 0,
+              cc_msg("deque_contains: "
+                     "Unexpected number of elements found"));
+
+    cc_assert(deque_contains(deque, &e) == 1,
+              cc_msg("deque_contains: "
+                     "Unexpected number of elements found"));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_size()
 {
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
 
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+    deque_add(deque, &d);
+
+    size_t size = deque_size(deque);
+
+    cc_assert(size == 4,
+              cc_msg("deque_size: Unexpected size. Expected "
+                     "%d, but got %d instead", 4, size));
+
+    deque_destroy(deque);
 }
 
 
 void test_deque_capacity()
 {
+    DequeConf conf;
+    deque_conf_init(&conf);
 
-}
+    conf.capacity = 2;
 
+    Deque *deque = deque_new_conf(&conf);
 
-void test_deque_foreach()
-{
+    cc_assert(deque_capacity(deque) == 2,
+              cc_msg("deque_capacity: Unexpected capacity. Expected 2"));
 
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+
+    cc_assert(deque_capacity(deque) == 4,
+              cc_msg("deque_capacity: Unexpected capacity. Expected 4"));
+
+    deque_destroy(deque);
 }
