@@ -557,7 +557,7 @@ Deque* deque_copy_shallow(Deque *deque)
     copy_buffer(deque, copy->buffer, NULL);
 
     copy->first = 0;
-    copy->last  = copy->size; // XXX
+    copy->last  = copy->size;
 
     return copy;
 }
@@ -712,13 +712,20 @@ static void copy_buffer(Deque *deque, void **buff, void *(*cp) (void *))
 {
     if (cp == NULL) {
         if (deque->last > deque->first) {
-            memcpy(buff, &(deque->buffer[deque->first]), deque->size);
+            memcpy(buff,
+                   &(deque->buffer[deque->first]),
+                   deque->size * sizeof(void*));
         } else {
             size_t l = deque->last;
             size_t e = deque->capacity - deque->first;
 
-            memcpy(buff, &(deque->buffer[deque->first]), e * sizeof(void*));
-            memcpy(&(buff[e]), deque->buffer, l * sizeof(void*));
+            memcpy(buff,
+                   &(deque->buffer[deque->first]),
+                   e * sizeof(void*));
+
+            memcpy(&(buff[e]),
+                   deque->buffer,
+                   l * sizeof(void*));
         }
     } else {
         size_t i;
