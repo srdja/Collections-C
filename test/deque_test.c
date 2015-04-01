@@ -18,6 +18,7 @@ void test_deque_contains();
 void test_deque_size();
 void test_deque_capacity();
 void test_deque_trim_capacity();
+void test_deque_reverse();
 
 int main(int argc, char **argv)
 {
@@ -39,6 +40,7 @@ int main(int argc, char **argv)
     test_deque_size();
     test_deque_capacity();
     test_deque_trim_capacity();
+    test_deque_reverse();
 
     return cc_get_status();
 }
@@ -835,6 +837,40 @@ void test_deque_trim_capacity()
               cc_msg("deque_trim_capacity"
                      " Unexpected capacity."
                      " Expected 4, but got %d", capacity));
+
+    deque_destroy(deque);
+}
+
+
+void test_deque_reverse()
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+
+    deque_reverse(deque);
+
+    int ra = *((int*) deque_get(deque, 0));
+    int rb = *((int*) deque_get(deque, 1));
+    int rc = *((int*) deque_get(deque, 2));
+
+    cc_assert(ra == c,
+              cc_msg("deque_reverse: Expected %d but got %d instead",
+                     c, ra));
+
+    cc_assert(rb == b,
+              cc_msg("deque_reverse: Expected %d but got %d instead",
+                     b, rb));
+
+    cc_assert(rc == a,
+              cc_msg("deque_reverse: Expected %d but got %d instead",
+                     a, rc));
 
     deque_destroy(deque);
 }
