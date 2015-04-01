@@ -620,6 +620,30 @@ void deque_trim_capacity(Deque *deque)
 }
 
 /**
+ * Reverses the order of elements in the specified deque.
+ *
+ * @param[in] deque the deque that is being reversed
+ */
+void deque_reverse(Deque *deque)
+{
+    size_t i;
+    size_t j;
+    size_t s = deque->size;
+    size_t c = deque->capacity - 1;
+
+    size_t first = deque->first;
+
+    for (i = 0, j = s - 1; i < (s - 1) / 2; i++, j--) {
+        size_t f = (first + i) & c;
+        size_t l = (first + j) & c;
+
+        void *tmp = deque->buffer[f];
+        deque->buffer[f] = deque->buffer[l];
+        deque->buffer[l] = tmp;
+    }
+}
+
+/**
  * Returns the number of occurrences of the element within the specified deque.
  *
  * @param[in] deque the deque that is being searched
