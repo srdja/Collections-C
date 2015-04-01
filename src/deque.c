@@ -594,6 +594,32 @@ Deque* deque_copy_deep(Deque *deque, void *(*cp) (void*))
 }
 
 /**
+ * Trims the capacity of the deque to a power of 2 that is the nearest to
+ * the number of elements in the deque.
+ *
+ * @param[in] deque the deque on which this operation is being performed
+ */
+void deque_trim_capacity(Deque *deque)
+{
+    if (deque->capacity == deque->size)
+        return;
+
+    size_t new_size = upper_pow_two(deque->size);
+
+    if (new_size == deque->capacity)
+        return;
+
+    void **new_buff = deque->mem_alloc(sizeof(void) * new_size);
+
+    copy_buffer(deque, new_buff, NULL);
+
+    deque->buffer   = new_buff;
+    deque->first    = 0;
+    deque->last     = deque->size;
+    deque->capacity = new_size;
+}
+
+/**
  * Returns the number of occurrences of the element within the specified deque.
  *
  * @param[in] deque the deque that is being searched
