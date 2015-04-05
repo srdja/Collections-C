@@ -19,6 +19,7 @@ void test_deque_size();
 void test_deque_capacity();
 void test_deque_trim_capacity();
 void test_deque_reverse();
+void test_deque_iterator();
 
 int main(int argc, char **argv)
 {
@@ -41,6 +42,7 @@ int main(int argc, char **argv)
     test_deque_capacity();
     test_deque_trim_capacity();
     test_deque_reverse();
+    test_deque_iterator();
 
     return cc_get_status();
 }
@@ -873,4 +875,147 @@ void test_deque_reverse()
                      a, rc));
 
     deque_destroy(deque);
+}
+
+void test_deque_iterator_add()
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+    int g = 7;
+
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+    deque_add(deque, &d);
+    deque_add(deque, &e);
+    deque_add(deque, &f);
+
+    DequeIter iter;
+    deque_iter_init(&iter, deque);
+
+    size_t i = 0;
+
+    while (deque_iter_has_next(&iter)) {
+        deque_iter_next(&iter);
+
+        if (deque_iter_index(&iter) == 3)
+            deque_iter_add(&iter, &g);
+
+        if (deque_iter_index(&iter) < 3) {
+            cc_assert(deque_size(deque) == 6,
+                      cc_msg("deque_iterator: Deque size not 6 as expected"
+                             " before insertion."));
+        } else {
+            cc_assert(deque_size(deque) == 7,
+                      cc_msg("deque_iterator: Deque size not 7 as expected"
+                             " after insertion."));
+        }
+        if (i >= 3) {
+            cc_assert(deque_iter_index(&iter) - 1 == i,
+                      cc_msg("deque_iterator: Iterator index not off by one"
+                             " as expected."));
+        }
+        i++;
+    }
+    deque_destroy(deque);
+}
+
+void test_deque_iterator_remove()
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+    int g = 7;
+
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+    deque_add(deque, &d);
+    deque_add(deque, &e);
+    deque_add(deque, &f);
+
+    DequeIter iter;
+    deque_iter_init(&iter, deque);
+
+    size_t i = 0;
+        while (deque_iter_has_next(&iter)) {
+        deque_iter_next(&iter);
+
+        if (i == 3)
+            deque_iter_remove(&iter);
+
+        if (i > 2) {
+            cc_assert(deque_size(deque) == 5,
+                      cc_msg("deque_iterator remove: Deque size not 5 as expected"
+                             " after deletion."));
+        } else {
+            cc_assert(deque_size(deque) == 6,
+                      cc_msg("deque_iterator remove: Deque size not 6 as expected"
+                             " before removal."));
+        }
+        if (i >= 3) {
+            cc_assert(deque_iter_index(&iter) == i - 1,
+                      cc_msg("deque_iterator remove: Iterator index not off by one"
+                             " as expected."));
+        }
+        i++;
+    }
+    deque_destroy(deque);
+}
+
+void test_deque_iterator_next()
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+    int g = 7;
+
+    Deque *deque = deque_new();
+
+    deque_add(deque, &a);
+    deque_add(deque, &b);
+    deque_add(deque, &c);
+    deque_add(deque, &d);
+    deque_add(deque, &e);
+    deque_add(deque, &f);
+
+    DequeIter iter;
+    deque_iter_init(&iter, deque);
+
+    size_t i = 0;
+
+    while (deque_iter_has_next(&iter)) {
+        cc_assert(iter.index == i,
+                  cc_msg("deque_iterator: Iterator index invalid. "
+                         "Expected %d but got %d instead", i, iter.index));
+
+        void *e = deque_iter_next(&iter);
+
+        cc_assert(e == deque_get(deque, i),
+                  cc_msg("deque_iterator: Element returned by "
+                         "deque_iter_next not as expected"));
+        i++;
+    }
+    deque_destroy(deque);
+}
+
+void test_deque_iterator()
+{
+    test_deque_iterator_next();
+    test_deque_iterator_add();
+    test_deque_iterator_remove();
 }
