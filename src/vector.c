@@ -720,11 +720,15 @@ void *vector_iter_replace(VectorIter *iter, void *element)
  * Returns the index of the last returned element by <code>vector_iter_next()
  * </code>.
  *
+ * @note
+ * This function should not be called before a call to <code>vector_iter_next()
+ * </code>
+ *
  * @param[in] iter the iterator on which this operation is being performed
  *
  * @return the index
  */
 size_t vector_iter_index(VectorIter *iter)
 {
-    return iter->index;
+    return iter->index - 1;
 }
