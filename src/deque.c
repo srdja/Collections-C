@@ -865,13 +865,14 @@ void deque_iter_init(DequeIter *iter, Deque *deque)
  */
 bool deque_iter_has_next(DequeIter *iter)
 {
-    const size_t last = (iter->deque->last) &
-                        (iter->deque->capacity - 1);
+    const size_t c     = (iter->deque->capacity - 1);
+    const size_t last  = (iter->deque->last) & c;
+    const size_t first = (iter->deque->first) & c;
 
-    if (iter->index < last) {
-        return true;
-    }
-    return false;
+    if (last == first || iter->index >= iter->deque->size)
+        return false;
+
+    return true;
 }
 
 /**
@@ -898,7 +899,11 @@ void *deque_iter_next(DequeIter *iter)
  */
 void *deque_iter_remove(DequeIter *iter)
 {
-    return deque_remove_at(iter->deque, iter->index); // maybe a bug
+    void *rm = deque_remove_at(iter->deque, iter->index);
+    if (rm != NULL)
+        iter->index--;
+
+    return rm;
 }
 
 /**
@@ -913,7 +918,11 @@ void *deque_iter_remove(DequeIter *iter)
  */
 bool deque_iter_add(DequeIter *iter, void *element)
 {
-    return deque_add_at(iter->deque, element, iter->index++);
+    bool rm = deque_add_at(iter->deque, element, iter->index);
+    if (rm)
+        iter->index++;
+
+    return rm;
 }
 
 /**
