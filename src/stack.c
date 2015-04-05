@@ -26,15 +26,25 @@ struct stack_s {
 };
 
 /**
+ * Initializes the fields of the StackConf struct to default values.
+ *
+ * @param[in, out] conf the configuration object that is being initialized
+ */
+void stack_conf_init(StackConf *conf)
+{
+    vector_conf_init(conf);
+}
+
+/**
  * Returns a new empty stack, or NULL if the space allocation fails.
- * 
+ *
  * @return a new empty stack, or NULL.
  */
 Stack *stack_new()
 {
-    Stack *s = calloc(1, sizeof(Stack));
-    s->v = vector_new();
-    return s;
+    StackConf conf;
+    stack_conf_init(&conf);
+    return stack_new_conf(&conf);
 }
 
 /**
@@ -45,16 +55,16 @@ Stack *stack_new()
  *
  * @return a new empty stack, or NULL
  */
-Stack *stack_new_capacity(size_t capacity)
+Stack *stack_new_conf(StackConf *conf)
 {
-    Stack *s = calloc(1, sizeof(Stack));
-    s->v = vector_new_capacity(capacity);
+    Stack *s = conf->mem_calloc(1, sizeof(Stack));
+    s->v = vector_new_capacity(conf);
     return s;
 }
 
 /**
  * Destroys the specified stack structure, while leaving the data it holds
- * intact. 
+ * intact.
  *
  * @param[in] stack the stack to be destroyed
  */
@@ -80,8 +90,8 @@ void stack_destroy_free(Stack *stack)
  * for the new element cannot be allocated.
  *
  * @param[in] stack the stack on which the elment is being pushed onto
- * @param[in] element the element being pushed onto the stack 
- * 
+ * @param[in] element the element being pushed onto the stack
+ *
  * @return true if the operation was successful, false if not
  */
 bool stack_push(Stack *stack, void *element)

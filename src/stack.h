@@ -23,17 +23,22 @@
 
 #include "common.h"
 
-typedef struct stack_s Stack;
+typedef struct stack_s    Stack;
+typedef        VectorConf StackConf;
 
-Stack  *stack_new     ();
-void    stack_destroy (Stack *stack);
+void    stack_conf_init   (StackConf *conf);
 
-bool    stack_push    (Stack *stack, void *element);
-void   *stack_peek    (Stack *stack);
-void   *stack_pop     (Stack *stack);
+Stack  *stack_new         ();
+Stack  *stack_new_conf    (StackConf *conf);
+void    stack_destroy     (Stack *stack);
+void    stack_destroy_free(Stack *stack);
 
-size_t  stack_size    (Stack *stack);
+bool    stack_push        (Stack *stack, void *element);
+void   *stack_peek        (Stack *stack);
+void   *stack_pop         (Stack *stack);
 
-void    stack_foreach (Stack *stack, void (*op) (void *));
+size_t  stack_size        (Stack *stack);
+
+void    stack_foreach     (Stack *stack, void (*op) (void *));
 
 #endif /* STACK_H_ */
