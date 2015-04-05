@@ -129,6 +129,19 @@ bool queue_enqueue(Queue *queue, void *element)
 }
 
 /**
+ * Returns the size of the specified queue. The size of the queue is
+ * the number of elements contained within the queue.
+ *
+ * @param[in] queue the queue whose size is being returned
+ *
+ * @return the number of elements within the queue
+ */
+void queue_size(Queue *queue)
+{
+    return deque_size(queue->d);
+}
+
+/**
  * A 'foreach loop' function that invokes the specified function on each element
  * in the queue.
  *

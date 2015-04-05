@@ -42,6 +42,7 @@ void  *queue_peek         (Queue *queue);
 void  *queue_poll         (Queue *queue);
 bool   queue_enqueue      (Queue *queue, void *element);
 
+size_t queue_size         (Queue *queue);
 void   queue_foreach      (Queue *queue, void (*op) (void*));
 
 void   queue_iter_init    (QueueIter *iter, Queue *queue);
