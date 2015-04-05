@@ -898,7 +898,7 @@ void *deque_iter_next(DequeIter *iter)
  */
 void *deque_iter_remove(DequeIter *iter)
 {
-    return deque_remove_at(iter->deque, iter->index);
+    return deque_remove_at(iter->deque, iter->index); // maybe a bug
 }
 
 /**
@@ -928,4 +928,21 @@ bool deque_iter_add(DequeIter *iter, void *element)
 void *deque_iter_replace(DequeIter *iter, void *replacement)
 {
     return deque_replace_at(iter->deque, replacement, iter->index);
+}
+
+/**
+ * Returns the index of the last returned element by <code>deque_iter_next()
+ * </code>.
+ *
+ * @note
+ * This function should not be called before a call to <code>deque_iter_next()
+ * </code>
+ *
+ * @param[in] iter the iterator on which this operation is being performed
+ *
+ * @return the index
+ */
+size_t deque_iter_index(DequeIter *iter)
+{
+    return iter->index - 1;
 }

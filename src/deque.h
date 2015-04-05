@@ -89,5 +89,6 @@ void*      deque_iter_next       (DequeIter *iter);
 void*      deque_iter_remove     (DequeIter *iter);
 bool       deque_iter_add        (DequeIter *iter, void *element);
 void*      deque_iter_replace    (DequeIter *iter, void *replacement);
+size_t     deque_iter_index      (DequeIter *iter);
 
 #endif /* DEQUE_H_ */
