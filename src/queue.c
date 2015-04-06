@@ -189,32 +189,6 @@ void* queue_iter_next(QueueIter *iter)
 }
 
 /**
- * Removes and returns the last returned element by <code>queue_iter_next()
- * </code> without invalidating the iterator.
- *
- * @param[in] iter the iterator on which this operation is being performed
- *
- * @return the removed element
- */
-void* queue_iter_remove(QueueIter *iter)
-{
-    return deque_iter_remove(&(iter->i));
-}
-
-/**
- * Adds a new element to the queue after the last returned element.
- *
- * @param[in] iter the iterator on which this operation is being performed.
- * @param[in] element the element being added
- *
- * @return true if the operation was successful
- */
-bool queue_iter_add(QueueIter *iter, void *element)
-{
-    return deque_iter_add(&(iter->i), element);
-}
-
-/**
  * Replaces the last returned element by the specified iterator.
  *
  * @param[in] iter the iterator on which this operation is being performed
@@ -224,5 +198,5 @@ bool queue_iter_add(QueueIter *iter, void *element)
  */
 void* queue_iter_replace(QueueIter *iter, void *replacement)
 {
-    deque_iter_replace(&(iter->i), replacement);
+    return deque_iter_replace(&(iter->i), replacement);
 }
