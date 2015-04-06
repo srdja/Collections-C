@@ -1,12 +1,13 @@
-check_PROGRAMS = list_test hashtable_test vector_test slist_test deque_test
+check_PROGRAMS = list_test hashtable_test vector_test slist_test deque_test hashset_test
 
-TESTS = list_test hashtable_test vector_test slist_test deque_test
+TESTS = list_test hashtable_test vector_test slist_test deque_test hashset_test
 
 list_test_LDFLAGS = -static
 hashtable_test_LDFLAGS = -static
 vector_test_LDFLAGS = -static
 slist_test_LDFLAGS = -static
 deque_test_LDFLAGS = -static
+hashset_test_LDFLAGS = -static
 
 list_test_SOURCES = list_test.c ../src/list.c ../src/list.h test.c test.h
 
@@ -18,3 +19,6 @@ vector_test_SOURCES = vector_test.c ../src/vector.c ../src/vector.h test.c test.
 slist_test_SOURCES = slist_test.c test.h test.c ../src/slist.h ../src/slist.c
 
 deque_test_SOURCES = deque_test.c test.h test.c ../src/deque.c ../src/deque.h
+
+hashset_test_SOURCES = hashset_test.c test.h test.c ../src/hashset.c ../src/hashset.h \
+                        ../src/hashtable.h ../src/hashtable.c ../src/vector.c ../src/vector.h 
