@@ -43,7 +43,7 @@ typedef struct hashtable_key_iter HashTableIter;
 typedef struct table_entry_s {
     /* A key in the table */
     void     *key;
-    
+
     /* Value associated with the key */
     void     *value;
 
@@ -56,7 +56,7 @@ typedef struct table_entry_s {
 
 /**
  * An iterator object used to iterate over table entries.
- * 
+ *
  * @note This structure should only be modified through the iterator
  * functions.
  */
@@ -71,7 +71,7 @@ struct hashtable_key_iter {
  * A configuration object used for configuring new hash tables.
  */
 typedef struct hashtable_conf_s {
-    /* The load factor determines how the underlying 
+    /* The load factor determines how the underlying
      * table array grows. For example if the load factor
      * is 0.5 and the arrays capacity is 100, the resize will
      * be triggered once the 50th entry is added. */
@@ -95,7 +95,7 @@ typedef struct hashtable_conf_s {
     bool   (*key_compare) (void *key1, void *key2);
 
     /* Memory allocators used to allocate the HashTable structure
-     * and for all internal memory allocations. */ 
+     * and for all internal memory allocations. */
     void  *(*mem_alloc)   (size_t size);
     void  *(*mem_calloc)  (size_t blocks, size_t size);
     void   (*mem_free)    (void *block);
@@ -107,7 +107,7 @@ HashTable  *hashtable_new             (void);
 HashTable  *hashtable_new_conf        (HashTableConf *conf);
 
 void        hashtable_destroy         (HashTable *table);
-bool        hashtable_put             (HashTable *table, void *key, void *val);
+bool        hashtable_add             (HashTable *table, void *key, void *val);
 void       *hashtable_get             (HashTable *table, void *key);
 void       *hashtable_remove          (HashTable *table, void *key);
 void        hashtable_remove_all      (HashTable *table);

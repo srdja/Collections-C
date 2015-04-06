@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     test_hashtable_new();
     test_hashtable_size();
     test_hashtable_remove_all();
-    test_hashtable_put();
+    test_hashtable_add();
     test_hashtable_remove();
     test_hashtable_get();
     test_hashtable_capacity();
@@ -65,7 +65,7 @@ void test_hashtable_new()
     hashtable_destroy(table);
 }
 
-void test_hashtable_put()
+void test_hashtable_add()
 {
     HashTable *table = hashtable_new();
 
@@ -73,17 +73,17 @@ void test_hashtable_put()
     char *b = "cookies";
     char *c = "m31";
 
-    hashtable_put(table, "key", a);
-    hashtable_put(table, "randomstring", b);
-    hashtable_put(table, "5", c);
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", b);
+    hashtable_add(table, "5", c);
 
     size_t size = hashtable_size(table);
 
     cc_assert(size == 3,
-              cc_msg("hashtable_put: Expected size was 3, but got %d", size));
+              cc_msg("hashtable_add: Expected size was 3, but got %d", size));
 
     cc_assert(hashtable_get(table, "key") == a,
-              cc_msg("hashtable_put: Wrong value retrieved"));
+              cc_msg("hashtable_add: Wrong value retrieved"));
 
     hashtable_destroy(table);
 
@@ -95,16 +95,16 @@ void test_hashtable_put()
 
     table = hashtable_new_conf(&conf);
 
-    hashtable_put(table, "key", a);
-    hashtable_put(table, "randomstring", c);
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", c);
 
     size = hashtable_size(table);
 
     cc_assert(size == 2,
-              cc_msg("hashtable_put: Expected size was 2, but got %d", size));
+              cc_msg("hashtable_add: Expected size was 2, but got %d", size));
 
     cc_assert(hashtable_get(table, "randomstring") == c,
-              cc_msg("hashtable_put: Expected 'm31' to be retrieved, but got %s", c));
+              cc_msg("hashtable_add: Expected 'm31' to be retrieved, but got %s", c));
 
     hashtable_destroy(table);
 }
@@ -118,9 +118,9 @@ void test_hashtable_remove()
     char *b = "cookies";
     char *c = "m31";
 
-    hashtable_put(table, "key", a);
-    hashtable_put(table, "randomstring", b);
-    hashtable_put(table, "5", c);
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", b);
+    hashtable_add(table, "5", c);
 
     char   *rm   = hashtable_remove(table, "randomstring");
     size_t  size = hashtable_size(table);
@@ -143,9 +143,9 @@ void test_hashtable_remove()
 
     table = hashtable_new_conf(&conf);
 
-    hashtable_put(table, "key", a);
-    hashtable_put(table, "randomstring", c);
-    hashtable_put(table, "5", c);
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", c);
+    hashtable_add(table, "5", c);
 
     rm = hashtable_remove(table, "randomstring");
     size = hashtable_size(table);
@@ -166,8 +166,8 @@ void test_hashtable_remove_all()
 {
     HashTable *table = hashtable_new();
 
-    hashtable_put(table, "key", "value");
-    hashtable_put(table, "randomkey", "randomvalue");
+    hashtable_add(table, "key", "value");
+    hashtable_add(table, "randomkey", "randomvalue");
 
     hashtable_remove_all(table);
     size_t size = hashtable_size(table);
@@ -191,8 +191,8 @@ void test_hashtable_get()
 
     char *val = "567";
 
-    hashtable_put(table, "key", "value");
-    hashtable_put(table, "123", val);
+    hashtable_add(table, "key", "value");
+    hashtable_add(table, "123", val);
 
     char *ret = hashtable_get(table, "123");
 
@@ -206,9 +206,9 @@ void test_hashtable_size()
 {
     HashTable *table = hashtable_new();
 
-    hashtable_put(table, "key", "value");
-    hashtable_put(table, "randomstring", "cookies");
-    hashtable_put(table, "5", "asdf");
+    hashtable_add(table, "key", "value");
+    hashtable_add(table, "randomstring", "cookies");
+    hashtable_add(table, "5", "asdf");
 
     size_t size = hashtable_size(table);
 
@@ -229,20 +229,20 @@ void test_hashtable_capacity()
 
     HashTable *t = hashtable_new_conf(&conf);
 
-    hashtable_put(t, "a", NULL);
+    hashtable_add(t, "a", NULL);
 
     cc_assert(hashtable_capacity(t) == 2,
               cc_msg("hashtable_capacity: Expected capacity was 4, but got %d",
                      hashtable_capacity(t)));
 
-    hashtable_put(t, "b", NULL);
+    hashtable_add(t, "b", NULL);
 
     cc_assert(hashtable_capacity(t) == 4,
               cc_msg("hashtable_capacity: Expected capacity was 8, but got %d",
                      hashtable_capacity(t)));
 
-    hashtable_put(t, "c", NULL);
-    hashtable_put(t, "d", NULL);
+    hashtable_add(t, "c", NULL);
+    hashtable_add(t, "d", NULL);
 
     cc_assert(hashtable_capacity(t) == 8,
               cc_msg("hashtable_capacity: Expected capacity was 16, but got %d",
@@ -256,9 +256,9 @@ void test_hashtable_contains_key()
 {
     HashTable *table = hashtable_new();
 
-    hashtable_put(table, "key", "value");
-    hashtable_put(table, "randomstring", "cookies");
-    hashtable_put(table, "5", "m31");
+    hashtable_add(table, "key", "value");
+    hashtable_add(table, "randomstring", "cookies");
+    hashtable_add(table, "5", "m31");
 
     cc_assert(hashtable_contains_key(table, "key"),
               cc_msg("hashtable_contains_key: "
@@ -301,9 +301,9 @@ void test_hashtable_memory_chunks_as_keys()
 
     HashTable *t = hashtable_new_conf(&conf);
 
-    hashtable_put(t, array1, "one");
-    hashtable_put(t, array2, "two");
-    hashtable_put(t, array3, "three");
+    hashtable_add(t, array1, "one");
+    hashtable_add(t, array2, "two");
+    hashtable_add(t, array3, "three");
 
     cc_assert(strcmp(hashtable_get(t, array1), "one") == 0,
               cc_msg("hashtable_memory_chunks_as_keys: "
@@ -322,11 +322,11 @@ void test_hashtable_iter_next()
 {
     HashTable *t = hashtable_new();
 
-    hashtable_put(t, "one", "1");
-    hashtable_put(t, "two", "2");
-    hashtable_put(t, "three", "3");
-    hashtable_put(t, "four", "4");
-    hashtable_put(t, "five", "5");
+    hashtable_add(t, "one", "1");
+    hashtable_add(t, "two", "2");
+    hashtable_add(t, "three", "3");
+    hashtable_add(t, "four", "4");
+    hashtable_add(t, "five", "5");
 
     int one   = 0;
     int two   = 0;
@@ -378,9 +378,9 @@ void test_hashtable_iter_remove()
     char *b = "bar";
     char *c = "baz";
 
-    hashtable_put(t, a, "a");
-    hashtable_put(t, b, "a");
-    hashtable_put(t, c, "a");
+    hashtable_add(t, a, "a");
+    hashtable_add(t, b, "a");
+    hashtable_add(t, c, "a");
 
     HashTableIter iter;
     hashtable_iter_init(&iter, t);

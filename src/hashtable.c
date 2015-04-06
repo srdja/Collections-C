@@ -43,7 +43,7 @@ static size_t  get_table_index  (HashTable *table, void *key);
 static bool    resize           (HashTable *t, size_t new_capacity);
 static size_t  round_pow_two    (size_t n);
 static void   *get_null_key     (HashTable *table);
-static bool    put_null_key     (HashTable *table, void *val);
+static bool    add_null_key     (HashTable *table, void *val);
 static void   *remove_null_key  (HashTable *table);
 static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
                                  size_t src_size, size_t dest_size);
@@ -149,13 +149,13 @@ void hashtable_destroy(HashTable *table)
  *
  * @return true if the operation was successful
  */
-bool hashtable_put(HashTable *table, void *key, void *val)
+bool hashtable_add(HashTable *table, void *key, void *val)
 {
     if (table->size >= table->threshold)
         resize(table, table->capacity << 1);
 
     if (!key)
-        return put_null_key(table, val);
+        return add_null_key(table, val);
 
     const size_t hash = table->hash(key, table->key_len, table->hash_seed);
     const size_t i    = hash & (table->capacity - 1);
@@ -190,12 +190,12 @@ bool hashtable_put(HashTable *table, void *key, void *val)
  * Creates a new key-value mapping for the NULL key. This operation may fail if
  * the space allocation for the new entry fails.
  *
- * @param[in] table the table into which this key value-mapping is being put in
+ * @param[in] table the table into which this key value-mapping is being add in
  * @param[in] val the value that is being mapped to the NULL key
  *
  * @return true if the operation was successful
  */
-static bool put_null_key(HashTable *table, void *val)
+static bool add_null_key(HashTable *table, void *val)
 {
     TableEntry *replace = table->buckets[0];
 
