@@ -29,7 +29,7 @@ typedef struct hashset_iter_s HashSetIter;
 typedef        HashTableConf  HashSetConf;
 
 struct hashset_iter_s {
-    HashTableIter *iter;
+    HashTableIter iter;
 };
 
 void        hashset_conf_init     (HashSetConf *conf);

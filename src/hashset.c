@@ -178,7 +178,7 @@ void hashset_foreach(HashSet *set, void (*op) (const void *e))
  */
 void hashset_iter_init(HashSetIter *iter, HashSet *set)
 {
-    hashtable_iter_init(iter->iter, set->table);
+    hashtable_iter_init(&(iter->iter), set->table);
 }
 
 /**
@@ -190,7 +190,7 @@ void hashset_iter_init(HashSetIter *iter, HashSet *set)
  */
 bool hashset_iter_has_next(HashSetIter *iter)
 {
-    return hashtable_iter_has_next(iter->iter);
+    return hashtable_iter_has_next(&(iter->iter));
 }
 
 /**
@@ -202,8 +202,8 @@ bool hashset_iter_has_next(HashSetIter *iter)
  */
 const void *hashset_iter_next(HashSetIter *iter)
 {
-    TableEntry *entry = hashtable_iter_next(iter->iter);
-    return (const void*) entry->key;
+    TableEntry *entry = hashtable_iter_next(&(iter->iter));
+    return entry->key;
 }
 
 /**
@@ -216,7 +216,7 @@ const void *hashset_iter_next(HashSetIter *iter)
  */
 void *hashset_iter_remove(HashSetIter *iter)
 {
-    void *element = iter->iter->prev_entry->key;
-    hashtable_iter_remove(iter->iter);
+    void *element = iter->iter.prev_entry->key;
+    hashtable_iter_remove(&(iter->iter));
     return element;
 }
