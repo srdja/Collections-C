@@ -23,20 +23,20 @@
 
 struct slist_s {
     size_t  size;
-    Node   *head;
-    Node   *tail;
+    SNode   *head;
+    SNode   *tail;
 
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
     void   (*mem_free)   (void *block);
 };
 
-static void* unlink              (SList *list, Node *node, Node *prev);
+static void* unlink              (SList *list, SNode *node, SNode *prev);
 static bool  unlink_all          (SList *list, bool freed);
-static void  splice_between      (SList *list1, SList *list2, Node *base, Node *end);
-static bool  get_node_at         (SList *list, size_t index, Node **node, Node **prev);
-static bool  get_node            (SList *list, void *element, Node **node, Node **prev);
-static bool  link_all_externally (SList *list, Node **h, Node **t);
+static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
+static bool  get_node_at         (SList *list, size_t index, SNode **node, SNode **prev);
+static bool  get_node            (SList *list, void *element, SNode **node, SNode **prev);
+static bool  link_all_externally (SList *list, SNode **h, SNode **t);
 
 /**
  * Initializes the fields SListConf struct to default values.
@@ -144,7 +144,7 @@ bool slist_add(SList *list, void *element)
  */
 bool slist_add_first(SList *list, void *element)
 {
-    Node *node = list->mem_calloc(1, sizeof(Node));
+    SNode *node = list->mem_calloc(1, sizeof(SNode));
 
     if (!node)
         return false;
@@ -174,7 +174,7 @@ bool slist_add_first(SList *list, void *element)
  */
 bool slist_add_last(SList *list, void *element)
 {
-    Node *node = list->mem_calloc(1, sizeof(Node));
+    SNode *node = list->mem_calloc(1, sizeof(SNode));
 
     if (!node)
         return false;
@@ -208,13 +208,13 @@ bool slist_add_last(SList *list, void *element)
  */
 bool slist_add_at(SList *list, void *element, size_t index)
 {
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node_at(list, index, &node, &prev))
         return false;
 
-    Node *new = list->mem_calloc(1, sizeof(Node));
+    SNode *new = list->mem_calloc(1, sizeof(SNode));
 
     if (!new)
         return false;
@@ -225,7 +225,7 @@ bool slist_add_at(SList *list, void *element, size_t index)
         new->next  = list->head;
         list->head = new;
     } else {
-        Node *tmp  = prev->next;
+        SNode *tmp  = prev->next;
         prev->next = new;
         new->next  = tmp;
     }
@@ -251,8 +251,8 @@ bool slist_add_all(SList *list1, SList *list2)
     if (list2->size == 0)
         return false;
 
-    Node *head = NULL;
-    Node *tail = NULL;
+    SNode *head = NULL;
+    SNode *tail = NULL;
 
     if (!link_all_externally(list2, &head, &tail))
         return false;
@@ -289,14 +289,14 @@ bool slist_add_all_at(SList *list1, SList *list2, size_t index)
     if (list2->size == 0)
         return false;
 
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node_at(list1, index, &node, &prev))
         return false;
 
-    Node *head = NULL;
-    Node *tail = NULL;
+    SNode *head = NULL;
+    SNode *tail = NULL;
 
     if (!link_all_externally(list2, &head, &tail))
         return false;
@@ -325,17 +325,17 @@ bool slist_add_all_at(SList *list1, SList *list2, size_t index)
  *
  * @return true if the operation was successful
  */
-static bool link_all_externally(SList *list, Node **h, Node **t)
+static bool link_all_externally(SList *list, SNode **h, SNode **t)
 {
-    Node *ins = list->head;
+    SNode *ins = list->head;
 
     size_t i;
     for (i = 0; i < list->size; i++) {
-        Node *new = list->mem_calloc(1, sizeof(Node));
+        SNode *new = list->mem_calloc(1, sizeof(SNode));
 
         if (!new) {
             while (*h) {
-                Node *tmp = (*h)->next;
+                SNode *tmp = (*h)->next;
                 list->mem_free(*h);
                 *h = tmp;
             }
@@ -408,8 +408,8 @@ bool slist_splice_at(SList *list1, SList *list2, size_t index)
     if (index >= list1->size)
         return false;
 
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node_at(list1, index, &node, &prev))
         return false;
@@ -430,7 +430,7 @@ bool slist_splice_at(SList *list1, SList *list2, size_t index)
  * @param[in] left the node after which the elements are being added
  * @param[in] right the node behind which the elements are being added
  */
-static INLINE void splice_between(SList *l1, SList *l2, Node *base, Node *end)
+static INLINE void splice_between(SList *l1, SList *l2, SNode *base, SNode *end)
 {
     if (!base) {
         l2->tail->next = l1->head;
@@ -462,8 +462,8 @@ static INLINE void splice_between(SList *l1, SList *l2, Node *base, Node *end)
  */
 void *slist_remove(SList *list, void *element)
 {
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node(list, element, &node, &prev))
         return NULL;
@@ -487,8 +487,8 @@ void *slist_remove(SList *list, void *element)
  */
 void *slist_remove_at(SList *list, size_t index)
 {
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node_at(list, index, &node, &prev))
         return NULL;
@@ -525,8 +525,8 @@ void *slist_remove_last(SList *list)
     if (list->size == 0)
         return NULL;
 
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     get_node_at(list, list->size - 1, &node, &prev);
 
@@ -592,8 +592,8 @@ bool slist_remove_all_free(SList *list)
  */
 void *slist_replace_at(SList *list, void *element, size_t index)
 {
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node_at(list, index, &node, &prev))
         return NULL;
@@ -647,8 +647,8 @@ void *slist_get_last(SList *list)
  */
 void *slist_get(SList *list, size_t index)
 {
-    Node *prev = NULL;
-    Node *node = NULL;
+    SNode *prev = NULL;
+    SNode *node = NULL;
 
     if (!get_node_at(list, index, &node, &prev))
         return NULL;
@@ -678,9 +678,9 @@ void slist_reverse(SList *list)
     if (list->size == 0 || list->size == 1)
         return;
 
-    Node *prev = NULL;
-    Node *flip = list->head;
-    Node *next = flip->next;
+    SNode *prev = NULL;
+    SNode *flip = list->head;
+    SNode *next = flip->next;
 
     list->tail = list->head;
 
@@ -722,8 +722,8 @@ SList *slist_sublist(SList *list, size_t from, size_t to)
     if (from > to || to >= list->size)
         return NULL;
 
-    Node *base = NULL;
-    Node *node = NULL;
+    SNode *base = NULL;
+    SNode *node = NULL;
 
     SList *sub = slist_new();
 
@@ -752,7 +752,7 @@ SList *slist_sublist(SList *list, size_t from, size_t to)
 SList *slist_copy_shallow(SList *list)
 {
     SList *copy = slist_new();
-    Node *node = list->head;
+    SNode *node = list->head;
 
     while (node) {
         slist_add(copy, node->data);
@@ -779,7 +779,7 @@ SList *slist_copy_shallow(SList *list)
 SList *slist_copy_deep(SList *list, void *(*cp) (void*))
 {
     SList *copy = slist_new();
-    Node *node = list->head;
+    SNode *node = list->head;
 
     while (node) {
         slist_add(copy, cp(node->data));
@@ -799,7 +799,7 @@ SList *slist_copy_deep(SList *list, void *(*cp) (void*))
  */
 size_t slist_contains(SList *list, void *element)
 {
-    Node *node = list->head;
+    SNode *node = list->head;
 
     size_t e_count = 0;
 
@@ -824,7 +824,7 @@ size_t slist_contains(SList *list, void *element)
  */
 size_t slist_index_of(SList *list, void *element)
 {
-    Node *node = list->head;
+    SNode *node = list->head;
 
     size_t i = 0;
     while (node) {
@@ -849,7 +849,7 @@ size_t slist_index_of(SList *list, void *element)
 void **slist_to_array(SList *list)
 {
     void **array = list->mem_alloc(list->size * sizeof(void*));
-    Node  *node  = list->head;
+    SNode  *node  = list->head;
 
     size_t i;
     for (i = 0; i < list->size; i++) {
@@ -882,7 +882,7 @@ void slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
         return;
 
     void **elements = slist_to_array(list);
-    Node  *node     = list->head;
+    SNode  *node     = list->head;
 
     qsort(elements, list->size, sizeof(void*), cmp);
 
@@ -904,7 +904,7 @@ void slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
  */
 void slist_foreach(SList *list, void (*op) (void *))
 {
-    Node *n = list->head;
+    SNode *n = list->head;
 
     while (n) {
         op(n->data);
@@ -957,7 +957,7 @@ void *slist_iter_remove(SListIter *iter)
  */
 bool slist_iter_add(SListIter *iter, void *element)
 {
-    Node *new_node = iter->list->mem_calloc(1, sizeof(Node));
+    SNode *new_node = iter->list->mem_calloc(1, sizeof(SNode));
 
     if (!new_node)
         return false;
@@ -1051,7 +1051,7 @@ bool slist_iter_has_next(SListIter *iter)
  *
  * @return the data that was at this node
  */
-static void *unlink(SList *list, Node *node, Node *prev)
+static void *unlink(SList *list, SNode *node, SNode *prev)
 {
     void *data = node->data;
 
@@ -1082,10 +1082,10 @@ static bool unlink_all(SList *list, bool freed)
     if (list->size == 0)
         return false;
 
-    Node *n = list->head;
+    SNode *n = list->head;
 
     while (n) {
-        Node *tmp = n->next;
+        SNode *tmp = n->next;
 
         if (freed)
             list->mem_free(n->data);
@@ -1110,7 +1110,7 @@ static bool unlink_all(SList *list, bool freed)
  * @return true if the operation was successful
  */
 static bool
-get_node_at(SList *list, size_t index, Node **node, Node **prev)
+get_node_at(SList *list, size_t index, SNode **node, SNode **prev)
 {
     if (index >= list->size)
         return false;
@@ -1140,7 +1140,7 @@ get_node_at(SList *list, size_t index, Node **node, Node **prev)
  * @return true if a node containing the specified data was found
  */
 static bool
-get_node(SList *list, void *element, Node **node, Node **prev)
+get_node(SList *list, void *element, SNode **node, SNode **prev)
 {
    *node = list->head;
    *prev = NULL;

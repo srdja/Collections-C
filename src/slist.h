@@ -26,17 +26,17 @@
 
 typedef struct slist_s SList;
 
-typedef struct node_s {
-    void          *data;
-    struct node_s *next;
-} Node;
+typedef struct snode_s {
+    void           *data;
+    struct snode_s *next;
+} SNode;
 
 typedef struct slist_iter_s {
     size_t  index;
     SList  *list;
-    Node   *next;
-    Node   *current;
-    Node   *prev;
+    SNode   *next;
+    SNode   *current;
+    SNode   *prev;
 } SListIter;
 
 typedef struct slist_conf_s {
