@@ -22,9 +22,9 @@
 
 
 struct slist_s {
-    int   size;
-    Node *head;
-    Node *tail;
+    size_t  size;
+    Node   *head;
+    Node   *tail;
 
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
