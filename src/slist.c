@@ -544,7 +544,13 @@ void *slist_remove_last(SList *list)
  */
 bool slist_remove_all(SList *list)
 {
-    return unlink_all(list, false);
+    bool unlinked = unlink_all(list, false);
+
+    if (unlinked) {
+        list->head = NULL;
+        list->tail = NULL;
+    }
+    return unlinked;
 }
 
 /**
@@ -564,7 +570,13 @@ bool slist_remove_all(SList *list)
  */
 bool slist_remove_all_free(SList *list)
 {
-    return unlink_all(list, true);
+    bool unlinked = unlink_all(list, true);
+
+    if (unlinked) {
+        list->head = NULL;
+        list->tail = NULL;
+    }
+    return unlinked;
 }
 
 /**
@@ -1078,6 +1090,7 @@ static bool unlink_all(SList *list, bool freed)
 
         list->mem_free(n);
         n = tmp;
+        list->size--;
     }
     return true;
 }
