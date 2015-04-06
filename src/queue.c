@@ -161,7 +161,7 @@ void queue_foreach(Queue *queue, void (*op) (void*))
  */
 void queue_iter_init(QueueIter *iter, Queue *queue)
 {
-    deque_iter_init(iter->i, queue->d);
+    deque_iter_init(&(iter->i), queue->d);
 }
 
 /**
@@ -173,7 +173,7 @@ void queue_iter_init(QueueIter *iter, Queue *queue)
  */
 bool queue_iter_has_next(QueueIter *iter)
 {
-    return deque_iter_has_next(iter->i);
+    return deque_iter_has_next(&(iter->i));
 }
 
 /**
@@ -185,7 +185,7 @@ bool queue_iter_has_next(QueueIter *iter)
  */
 void* queue_iter_next(QueueIter *iter)
 {
-    return deque_iter_next(iter->i);
+    return deque_iter_next(&(iter->i));
 }
 
 /**
@@ -198,7 +198,7 @@ void* queue_iter_next(QueueIter *iter)
  */
 void* queue_iter_remove(QueueIter *iter)
 {
-    return deque_iter_remove(iter->i);
+    return deque_iter_remove(&(iter->i));
 }
 
 /**
@@ -211,7 +211,7 @@ void* queue_iter_remove(QueueIter *iter)
  */
 bool queue_iter_add(QueueIter *iter, void *element)
 {
-    return deque_iter_add(iter->i, element);
+    return deque_iter_add(&(iter->i), element);
 }
 
 /**
@@ -224,5 +224,5 @@ bool queue_iter_add(QueueIter *iter, void *element)
  */
 void* queue_iter_replace(QueueIter *iter, void *replacement)
 {
-    deque_iter_replace(iter->i, replacement);
+    deque_iter_replace(&(iter->i), replacement);
 }

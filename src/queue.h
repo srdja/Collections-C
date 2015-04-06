@@ -28,7 +28,7 @@ typedef struct queue_s   Queue;
 typedef        DequeConf QueueConf;
 
 typedef struct queue_iter_s {
-    DequeIter *i;
+    DequeIter i;
 } QueueIter;
 
 void   queue_conf_init    (QueueConf *conf);
