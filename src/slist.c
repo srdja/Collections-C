@@ -41,7 +41,7 @@ static bool  link_all_externally (SList *list, Node **h, Node **t);
 /**
  * Initializes the fields SListConf struct to default values.
  *
- * @param[in] conf
+ * @param[in] conf the SListConf struct that is being initialized.
  */
 void slist_conf_init(SListConf *conf)
 {
@@ -63,10 +63,15 @@ SList *slist_new()
 }
 
 /**
+ * Returns a new empty SList based on the specified SListConf struct.
  *
- * @param[in] conf
+ * The SList is allocated using the allocators specified in the SListConf
+ * struct. THe allocation may fail if the underlying allocator fails.
  *
- * @return
+ * @param[in] conf SList configuration. All fields must be initialized
+ *                 to appropriate values.
+ *
+ * @return a new SList if the allocation was successful, or NULL if not.
  */
 Slist *slist_new_conf(SListConf *conf)
 {
@@ -687,6 +692,9 @@ void slist_reverse(SList *list)
  * list of length 3, containing [6, 7, 8]. The returned sublist is only a copy of
  * the original lists structure, meaning the data it points to is not copied.
  *
+ * @note The sublist is allocated using the original lists allocators and also
+ *       inherits the configuration of the original list.
+ *
  * @param[in] list the list from which the sublist is taken
  * @param[in] b    The beginning index, ie., the first element to be included.
  *                 Must be a positive integer and may not exceed the list size
@@ -722,6 +730,9 @@ SList *slist_sublist(SList *list, size_t from, size_t to)
  * list structure. This operation does not copy the actual data that this list
  * holds.
  *
+ * @note The new list is allocated using the original lists allocators and also
+ *       inherits the configuration of the original list.
+ *
  * @param[in] list list to be copied
  *
  * @return a shallow copy of the list
@@ -743,6 +754,9 @@ SList *slist_copy_shallow(SList *list)
  * of the list along with all the data it holds. The element copying is done
  * through the specified copy function that should return a pointer to the copy
  * of the element passed to it.
+ *
+ * @note The new list is allocated using the original lists allocators and also
+ *       inherits the configuration of the original list.
  *
  * @param[in] list list to be copied
  * @parama[in] cp  the copy function that should return a pointer to the copy of
@@ -887,9 +901,12 @@ void slist_foreach(SList *list, void (*op) (void *))
 }
 
 /**
+ * Initializes the iterator.
  *
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] list the slist to iterate over
  */
-void slist_iter_init(SList *list)
+void slist_iter_initS(SListIter *iter, List *list)
 {
     iter->index   = 0;
     iter->list    = list;
