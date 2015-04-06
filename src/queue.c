@@ -136,7 +136,7 @@ bool queue_enqueue(Queue *queue, void *element)
  *
  * @return the number of elements within the queue
  */
-void queue_size(Queue *queue)
+size_t queue_size(Queue *queue)
 {
     return deque_size(queue->d);
 }

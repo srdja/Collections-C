@@ -73,7 +73,7 @@ SList *slist_new()
  *
  * @return a new SList if the allocation was successful, or NULL if not.
  */
-Slist *slist_new_conf(SListConf *conf)
+SList *slist_new_conf(SListConf *conf)
 {
     SList *list = conf->mem_calloc(1, sizeof(SList));
 
@@ -906,7 +906,7 @@ void slist_foreach(SList *list, void (*op) (void *))
  * @param[in] iter the iterator that is being initialized
  * @param[in] list the slist to iterate over
  */
-void slist_iter_initS(SListIter *iter, List *list)
+void slist_iter_init(SListIter *iter, SList *list)
 {
     iter->index   = 0;
     iter->list    = list;
