@@ -884,7 +884,9 @@ bool deque_iter_has_next(DequeIter *iter)
  */
 void *deque_iter_next(DequeIter *iter)
 {
-    const size_t i = iter->index & (iter->deque->capacity - 1);
+    const size_t c = iter->deque->capacity - 1;
+    const size_t i = (iter->deque->first + iter->index) & c;
+
     iter->index++;
     return iter->deque->buffer[i];
 }
