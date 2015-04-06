@@ -27,7 +27,7 @@ struct queue_s {
 /**
  * Initializes the fields of the QueueConf struct to default values.
  *
- * @param[in, out] conf the configuration object that is being initialized
+ * @param[in, out] conf the configuration struct that is being initialized
  */
 void queue_conf_init(QueueConf *conf)
 {

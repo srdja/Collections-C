@@ -47,7 +47,9 @@ static bool  add_all_to_empty    (List *l1, List *l2);
 static bool  link_all_externally (List *l, Node **h, Node **t);
 
 /**
+ * Initializes the fields of the ListConf struct to default values.
  *
+ * @parma[in] conf the configuration struct that is being initialized
  */
 void list_conf_init(ListConf *conf)
 {
@@ -68,6 +70,16 @@ List *list_new()
     return list_new_conf(&lc);
 }
 
+/**
+ * Returns a new empty list based on the specified ListConf struct.
+ *
+ * The List is allocated using the allocators specified in the ListConf
+ * struct. The allocation may fail if the undelying allocator fails.
+ *
+ * @param[in] conf the configuration
+ *
+ * @return a new list if the allocation was successful, or NULL if not.
+ */
 List *list_new_conf(ListConf *conf)
 {
     List *list = conf->mem_calloc(1, sizeof(List));

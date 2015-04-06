@@ -48,12 +48,14 @@ Stack *stack_new()
 }
 
 /**
- * Returns a new empty stack with the specified initial capacity, or NULL if the
- * space allocation fails.
+ * Returns a new empty stack based on the StackConf struct.
  *
- * @param[in] capacity the initial capacity of the new stack
+ * The stack is allocated using the allocators specified in the StackConf
+ * struct. The allocation may fail if the undlying allocator fails.
  *
- * @return a new empty stack, or NULL
+ * @param[in] conf the stack configuration
+ *
+ * @return a new empty stack, or NULL if the allocation fails
  */
 Stack *stack_new_conf(StackConf *conf)
 {
