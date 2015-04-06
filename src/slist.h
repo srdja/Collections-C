@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -25,9 +25,30 @@
 #include "common.h"
 
 typedef struct slist_s SList;
-typedef struct slist_iter_s SListIter;
+
+typedef struct node_s {
+    void          *data;
+    struct node_s *next;
+} Node;
+
+struct slist_iter_s {
+    size_t  index;
+    SList  *list;
+    Node   *next;
+    Node   *current;
+    Node   *prev;
+} SListIter;
+
+typedef struct slist_conf_s {
+    void  *(*mem_alloc)  (size_t size);
+    void  *(*mem_calloc) (size_t blocks, size_t size);
+    void   (*mem_free)   (void *block);
+} SListConf;
+
+void       slist_conf_init       (SListConf *conf);
 
 SList*     slist_new             ();
+SList*     slist_new_conf        (SListConf *conf);
 bool       slist_destroy         (SList *list);
 bool       slist_destroy_free    (SList *list);
 
@@ -69,8 +90,7 @@ size_t     slist_size            (SList *list);
 
 void       slist_foreach         (SList *list, void (*op) (void *));
 
-SListIter* slist_iter_new        (SList *list);
-void       slist_iter_destroy    (SListIter *iter);
+void       slist_iter_init       (SListIter *iter, SList *list);
 void*      slist_iter_remove     (SListIter *iter);
 bool       slist_iter_add        (SListIter *iter, void *element);
 void*      slist_iter_replace    (SListIter *iter, void *element);
