@@ -5,7 +5,7 @@
 static HashTableConf conf;
 
 void test_hashtable_new();
-void test_hashtable_put();
+void test_hashtable_add();
 void test_hashtable_remove();
 void test_hashtable_get();
 void test_hashtable_size();
