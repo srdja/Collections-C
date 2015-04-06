@@ -58,7 +58,7 @@ Stack *stack_new()
 Stack *stack_new_conf(StackConf *conf)
 {
     Stack *s = conf->mem_calloc(1, sizeof(Stack));
-    s->v = vector_new_capacity(conf);
+    s->v = vector_new_conf(conf);
     return s;
 }
 
