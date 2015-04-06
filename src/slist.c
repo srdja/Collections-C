@@ -964,6 +964,8 @@ bool slist_iter_add(SListIter *iter, void *element)
 
     new_node->data      = element;
     new_node->next      = iter->next;
+
+    iter->prev->next    = iter->current;
     iter->prev          = iter->current;
     iter->current->next = new_node;
 
