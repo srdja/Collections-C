@@ -22,6 +22,7 @@
 #define STACK_H_
 
 #include "common.h"
+#include "vector.h"
 
 typedef struct stack_s    Stack;
 typedef        VectorConf StackConf;
