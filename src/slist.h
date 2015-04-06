@@ -31,7 +31,7 @@ typedef struct node_s {
     struct node_s *next;
 } Node;
 
-struct slist_iter_s {
+typedef struct slist_iter_s {
     size_t  index;
     SList  *list;
     Node   *next;
