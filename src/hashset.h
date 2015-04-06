@@ -44,6 +44,7 @@ void        hashset_remove_all    (HashSet *set);
 
 bool        hashset_contains      (HashSet *set, void *element);
 size_t      hashset_size          (HashSet *set);
+size_t      hashset_capacity      (HashSet *set);
 
 void        hashset_foreach       (HashSet *set, void (*op) (const void*));
 

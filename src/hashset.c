@@ -141,7 +141,19 @@ bool hashset_contains(HashSet *set, void *element)
  */
 size_t hashset_size(HashSet *set)
 {
-    return (size_t) hashtable_size(set->table);
+    return hashtable_size(set->table);
+}
+
+/**
+ * Returns the capacity of the specified set.
+ *
+ * @param[in] set the set whose capacity is being returned
+ *
+ * @return the capacity of the set
+ */
+size_t hashset_capacity(HashSet *set)
+{
+    return hashtable_capacity(set->table);
 }
 
 /**
