@@ -68,7 +68,7 @@ TreeTable *treetable_new(int (*cmp) (void *, void *))
     return treetable_new_conf(&conf);
 }
 
-TreeTable *treetable_new_conf(TreeTableConf *conf) // put cmp in conf
+TreeTable *treetable_new_conf(TreeTableConf *conf)
 {
     TreeTable *table  = conf->mem_calloc(1, sizeof(TreeTable));
     RBNode *sentinel  = conf->mem_calloc(1, sizeof(RBNode));
@@ -324,6 +324,7 @@ static void remove_node(TreeTable *table, RBNode *z)
         transplant(table, z, z->left);
     } else {
         y = tree_min(table, z->right);
+        y_color = y->color;
         x = y->right;
         if (y->parent == z) {
             x->parent = y;
