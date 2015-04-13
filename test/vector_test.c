@@ -25,7 +25,7 @@ void test_vector_iter_add();
 int main(int argc, char **argv)
 {
     cc_set_exit_on_failure(false);
-    
+
     test_vector_add();
     test_vector_add_at();
     test_vector_replace_at();
@@ -59,11 +59,11 @@ void test_vector_add()
     vector_add(v, &a);
     vector_add(v, &b);
     vector_add(v, &c);
-    
+
     int *ar = vector_get(v, 0);
     int *br = vector_get(v, 1);
     int *cr = vector_get(v, 2);
-    
+
     cc_assert(*ar == a,
               cc_msg("vector_add: Added element not in the expected position"));
 
@@ -72,7 +72,7 @@ void test_vector_add()
 
     cc_assert(*cr == c,
               cc_msg("vector_add: Added element not in the expected position"));
-    
+
     vector_destroy(v);
 }
 
@@ -82,9 +82,9 @@ void test_vector_add_at()
     VectorConf vc;
     vector_conf_init(&vc);
     vc.capacity = 20;
-    
+
     Vector *v = vector_new_conf(&vc);
-    
+
     int a = 5;
     int b = 12;
     int c = 848;
@@ -128,7 +128,7 @@ void test_vector_replace_at()
     int a = 23;
     int b = 32;
     int c = 55;
-    
+
     int replacement = 11;
 
     vector_add(v, &a);
@@ -144,7 +144,7 @@ void test_vector_replace_at()
     cc_assert(vector_get(v, 2) == &replacement,
               cc_msg("vector_replace_at: Replacement"
                      "element not at the expected index"));
-    
+
     vector_destroy(v);
 }
 
@@ -167,13 +167,13 @@ void test_vector_remove()
 
     cc_assert(vector_size(v) == 3,
               cc_msg("vector_remove: Expected "
-                     "size was 3, but got %d", 
+                     "size was 3, but got %d",
                      vector_size(v)));
 
     cc_assert(vector_get(v, 2) == &e,
               cc_msg("vector_remove: Unexpected"
                      " element at index 2"));
-    
+
     vector_destroy(v);
 }
 
@@ -196,13 +196,13 @@ void test_vector_remove_at()
 
     cc_assert(vector_size(v) == 3,
               cc_msg("vector_remove_at: Expected "
-                     "size was 3, but got %d", 
+                     "size was 3, but got %d",
                      vector_size(v)));
 
     cc_assert(vector_get(v, 2) == &e,
               cc_msg("vector_remove_at: Unexpected"
                      " element at index 2"));
-    
+
     vector_destroy(v);
 }
 
@@ -264,18 +264,18 @@ void test_vector_index_of()
     int a = 23;
     int b = 32;
     int c = 55;
-    
+
     vector_add(v, &a);
     vector_add(v, &b);
     vector_add(v, &c);
-    
+
     int ai = vector_index_of(v, &a);
     int ci = vector_index_of(v, &c);
 
-    cc_assert(ai == 0, 
+    cc_assert(ai == 0,
               cc_msg("vector_index_of: Expected index was 0, but got %d", ai));
 
-     cc_assert(ci == 2, 
+     cc_assert(ci == 2,
               cc_msg("vector_index_of: Expected index was 2, but got %d", ci));
 
     vector_destroy(v);
@@ -299,22 +299,22 @@ void test_vector_subvector()
     vector_add(v, &f);
 
     Vector *sub = vector_subvector(v, 1, 3);
-    
+
     cc_assert(vector_size(sub) == 3,
               cc_msg("vector_subvector: Expected "
-                     "subvector size was 3, but got %d", 
+                     "subvector size was 3, but got %d",
                      vector_size(sub)));
 
     int *s0 = vector_get(sub, 0);
     int *s1 = vector_get(sub, 1);
     int *s2 = vector_get(sub, 2);
-    
+
     cc_assert(s0 == &b,
               cc_msg("vector_subvector: Expected element at index 0 was %d, but got %d", b, *s0));
-    
+
     cc_assert(s1 == &c,
               cc_msg("vector_subvector: Expected element at index 1 was %d, but got %d", c, *s1));
-    
+
     cc_assert(s2 == &e,
               cc_msg("vector_subvector: Expected element at index 2 was %d, but got %d", e, *s2));
 
@@ -348,7 +348,7 @@ void test_vector_copy_shallow()
 }
 
 
-void *copy(void *val) 
+void *copy(void *val)
 {
     int v = *((int*) val);
     int *new = malloc(sizeof(int));
@@ -395,7 +395,7 @@ void test_vector_reverse()
     vector_add(v, &a);
     vector_add(v, &b);
     vector_add(v, &c);
-    
+
     vector_reverse(v);
 
     int *i0 = vector_get(v, 0);
@@ -414,7 +414,7 @@ void test_vector_trim_capacity()
     VectorConf vc;
     vector_conf_init(&vc);
     vc.capacity = 20;
-    
+
     Vector *v = vector_new_conf(&vc);
 
     int a = 5;
@@ -461,7 +461,7 @@ void test_vector_contains()
 
     cc_assert(cc == 2,
               cc_msg("vector_contains: Expected number of elements was 2, but got %d", cc));
-    
+
     cc_assert(ca == 1,
               cc_msg("vector_contains: Expected number of elements was 1, but got %d", ca));
 
@@ -477,7 +477,7 @@ void test_vector_capacity()
     VectorConf vc;
     vector_conf_init(&vc);
     vc.capacity = 1;
-    
+
     Vector *v = vector_new_conf(&vc);
 
     int a = 5;
@@ -486,7 +486,7 @@ void test_vector_capacity()
     int d = 23;
 
     vector_add(v, &a);
-    
+
     cc_assert(vector_capacity(v) == 1,
               cc_msg("vector_capacity: Expected capacity was 1, but got %d",
                      vector_capacity(v)));
@@ -496,14 +496,14 @@ void test_vector_capacity()
     cc_assert(vector_capacity(v) == 2,
               cc_msg("vector_capacity: Expected capacity was 2, but got %d",
                      vector_capacity(v)));
-    
+
     vector_destroy(v);
 }
 
 int comp(void const *e1, void const *e2)
 {
-    int *i = *((int*) e1);
-    int *j = *((int*) e2);
+    int *i = *((int**) e1);
+    int *j = *((int**) e2);
 
     if (*i < *j)
         return -1;
@@ -566,7 +566,7 @@ void test_vector_iter_remove()
 
     for (;vector_iter_has_next(&iter);) {
         int *e = vector_iter_next(&iter);
-        
+
         if (*e == c) {
             vector_iter_remove(&iter);
         }
@@ -596,12 +596,12 @@ void test_vector_iter_add()
 
     VectorIter iter;
     vector_iter_init(&iter, v);
-    
+
     for (;vector_iter_has_next(&iter);) {
         int *e = vector_iter_next(&iter);
-        
+
         if (vector_iter_index(&iter) == 2)
-            vector_iter_add(&iter, &new);      
+            vector_iter_add(&iter, &new);
     }
 
     cc_assert(vector_contains(v, &new) == 1,
@@ -609,4 +609,3 @@ void test_vector_iter_add()
 
     vector_destroy(v);
 }
-
