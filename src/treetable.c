@@ -22,6 +22,8 @@
 
 #include "treetable.h"
 
+#include <stdio.h>
+
 #define RB_BLACK 1
 #define RB_RED   0
 
@@ -68,7 +70,7 @@ TreeTable *treetable_new(int (*cmp) (void *, void *))
 
 TreeTable *treetable_new_conf(TreeTableConf *conf) // put cmp in conf
 {
-    TreeTable *table  = conf->mem_alloc(sizeof(TreeTable));
+    TreeTable *table  = conf->mem_calloc(1, sizeof(TreeTable));
     RBNode *sentinel  = conf->mem_calloc(1, sizeof(RBNode));
 
     if (!table || !sentinel)
@@ -149,29 +151,31 @@ bool treetable_add(TreeTable *table, void *key, void *val)
             return true;
         }
     }
-
     RBNode *n = table->mem_alloc(sizeof(RBNode));
 
     if (!n)
         return false;
 
+    n->value  = val;
+    n->key    = key;
     n->parent = y;
     n->left   = table->sentinel;
     n->right  = table->sentinel;
-    n->value  = val;
-    n->key    = key;
-    n->color  = RB_RED;
-
-    if (y == table->sentinel)
-        table->root = n;
-    else if (table->cmp(key, y->key) < 0)
-        y->left = n;
-    else
-        y->right = n;
 
     table->size++;
-    rebalance_after_insert(table, n);
 
+    if (y == table->sentinel) {
+        table->root = n;
+        n->color    = RB_BLACK;
+    } else {
+        n->color = RB_RED;
+        if (table->cmp(key, y->key) < 0) {
+            y->left = n;
+        } else {
+            y->right = n;
+        }
+        rebalance_after_insert(table, n);
+    }
     return true;
 }
 
@@ -182,12 +186,10 @@ static void rebalance_after_insert(TreeTable *table, RBNode *z)
     while (z->parent->color == RB_RED) {
         if (z->parent == z->parent->parent->left) {
             y = z->parent->parent->right;
-
             if (y->color == RB_RED) {
                 z->parent->color         = RB_BLACK;
                 y->color                 = RB_BLACK;
                 z->parent->parent->color = RB_RED;
-
                 z = z->parent->parent;
             } else {
                 if (z == z->parent->right) {
@@ -200,12 +202,10 @@ static void rebalance_after_insert(TreeTable *table, RBNode *z)
             }
         } else {
             y = z->parent->parent->left;
-
             if (y->color == RB_RED) {
                 z->parent->color         = RB_BLACK;
                 y->color                 = RB_BLACK;
                 z->parent->parent->color = RB_RED;
-
                 z = z->parent->parent;
             } else {
                 if (z == z->parent->left) {
@@ -372,12 +372,12 @@ static void rotate_right(TreeTable *table, RBNode *x)
 
     y->parent = x->parent;
 
-    if (x != table->sentinel)
+    if (x->parent == table->sentinel)
         table->root = y;
-    else if (x == x->parent->left)
-        x->parent->left = y;
-    else
+    else if (x == x->parent->right)
         x->parent->right = y;
+    else
+        x->parent->left = y;
 
     y->right  = x;
     x->parent = y;
@@ -429,8 +429,59 @@ static RBNode *get_tree_node_by_key(TreeTable *table, void *key)
 }
 
 #ifdef DEBUG
+static int treetable_test(TreeTable *table, RBNode *node, int *nb)
+{
+    if (node == table->sentinel) {
+        *nb = 1;
+        return RB_ERROR_OK;
+    }
+    /* check tree oreder */
+    if (node->left != table->sentinel) {
+        int cmp = table->cmp(node->left->key, node->key);
+        if (cmp >= 0)
+            return RB_ERROR_TREE_STRUCTURE;
+    }
+    if (node->right != table->sentinel) {
+        int cmp = table->cmp(node->right->key, node->key);
+        if (cmp <= 0)
+            return RB_ERROR_TREE_STRUCTURE;
+    }
+
+    /* check red rule */
+    if (node->color == RB_RED && node->parent->color == RB_RED) {
+        return RB_ERROR_CONSECUTIVE_RED;
+    }
+
+    int nb_left;
+    int nb_right;
+
+    int left_err = treetable_test(table, node->left, &nb_left);
+
+    /* propagate the descendant errors all the way up */
+    if (left_err != RB_ERROR_OK)
+        return left_err;
+
+    int right_err = treetable_test(table, node->right, &nb_right);
+
+    if (right_err != RB_ERROR_OK)
+        return right_err;
+
+    /* check black rule */
+    if (nb_left != nb_right)
+        return RB_ERROR_BLACK_HEIGHT;
+
+    if (node->color == RB_BLACK)
+        *nb = nb_left + 1;
+    else
+        *nb = nb_left;
+
+    return RB_ERROR_OK;
+}
+
 int treetable_assert_rb_rules(TreeTable *table)
 {
-
+    int x;
+    int status = treetable_test(table, table->root, &x);
+    return status;
 }
 #endif

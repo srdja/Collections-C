@@ -60,6 +60,7 @@ bool       treetable_contains_key (TreeTable *table, void *key);
 #define RB_ERROR_CONSECUTIVE_RED 0
 #define RB_ERROR_BLACK_HEIGHT    1
 #define RB_ERROR_TREE_STRUCTURE  2
+#define RB_ERROR_OK              4
 
 int treetable_assert_rb_rules(TreeTable *table);
 #endif
