@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libcollectc.la
 
-libcollectc_la_CFLAGS= -O2
+libcollectc_la_CFLAGS= -O2 -Werror
 
 libcollectc_la_LDFLAGS= -module -avoid-version -shared
 
@@ -9,11 +9,13 @@ libcollectc_la_SOURCES = vector.c  stack.c      slist.c \
                          deque.c   list.c       collections-c.h \
                          common.h  vector.h     list.h \
                          slist.h   hashtable.h  hashset.h \
-                         deque.h   stack.h      queue.h
+                         deque.h   stack.h      queue.h \
+			 treetable.c treetable.h treeset.c \
+			 treeset.h
 
 library_includedir = $(includedir)/collections-c/
 
 library_include_HEADERS = collections-c.h  hashtable.h  hashset.h \
                           vector.h         list.h       slist.h \
                           common.h         deque.h      queue.h \
-                          stack.h
+                          stack.h          treetable.h  treeset.h
