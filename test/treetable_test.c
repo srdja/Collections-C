@@ -67,10 +67,10 @@ void test_treetable_add()
     treetable_add(table, &g, "g");
     treetable_add(table, &h, "h");
 
-    cc_assert(!treetable_contains_key(table, &a),
+    cc_assert(treetable_contains_key(table, &a),
               cc_msg("treetable_add: Added key not found"));
 
-    cc_assert(!treetable_contains_key(table, &e),
+    cc_assert(treetable_contains_key(table, &e),
               cc_msg("treetable_add: Added key not found"));
 
     treetable_destroy(table);
@@ -154,8 +154,8 @@ void test_treetable_get()
     treetable_add(table, &c, "c");
 
     char *ra = treetable_get(table, &a);
-    char *rb = treetable_get(table, &a);
-    char *rc = treetable_get(table, &a);
+    char *rb = treetable_get(table, &b);
+    char *rc = treetable_get(table, &c);
 
     cc_assert(strcmp(ra, "a") == 0,
               cc_msg("treetable_get: Retrieved value not as expected"));
@@ -213,7 +213,7 @@ char *error_code_to_string(int code)
 void test_rb_structure()
 {
     /* Thows a whole bunch of random data at the tree to make sure that  */
-    /* that the Red Black properties always hold. */
+    /* the Red Black properties always hold. */
 
     /* fill an array so that we don't have to malloc all these ints */
     int nkeys = 10000;
