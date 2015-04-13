@@ -22,7 +22,11 @@
 
 struct hashset_s {
     HashTable *table;
-    int *dummy;
+    int       *dummy;
+
+    void *(*mem_alloc)  (size_t size);
+    void *(*mem_calloc) (size_t blocks, size_t size);
+    void  (*mem_free)   (void *block);
 };
 
 /**
@@ -61,12 +65,16 @@ HashSet *hashset_new()
  */
 HashSet *hashset_new_conf(HashSetConf *conf)
 {
-    HashSet *set = calloc(1, sizeof(HashSet));
-    set->table = hashtable_new_conf(conf);
+    HashSet *set    = conf->mem_calloc(1, sizeof(HashSet));
+
+    set->table      = hashtable_new_conf(conf);
+    set->mem_alloc  = conf->mem_alloc;
+    set->mem_calloc = conf->mem_calloc;
+    set->mem_free   = conf->mem_free;
 
     /* A dummy pointer that is never actually dereferenced
     *  that must not be null.*/
-    set->dummy = (int*) 1;
+    set->dummy      = (int*) 1;
     return set;
 }
 
@@ -78,7 +86,7 @@ HashSet *hashset_new_conf(HashSetConf *conf)
 void hashset_destroy(HashSet *set)
 {
     hashtable_destroy(set->table);
-    free(set);
+    set->mem_free(set);
 }
 
 /**

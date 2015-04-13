@@ -22,6 +22,10 @@
 
 struct queue_s {
     Deque *d;
+
+    void *(*mem_alloc)  (size_t size);
+    void *(*mem_calloc) (size_t blocks, size_t size);
+    void  (*mem_free)   (void *block);
 };
 
 /**
@@ -58,8 +62,12 @@ Queue *queue_new()
  */
 Queue *queue_new_conf(QueueConf *conf)
 {
-    Queue *queue = conf->mem_calloc(1, sizeof(Queue));
-    queue->d = deque_new_conf(conf);
+    Queue *queue      = conf->mem_calloc(1, sizeof(Queue));
+
+    queue->d          = deque_new_conf(conf);
+    queue->mem_alloc  = conf->mem_alloc;
+    queue->mem_calloc = conf->mem_calloc;
+    queue->mem_free   = conf->mem_free;
 
     return queue;
 }
@@ -72,7 +80,7 @@ Queue *queue_new_conf(QueueConf *conf)
 void queue_destroy(Queue *queue)
 {
     deque_destroy(queue->d);
-    free(queue);
+    queue->mem_free(queue);
 }
 
 /**

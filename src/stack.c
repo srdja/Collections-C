@@ -23,6 +23,10 @@
 
 struct stack_s {
     Vector *v;
+
+    void *(*mem_alloc)  (size_t size);
+    void *(*mem_calloc) (size_t blocks, size_t size);
+    void  (*mem_free)   (void *block);
 };
 
 /**
@@ -59,8 +63,13 @@ Stack *stack_new()
  */
 Stack *stack_new_conf(StackConf *conf)
 {
-    Stack *s = conf->mem_calloc(1, sizeof(Stack));
-    s->v = vector_new_conf(conf);
+    Stack *s      = conf->mem_calloc(1, sizeof(Stack));
+    s->v          = vector_new_conf(conf);
+
+    s->mem_alloc  = conf->mem_alloc;
+    s->mem_calloc = conf->mem_calloc;
+    s->mem_free   = conf->mem_free;
+
     return s;
 }
 
@@ -73,7 +82,7 @@ Stack *stack_new_conf(StackConf *conf)
 void stack_destroy(Stack *stack)
 {
     vector_destroy(stack->v);
-    free(stack);
+    stack->mem_free(stack);
 }
 
 /**
