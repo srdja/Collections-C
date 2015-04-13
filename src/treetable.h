@@ -49,9 +49,15 @@ TreeTable *treetable_new_conf     (TreeTableConf *conf);
 
 void       treetable_destroy      (TreeTable *table);
 bool       treetable_add          (TreeTable *table, void *key, void *val);
+
 void      *treetable_remove       (TreeTable *table, void *key);
 void       treetable_remove_all   (TreeTable *table);
+void      *treetable_remove_first (TreeTable *table);
+void      *treetable_remove_last  (TreeTable *table);
+
 void      *treetable_get          (TreeTable *table, void *key);
+void      *treetable_get_first    (TreeTable *table);
+void      *treetable_get_last     (TreeTable *table);
 
 size_t     treetable_size         (TreeTable *table);
 bool       treetable_contains_key (TreeTable *table, void *key);

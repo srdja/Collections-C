@@ -22,8 +22,6 @@
 
 #include "treetable.h"
 
-#include <stdio.h>
-
 #define RB_BLACK 1
 #define RB_RED   0
 
@@ -115,6 +113,18 @@ void *treetable_get(TreeTable *table, void *key)
     if (!node)
         return NULL;
 
+    return node->value;
+}
+
+void *treetable_get_first(TreeTable *table)
+{
+    RBNode *node = tree_min(table);
+    return node->value;
+}
+
+void *treetable_get_last(TreeTable *table)
+{
+    RBNode *node = tree_max(table);
     return node->value;
 }
 
@@ -351,8 +361,29 @@ void *treetable_remove(TreeTable *table, void *key)
     if (!node)
         return NULL;
 
+    void *val = node->value;
     remove_node(table, node);
     table->size--;
+
+    return val;
+}
+
+void *treetable_remove_first(TreeTable *table)
+{
+    RBNode *node = tree_min(table);
+    void   *val  = node->value;
+
+    remove_node(table, node);
+    return val;
+}
+
+void *treetable_remove_last(TreeTable *table)
+{
+    RBNode *node = tree_max(table);
+    void   *val  = node->value;
+
+    remove_node(table, node);
+    return val;
 }
 
 void treetable_remove_all(TreeTable *table)
