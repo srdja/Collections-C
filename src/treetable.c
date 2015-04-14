@@ -49,7 +49,7 @@ static INLINE void *tree_min       (TreeTable *table, RBNode *n);
 static INLINE void *tree_max       (TreeTable *table, RBNode *n);
 
 static RBNode *get_tree_node_by_key(TreeTable *table, void *key);
-
+static RBNode *get_successor_node  (TreeTable *table, RBNode *n);
 
 void treetable_conf_init(TreeTableConf *conf)
 {
@@ -119,13 +119,43 @@ void *treetable_get(TreeTable *table, void *key)
 void *treetable_get_first(TreeTable *table)
 {
     RBNode *node = tree_min(table, table->root);
-    return node->value;
+
+    if (node != table->sentinel)
+        return node->value;
+
+    return NULL;
 }
 
 void *treetable_get_last(TreeTable *table)
 {
     RBNode *node = tree_max(table, table->root);
-    return node->value;
+
+    if (node != table->sentinel)
+        return node->value;
+
+    return NULL;
+}
+
+void *treetable_get_greater_than(TreeTable *table, void *key)
+{
+    RBNode *n = get_tree_node_by_key(table, key);
+    RBNode *s = get_successor_node(table, n);
+
+    if (n && s)
+        return s->key;
+
+    return NULL;
+}
+
+void *treetable_get_lesser_than(TreeTable *table, void *key)
+{
+    RBNode *n = get_tree_node_by_key(table, key);
+    RBNode *s = get_predecessor_node(table, n);
+
+    if (n && s)
+        return s->key;
+
+    return NULL;
 }
 
 size_t treetable_size(TreeTable *table)
@@ -352,6 +382,7 @@ static void remove_node(TreeTable *table, RBNode *z)
         rebalance_after_delete(table, x);
 
     table->mem_free(z);
+    table->size--;
 }
 
 void *treetable_remove(TreeTable *table, void *key)
@@ -363,7 +394,6 @@ void *treetable_remove(TreeTable *table, void *key)
 
     void *val = node->value;
     remove_node(table, node);
-    table->size--;
 
     return val;
 }
@@ -458,6 +488,85 @@ static RBNode *get_tree_node_by_key(TreeTable *table, void *key)
     } while (n != s && cmp != 0);
 
     return NULL;
+}
+
+static RBNode *get_successor_node(TreeTable *table, RBNode *x)
+{
+    if (x == NULL)
+        return NULL;
+
+    if (x->right != table->sentinel)
+        return treetable_min(table, x->right);
+
+    RBNode *y = x->parent;
+
+    while (y != table->sentinel && x == y->right) {
+        x = y;
+        y = y->parent;
+    }
+    return y;
+}
+
+static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
+{
+    if (x == NULL)
+        return NULL;
+
+    if (x->left != table->sentinel)
+        return treetable_max(table, x->left);
+
+    RBNode *y = x->parent;
+
+    while (y != table->sentinel && x == y->left) {
+        x = y;
+        y = y->parent;
+    }
+    return y;
+}
+
+void treetable_foreach_key(TreeTable *table, void (*op) (void *k))
+{
+    RBNode *n = treetable_min(table->root);
+
+    while (n != table->sentinel) {
+        op(n->key);
+        n = get_successor_node(table, n);
+    }
+}
+
+void treetable_foreach_value(TreeTable *table, void (*op) (void *k))
+{
+    RBNode *n = treetable_min(table->root);
+
+    while (n != table->sentinel) {
+        op(n->value);
+        n = get_successor_node(table, n);
+    }
+}
+
+void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
+{
+    iter->table   = table;
+    iter->current = table->sentinel;
+    iter->next    = treetable_min(table->root);
+}
+
+bool treetable_iter_has_next(TreeTableIter *iter)
+{
+    return iter->next != iter->table->sentinel ? true : false;
+}
+
+void treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
+{
+    entry->value  = iter->next->value;
+    entry->key    = iter->next->key;
+    iter->current = iter->next;
+    iter->next    = get_successor_node(iter->table, iter->current);
+}
+
+void treetable_iter_remove(TreeTableIter *iter)
+{
+    remove_node(iter->table, iter->current);
 }
 
 #ifdef DEBUG
