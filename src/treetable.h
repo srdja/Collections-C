@@ -35,6 +35,15 @@ typedef struct rbnode_s {
     struct rbnode_s *right;
 } RBNode;
 
+typedef struct tree_table_entry_s {
+    void *key;
+    void *value;
+} TreeTableEntry;
+
+typedef struct tree_table_iter_s {
+    RBNode *last_returned;
+}
+
 typedef struct treetable_conf_s {
     int    (*cmp)         (void *k1, void *k2);
     void  *(*mem_alloc)   (size_t size);
@@ -43,24 +52,34 @@ typedef struct treetable_conf_s {
 } TreeTableConf;
 
 
-void       treetable_conf_init    (TreeTableConf *conf);
-TreeTable *treetable_new          (int (*cmp) (void *, void *));
-TreeTable *treetable_new_conf     (TreeTableConf *conf);
+void       treetable_conf_init        (TreeTableConf *conf);
+TreeTable *treetable_new              (int (*cmp) (void *, void *));
+TreeTable *treetable_new_conf         (TreeTableConf *conf);
 
-void       treetable_destroy      (TreeTable *table);
-bool       treetable_add          (TreeTable *table, void *key, void *val);
+void       treetable_destroy          (TreeTable *table);
+bool       treetable_add              (TreeTable *table, void *key, void *val);
 
-void      *treetable_remove       (TreeTable *table, void *key);
-void       treetable_remove_all   (TreeTable *table);
-void      *treetable_remove_first (TreeTable *table);
-void      *treetable_remove_last  (TreeTable *table);
+void      *treetable_remove           (TreeTable *table, void *key);
+void       treetable_remove_all       (TreeTable *table);
+void      *treetable_remove_first     (TreeTable *table);
+void      *treetable_remove_last      (TreeTable *table);
 
-void      *treetable_get          (TreeTable *table, void *key);
-void      *treetable_get_first    (TreeTable *table);
-void      *treetable_get_last     (TreeTable *table);
+void      *treetable_get              (TreeTable *table, void *key);
+void      *treetable_get_first        (TreeTable *table);
+void      *treetable_get_last         (TreeTable *table);
+void      *treetable_get_greater_than (TreeTable *table, void *key);
+void      *treetable_get_lesser_than  (TreeTable *table, void *key);
 
-size_t     treetable_size         (TreeTable *table);
-bool       treetable_contains_key (TreeTable *table, void *key);
+size_t     treetable_size             (TreeTable *table);
+bool       treetable_contains_key     (TreeTable *table, void *key);
+
+void       treetable_foreach_key      (TreeTable *table, void (*op) (void*));
+void       treetable_foreach_value    (TreeTable *table, void (*op) (void*));
+
+void       treetable_iter_init        (TreeTableIter *iter, TreeTable *table);
+bool       treetable_iter_has_next    (TreeTableIter *iter);
+void       treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
+void       treetable_iter_remove      (TreeTableIter *iter);
 
 #ifdef DEBUG
 #define RB_ERROR_CONSECUTIVE_RED 0
