@@ -95,10 +95,12 @@ void treeset_destroy(TreeSet *set)
  *
  * @param[in] set the set to which the element is being added
  * @param[in] element the element being added
+ *
+ * @return true if the element was successfully added to the set
  */
-void treeset_add(TreeSet *set, void *element)
+bool treeset_add(TreeSet *set, void *element)
 {
-    treetable_add(set->t, element, set->dummy);
+    return treetable_add(set->t, element, set->dummy);
 }
 
 /**

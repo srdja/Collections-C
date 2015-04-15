@@ -98,7 +98,7 @@ void hashset_destroy(HashSet *set)
  */
 bool hashset_add(HashSet *set, void *element)
 {
-    hashtable_add(set->table, element, set->dummy);
+    return hashtable_add(set->table, element, set->dummy);
 }
 
 /**

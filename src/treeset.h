@@ -36,7 +36,7 @@ TreeSet  *treeset_new              (int (*cmp) (void*, void*));
 TreeSet  *treeset_new_conf         (TreeSetConf *conf);
 void      treeset_destroy          (TreeSet *set);
 
-void      treeset_add              (TreeSet *set, void *element);
+bool      treeset_add              (TreeSet *set, void *element);
 void     *treeset_remove           (TreeSet *set, void *element);
 void      treeset_remove_all       (TreeSet *set);
 
