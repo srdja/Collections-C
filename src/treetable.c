@@ -45,12 +45,18 @@ static void remove_node            (TreeTable *table, RBNode *z);
 static void tree_destroy           (TreeTable *table, RBNode *s);
 
 static INLINE void  transplant     (TreeTable *table, RBNode *u, RBNode *v);
-static INLINE void *tree_min       (TreeTable *table, RBNode *n);
-static INLINE void *tree_max       (TreeTable *table, RBNode *n);
+static INLINE RBNode *tree_min     (TreeTable *table, RBNode *n);
+static INLINE RBNode *tree_max     (TreeTable *table, RBNode *n);
 
 static RBNode *get_tree_node_by_key(TreeTable *table, void *key);
 static RBNode *get_successor_node  (TreeTable *table, RBNode *n);
+static RBNode *get_predecessor_node(TreeTable *table, RBNode *n);
 
+/**
+ * Initializes the TreehTableConf structs fields to default values.
+ *
+ * @param[in] conf the struct that is being initialized
+ */
 void treetable_conf_init(TreeTableConf *conf)
 {
     conf->mem_alloc  = malloc;
@@ -58,6 +64,14 @@ void treetable_conf_init(TreeTableConf *conf)
     conf->mem_free   = free;
 }
 
+/**
+ * Allocates a new TreeTable object using the standard allocators.
+ * NULL may be returned if the underlying memory allocators fail.
+ *
+ * @param[in] cmp the comparator used to order keys within the table
+ *
+ * @return a new TreeTable or NULL if the memory allocation fails.
+ */
 TreeTable *treetable_new(int (*cmp) (void *, void *))
 {
     TreeTableConf conf;
@@ -66,6 +80,17 @@ TreeTable *treetable_new(int (*cmp) (void *, void *))
     return treetable_new_conf(&conf);
 }
 
+/**
+ * Allocates a new configured TreeTable based on the provided TreeTableConf object.
+ * The table is allocated using the memory allocators specified in the TreeTableConf
+ * object. In case the allocation of the table structure fails, NULL is returned.
+ * The TreeTableConf object is not modified by this function and can therefore
+ * be used for other tables.
+ *
+ * @param conf the TreeTableConf object used to configure this new TreeTable
+ *
+ * @return a new TreeTable or NULL if the memory allocation fails.
+ */
 TreeTable *treetable_new_conf(TreeTableConf *conf)
 {
     TreeTable *table  = conf->mem_calloc(1, sizeof(TreeTable));
@@ -98,6 +123,13 @@ static void tree_destroy(TreeTable *table, RBNode *n)
     table->mem_free(n);
 }
 
+/**
+ * Destroys the specified TreeTable structure without destroying the the data
+ * contained within it. In other words the keys and the values are not freed,
+ * but only the table structure.
+ *
+ * @param[in] table TreeTable to be destroyed.
+ */
 void treetable_destroy(TreeTable *table)
 {
     tree_destroy(table, table->root);
@@ -106,6 +138,18 @@ void treetable_destroy(TreeTable *table)
     table->mem_free(table);
 }
 
+/**
+ * Returns a value associated with the specified key. If there is no value
+ * associated with this key, NULL is returned. In the case where the provided
+ * key explicitly maps to a NULL value, calling <code>treetable_contains_key()
+ * </code> before this function can resolve the ambiguity.
+ *
+ * @param[in] table the table from which the mapping is being returned
+ * @param[in] key   the key that is being looked up
+ *
+ * @return the value mapped to the specified key, or null if the mapping doesn't
+ *         exit
+ */
 void *treetable_get(TreeTable *table, void *key)
 {
     RBNode *node = get_tree_node_by_key(table, key);
@@ -116,7 +160,14 @@ void *treetable_get(TreeTable *table, void *key)
     return node->value;
 }
 
-void *treetable_get_first(TreeTable *table)
+/**
+ * Returns the value associated with the first (lowest) key in the table.
+ *
+ * @param[in] table the table in which the lookup is performed
+ *
+ * @return value associated with the first key, or NULL if the table is empty
+ */
+void *treetable_get_first_value(TreeTable *table)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -126,7 +177,14 @@ void *treetable_get_first(TreeTable *table)
     return NULL;
 }
 
-void *treetable_get_last(TreeTable *table)
+/**
+ * Returns the value associated with the highest (last) key in the table.
+ *
+ * @param[in] table the table in which the lookup is performed
+ *
+ * @return value associated with the last key, or NULL if the table is empty
+ */
+void *treetable_get_last_value(TreeTable *table)
 {
     RBNode *node = tree_max(table, table->root);
 
@@ -136,6 +194,35 @@ void *treetable_get_last(TreeTable *table)
     return NULL;
 }
 
+void *treetable_get_first_key(TreeTable *table)
+{
+    RBNode *node = tree_min(table, table->root);
+
+    if (node != table->sentinel)
+        return node->key;
+
+    return NULL;
+}
+
+void *treetable_get_last_key(TreeTable *table)
+{
+    RBNode *node = tree_max(table, table->root);
+
+    if (node != table->sentinel)
+        return node->key;
+
+    return NULL;
+}
+
+
+/**
+ * Returns the immediate successor of the specified key.
+ *
+ * @param[in] table the table into which the lookup is performed
+ * @param[in] key   the key whose successor is being returned
+ *
+ * @return successor of the key, or NULL if there is no successor key
+ */
 void *treetable_get_greater_than(TreeTable *table, void *key)
 {
     RBNode *n = get_tree_node_by_key(table, key);
@@ -147,6 +234,14 @@ void *treetable_get_greater_than(TreeTable *table, void *key)
     return NULL;
 }
 
+/**
+ * Returns the immediate predecessor of the specified key.
+ *
+ * @param[in] table the table into which the lookup is performed
+ * @param[in] key   the key whose predecessor is being returned
+ *
+ * @return predecessor of the key, or NULL if there is no predecessor key
+ */
 void *treetable_get_lesser_than(TreeTable *table, void *key)
 {
     RBNode *n = get_tree_node_by_key(table, key);
@@ -158,20 +253,62 @@ void *treetable_get_lesser_than(TreeTable *table, void *key)
     return NULL;
 }
 
+/**
+ * Returns the size of the specified TreeTable. Size of a TreeTable represents
+ * the number of key-value mappings within the table.
+ *
+ * @param[in] table the table whose size is being returned
+ *
+ * @return the size of the table
+ */
 size_t treetable_size(TreeTable *table)
 {
     return table->size;
 }
 
+/**
+ * Checks whether or not the TreeTable contains the specified key.
+ *
+ * @param[in] table the table into which the lookup is performed
+ * @param[in] key the key that is being looked up
+ *
+ * @return true if the table contains the key.
+ */
 bool treetable_contains_key(TreeTable *table, void *key)
 {
     RBNode *node = get_tree_node_by_key(table, key); // keys can't be null
 
     if (node)
         return true;
+
     return false;
 }
 
+size_t treetable_contains_value(TreeTable *table, void *value)
+{
+    RBNode *node = tree_min(table, table->root);
+
+    size_t o = 0;
+    while (node != table->sentinel) {
+        if (node->value == value)
+            o++;
+        node = get_successor_node(table, node);
+    }
+    return o;
+}
+
+/**
+ * Creates a new key-value mapping in the specified TreeTable. If the unique key
+ * is already mapped to a value in this table, that value is replaced with the
+ * new value. This operation may fail if the space allocation for the new entry
+ * fails.
+ *
+ * @param[in] table the table to which this new key-value mapping is being added
+ * @param[in] key a tree table key used to access the specified value
+ * @param[in] val a value that is being stored in the table
+ *
+ * @return true if the operation was successful
+ */
 bool treetable_add(TreeTable *table, void *key, void *val)
 {
     RBNode *y = table->sentinel;
@@ -331,7 +468,7 @@ static INLINE void transplant(TreeTable *table, RBNode *u, RBNode *v)
     v->parent = u->parent;
 }
 
-static INLINE void *tree_min(TreeTable *table, RBNode *n)
+static INLINE RBNode *tree_min(TreeTable *table, RBNode *n)
 {
     RBNode *s = table->sentinel;
 
@@ -340,7 +477,7 @@ static INLINE void *tree_min(TreeTable *table, RBNode *n)
     return n;
 }
 
-static INLINE void *tree_max(TreeTable *table, RBNode *n)
+static INLINE RBNode *tree_max(TreeTable *table, RBNode *n)
 {
     RBNode *s = table->sentinel;
 
@@ -349,6 +486,12 @@ static INLINE void *tree_max(TreeTable *table, RBNode *n)
     return n;
 }
 
+/**
+ * Removes a node from the RB tree.
+ *
+ * @param[in] table the table on which this operation is performed
+ * @param[in] z the node that is being removed
+ */
 static void remove_node(TreeTable *table, RBNode *z)
 {
     RBNode *x;
@@ -385,6 +528,19 @@ static void remove_node(TreeTable *table, RBNode *z)
     table->size--;
 }
 
+/**
+ * Removes a key-value mapping from the specified TreeTable and returns the
+ * value that was mapped to the specified key. In case the key doesn't exist
+ * NULL is returned. NULL might also be returned if the key maps to a null value.
+ * Calling <code>treetable_contains_key()</code> before this functin can resolve
+ * the ambiguity.
+ *
+ * @param[in] table the table from which the key-value pair is being removed
+ * @param[in] key the key of the value being returned
+ *
+ * @return the value associated with the removed key, or NULL if the key doesn't
+ *         exist
+ */
 void *treetable_remove(TreeTable *table, void *key)
 {
     RBNode *node = get_tree_node_by_key(table, key);
@@ -496,7 +652,7 @@ static RBNode *get_successor_node(TreeTable *table, RBNode *x)
         return NULL;
 
     if (x->right != table->sentinel)
-        return treetable_min(table, x->right);
+        return tree_min(table, x->right);
 
     RBNode *y = x->parent;
 
@@ -513,7 +669,7 @@ static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
         return NULL;
 
     if (x->left != table->sentinel)
-        return treetable_max(table, x->left);
+        return tree_max(table, x->left);
 
     RBNode *y = x->parent;
 
@@ -524,9 +680,9 @@ static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
     return y;
 }
 
-void treetable_foreach_key(TreeTable *table, void (*op) (void *k))
+void treetable_foreach_key(TreeTable *table, void (*op) (const void *k))
 {
-    RBNode *n = treetable_min(table->root);
+    RBNode *n = tree_min(table, table->root);
 
     while (n != table->sentinel) {
         op(n->key);
@@ -536,7 +692,7 @@ void treetable_foreach_key(TreeTable *table, void (*op) (void *k))
 
 void treetable_foreach_value(TreeTable *table, void (*op) (void *k))
 {
-    RBNode *n = treetable_min(table->root);
+    RBNode *n = tree_min(table, table->root);
 
     while (n != table->sentinel) {
         op(n->value);
@@ -548,7 +704,7 @@ void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
 {
     iter->table   = table;
     iter->current = table->sentinel;
-    iter->next    = treetable_min(table->root);
+    iter->next    = tree_min(table, table->root);
 }
 
 bool treetable_iter_has_next(TreeTableIter *iter)

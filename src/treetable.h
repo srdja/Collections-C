@@ -41,8 +41,10 @@ typedef struct tree_table_entry_s {
 } TreeTableEntry;
 
 typedef struct tree_table_iter_s {
-    RBNode *last_returned;
-}
+    TreeTable *table;
+    RBNode    *current;
+    RBNode    *next;
+} TreeTableIter;
 
 typedef struct treetable_conf_s {
     int    (*cmp)         (void *k1, void *k2);
@@ -65,15 +67,18 @@ void      *treetable_remove_first     (TreeTable *table);
 void      *treetable_remove_last      (TreeTable *table);
 
 void      *treetable_get              (TreeTable *table, void *key);
-void      *treetable_get_first        (TreeTable *table);
-void      *treetable_get_last         (TreeTable *table);
+void      *treetable_get_first_value  (TreeTable *table);
+void      *treetable_get_first_key    (TreeTable *table);
+void      *treetable_get_last_value   (TreeTable *table);
+void      *treetable_get_last_key     (TreeTable *table);
 void      *treetable_get_greater_than (TreeTable *table, void *key);
 void      *treetable_get_lesser_than  (TreeTable *table, void *key);
 
 size_t     treetable_size             (TreeTable *table);
 bool       treetable_contains_key     (TreeTable *table, void *key);
+size_t     treetable_contains_value   (TreeTable *table, void *key);
 
-void       treetable_foreach_key      (TreeTable *table, void (*op) (void*));
+void       treetable_foreach_key      (TreeTable *table, void (*op) (const void*));
 void       treetable_foreach_value    (TreeTable *table, void (*op) (void*));
 
 void       treetable_iter_init        (TreeTableIter *iter, TreeTable *table);
