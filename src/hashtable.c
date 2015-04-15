@@ -97,7 +97,7 @@ HashTable *hashtable_new_conf(HashTableConf *conf)
 }
 
 /**
- * Initializes the fields HashTableConf structs fields to default values.
+ * Initializes the HashTableConf structs fields to default values.
  *
  * @param[in] conf the struct that is being initialized
  */
@@ -229,9 +229,8 @@ static bool add_null_key(HashTable *table, void *val)
  * key explicitly maps to a NULL value, calling <code>hashtable_contains_key()
  * </code> before this function can resolve the ambiguity.
  *
- * @param[in] table the table from which the value mapped to the specified key
- *                  is being returned
- * @param[in] key   the key into the
+ * @param[in] table the table from which the mapping is being returned
+ * @param[in] key   the key that is being looked up
  *
  * @return the value mapped to the specified key, or null if the mapping doesn't
  *         exit
