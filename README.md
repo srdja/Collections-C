@@ -3,9 +3,7 @@ Collections-C
 
 A library of generic container types including a list, vector, hashtable, deque etc..
 
-#### Setup
-
-#####Dependencies
+####Dependencies
 - gcc
 - autoconf
 - automake
