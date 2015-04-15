@@ -7,7 +7,8 @@ deque_test \
 hashset_test \
 stack_test \
 queue_test \
-treetable_test
+treetable_test \
+treeset_test
 
 TESTS = \
 list_test \
@@ -18,7 +19,8 @@ deque_test \
 hashset_test \
 stack_test \
 queue_test \
-treetable_test
+treetable_test \
+treeset_test
 
 list_test_LDFLAGS      = -static
 hashtable_test_LDFLAGS = -static
@@ -29,6 +31,7 @@ hashset_test_LDFLAGS   = -static
 stack_test_LDFLAGS     = -static
 queue_test_LDFLAGS     = -static
 treetable_test_LDFLAGS = -static
+treeset_test_LDFLAGS   = -static
 
 treetable_test_CFLAGS = -DDEBUG -g -O0 -Werror
 list_test_CFLAGS      = -DDEBUG -g -O0 -Werror
@@ -39,8 +42,18 @@ deque_test_CFLAGS     = -DDEBUG -g -O0 -Werror
 hashset_test_CFLAGS   = -DDEBUG -g -O0 -Werror
 stack_test_CFLAGS     = -DDEBUG -g -O0 -Werror
 queue_test_CFLAGS     = -DDEBUG -g -O0 -Werror
+treeset_test_CFLAGS   = -DDEBUG -g -O0 -Werror
 
-list_test_SOURCES = \
+treeset_test_SOURCES =\
+treeset_test.c\
+../src/treeset.c\
+../src/treeset.h\
+../src/treetable.c\
+../src/treetable.h\
+test.c\
+test.h
+
+list_test_SOURCES =\
 list_test.c \
 ../src/list.c \
 ../src/list.h \
