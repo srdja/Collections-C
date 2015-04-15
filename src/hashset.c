@@ -30,10 +30,9 @@ struct hashset_s {
 };
 
 /**
- * Returns a new HashTableProperties object that is by default configured for
- * string elements.
+ * Initializes the fields of the HashSetConf struct to default values.
  *
- * @return a new HashTableProperties object.
+ * @param[in, out] conf the configuration struct that is being initialized
  */
 void hashset_conf_init(HashSetConf *conf)
 {
@@ -43,8 +42,6 @@ void hashset_conf_init(HashSetConf *conf)
 /**
  * Returns a new empty HashSet configured based on the specified properties
  * object.
- *
- * @param[in] properties the properties object used to configure the new HashSet
  *
  * @return a new empty HashSet
  */
@@ -58,10 +55,12 @@ HashSet *hashset_new()
 /**
  * Returns a new empty HashSet based on the specified HashSetConf object.
  *
- * The hashset is allocated using the allocators specified in the HashSetConf
+ * The HashSet is allocated using the allocators specified in the HashSetConf
  * object. The allocation may fail if the underlying allocator fails.
  *
  * @param[in] conf The hashset configuration object. All fields must be initialized.
+ *
+ * @return a new empty HashSet
  */
 HashSet *hashset_new_conf(HashSetConf *conf)
 {
@@ -179,7 +178,7 @@ void hashset_foreach(HashSet *set, void (*op) (const void *e))
 }
 
 /**
- * Initializes the iterator
+ * Initializes the set iterator
  *
  * @param[in] iter the iterator that is being initialized
  * @param[in] set the set on which this iterator will operate
