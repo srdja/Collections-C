@@ -38,7 +38,7 @@ HashSet    *hashset_new           (void);
 HashSet    *hashset_new_conf      (HashSetConf *properties);
 void        hashset_destroy       (HashSet *set);
 
-void        hashset_add           (HashSet *set, void *element);
+bool        hashset_add           (HashSet *set, void *element);
 void       *hashset_remove        (HashSet *set, void *element);
 void        hashset_remove_all    (HashSet *set);
 

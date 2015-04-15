@@ -93,8 +93,10 @@ void hashset_destroy(HashSet *set)
  *
  * @param[in] set the set to which the element is being added
  * @param[in] element the element being added
+ *
+ * @return true if the element was successfuly added to the set
  */
-void hashset_add(HashSet *set, void *element)
+bool hashset_add(HashSet *set, void *element)
 {
     hashtable_add(set->table, element, set->dummy);
 }
