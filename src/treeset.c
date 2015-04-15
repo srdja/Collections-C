@@ -45,8 +45,13 @@ TreeSet *treeset_new(int (*cmp) (void*, void*))
 TreeSet *treeset_new_conf(TreeSetConf *conf)
 {
     TreeSet *set = conf->mem_calloc(1, sizeof(TreeSet));
-    set->t = treetable_new_conf(conf);
-    set->dummy = (int*) 1;
+
+    set->t          = treetable_new_conf(conf);
+    set->dummy      = (int*) 1;
+    set->mem_alloc  = conf->mem_alloc;
+    set->mem_calloc = conf->mem_calloc;
+    set->mem_free   = conf->mem_free;
+
     return set;
 }
 
@@ -71,6 +76,26 @@ void treeset_remove_all(TreeSet *set)
     treetable_remove_all(set->t);
 }
 
+void *treeset_get_first(TreeSet *set)
+{
+    return treetable_get_first_key(set->t);
+}
+
+void *treeset_get_last(TreeSet *set)
+{
+    return treetable_get_last_key(set->t);
+}
+
+void *treeset_get_greater_than(TreeSet *set, void *element)
+{
+    return treetable_get_greater_than(set->t, element);
+}
+
+void *treeset_get_lesser_than(TreeSet *set, void *element)
+{
+    return treetable_get_lesser_than(set->t, element);
+}
+
 bool treeset_contains(TreeSet *set, void *element)
 {
     return treetable_contains_key(set->t, element);
@@ -79,4 +104,30 @@ bool treeset_contains(TreeSet *set, void *element)
 size_t treeset_size(TreeSet *set)
 {
     return treetable_size(set->t);
+}
+
+void treeset_foreach(TreeSet *set, void (*op) (const void*))
+{
+    treetable_foreach_key(set->t, op);
+}
+
+void treeset_iter_init(TreeSetIter *iter, TreeSet *set)
+{
+    treetable_iter_init(&(iter->i), set->t);
+}
+
+bool treeset_iter_has_next(TreeSetIter *iter)
+{
+    return treetable_iter_has_next(&(iter->i));
+}
+
+void treeset_iter_next(TreeSetIter *iter, void **element)
+{
+    TreeTableEntry entry;
+    treetable_iter_next(&(iter->i), &entry);
+    *element = entry.key;
+}
+void treeset_iter_remove(TreeSetIter *iter)
+{
+    treetable_iter_remove(&(iter->i));
 }
