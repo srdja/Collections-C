@@ -4,12 +4,19 @@
 #include "../src/deque.h"
 #include "test.h"
 
-
 void test_treetable_add();
 void test_treetable_remove();
 void test_treetable_remove_all();
 void test_treetable_get();
 void test_treetable_size();
+void test_treetable_get_first();
+void test_treetable_get_last();
+void test_treetable_remove_first();
+void test_treetable_remove_last();
+void test_treetable_get_greater_than();
+void test_treetable_get_lesser_than();
+void test_treetable_foreach();
+void test_treetable_iter();
 
 #ifdef DEBUG
 void test_rb_structure();
@@ -28,6 +35,13 @@ int main(int argc, char **argv)
     test_treetable_remove_all();
     test_treetable_get();
     test_treetable_size();
+    test_treetable_get_first();
+    test_treetable_get_last();
+    test_treetable_remove_first();
+    test_treetable_remove_last();
+    test_treetable_get_greater_than();
+    test_treetable_get_lesser_than();
+    test_treetable_iter();
 
     return cc_get_status();
 }
@@ -187,6 +201,236 @@ void test_treetable_size()
     treetable_destroy(table);
 }
 
+void test_treetable_get_first()
+{
+    TreeTable *table = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(table, &c, "a");
+    treetable_add(table, &d, "b");
+    treetable_add(table, &b, "c");
+    treetable_add(table, &a, "d");
+
+    int first = *((int*) treetable_get_first_key(table));
+
+    cc_assert(first == a,
+              cc_msg("treetable_get_first_key: first %d, expected %d instead",
+                     first, a));
+
+    treetable_destroy(table);
+}
+
+void test_treetable_get_last()
+{
+    TreeTable *table = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(table, &c, "a");
+    treetable_add(table, &d, "b");
+    treetable_add(table, &b, "c");
+    treetable_add(table, &a, "d");
+
+    int last = *((char*) treetable_get_last_key(table));
+
+    cc_assert(last == d,
+              cc_msg("treetable_get_last_key: last %d, expected %d instead",
+                     last, d));
+
+    treetable_destroy(table);
+}
+
+void test_treetable_remove_first()
+{
+    TreeTable *table = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(table, &c, "a");
+    treetable_add(table, &d, "b");
+    treetable_add(table, &b, "c");
+    treetable_add(table, &a, "d");
+
+    treetable_remove_first(table);
+
+    cc_assert(!treetable_contains_key(table, &a),
+              cc_msg("treetable_remove_first: Key still present after removal"));
+
+    treetable_destroy(table);
+}
+
+void test_treetable_remove_last()
+{
+    TreeTable *table = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(table, &c, "a");
+    treetable_add(table, &d, "b");
+    treetable_add(table, &b, "c");
+    treetable_add(table, &a, "d");
+
+    treetable_remove_last(table);
+
+    cc_assert(!treetable_contains_key(table, &d),
+              cc_msg("treetable_remove_last: Key still present after removal"));
+
+    treetable_destroy(table);
+}
+
+void test_treetable_get_greater_than()
+{
+    TreeTable *table = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(table, &c, "a");
+    treetable_add(table, &d, "b");
+    treetable_add(table, &b, "c");
+    treetable_add(table, &a, "d");
+
+    int g = *((int*) treetable_get_greater_than(table, &b));
+
+    cc_assert(g == c,
+              cc_msg("treetable_get_greater_than: Expected key was %d, but got "
+                     "%d instead", c, g));
+
+    treetable_destroy(table);
+}
+
+void test_treetable_get_lesser_than()
+{
+    TreeTable *table = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(table, &c, "a");
+    treetable_add(table, &d, "b");
+    treetable_add(table, &b, "c");
+    treetable_add(table, &a, "d");
+
+    int g = *((int*) treetable_get_lesser_than(table, &b));
+
+    cc_assert(g == a,
+              cc_msg("treetable_get_lesser_than: Expected key was %d, but got "
+                     "%d instead", a, g));
+
+    treetable_destroy(table);
+}
+
+
+void test_treetable_iter_next()
+{
+    TreeTable *t = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+
+    treetable_add(t, &a, "1");
+    treetable_add(t, &b, "2");
+    treetable_add(t, &c, "3");
+    treetable_add(t, &d, "5");
+
+    int one   = 0;
+    int two   = 0;
+    int three = 0;
+    int four  = 0;
+
+    TreeTableIter iter;
+    treetable_iter_init(&iter, t);
+
+    TreeTableEntry entry;
+    while (treetable_iter_has_next(&iter)) {
+        treetable_iter_next(&iter, &entry);
+
+        int const *key = entry.key;
+
+        if (*key == a)
+            one++;
+
+        if (*key == b)
+            two++;
+
+        if (*key == c)
+            three++;
+
+        if (*key == d)
+            four++;
+    }
+
+    bool asrt = (one   == 1) && (two  == 1)  &&
+                (three == 1) && (four == 1);
+
+    cc_assert(asrt,
+              cc_msg("treetable_iter_next: Unexpected number"
+                     " of entries returned"));
+
+    treetable_destroy(t);
+}
+
+void test_treetable_iter_remove()
+{
+    TreeTable *t = treetable_new(cmp);
+
+    int a = 1;
+    int b = 2;
+    int c = 3;
+
+    treetable_add(t, &a, "a");
+    treetable_add(t, &b, "a");
+    treetable_add(t, &c, "a");
+
+    TreeTableIter iter;
+    treetable_iter_init(&iter, t);
+
+    TreeTableEntry entry;
+    while (treetable_iter_has_next(&iter)) {
+        treetable_iter_next(&iter, &entry);
+        int const *key = entry.key;
+
+        if (*key == b)
+            treetable_iter_remove(&iter);
+    }
+
+    cc_assert(treetable_size(t) == 2,
+              cc_msg("treetable_iter_remove: Expected size 2 but got %d ",
+                     treetable_size(t)));
+
+    cc_assert(!treetable_contains_key(t, &b),
+              cc_msg("treetable_iter_remove: Element b  still pressent "
+                     "after removal"));
+
+    treetable_destroy(t);
+}
+
+void test_treetable_iter()
+{
+    test_treetable_iter_next();
+    test_treetable_iter_remove();
+}
+
+
 #ifdef DEBUG
 char *error_code_to_string(int code)
 {
@@ -216,7 +460,7 @@ void test_rb_structure()
     /* the Red Black properties always hold. */
 
     /* fill an array so that we don't have to malloc all these ints */
-    int nkeys = 10000;
+    int nkeys = 1000;
     int rkeys[nkeys];
 
     srand(time(NULL));
@@ -246,7 +490,6 @@ void test_rb_structure()
         int *key = deque_get(keys, (rand() % (deque_size(keys)) -1));
 
         if (key != NULL) {
-            printf("Removing %d\n", *key);
             treetable_remove(tree, key);
             deque_remove(keys, key);
         }
