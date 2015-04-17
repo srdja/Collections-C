@@ -436,7 +436,7 @@ bool list_splice_at(List *list1, List *list2, size_t index)
         list2->head = NULL;
         list2->tail = NULL;
         list2->size = 0;
-        return;
+        return true;
     }
 
     Node *end  = get_node_at(list1, index);
