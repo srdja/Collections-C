@@ -21,7 +21,7 @@
 #ifndef __HASHTABLE_H__
 #define __HASHTABLE_H__
 
-#include "vector.h"
+#include "array.h"
 
 #define KEY_LENGTH_VARIABLE  -1
 #define KEY_LENGTH_DOUBLE    sizeof(double)
@@ -113,8 +113,8 @@ void       *hashtable_remove          (HashTable *table, void *key);
 void        hashtable_remove_all      (HashTable *table);
 bool        hashtable_contains_key    (HashTable *table, void *key);
 
-Vector     *hashtable_get_keys        (HashTable *table);
-Vector     *hashtable_get_values      (HashTable *table);
+Array      *hashtable_get_keys        (HashTable *table);
+Array      *hashtable_get_values      (HashTable *table);
 
 bool        hashtable_string_key_cmp  (void *key1, void *key2);
 bool        hashtable_float_key_cmp   (void *key1, void *key2);

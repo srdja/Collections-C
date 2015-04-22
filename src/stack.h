@@ -22,10 +22,10 @@
 #define STACK_H_
 
 #include "common.h"
-#include "vector.h"
+#include "array.h"
 
 typedef struct stack_s    Stack;
-typedef        VectorConf StackConf;
+typedef        ArrayConf StackConf;
 
 void    stack_conf_init   (StackConf *conf);
 

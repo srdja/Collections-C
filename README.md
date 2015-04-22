@@ -1,7 +1,7 @@
 Collections-C
 =============
 
-A library of generic container types including a list, vector, hashtable, deque etc..
+A library of generic container types including a list, array, hashtable, deque etc..
 
 ####Dependencies
 - gcc
@@ -15,7 +15,7 @@ These packages can usually be installed through your distributions package manag
 Building on windows requires [MinGW](http://mingw.org) which provides all the tools needed to build the project.
 
 #### Building the project
-In the project directory, run the following commands: `./autogen.sh` then run `./configure`. If autogen complains that it couldn't find a directory named "m4", run: `mkdir m4` and then `./autogen.sh`.  
+In the project directory, run the following commands: `./autogen.sh` then run `./configure`. If autogen complains that it couldn't find a directory named "m4", run: `mkdir m4` and then `./autogen.sh`.
 
 At this point we should be able to build the project by running:
 ```
@@ -28,7 +28,7 @@ make check
 
 #### Examples
 
-HashTable:  
+HashTable:
 ```c
 HashTable *table = hashtable_new();
 
@@ -40,20 +40,20 @@ char *removed = hashtable_remove("foo"); // removes the key and returns the valu
 
 hashtable_destroy(table);
 ```
-Vector (dynamic array):
+Array (dynamic array):
 ```c
-Vector *vec = vector_new();
+Array *vec = array_new();
 
-vector_add(vec, "foo");
-vector_add(vec, "bar");
-vector_add(vec, "baz");
+array_add(vec, "foo");
+array_add(vec, "bar");
+array_add(vec, "baz");
 
-char *foo = vector_get(vec, 0);
-char *baz = vector_get(vec, 2);
+char *foo = array_get(vec, 0);
+char *baz = array_get(vec, 2);
 
-char *removed = vector_remove_at(vec, 1);
+char *removed = array_remove_at(vec, 1);
 
-vector_destroy(vec);
+array_destroy(vec);
 ```
 TreeSet (sorted set):
 ```c

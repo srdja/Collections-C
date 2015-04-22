@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.68])
 AC_INIT([libcollectc], [0.0.0], [srdjan.panic@ymail.com])
-AC_CONFIG_SRCDIR([src/vector.c])
+AC_CONFIG_SRCDIR([src/array.c])
 AC_CONFIG_HEADERS([config.h])
 
 #Setup automake

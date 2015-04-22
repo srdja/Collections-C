@@ -18,11 +18,11 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vector.h"
+#include "array.h"
 #include "stack.h"
 
 struct stack_s {
-    Vector *v;
+    Array *v;
 
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
@@ -36,7 +36,7 @@ struct stack_s {
  */
 void stack_conf_init(StackConf *conf)
 {
-    vector_conf_init(conf);
+    array_conf_init(conf);
 }
 
 /**
@@ -64,7 +64,7 @@ Stack *stack_new()
 Stack *stack_new_conf(StackConf *conf)
 {
     Stack *s      = conf->mem_calloc(1, sizeof(Stack));
-    s->v          = vector_new_conf(conf);
+    s->v          = array_new_conf(conf);
 
     s->mem_alloc  = conf->mem_alloc;
     s->mem_calloc = conf->mem_calloc;
@@ -81,7 +81,7 @@ Stack *stack_new_conf(StackConf *conf)
  */
 void stack_destroy(Stack *stack)
 {
-    vector_destroy(stack->v);
+    array_destroy(stack->v);
     stack->mem_free(stack);
 }
 
@@ -92,7 +92,7 @@ void stack_destroy(Stack *stack)
  */
 void stack_destroy_free(Stack *stack)
 {
-    vector_destroy_free(stack->v);
+    array_destroy_free(stack->v);
     free(stack);
 }
 
@@ -107,7 +107,7 @@ void stack_destroy_free(Stack *stack)
  */
 bool stack_push(Stack *stack, void *element)
 {
-    return vector_add(stack->v, element);
+    return array_add(stack->v, element);
 }
 
 /**
@@ -119,7 +119,7 @@ bool stack_push(Stack *stack, void *element)
  */
 void *stack_peek(Stack *stack)
 {
-    return vector_get_last(stack->v);
+    return array_get_last(stack->v);
 }
 
 /**
@@ -131,7 +131,7 @@ void *stack_peek(Stack *stack)
  */
 void *stack_pop(Stack *stack)
 {
-    return vector_remove_last(stack->v);
+    return array_remove_last(stack->v);
 }
 
 /**
@@ -143,7 +143,7 @@ void *stack_pop(Stack *stack)
  */
 size_t stack_size(Stack *stack)
 {
-    return vector_size(stack->v);
+    return array_size(stack->v);
 }
 
 /**
@@ -156,5 +156,5 @@ size_t stack_size(Stack *stack)
  */
 void stack_foreach(Stack *stack, void (*op) (void *))
 {
-    vector_foreach(stack->v, op);
+    array_foreach(stack->v, op);
 }

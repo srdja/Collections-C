@@ -1,7 +1,7 @@
 check_PROGRAMS = \
 list_test \
 hashtable_test \
-vector_test \
+array_test \
 slist_test \
 deque_test \
 hashset_test \
@@ -13,7 +13,7 @@ treeset_test
 TESTS = \
 list_test \
 hashtable_test \
-vector_test \
+array_test \
 slist_test \
 deque_test \
 hashset_test \
@@ -24,7 +24,7 @@ treeset_test
 
 list_test_LDFLAGS      = -static
 hashtable_test_LDFLAGS = -static
-vector_test_LDFLAGS    = -static
+array_test_LDFLAGS    = -static
 slist_test_LDFLAGS     = -static
 deque_test_LDFLAGS     = -static
 hashset_test_LDFLAGS   = -static
@@ -36,7 +36,7 @@ treeset_test_LDFLAGS   = -static
 treetable_test_CFLAGS = -DDEBUG -g -O0 -Werror
 list_test_CFLAGS      = -DDEBUG -g -O0 -Werror
 hashtable_test_CFLAGS = -DDEBUG -g -O0 -Werror
-vector_test_CFLAGS    = -DDEBUG -g -O0 -Werror
+array_test_CFLAGS    = -DDEBUG -g -O0 -Werror
 slist_test_CFLAGS     = -DDEBUG -g -O0 -Werror
 deque_test_CFLAGS     = -DDEBUG -g -O0 -Werror
 hashset_test_CFLAGS   = -DDEBUG -g -O0 -Werror
@@ -64,15 +64,15 @@ hashtable_test_SOURCES =\
 hashtable_test.c \
 ../src/hashtable.c \
 ../src/hashtable.h \
-../src/vector.c \
-../src/vector.h \
+../src/array.c \
+../src/array.h \
 test.c \
 test.h
 
-vector_test_SOURCES =\
-vector_test.c\
-../src/vector.c\
-../src/vector.h\
+array_test_SOURCES =\
+array_test.c\
+../src/array.c\
+../src/array.h\
 test.c\
 test.h
 
@@ -97,8 +97,8 @@ test.c\
 ../src/hashset.h\
 ../src/hashtable.h\
 ../src/hashtable.c\
-../src/vector.c\
-../src/vector.h
+../src/array.c\
+../src/array.h
 
 stack_test_SOURCES =\
 stack_test.c\
@@ -106,8 +106,8 @@ test.h\
 test.c\
 ../src/stack.c\
 ../src/stack.h\
-../src/vector.c\
-../src/vector.h
+../src/array.c\
+../src/array.h
 
 queue_test_SOURCES =\
 queue_test.c\

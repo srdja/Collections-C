@@ -514,25 +514,25 @@ bool hashtable_contains_key(HashTable *table, void *key)
 }
 
 /**
- * Returns a Vector of hashtable values. The returned Vector is allocated
+ * Returns a Array of hashtable values. The returned Array is allocated
  * using the same memory allocators used by the HashTable. NULL may be
- * returned if the memory allocation of the Vector structure fails.
+ * returned if the memory allocation of the Array structure fails.
  *
  * @param[in] table the table whose values are being returned
  *
- * @return a Vector of values or NULL
+ * @return a Array of values or NULL
  */
-Vector *hashtable_get_values(HashTable *table)
+Array *hashtable_get_values(HashTable *table)
 {
-    VectorConf vc;
-    vector_conf_init(&vc);
+    ArrayConf vc;
+    array_conf_init(&vc);
 
     vc.capacity   = table->size;
     vc.mem_alloc  = table->mem_alloc;
     vc.mem_calloc = table->mem_calloc;
     vc.mem_free   = table->mem_free;
 
-    Vector *v = vector_new_conf(&vc);
+    Array *v = array_new_conf(&vc);
 
     if (!v)
         return NULL;
@@ -545,7 +545,7 @@ Vector *hashtable_get_values(HashTable *table)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            vector_add(v, entry->value);
+            array_add(v, entry->value);
             entry = entry->next;
         }
     }
@@ -553,25 +553,25 @@ Vector *hashtable_get_values(HashTable *table)
 }
 
 /**
- * Returns a Vector of hashtable keys. The returned Vector is allocated
+ * Returns a Array of hashtable keys. The returned Array is allocated
  * using the same memory allocators used by the HashTable. NULL may be
- * returned if the memory allocation of the Vector structure fails.
+ * returned if the memory allocation of the Array structure fails.
  *
  * @param[in] table the table whos keys are being returned
  *
- * @return a Vector of keys or NULL
+ * @return a Array of keys or NULL
  */
-Vector *hashtable_get_keys(HashTable *table)
+Array *hashtable_get_keys(HashTable *table)
 {
-    VectorConf vc;
-    vector_conf_init(&vc);
+    ArrayConf vc;
+    array_conf_init(&vc);
 
     vc.capacity   = table->size;
     vc.mem_alloc  = table->mem_alloc;
     vc.mem_calloc = table->mem_calloc;
     vc.mem_free   = table->mem_free;
 
-    Vector *keys = vector_new_conf(&vc);
+    Array *keys = array_new_conf(&vc);
 
     if (!keys)
         return NULL;
@@ -584,7 +584,7 @@ Vector *hashtable_get_keys(HashTable *table)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            vector_add(keys, entry->key);
+            array_add(keys, entry->key);
             entry = entry->next;
         }
     }
