@@ -56,6 +56,7 @@ gcc hello.c -I/path/to/library/include/ -static -L/path/to/library/lib/ -lcollec
 ```
 
 #### Examples
+Check the [documentation](https://srdja.github.io/Collections-C/) for details.
 
 HashTable:
 ```c
