@@ -24,7 +24,7 @@ At this point we should be able to build the project by running:
 make
 ```
 By default `make` builds a shared library. To build a static library, run make with "static" flag on: `make CFLAGS=-static`.  
-
+- note: When building for the 64 bit architecture, "ARCH_64" can be explicitly set like so: `make CFLAGS=-DARCH_64`. This will increase the maximum container capacity to ~2^64. Otherwise the maximum capacity defaults to ~2^32 elements regardless of the target architecture.
 
 Installing the library:
 ```
