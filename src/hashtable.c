@@ -123,7 +123,7 @@ void hashtable_conf_init(HashTableConf *conf)
  */
 void hashtable_destroy(HashTable *table)
 {
-    int i;
+    size_t i;
     for (i = 0; i < table->capacity; i++) {
         TableEntry *next = table->buckets[i];
 
@@ -364,7 +364,7 @@ void *remove_null_key(HashTable *table)
  */
 void hashtable_remove_all(HashTable *table)
 {
-    int i;
+    size_t i;
     for (i = 0; i < table->capacity; i++) {
         TableEntry *entry = table->buckets[i];
         while (entry) {
@@ -452,7 +452,7 @@ static INLINE void
 move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
              size_t       src_size,   size_t       dest_size)
 {
-    int i;
+    size_t i;
     for (i = 0; i < src_size; i++) {
         TableEntry *entry = src_bucket[i];
 
@@ -537,7 +537,7 @@ Array *hashtable_get_values(HashTable *table)
     if (!v)
         return NULL;
 
-    int i;
+    size_t i;
     for (i = 0; i <table->capacity; i++) {
         if (!table->buckets[i])
             continue;
@@ -576,7 +576,7 @@ Array *hashtable_get_keys(HashTable *table)
     if (!keys)
         return NULL;
 
-    int i;
+    size_t i;
     for (i = 0; i < table->capacity; i++) {
         if (!table->buckets[i])
             continue;
@@ -717,7 +717,7 @@ bool hashtable_pointer_key_cmp(void *key1, void *key2)
  */
 void hashtable_foreach_key(HashTable *table, void (*op) (const void *key))
 {
-    int i;
+    size_t i;
     for (i = 0; i <table->capacity; i++) {
         if (!table->buckets[i])
             continue;
@@ -741,7 +741,7 @@ void hashtable_foreach_key(HashTable *table, void (*op) (const void *key))
  */
 void hashtable_foreach_value(HashTable *table, void (*op) (void *val))
 {
-    int i;
+    size_t i;
     for (i = 0; i <table->capacity; i++) {
         if (!table->buckets[i])
             continue;
@@ -767,7 +767,7 @@ void hashtable_iter_init(HashTableIter *iter, HashTable *table)
 {
     iter->table = table;
 
-    int i;
+    size_t i;
     for (i = 0; i < table->capacity; i++) {
         TableEntry *e = table->buckets[i];
         if (e) {
@@ -803,7 +803,7 @@ TableEntry *hashtable_iter_next(HashTableIter *iter)
     if (iter->next_entry)
         return iter->prev_entry;
 
-    int i;
+    size_t i;
     for (i = iter->bucket_index + 1; i < iter->table->capacity; i++) {
         iter->next_entry = iter->table->buckets[i];
 
@@ -812,6 +812,7 @@ TableEntry *hashtable_iter_next(HashTableIter *iter)
             return iter->prev_entry;
         }
     }
+    return NULL;
 }
 
 /**
@@ -836,7 +837,7 @@ void hashtable_iter_remove(HashTableIter *iter)
 size_t hashtable_hash_string(const void *key, int len, uint32_t seed)
 {
     const    char   *str  = key;
-    register size_t  hash = 5381;
+    register size_t  hash = seed + 5381 + len + 1; /* Supresses the unused param warning */
 
     while (*str++)
         hash = ((hash << 5) + hash) ^ *str;

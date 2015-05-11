@@ -609,7 +609,7 @@ void deque_trim_capacity(Deque *deque)
     if (new_size == deque->capacity)
         return;
 
-    void **new_buff = deque->mem_alloc(sizeof(void) * new_size);
+    void **new_buff = deque->mem_alloc(sizeof(void*) * new_size);
 
     copy_buffer(deque, new_buff, NULL);
 

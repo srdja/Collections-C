@@ -113,13 +113,16 @@ void       *hashtable_remove          (HashTable *table, void *key);
 void        hashtable_remove_all      (HashTable *table);
 bool        hashtable_contains_key    (HashTable *table, void *key);
 
+size_t      hashtable_size            (HashTable *table);
+size_t      hashtable_capacity        (HashTable *table);
+
 Array      *hashtable_get_keys        (HashTable *table);
 Array      *hashtable_get_values      (HashTable *table);
 
 bool        hashtable_string_key_cmp  (void *key1, void *key2);
 bool        hashtable_float_key_cmp   (void *key1, void *key2);
 bool        hashtable_char_key_cmp    (void *key1, void *key2);
-bool        hasthable_short_key_cmp   (void *key1, void *key2);
+bool        hashtable_short_key_cmp   (void *key1, void *key2);
 bool        hashtable_double_key_cmp  (void *key1, void *key2);
 bool        hashtable_int_key_cmp     (void *key1, void *key2);
 bool        hashtable_long_key_cmp    (void *key1, void *key2);

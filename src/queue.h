@@ -33,7 +33,7 @@ typedef struct queue_iter_s {
 
 void   queue_conf_init    (QueueConf *conf);
 
-Queue *queue_new          ();
+Queue *queue_new          (void);
 Queue *queue_new_conf     (QueueConf *conf);
 void   queue_destroy      (Queue *queue);
 void   queue_destroy_free (Queue *queue);

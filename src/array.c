@@ -124,7 +124,7 @@ void array_destroy(Array *ar)
  */
 void array_destroy_free(Array *ar)
 {
-    int i;
+    size_t i;
     for (i = 0; i < ar->size; i++)
         ar->mem_free(ar->buffer[i]);
 
@@ -226,7 +226,7 @@ void *array_remove(Array *ar, void *element)
 {
     size_t index = array_index_of(ar, element);
 
-    if (index == -1)
+    if (index == NO_SUCH_INDEX)
         return NULL;
 
     if (index != ar->size - 1) {
@@ -356,9 +356,9 @@ void *array_get_last(Array *ar)
  *
  * @return the buffer
  */
-const void **array_get_buffer(Array *ar)
+const void * const*array_get_buffer(Array *ar)
 {
-    return (const void**) ar->buffer;
+    return (const void* const*) ar->buffer;
 }
 
 /**
@@ -402,7 +402,7 @@ size_t array_index_of(Array *ar, void *element)
  */
 Array *array_subarray(Array *ar, size_t b, size_t e)
 {
-    if (b > e || b < 0 || e > ar->size)
+    if (b > e || e > ar->size)
         return NULL;
 
     Array *sub_ar     = ar->mem_calloc(1, sizeof(Array));

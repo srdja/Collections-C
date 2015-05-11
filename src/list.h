@@ -76,7 +76,7 @@ void*      list_get_last        (List *list);
 List*      list_sublist         (List *list, size_t from, size_t to);
 List*      list_copy_shallow    (List *list);
 List*      list_copy_deep       (List *list, void *(*cp) (void*));
- 
+
 void*      list_replace_at      (List *list, void *element, size_t index);
 
 size_t     list_contains        (List *list, void *element);
@@ -103,7 +103,7 @@ void*      list_diter_remove    (ListIter *iter);
 bool       list_diter_add       (ListIter *iter, void *element);
 void*      list_diter_replace   (ListIter *iter, void *element);
 bool       list_diter_has_next  (ListIter *iter);
-size_t     list_iter_index      (ListIter *iter);
+size_t     list_diter_index     (ListIter *iter);
 void*      list_diter_next      (ListIter *iter);
 
 #endif /* LIST_H_ */

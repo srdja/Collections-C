@@ -47,7 +47,7 @@ typedef struct slist_conf_s {
 
 void       slist_conf_init       (SListConf *conf);
 
-SList*     slist_new             ();
+SList*     slist_new             (void);
 SList*     slist_new_conf        (SListConf *conf);
 bool       slist_destroy         (SList *list);
 bool       slist_destroy_free    (SList *list);
@@ -63,8 +63,8 @@ bool       slist_add_first       (SList *list, void *element);
 bool       slist_add_last        (SList *list, void *element);
 
 void*      slist_remove          (SList *list, void *element);
-void*      slist_remove_head     (SList *list);
-void*      slist_remove_tail     (SList *list);
+void*      slist_remove_first    (SList *list);
+void*      slist_remove_last     (SList *list);
 void*      slist_remove_at       (SList *list, size_t index);
 
 bool       slist_remove_all      (SList *list);

@@ -384,6 +384,8 @@ bool slist_splice(SList *list1, SList *list2)
     list2->head = NULL;
     list2->tail = NULL;
     list2->size = 0;
+
+    return true;
 }
 
 /**
@@ -1066,6 +1068,8 @@ static void *unlink(SList *list, SNode *node, SNode *prev)
 
     list->mem_free(node);
     list->size--;
+
+    return data;
 }
 
 /**

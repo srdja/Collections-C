@@ -29,7 +29,7 @@ typedef        ArrayConf StackConf;
 
 void    stack_conf_init   (StackConf *conf);
 
-Stack  *stack_new         ();
+Stack  *stack_new         (void);
 Stack  *stack_new_conf    (StackConf *conf);
 void    stack_destroy     (Stack *stack);
 void    stack_destroy_free(Stack *stack);

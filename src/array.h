@@ -45,7 +45,7 @@ struct array_iter_s {
     size_t  index;
 };
 
-Array*       array_new             ();
+Array*       array_new             (void);
 Array*       array_new_conf        (ArrayConf *conf);
 void         array_conf_init       (ArrayConf *conf);
 
@@ -64,7 +64,6 @@ void         array_remove_all_free (Array *ar);
 
 void*        array_get             (Array *ar, size_t index);
 void*        array_get_last        (Array *ar);
-const void** array_get_buffer      (Array *ar);
 
 Array*       array_subarray        (Array *ar, size_t from, size_t to);
 Array*       array_copy_shallow    (Array *ar);
@@ -73,7 +72,7 @@ Array*       array_copy_deep       (Array *ar, void *(*cp) (void*));
 void         array_reverse         (Array *ar);
 void         array_trim_capacity   (Array *ar);
 
-size_t       array_cointains       (Array *ar, void *element);
+size_t       array_contains        (Array *ar, void *element);
 size_t       array_size            (Array *ar);
 size_t       array_capacity        (Array *ar);
 
@@ -89,5 +88,7 @@ void*        array_iter_remove     (ArrayIter *iter);
 bool         array_iter_add        (ArrayIter *iter, void *element);
 void*        array_iter_replace    (ArrayIter *iter, void *element);
 size_t       array_iter_index      (ArrayIter *iter);
+
+const void* const* array_get_buffer(Array *ar);
 
 #endif /* ARRAY_H_ */

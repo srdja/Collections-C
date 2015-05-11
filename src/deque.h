@@ -44,7 +44,7 @@ struct deque_iter_s {
     size_t index;
 };
 
-Deque*     deque_new             ();
+Deque*     deque_new             (void);
 Deque*     deque_new_conf        (DequeConf *conf);
 void       deque_conf_init       (DequeConf *conf);
 

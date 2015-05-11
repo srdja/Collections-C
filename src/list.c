@@ -729,7 +729,7 @@ void list_reverse(List *list)
  */
 List *list_sublist(List *list, size_t b, size_t e)
 {
-    if (b > e || b < 0 || e >= list->size)
+    if (b > e || e >= list->size)
         return NULL;
 
     ListConf conf;
@@ -1295,7 +1295,7 @@ void *list_diter_replace(ListIter *iter, void *element)
  *
  * @return the index of the last returned element
  */
-size_t dlist_diter_index(ListIter *iter)
+size_t list_diter_index(ListIter *iter)
 {
     return iter->index - 1;
 }
