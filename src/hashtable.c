@@ -800,19 +800,21 @@ TableEntry *hashtable_iter_next(HashTableIter *iter)
     iter->prev_entry = iter->next_entry;
     iter->next_entry = iter->next_entry->next;
 
+    /* Iterate through the list */
     if (iter->next_entry)
         return iter->prev_entry;
 
+    /* Find the next list and return the first element*/
     size_t i;
     for (i = iter->bucket_index + 1; i < iter->table->capacity; i++) {
         iter->next_entry = iter->table->buckets[i];
 
         if (iter->next_entry) {
             iter->bucket_index = i;
-            return iter->prev_entry;
+            break;
         }
     }
-    return NULL;
+    return iter->prev_entry;
 }
 
 /**
