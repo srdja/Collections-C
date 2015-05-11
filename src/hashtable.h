@@ -41,16 +41,20 @@ typedef struct hashtable_key_iter HashTableIter;
  * @note modifying this structure may invalidate the table.
  */
 typedef struct table_entry_s {
-    /* A key in the table */
+    /**
+     * A key in the table */
     void     *key;
 
-    /* Value associated with the key */
+    /**
+     * Value associated with the key */
     void     *value;
 
-    /* Hash of the key */
+    /**
+     * Hash of the key */
     size_t    hash;
 
-    /* Pointer the next entry in the list. */
+    /**
+     * Pointer the next entry in the list. */
     struct table_entry_s *next;
 } TableEntry;
 
@@ -71,30 +75,37 @@ struct hashtable_key_iter {
  * A configuration object used for configuring new hash tables.
  */
 typedef struct hashtable_conf_s {
-    /* The load factor determines how the underlying
+    /**
+     * The load factor determines how the underlying
      * table array grows. For example if the load factor
      * is 0.5 and the arrays capacity is 100, the resize will
      * be triggered once the 50th entry is added. */
     float    load_factor;
 
-    /* The initial capacity of the table array. */
+    /**
+     * The initial capacity of the table array. */
     size_t   initial_capacity;
 
-    /* Length of the key or -1 if the key length is
+    /**
+     * Length of the key or -1 if the key length is
      * variable */
     int      key_length;
 
-    /* The hash seed passed to the hash function for
-    *  extra randomness.*/
+    /**
+     * The hash seed passed to the hash function for
+     * extra 'randomness'.*/
     uint32_t hash_seed;
 
-    /* Hash function used for hashing table keys */
+    /**
+     * Hash function used for hashing table keys */
     size_t (*hash)        (const void *key, int l, uint32_t seed);
 
-    /* The key comparator function */
+    /**
+     * The key comparator function */
     bool   (*key_compare) (void *key1, void *key2);
 
-    /* Memory allocators used to allocate the HashTable structure
+    /**
+     * Memory allocators used to allocate the HashTable structure
      * and for all internal memory allocations. */
     void  *(*mem_alloc)   (size_t size);
     void  *(*mem_calloc)  (size_t blocks, size_t size);

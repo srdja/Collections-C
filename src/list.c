@@ -18,6 +18,10 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * A doubly linked list
+ */
+
 #include "list.h"
 
 struct list_s {
