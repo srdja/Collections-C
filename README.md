@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 ```
-We can now build and staticly link the library to our program:
+We can now build and statically link the library to our program:
 ```
 gcc hello.c -I/path/to/library/include/ -static -L/path/to/library/lib/ -lcollectc -o hello
 ```
