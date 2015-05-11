@@ -13,7 +13,7 @@ libcollectc_la_SOURCES = array.c  stack.c      slist.c \
 			 treetable.c treetable.h treeset.c \
 			 treeset.h
 
-library_includedir = $(includedir)/collections-c/
+library_includedir = $(includedir)
 
 library_include_HEADERS = collections-c.h  hashtable.h  hashset.h \
                           array.h          list.h       slist.h \
