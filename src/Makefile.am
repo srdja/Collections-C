@@ -1,8 +1,8 @@
 lib_LTLIBRARIES = libcollectc.la
 
-libcollectc_la_CFLAGS= -O2 -Werror
+libcollectc_la_CFLAGS= -O2 -Werror -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wall -pedantic -std=c99 -Wcast-equal -Wshadow
 
-libcollectc_la_LDFLAGS= -module -avoid-version -shared
+libcollectc_la_LDFLAGS= -module -avoid-version -shared 
 
 libcollectc_la_SOURCES = array.c  stack.c      slist.c \
                          queue.c   hashtable.c  hashset.c \
