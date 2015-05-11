@@ -909,7 +909,8 @@ uint64_t hashtable_hash(const void *key, int len, uint32_t seed)
 
     const uint64_t *blocks  = (const uint64_t*)(data);
 
-    for(int i = 0; i < nblocks; i++) {
+    int i;
+    for(i = 0; i < nblocks; i++) {
         uint64_t k1 = blocks[i*2+0];
         uint64_t k2 = blocks[i*2+1];
 
