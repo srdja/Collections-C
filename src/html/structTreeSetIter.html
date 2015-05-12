@@ -90,6 +90,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>TreeSet iterator object.  
+ <a href="structTreeSetIter.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="treeset_8h_source.html">treeset.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -97,7 +100,19 @@ Data Fields</h2></td></tr>
 <tr class="memitem:abbacfea942346c1e98e196ab824ccf84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTreeTableIter.html">TreeTableIter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeSetIter.html#abbacfea942346c1e98e196ab824ccf84">i</a></td></tr>
 <tr class="separator:abbacfea942346c1e98e196ab824ccf84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>TreeSet iterator object. </p>
+<p>Used to iterate over the elements of the set. The iterator also supports operations for safely removing elements during iteration.</p>
+<div class="fragment"><div class="line"><a class="code" href="structTreeSetIter.html">TreeSetIter</a> <a class="code" href="structTreeSetIter.html#abbacfea942346c1e98e196ab824ccf84">i</a>;</div>
+<div class="line"><a class="code" href="treeset_8c.html#a9090f7616a20c8c953d22d93136fca50">treeset_iter_init</a>(&amp;i);</div>
+<div class="line"></div>
+<div class="line"><span class="keywordtype">int</span> * <span class="keyword">const</span>* e;</div>
+<div class="line"></div>
+<div class="line"><span class="keywordflow">while</span> (<a class="code" href="treeset_8c.html#ace335c1043ad67b255d583448cf655d4">treeset_iter_has_next</a>(&amp;i)) {</div>
+<div class="line">    <a class="code" href="treeset_8c.html#a48af598da8fae590ff8814c2b1c3e403">treeset_iter_next</a>(&amp;i, &amp;e);</div>
+<div class="line">    do_something(e);</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="abbacfea942346c1e98e196ab824ccf84"></a>
 <div class="memitem">
 <div class="memproto">
@@ -116,7 +131,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

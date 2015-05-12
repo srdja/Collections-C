@@ -112,30 +112,31 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="common_8h.html">common.h</a>&quot;</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="array_8h.html">array.h</a>&quot;</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structstack__s.html">stack_s</a>    Stack;</div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="stack_8h.html#a5c4d74dfbaf7245c778e2277aaffff16">   28</a></span>&#160;<span class="keyword">typedef</span>        <a class="code" href="structArrayConf.html">ArrayConf</a> <a class="code" href="stack_8h.html#a5c4d74dfbaf7245c778e2277aaffff16">StackConf</a>;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a998802ba9d5375818840aa897e262470">stack_conf_init</a>   (StackConf *conf);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;Stack  *<a class="code" href="stack_8h.html#ac193892760d3bdc2b800419750a658d8">stack_new</a>         (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;Stack  *<a class="code" href="stack_8h.html#a9ba394fc735307eb6d24ea25fc4212dd">stack_new_conf</a>    (StackConf *conf);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a1c78193162bca5a7c494c0750a3d58ed">stack_destroy</a>     (Stack *stack);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a86152f57ac5fdc2136f86f5953bc96d9">stack_destroy_free</a>(Stack *stack);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">bool</span>    <a class="code" href="stack_8h.html#ab3fa683f3da66d8ff322b233f1c3b14b">stack_push</a>        (Stack *stack, <span class="keywordtype">void</span> *element);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keywordtype">void</span>   *<a class="code" href="stack_8h.html#a6c01cb19646f8f9134032e08fd63133a">stack_peek</a>        (Stack *stack);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">void</span>   *<a class="code" href="stack_8h.html#aa84e01dbabe5b405ec87f04105aa371d">stack_pop</a>         (Stack *stack);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">size_t</span>  <a class="code" href="stack_8h.html#ac898c94040430e4b240220588f078a6d">stack_size</a>        (Stack *stack);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a80fa9607a6c73b038c8f792314f3a70d">stack_foreach</a>     (Stack *stack, <span class="keywordtype">void</span> (*op) (<span class="keywordtype">void</span> *));</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structstack__s.html">stack_s</a> Stack;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="stack_8h.html#a5c4d74dfbaf7245c778e2277aaffff16">   36</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="structArrayConf.html">ArrayConf</a> <a class="code" href="stack_8h.html#a5c4d74dfbaf7245c778e2277aaffff16">StackConf</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a998802ba9d5375818840aa897e262470">stack_conf_init</a>   (<a class="code" href="structArrayConf.html">StackConf</a> *conf);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;Stack  *<a class="code" href="stack_8h.html#ac193892760d3bdc2b800419750a658d8">stack_new</a>         (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;Stack  *<a class="code" href="stack_8h.html#a9ba394fc735307eb6d24ea25fc4212dd">stack_new_conf</a>    (<a class="code" href="structArrayConf.html">StackConf</a> *conf);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a1c78193162bca5a7c494c0750a3d58ed">stack_destroy</a>     (Stack *stack);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a86152f57ac5fdc2136f86f5953bc96d9">stack_destroy_free</a>(Stack *stack);</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* STACK_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordtype">bool</span>    <a class="code" href="stack_8h.html#ab3fa683f3da66d8ff322b233f1c3b14b">stack_push</a>        (Stack *stack, <span class="keywordtype">void</span> *element);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">void</span>   *<a class="code" href="stack_8h.html#a6c01cb19646f8f9134032e08fd63133a">stack_peek</a>        (Stack *stack);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keywordtype">void</span>   *<a class="code" href="stack_8h.html#aa84e01dbabe5b405ec87f04105aa371d">stack_pop</a>         (Stack *stack);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">size_t</span>  <a class="code" href="stack_8h.html#ac898c94040430e4b240220588f078a6d">stack_size</a>        (Stack *stack);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">void</span>    <a class="code" href="stack_8h.html#a80fa9607a6c73b038c8f792314f3a70d">stack_foreach</a>     (Stack *stack, <span class="keywordtype">void</span> (*op) (<span class="keywordtype">void</span> *));</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* STACK_H_ */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="stack_8h_html_a998802ba9d5375818840aa897e262470"><div class="ttname"><a href="stack_8h.html#a998802ba9d5375818840aa897e262470">stack_conf_init</a></div><div class="ttdeci">void stack_conf_init(StackConf *conf)</div><div class="ttdoc">Initializes the fields of the StackConf struct to default values. </div><div class="ttdef"><b>Definition:</b> stack.c:37</div></div>
 <div class="ttc" id="stack_8h_html_a6c01cb19646f8f9134032e08fd63133a"><div class="ttname"><a href="stack_8h.html#a6c01cb19646f8f9134032e08fd63133a">stack_peek</a></div><div class="ttdeci">void * stack_peek(Stack *stack)</div><div class="ttdoc">Returns the top element of the stack without removing it. </div><div class="ttdef"><b>Definition:</b> stack.c:120</div></div>
 <div class="ttc" id="stack_8h_html_a80fa9607a6c73b038c8f792314f3a70d"><div class="ttname"><a href="stack_8h.html#a80fa9607a6c73b038c8f792314f3a70d">stack_foreach</a></div><div class="ttdeci">void stack_foreach(Stack *stack, void(*op)(void *))</div><div class="ttdoc">A stack foreach loop function that invokes the specified function on each element of the stack...</div><div class="ttdef"><b>Definition:</b> stack.c:157</div></div>
-<div class="ttc" id="stack_8h_html_a5c4d74dfbaf7245c778e2277aaffff16"><div class="ttname"><a href="stack_8h.html#a5c4d74dfbaf7245c778e2277aaffff16">StackConf</a></div><div class="ttdeci">ArrayConf StackConf</div><div class="ttdef"><b>Definition:</b> stack.h:28</div></div>
-<div class="ttc" id="structstack__s_html"><div class="ttname"><a href="structstack__s.html">stack_s</a></div><div class="ttdef"><b>Definition:</b> stack.c:24</div></div>
+<div class="ttc" id="stack_8h_html_a5c4d74dfbaf7245c778e2277aaffff16"><div class="ttname"><a href="stack_8h.html#a5c4d74dfbaf7245c778e2277aaffff16">StackConf</a></div><div class="ttdeci">ArrayConf StackConf</div><div class="ttdoc">Stack configuration object. </div><div class="ttdef"><b>Definition:</b> stack.h:36</div></div>
+<div class="ttc" id="structstack__s_html"><div class="ttname"><a href="structstack__s.html">stack_s</a></div><div class="ttdoc">A LIFO (last in first out) structure. </div><div class="ttdef"><b>Definition:</b> stack.c:24</div></div>
 <div class="ttc" id="stack_8h_html_ac898c94040430e4b240220588f078a6d"><div class="ttname"><a href="stack_8h.html#ac898c94040430e4b240220588f078a6d">stack_size</a></div><div class="ttdeci">size_t stack_size(Stack *stack)</div><div class="ttdoc">Returns the number stack element. </div><div class="ttdef"><b>Definition:</b> stack.c:144</div></div>
 <div class="ttc" id="array_8h_html"><div class="ttname"><a href="array_8h.html">array.h</a></div></div>
 <div class="ttc" id="stack_8h_html_a86152f57ac5fdc2136f86f5953bc96d9"><div class="ttname"><a href="stack_8h.html#a86152f57ac5fdc2136f86f5953bc96d9">stack_destroy_free</a></div><div class="ttdeci">void stack_destroy_free(Stack *stack)</div><div class="ttdoc">Destroys the specified stack structure along with all the data it holds. </div><div class="ttdef"><b>Definition:</b> stack.c:93</div></div>
@@ -145,11 +146,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="stack_8h_html_a9ba394fc735307eb6d24ea25fc4212dd"><div class="ttname"><a href="stack_8h.html#a9ba394fc735307eb6d24ea25fc4212dd">stack_new_conf</a></div><div class="ttdeci">Stack * stack_new_conf(StackConf *conf)</div><div class="ttdoc">Returns a new empty stack based on the StackConf struct. </div><div class="ttdef"><b>Definition:</b> stack.c:64</div></div>
 <div class="ttc" id="stack_8h_html_ab3fa683f3da66d8ff322b233f1c3b14b"><div class="ttname"><a href="stack_8h.html#ab3fa683f3da66d8ff322b233f1c3b14b">stack_push</a></div><div class="ttdeci">bool stack_push(Stack *stack, void *element)</div><div class="ttdoc">Pushes a new element onto the stack. </div><div class="ttdef"><b>Definition:</b> stack.c:108</div></div>
 <div class="ttc" id="common_8h_html"><div class="ttname"><a href="common_8h.html">common.h</a></div></div>
-<div class="ttc" id="structArrayConf_html"><div class="ttname"><a href="structArrayConf.html">ArrayConf</a></div><div class="ttdef"><b>Definition:</b> array.h:29</div></div>
+<div class="ttc" id="structArrayConf_html"><div class="ttname"><a href="structArrayConf.html">ArrayConf</a></div><div class="ttdoc">Array configuration object. </div><div class="ttdef"><b>Definition:</b> array.h:46</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:14 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

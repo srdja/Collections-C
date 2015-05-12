@@ -95,6 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhashtable__s.html">HashTable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An unordered key-value map.  <a href="structhashtable__s.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -116,10 +117,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5490faf439e956e456f87eef0a845aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a new HashTable object using the standard allocators.  <a href="#a5490faf439e956e456f87eef0a845aeb">More...</a><br /></td></tr>
 <tr class="separator:a5490faf439e956e456f87eef0a845aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a957c0ce15f9cdfb0b486a11de247bca5"><td class="memItemLeft" align="right" valign="top">HashTable *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a957c0ce15f9cdfb0b486a11de247bca5">hashtable_new_conf</a> (<a class="el" href="structHashTableConf.html">HashTableConf</a> *conf)</td></tr>
-<tr class="memdesc:a957c0ce15f9cdfb0b486a11de247bca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a new configured HashTable based on the provided <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> object.  <a href="#a957c0ce15f9cdfb0b486a11de247bca5">More...</a><br /></td></tr>
+<tr class="memdesc:a957c0ce15f9cdfb0b486a11de247bca5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a new configured HashTable based on the provided <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> object.  <a href="#a957c0ce15f9cdfb0b486a11de247bca5">More...</a><br /></td></tr>
 <tr class="separator:a957c0ce15f9cdfb0b486a11de247bca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3494e267d26d6512f8035cd7a524959c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a3494e267d26d6512f8035cd7a524959c">hashtable_conf_init</a> (<a class="el" href="structHashTableConf.html">HashTableConf</a> *conf)</td></tr>
-<tr class="memdesc:a3494e267d26d6512f8035cd7a524959c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> structs fields to default values.  <a href="#a3494e267d26d6512f8035cd7a524959c">More...</a><br /></td></tr>
+<tr class="memdesc:a3494e267d26d6512f8035cd7a524959c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> structs fields to default values.  <a href="#a3494e267d26d6512f8035cd7a524959c">More...</a><br /></td></tr>
 <tr class="separator:a3494e267d26d6512f8035cd7a524959c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab27ab2cf3a3db16094cc4ba33a81feba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#ab27ab2cf3a3db16094cc4ba33a81feba">hashtable_destroy</a> (HashTable *table)</td></tr>
 <tr class="memdesc:ab27ab2cf3a3db16094cc4ba33a81feba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the specified HashTable structure without destroying the the data contained within it.  <a href="#ab27ab2cf3a3db16094cc4ba33a81feba">More...</a><br /></td></tr>
@@ -181,16 +182,16 @@ Functions</h2></td></tr>
 <tr class="memitem:a408c6539d60edde9ce38fad2d93f0a56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a408c6539d60edde9ce38fad2d93f0a56">hashtable_foreach_value</a> (HashTable *table, void(*op)(void *val))</td></tr>
 <tr class="memdesc:a408c6539d60edde9ce38fad2d93f0a56"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 'foreach loop' function that invokes the specified function on every value in the table.  <a href="#a408c6539d60edde9ce38fad2d93f0a56">More...</a><br /></td></tr>
 <tr class="separator:a408c6539d60edde9ce38fad2d93f0a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0de287a1bd4d0e16949aa59733ba066c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a0de287a1bd4d0e16949aa59733ba066c">hashtable_iter_init</a> (HashTableIter *iter, HashTable *table)</td></tr>
-<tr class="memdesc:a0de287a1bd4d0e16949aa59733ba066c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the HashTableIter structure.  <a href="#a0de287a1bd4d0e16949aa59733ba066c">More...</a><br /></td></tr>
+<tr class="memitem:a0de287a1bd4d0e16949aa59733ba066c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a0de287a1bd4d0e16949aa59733ba066c">hashtable_iter_init</a> (<a class="el" href="structHashTableIter.html">HashTableIter</a> *iter, HashTable *table)</td></tr>
+<tr class="memdesc:a0de287a1bd4d0e16949aa59733ba066c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="structHashTableIter.html" title="HashTable iterator object. ">HashTableIter</a> structure.  <a href="#a0de287a1bd4d0e16949aa59733ba066c">More...</a><br /></td></tr>
 <tr class="separator:a0de287a1bd4d0e16949aa59733ba066c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6b2d725b973a3d925af9dc4afb24c08"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#ac6b2d725b973a3d925af9dc4afb24c08">hashtable_iter_has_next</a> (HashTableIter *iter)</td></tr>
+<tr class="memitem:ac6b2d725b973a3d925af9dc4afb24c08"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#ac6b2d725b973a3d925af9dc4afb24c08">hashtable_iter_has_next</a> (<a class="el" href="structHashTableIter.html">HashTableIter</a> *iter)</td></tr>
 <tr class="memdesc:ac6b2d725b973a3d925af9dc4afb24c08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether or not the iterator has a next entry iterate over.  <a href="#ac6b2d725b973a3d925af9dc4afb24c08">More...</a><br /></td></tr>
 <tr class="separator:ac6b2d725b973a3d925af9dc4afb24c08"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acda8e7d87164d59f4775d281a0c0500a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTableEntry.html">TableEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#acda8e7d87164d59f4775d281a0c0500a">hashtable_iter_next</a> (HashTableIter *iter)</td></tr>
+<tr class="memitem:acda8e7d87164d59f4775d281a0c0500a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTableEntry.html">TableEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#acda8e7d87164d59f4775d281a0c0500a">hashtable_iter_next</a> (<a class="el" href="structHashTableIter.html">HashTableIter</a> *iter)</td></tr>
 <tr class="memdesc:acda8e7d87164d59f4775d281a0c0500a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the iterator and returns a table entry.  <a href="#acda8e7d87164d59f4775d281a0c0500a">More...</a><br /></td></tr>
 <tr class="separator:acda8e7d87164d59f4775d281a0c0500a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f2b36cad668c7211af2e07fbd723bf1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a5f2b36cad668c7211af2e07fbd723bf1">hashtable_iter_remove</a> (HashTableIter *iter)</td></tr>
+<tr class="memitem:a5f2b36cad668c7211af2e07fbd723bf1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a5f2b36cad668c7211af2e07fbd723bf1">hashtable_iter_remove</a> (<a class="el" href="structHashTableIter.html">HashTableIter</a> *iter)</td></tr>
 <tr class="memdesc:a5f2b36cad668c7211af2e07fbd723bf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the last returned table entry.  <a href="#a5f2b36cad668c7211af2e07fbd723bf1">More...</a><br /></td></tr>
 <tr class="separator:a5f2b36cad668c7211af2e07fbd723bf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a367b4ef4e7fb5bdbb9a613a00616c698"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hashtable_8c.html#a367b4ef4e7fb5bdbb9a613a00616c698">hashtable_hash_string</a> (const void *key, int len, uint32_t seed)</td></tr>
@@ -437,7 +438,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> structs fields to default values. </p>
+<p>Initializes the <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> structs fields to default values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>the struct that is being initialized </td></tr>
@@ -881,7 +882,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool hashtable_iter_has_next </td>
           <td>(</td>
-          <td class="paramtype">HashTableIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structHashTableIter.html">HashTableIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -900,7 +901,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void hashtable_iter_init </td>
           <td>(</td>
-          <td class="paramtype">HashTableIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structHashTableIter.html">HashTableIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -917,7 +918,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the HashTableIter structure. </p>
+<p>Initializes the <a class="el" href="structHashTableIter.html" title="HashTable iterator object. ">HashTableIter</a> structure. </p>
 <dl class="section note"><dt>Note</dt><dd>The order at which the entries are returned is unspecified.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -936,7 +937,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structTableEntry.html">TableEntry</a>* hashtable_iter_next </td>
           <td>(</td>
-          <td class="paramtype">HashTableIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structHashTableIter.html">HashTableIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -960,7 +961,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void hashtable_iter_remove </td>
           <td>(</td>
-          <td class="paramtype">HashTableIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structHashTableIter.html">HashTableIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -970,7 +971,7 @@ Functions</h2></td></tr>
 <p>Removes the last returned table entry. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">The</td><td>iterator on which this operation is performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>The iterator on which this operation is performed </td></tr>
   </table>
   </dd>
 </dl>
@@ -1047,11 +1048,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Allocates a new configured HashTable based on the provided <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> object. </p>
-<p>The table is allocated using the memory allocators specified in the <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> object. In case the allocation of the table structure fails, NULL is returned. The <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> object is not modified by this function and can therefore be used for other tables.</p>
+<p>Allocates a new configured HashTable based on the provided <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> object. </p>
+<p>The table is allocated using the memory allocators specified in the <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> object. In case the allocation of the table structure fails, NULL is returned. The <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> object is not modified by this function and can therefore be used for other tables.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">conf</td><td>the <a class="el" href="structHashTableConf.html" title="A configuration object used for configuring new hash tables. ">HashTableConf</a> object used to configure this new HashTable</td></tr>
+    <tr><td class="paramname">conf</td><td>the <a class="el" href="structHashTableConf.html" title="HashTable configuration object. ">HashTableConf</a> object used to configure this new HashTable</td></tr>
   </table>
   </dd>
 </dl>
@@ -1325,7 +1326,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

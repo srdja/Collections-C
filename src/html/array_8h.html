@@ -96,8 +96,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayConf.html">ArrayConf</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array configuration object.  <a href="structArrayConf.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structarray__iter__s.html">ArrayIter</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayIter.html">ArrayIter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array iterator object.  <a href="structArrayIter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -106,19 +108,19 @@ Functions</h2></td></tr>
 <tr class="memdesc:a914dd9ae1216fc49d4e117fe6f54e3cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty array, or NULL if the allocation fails.  <a href="#a914dd9ae1216fc49d4e117fe6f54e3cc">More...</a><br /></td></tr>
 <tr class="separator:a914dd9ae1216fc49d4e117fe6f54e3cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaea17531e99fa622a3593d2480afb25c"><td class="memItemLeft" align="right" valign="top">Array *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#aaea17531e99fa622a3593d2480afb25c">array_new_conf</a> (<a class="el" href="structArrayConf.html">ArrayConf</a> *conf)</td></tr>
-<tr class="memdesc:aaea17531e99fa622a3593d2480afb25c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty array based on the specified <a class="el" href="structArrayConf.html">ArrayConf</a> struct.  <a href="#aaea17531e99fa622a3593d2480afb25c">More...</a><br /></td></tr>
+<tr class="memdesc:aaea17531e99fa622a3593d2480afb25c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty array based on the specified <a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> struct.  <a href="#aaea17531e99fa622a3593d2480afb25c">More...</a><br /></td></tr>
 <tr class="separator:aaea17531e99fa622a3593d2480afb25c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a254e01e0d7d4b92224b8edac9055723c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a254e01e0d7d4b92224b8edac9055723c">array_conf_init</a> (<a class="el" href="structArrayConf.html">ArrayConf</a> *conf)</td></tr>
-<tr class="memdesc:a254e01e0d7d4b92224b8edac9055723c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields of the <a class="el" href="structArrayConf.html">ArrayConf</a> struct to default values.  <a href="#a254e01e0d7d4b92224b8edac9055723c">More...</a><br /></td></tr>
+<tr class="memdesc:a254e01e0d7d4b92224b8edac9055723c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields of the <a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> struct to default values.  <a href="#a254e01e0d7d4b92224b8edac9055723c">More...</a><br /></td></tr>
 <tr class="separator:a254e01e0d7d4b92224b8edac9055723c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1653efc8d9745e1342febc0e3e0af962"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a1653efc8d9745e1342febc0e3e0af962">array_destroy</a> (Array *ar)</td></tr>
 <tr class="memdesc:a1653efc8d9745e1342febc0e3e0af962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the array structure, but leaves the data it used to hold, intact.  <a href="#a1653efc8d9745e1342febc0e3e0af962">More...</a><br /></td></tr>
 <tr class="separator:a1653efc8d9745e1342febc0e3e0af962"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c28f9dbc652a80c0f6343c2bb0be556"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a8c28f9dbc652a80c0f6343c2bb0be556">array_destroy_free</a> (Array *ar)</td></tr>
-<tr class="memdesc:a8c28f9dbc652a80c0f6343c2bb0be556"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the array structure along with all the data it holds.  <a href="#a8c28f9dbc652a80c0f6343c2bb0be556">More...</a><br /></td></tr>
+<tr class="memdesc:a8c28f9dbc652a80c0f6343c2bb0be556"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the Array structure along with all the data it holds.  <a href="#a8c28f9dbc652a80c0f6343c2bb0be556">More...</a><br /></td></tr>
 <tr class="separator:a8c28f9dbc652a80c0f6343c2bb0be556"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f538d39060bcbb95a7e15d1e9a84656"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a0f538d39060bcbb95a7e15d1e9a84656">array_add</a> (Array *ar, void *element)</td></tr>
-<tr class="memdesc:a0f538d39060bcbb95a7e15d1e9a84656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new element to the array.  <a href="#a0f538d39060bcbb95a7e15d1e9a84656">More...</a><br /></td></tr>
+<tr class="memdesc:a0f538d39060bcbb95a7e15d1e9a84656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new element to the Array.  <a href="#a0f538d39060bcbb95a7e15d1e9a84656">More...</a><br /></td></tr>
 <tr class="separator:a0f538d39060bcbb95a7e15d1e9a84656"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0eb3267f91793cc3a56fe47174bbe5d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a0eb3267f91793cc3a56fe47174bbe5d2">array_add_at</a> (Array *ar, void *element, size_t index)</td></tr>
 <tr class="memdesc:a0eb3267f91793cc3a56fe47174bbe5d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new element to the array at a specified position by shifting all subsequent elemnts by one.  <a href="#a0eb3267f91793cc3a56fe47174bbe5d2">More...</a><br /></td></tr>
@@ -179,25 +181,25 @@ Functions</h2></td></tr>
 <tr class="separator:a0da93b02bbb9e5292b2e9378f1c7260d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8645ea9c785dc58b22a008a3d377cbd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#af8645ea9c785dc58b22a008a3d377cbd">array_foreach</a> (Array *ar, void(*op)(void *))</td></tr>
 <tr class="separator:af8645ea9c785dc58b22a008a3d377cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c7d4f04ffa60a2e8fcb3db8d33f0dde"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a2c7d4f04ffa60a2e8fcb3db8d33f0dde">array_iter_init</a> (ArrayIter *iter, Array *vec)</td></tr>
+<tr class="memitem:a2c7d4f04ffa60a2e8fcb3db8d33f0dde"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a2c7d4f04ffa60a2e8fcb3db8d33f0dde">array_iter_init</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter, Array *vec)</td></tr>
 <tr class="memdesc:a2c7d4f04ffa60a2e8fcb3db8d33f0dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the iterator.  <a href="#a2c7d4f04ffa60a2e8fcb3db8d33f0dde">More...</a><br /></td></tr>
 <tr class="separator:a2c7d4f04ffa60a2e8fcb3db8d33f0dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af029ebd32a21e9fe9349e909ac16304b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#af029ebd32a21e9fe9349e909ac16304b">array_iter_has_next</a> (ArrayIter *iter)</td></tr>
+<tr class="memitem:af029ebd32a21e9fe9349e909ac16304b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#af029ebd32a21e9fe9349e909ac16304b">array_iter_has_next</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter)</td></tr>
 <tr class="memdesc:af029ebd32a21e9fe9349e909ac16304b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether or not the iterator has reached the end of the array.  <a href="#af029ebd32a21e9fe9349e909ac16304b">More...</a><br /></td></tr>
 <tr class="separator:af029ebd32a21e9fe9349e909ac16304b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcb45a79aaae2005ae51480c7b6bd495"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#abcb45a79aaae2005ae51480c7b6bd495">array_iter_next</a> (ArrayIter *iter)</td></tr>
+<tr class="memitem:abcb45a79aaae2005ae51480c7b6bd495"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#abcb45a79aaae2005ae51480c7b6bd495">array_iter_next</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter)</td></tr>
 <tr class="memdesc:abcb45a79aaae2005ae51480c7b6bd495"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next element in the sequence and advances the iterator.  <a href="#abcb45a79aaae2005ae51480c7b6bd495">More...</a><br /></td></tr>
 <tr class="separator:abcb45a79aaae2005ae51480c7b6bd495"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30cf02f64edf00efb83acfee90e31406"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a30cf02f64edf00efb83acfee90e31406">array_iter_remove</a> (ArrayIter *iter)</td></tr>
+<tr class="memitem:a30cf02f64edf00efb83acfee90e31406"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a30cf02f64edf00efb83acfee90e31406">array_iter_remove</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter)</td></tr>
 <tr class="memdesc:a30cf02f64edf00efb83acfee90e31406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes and returns the last returned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a> </code> without invalidating the iterator.  <a href="#a30cf02f64edf00efb83acfee90e31406">More...</a><br /></td></tr>
 <tr class="separator:a30cf02f64edf00efb83acfee90e31406"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefdc6fb12d224ba2ab911fbed987c09f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#aefdc6fb12d224ba2ab911fbed987c09f">array_iter_add</a> (ArrayIter *iter, void *element)</td></tr>
-<tr class="memdesc:aefdc6fb12d224ba2ab911fbed987c09f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new element to the array after the last retuned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a></code> without invalidating the iterator.  <a href="#aefdc6fb12d224ba2ab911fbed987c09f">More...</a><br /></td></tr>
+<tr class="memitem:aefdc6fb12d224ba2ab911fbed987c09f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#aefdc6fb12d224ba2ab911fbed987c09f">array_iter_add</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter, void *element)</td></tr>
+<tr class="memdesc:aefdc6fb12d224ba2ab911fbed987c09f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new element to the array after the last retuned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a></code>, without invalidating the iterator.  <a href="#aefdc6fb12d224ba2ab911fbed987c09f">More...</a><br /></td></tr>
 <tr class="separator:aefdc6fb12d224ba2ab911fbed987c09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1552117378c38f913bff434ec999b5dc"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a1552117378c38f913bff434ec999b5dc">array_iter_replace</a> (ArrayIter *iter, void *element)</td></tr>
+<tr class="memitem:a1552117378c38f913bff434ec999b5dc"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a1552117378c38f913bff434ec999b5dc">array_iter_replace</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter, void *element)</td></tr>
 <tr class="memdesc:a1552117378c38f913bff434ec999b5dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the last returned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a></code> with the specified replacement element.  <a href="#a1552117378c38f913bff434ec999b5dc">More...</a><br /></td></tr>
 <tr class="separator:a1552117378c38f913bff434ec999b5dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2177e073fc4d3436dd5f2c82f377e109"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a2177e073fc4d3436dd5f2c82f377e109">array_iter_index</a> (ArrayIter *iter)</td></tr>
+<tr class="memitem:a2177e073fc4d3436dd5f2c82f377e109"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a2177e073fc4d3436dd5f2c82f377e109">array_iter_index</a> (<a class="el" href="structArrayIter.html">ArrayIter</a> *iter)</td></tr>
 <tr class="memdesc:a2177e073fc4d3436dd5f2c82f377e109"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index of the last returned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a> </code>.  <a href="#a2177e073fc4d3436dd5f2c82f377e109">More...</a><br /></td></tr>
 <tr class="separator:a2177e073fc4d3436dd5f2c82f377e109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8679f730af9d59c5aef38a4f3da6a5e2"><td class="memItemLeft" align="right" valign="top">const void *const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="array_8h.html#a8679f730af9d59c5aef38a4f3da6a5e2">array_get_buffer</a> (Array *ar)</td></tr>
@@ -229,11 +231,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Adds a new element to the array. </p>
-<p>The element is appended to the array making it the last element (the one with the highest index) of the array. This function returns a <code>bool</code> based on whether or not the space allocation for the new element was successful or not.</p>
+<p>Adds a new element to the Array. </p>
+<p>The element is appended to the array making it the last element (the one with the highest index) of the Array. This function returns a <code>bool</code> based on whether or not the memory allocation for the new element was successful or not.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array to which the element is being added </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the Array to which the element is being added </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the element that is being added</td></tr>
   </table>
   </dd>
@@ -273,16 +275,16 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Adds a new element to the array at a specified position by shifting all subsequent elemnts by one. </p>
-<p>The specified index must be within the bounds of the array, otherwise this operation will fail and false will be returned to indicate failure. This function may also fail if the space allocation for the new element was unsuccessful.</p>
+<p>The specified index must be within the bounds of the array, otherwise this operation will fail and false will be returned to indicate failure. This function may also fail if the memory allocation for the new element was unsuccessful.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array to which the element is being added </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the Array to which the element is being added </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the element that is being added </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the position in the array at which the element is being added that must be within bounds of the array</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the position in the array at which the element is being added</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful, false if not </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the operation was successful </dd></dl>
 
 </div>
 </div>
@@ -304,7 +306,7 @@ Functions</h2></td></tr>
 <p>The capacity of the array is the maximum number of elements a array can hold before it has to be resized.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>array whose capacity is being returned</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>array whose capacity is being returned</td></tr>
   </table>
   </dd>
 </dl>
@@ -326,10 +328,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the fields of the <a class="el" href="structArrayConf.html">ArrayConf</a> struct to default values. </p>
+<p>Initializes the fields of the <a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> struct to default values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">conf</td><td>the struct that is being initialized </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">conf</td><td><a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> being initialized </td></tr>
   </table>
   </dd>
 </dl>
@@ -363,7 +365,7 @@ Functions</h2></td></tr>
 <p>Returns the number of occurrences of the element within the specified array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array that is being searched </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array that is being searched </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the element that is being searched for</td></tr>
   </table>
   </dd>
@@ -401,7 +403,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>The new array is allocated using the original arrays allocators and also inherits the configuration of the original array.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array to be copied </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array to be copied </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">cp</td><td>the copy function that returns a copy of a array element</td></tr>
   </table>
   </dd>
@@ -429,7 +431,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>The new array is allocated using the original arrays allocators and also inherits the configuration of the original array.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array to be copied</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array to be copied</td></tr>
   </table>
   </dd>
 </dl>
@@ -454,7 +456,7 @@ Functions</h2></td></tr>
 <p>Destroys the array structure, but leaves the data it used to hold, intact. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array that is to be destroyed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the Array that is to be destroyed. </td></tr>
   </table>
   </dd>
 </dl>
@@ -475,11 +477,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Destroys the array structure along with all the data it holds. </p>
+<p>Destroys the Array structure along with all the data it holds. </p>
 <dl class="section note"><dt>Note</dt><dd>This function should not be called on a array that has some of its elements allocated on the stack.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array that is being destroyed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array that is being destroyed </td></tr>
   </table>
   </dd>
 </dl>
@@ -540,7 +542,7 @@ Functions</h2></td></tr>
 <p>The specified index must be within the bounds of the array, otherwise NULL is returned. NULL can also be returned if the element at the specified index is NULL. This ambiguity can be resolved by calling <code><a class="el" href="array_8c.html#a42c462b132d8ea30c69d7d3281d27abe" title="Returns the number of occurrences of the element within the specified array. ">array_contains()</a></code> before this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array from which the element is being retrieved </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array from which the element is being retrieved </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the index of the array element</td></tr>
   </table>
   </dd>
@@ -567,7 +569,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>Any direct modification of the buffer may invalidate the array.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array whose underlying buffer is being returned</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array whose underlying buffer is being returned</td></tr>
   </table>
   </dd>
 </dl>
@@ -593,7 +595,7 @@ Functions</h2></td></tr>
 <p>the element at the highest index, or NULL if the array is empty. Null may also be returned if the last element of the array is NULL. This ambiguity can be resolved by calling <code> <a class="el" href="array_8c.html#a1642fa6d156a8ba9c9e77d9f9883bc01" title="Returns the size of the specified array. ">array_size()</a></code> before this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">the</td><td>array whose last element is being returned</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array whose last element is being returned</td></tr>
   </table>
   </dd>
 </dl>
@@ -628,7 +630,7 @@ Functions</h2></td></tr>
 <p>Returns the index of the first occurrence of the specified array element, or NO_SUCH_INDEX if the element could not be found. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>array being searched </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>array being searched </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the element whose index is being looked up</td></tr>
   </table>
   </dd>
@@ -644,7 +646,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool array_iter_add </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -661,10 +663,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Adds a new element to the array after the last retuned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a></code> without invalidating the iterator. </p>
+<p>Adds a new element to the array after the last retuned element by <code><a class="el" href="array_8c.html#abcb45a79aaae2005ae51480c7b6bd495" title="Returns the next element in the sequence and advances the iterator. ">array_iter_next()</a></code>, without invalidating the iterator. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator on which this operation is being performed [in] element the element being added</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator on which this operation is being performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the element being added</td></tr>
   </table>
   </dd>
 </dl>
@@ -679,7 +682,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool array_iter_has_next </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -704,7 +707,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">size_t array_iter_index </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -730,7 +733,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void array_iter_init </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -765,7 +768,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void* array_iter_next </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -790,7 +793,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void* array_iter_remove </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -815,7 +818,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void* array_iter_replace </td>
           <td>(</td>
-          <td class="paramtype">ArrayIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structArrayIter.html">ArrayIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -877,11 +880,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a new empty array based on the specified <a class="el" href="structArrayConf.html">ArrayConf</a> struct. </p>
-<p>The array is allocated using the allocators specified in the <a class="el" href="structArrayConf.html">ArrayConf</a> struct. The allocation may fail if underlying allocator fails. It may also fail if the values of exp_factor and capacity in the <a class="el" href="structArrayConf.html">ArrayConf</a> do not meet the following condition: <code>exp_factor &lt; (MAX_ELEMENTS / capacity)</code>.</p>
+<p>Returns a new empty array based on the specified <a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> struct. </p>
+<p>The array is allocated using the allocators specified in the <a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> struct. The allocation may fail if underlying allocator fails. It may also fail if the values of exp_factor and capacity in the <a class="el" href="structArrayConf.html" title="Array configuration object. ">ArrayConf</a> do not meet the following condition: <code>exp_factor &lt; (MAX_ELEMENTS / capacity)</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>Array configuration struct. All fields must be initialized to appropriate values.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>Array configuration object</td></tr>
   </table>
   </dd>
 </dl>
@@ -917,7 +920,7 @@ Functions</h2></td></tr>
 <p>In case the element does not exist NULL is returned. NULL can also be returned if the specified element is NULL. In this case calling <code> <a class="el" href="array_8c.html#a42c462b132d8ea30c69d7d3281d27abe" title="Returns the number of occurrences of the element within the specified array. ">array_contains()</a></code> before this function can resolve this ambiguity.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array from which the element is being removed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the Array from which the element is being removed </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the element being removed</td></tr>
   </table>
   </dd>
@@ -944,7 +947,7 @@ Functions</h2></td></tr>
 <p>This function does not shrink the array capacity.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array from which all elements are to be removed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array from which all elements are to be removed </td></tr>
   </table>
   </dd>
 </dl>
@@ -969,7 +972,7 @@ Functions</h2></td></tr>
 <p>This function does not shrink the array capacity.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array from which all elements are to be removed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array from which all elements are to be removed </td></tr>
   </table>
   </dd>
 </dl>
@@ -1004,7 +1007,7 @@ Functions</h2></td></tr>
 <p>The index must be within the bounds of the array, otherwise NULL is returned. NULL may also be returned if the removed element was NULL. To resolve this ambiguity call <code><a class="el" href="array_8c.html#a42c462b132d8ea30c69d7d3281d27abe" title="Returns the number of occurrences of the element within the specified array. ">array_contains()</a></code> before this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array from which the element is being removed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array from which the element is being removed </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the index of the element being removed.</td></tr>
   </table>
   </dd>
@@ -1031,7 +1034,7 @@ Functions</h2></td></tr>
 <p>Or NULL if array is empty. NULL may also be returned if the last element of the array is NULL value. This ambiguity can be resolved by calling <code><a class="el" href="array_8c.html#a1642fa6d156a8ba9c9e77d9f9883bc01" title="Returns the size of the specified array. ">array_size()</a> </code>before this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">the</td><td>array whose last element is being removed</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array whose last element is being removed</td></tr>
   </table>
   </dd>
 </dl>
@@ -1070,12 +1073,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Replaces a array element at the specified index and returns the replaced element. </p>
-<p>The specified index must be within the bounds of the array, otherwise NULL is returned. NULL can also be returned if the replaced element was NULL. In this case calling <code><a class="el" href="array_8c.html#a42c462b132d8ea30c69d7d3281d27abe" title="Returns the number of occurrences of the element within the specified array. ">array_contains()</a></code> before this function can resolve this ambiguity.</p>
+<p>The specified index must be within the bounds of the Array, otherwise NULL is returned. NULL can also be returned if the replaced element was NULL. In this case calling <code><a class="el" href="array_8c.html#a42c462b132d8ea30c69d7d3281d27abe" title="Returns the number of occurrences of the element within the specified array. ">array_contains()</a></code> before this function can resolve this ambiguity.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array whose element is being replaced </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the Array whose element is being replaced </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">element</td><td>the replacement element </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the index at which the replacement element should be placed</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>the index at which the replacement element should be inserted</td></tr>
   </table>
   </dd>
 </dl>
@@ -1100,7 +1103,7 @@ Functions</h2></td></tr>
 <p>Reverses the order of elements in the specified array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array that is being reversed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array that is being reversed. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1125,7 +1128,7 @@ Functions</h2></td></tr>
 <p>The size of the array is the number of elements contained within the array.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array whose size is being returned</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array whose size is being returned</td></tr>
   </table>
   </dd>
 </dl>
@@ -1159,9 +1162,21 @@ Functions</h2></td></tr>
 
 <p>Sorts the specified array. </p>
 <dl class="section note"><dt>Note</dt><dd>Pointers passed to the comparator function will be pointers to the array elements that are of type (void*) ie. void**. So an extra step of dereferencing will be required before the data can be used for comparison: eg. <code>my_type e = *(*((my_type**) ptr));</code>.</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;int mycmp(const void *e1, const void *e2) {</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    MyType el1 = *(*((int**) e1));</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    MyType el2 = *(*((int**) e2));</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    if (el1 &lt; el2) return -1;</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    if (el1 &gt; el2) return 1;</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    return 0;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;}</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;...</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;array_sort(array, mycmp);</div>
+</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>array to be sorted </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>array to be sorted </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">cmp</td><td>the comparator function that must be of type <code> int cmp(const void e1*, const void e2*)</code> that returns &lt; 0 if the first element goes before the second, 0 if the elements are equal and &gt; 0 if the second goes before the first. </td></tr>
   </table>
   </dd>
@@ -1231,7 +1246,7 @@ Functions</h2></td></tr>
 <p>Trims the array's capacity, in other words, it shrinks the capacity to match the number of elements in the specified array, however the capacity will never shrink below 1. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">art</td><td>the array whose capacity is being trimmed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ar</td><td>the array whose capacity is being trimmed. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1241,7 +1256,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

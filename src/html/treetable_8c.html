@@ -95,6 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtreetable__s.html">TreeTable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An ordered key-value map.  <a href="structtreetable__s.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -113,7 +114,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a68d23ac3ab512602f00366b4e49f9053"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a new TreeTable object using the standard allocators.  <a href="#a68d23ac3ab512602f00366b4e49f9053">More...</a><br /></td></tr>
 <tr class="separator:a68d23ac3ab512602f00366b4e49f9053"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a359ee2ad8406fb8846aa1a152c7bddc0"><td class="memItemLeft" align="right" valign="top">TreeTable *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a359ee2ad8406fb8846aa1a152c7bddc0">treetable_new_conf</a> (<a class="el" href="structTreeTableConf.html">TreeTableConf</a> *conf)</td></tr>
-<tr class="memdesc:a359ee2ad8406fb8846aa1a152c7bddc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a new configured TreeTable based on the provided <a class="el" href="structTreeTableConf.html">TreeTableConf</a> object.  <a href="#a359ee2ad8406fb8846aa1a152c7bddc0">More...</a><br /></td></tr>
+<tr class="memdesc:a359ee2ad8406fb8846aa1a152c7bddc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a new configured TreeTable based on the provided <a class="el" href="structTreeTableConf.html" title="TreeTable configuration object. ">TreeTableConf</a> object.  <a href="#a359ee2ad8406fb8846aa1a152c7bddc0">More...</a><br /></td></tr>
 <tr class="separator:a359ee2ad8406fb8846aa1a152c7bddc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dd993dc605d1f02ad663ce4e5c153e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a8dd993dc605d1f02ad663ce4e5c153e7">treetable_destroy</a> (TreeTable *table)</td></tr>
 <tr class="memdesc:a8dd993dc605d1f02ad663ce4e5c153e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the specified TreeTable structure without destroying the the data contained within it.  <a href="#a8dd993dc605d1f02ad663ce4e5c153e7">More...</a><br /></td></tr>
@@ -128,8 +129,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:ab9191ddc74151c6e401d4d6bff25618d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value associated with the highest (last) key in the table.  <a href="#ab9191ddc74151c6e401d4d6bff25618d">More...</a><br /></td></tr>
 <tr class="separator:ab9191ddc74151c6e401d4d6bff25618d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c7fccd1e20fb59b1957d557509fcaa2"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a6c7fccd1e20fb59b1957d557509fcaa2">treetable_get_first_key</a> (TreeTable *table)</td></tr>
+<tr class="memdesc:a6c7fccd1e20fb59b1957d557509fcaa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the first (lowest) key in the table.  <a href="#a6c7fccd1e20fb59b1957d557509fcaa2">More...</a><br /></td></tr>
 <tr class="separator:a6c7fccd1e20fb59b1957d557509fcaa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a064c181eb85fb6044798b9e038621606"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a064c181eb85fb6044798b9e038621606">treetable_get_last_key</a> (TreeTable *table)</td></tr>
+<tr class="memdesc:a064c181eb85fb6044798b9e038621606"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the last (highest) key in the table.  <a href="#a064c181eb85fb6044798b9e038621606">More...</a><br /></td></tr>
 <tr class="separator:a064c181eb85fb6044798b9e038621606"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d86830dfcdcddcae0223b803edbbc1e"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a6d86830dfcdcddcae0223b803edbbc1e">treetable_get_greater_than</a> (TreeTable *table, void *key)</td></tr>
 <tr class="memdesc:a6d86830dfcdcddcae0223b803edbbc1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the immediate successor of the specified key.  <a href="#a6d86830dfcdcddcae0223b803edbbc1e">More...</a><br /></td></tr>
@@ -144,6 +147,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ac4118fec458e90ca5d0bbb1faf9db0d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether or not the TreeTable contains the specified key.  <a href="#ac4118fec458e90ca5d0bbb1faf9db0d7">More...</a><br /></td></tr>
 <tr class="separator:ac4118fec458e90ca5d0bbb1faf9db0d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d91fe08d9510e5b92224d57850ed92f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a4d91fe08d9510e5b92224d57850ed92f">treetable_contains_value</a> (TreeTable *table, void *value)</td></tr>
+<tr class="memdesc:a4d91fe08d9510e5b92224d57850ed92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether or not the TreeTable contains the specified value.  <a href="#a4d91fe08d9510e5b92224d57850ed92f">More...</a><br /></td></tr>
 <tr class="separator:a4d91fe08d9510e5b92224d57850ed92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6478949238c24111582eed5e494ef782"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a6478949238c24111582eed5e494ef782">treetable_add</a> (TreeTable *table, void *key, void *val)</td></tr>
 <tr class="memdesc:a6478949238c24111582eed5e494ef782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new key-value mapping in the specified TreeTable.  <a href="#a6478949238c24111582eed5e494ef782">More...</a><br /></td></tr>
@@ -152,22 +156,31 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5dcdfe6374fd2af606e653e1ba5d4b7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a key-value mapping from the specified TreeTable and returns the value that was mapped to the specified key.  <a href="#a5dcdfe6374fd2af606e653e1ba5d4b7b">More...</a><br /></td></tr>
 <tr class="separator:a5dcdfe6374fd2af606e653e1ba5d4b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86ecded7d25f299ad778290a9427338d"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a86ecded7d25f299ad778290a9427338d">treetable_remove_first</a> (TreeTable *table)</td></tr>
+<tr class="memdesc:a86ecded7d25f299ad778290a9427338d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the frist (lowest) key from the specified table and returns the value taht was associated to the removed key, or NULL if the table is empty.  <a href="#a86ecded7d25f299ad778290a9427338d">More...</a><br /></td></tr>
 <tr class="separator:a86ecded7d25f299ad778290a9427338d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f836d8c27c0dd684788f6c751281a56"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a2f836d8c27c0dd684788f6c751281a56">treetable_remove_last</a> (TreeTable *table)</td></tr>
+<tr class="memdesc:a2f836d8c27c0dd684788f6c751281a56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the last (highest) key from the specified table and returns the value taht was associated to the removed key, or NULL if the table is empty.  <a href="#a2f836d8c27c0dd684788f6c751281a56">More...</a><br /></td></tr>
 <tr class="separator:a2f836d8c27c0dd684788f6c751281a56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae599385d74a0a4fd981103ccd4f6d8da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#ae599385d74a0a4fd981103ccd4f6d8da">treetable_remove_all</a> (TreeTable *table)</td></tr>
+<tr class="memdesc:ae599385d74a0a4fd981103ccd4f6d8da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all entries from the table.  <a href="#ae599385d74a0a4fd981103ccd4f6d8da">More...</a><br /></td></tr>
 <tr class="separator:ae599385d74a0a4fd981103ccd4f6d8da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf65d63e71551ed4fca3c7af7035a63f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#adf65d63e71551ed4fca3c7af7035a63f">treetable_foreach_key</a> (TreeTable *table, void(*op)(const void *k))</td></tr>
+<tr class="memdesc:adf65d63e71551ed4fca3c7af7035a63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 'foreach loop' function that invokes the specified function on every key in the table.  <a href="#adf65d63e71551ed4fca3c7af7035a63f">More...</a><br /></td></tr>
 <tr class="separator:adf65d63e71551ed4fca3c7af7035a63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f52daa4fdd229d469c79b9be9ed4edd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a9f52daa4fdd229d469c79b9be9ed4edd">treetable_foreach_value</a> (TreeTable *table, void(*op)(void *k))</td></tr>
+<tr class="memdesc:a9f52daa4fdd229d469c79b9be9ed4edd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 'foreach loop' function that invokes the specified function on every value in the table.  <a href="#a9f52daa4fdd229d469c79b9be9ed4edd">More...</a><br /></td></tr>
 <tr class="separator:a9f52daa4fdd229d469c79b9be9ed4edd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5074a92d25acf0df922ca506c7c517f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a5074a92d25acf0df922ca506c7c517f0">treetable_iter_init</a> (<a class="el" href="structTreeTableIter.html">TreeTableIter</a> *iter, TreeTable *table)</td></tr>
+<tr class="memdesc:a5074a92d25acf0df922ca506c7c517f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the <a class="el" href="structTreeTableIter.html" title="TreeTable iterator object. ">TreeTableIter</a> structure.  <a href="#a5074a92d25acf0df922ca506c7c517f0">More...</a><br /></td></tr>
 <tr class="separator:a5074a92d25acf0df922ca506c7c517f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad351646d7b8f0e390f530aea7c779933"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#ad351646d7b8f0e390f530aea7c779933">treetable_iter_has_next</a> (<a class="el" href="structTreeTableIter.html">TreeTableIter</a> *iter)</td></tr>
+<tr class="memdesc:ad351646d7b8f0e390f530aea7c779933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether or not the iterator has a next entry iterate over.  <a href="#ad351646d7b8f0e390f530aea7c779933">More...</a><br /></td></tr>
 <tr class="separator:ad351646d7b8f0e390f530aea7c779933"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9adbd64aae572bbe1f72378429dce328"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#a9adbd64aae572bbe1f72378429dce328">treetable_iter_next</a> (<a class="el" href="structTreeTableIter.html">TreeTableIter</a> *iter, <a class="el" href="structTreeTableEntry.html">TreeTableEntry</a> *entry)</td></tr>
+<tr class="memdesc:a9adbd64aae572bbe1f72378429dce328"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances the iterator.  <a href="#a9adbd64aae572bbe1f72378429dce328">More...</a><br /></td></tr>
 <tr class="separator:a9adbd64aae572bbe1f72378429dce328"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad13210ea75aa0427b3a0d814e64776d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="treetable_8c.html#ad13210ea75aa0427b3a0d814e64776d6">treetable_iter_remove</a> (<a class="el" href="structTreeTableIter.html">TreeTableIter</a> *iter)</td></tr>
+<tr class="memdesc:ad13210ea75aa0427b3a0d814e64776d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the last returned table entry.  <a href="#ad13210ea75aa0427b3a0d814e64776d6">More...</a><br /></td></tr>
 <tr class="separator:ad13210ea75aa0427b3a0d814e64776d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
@@ -324,6 +337,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Checks whether or not the TreeTable contains the specified value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table into which the lookup is performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>the value that is being looked up</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>number of occurrences of the specified value. </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a8dd993dc605d1f02ad663ce4e5c153e7"></a>
@@ -375,6 +398,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>A 'foreach loop' function that invokes the specified function on every key in the table. </p>
+<p>The operation function should not modify the key. Any modification of the key will invalidate the TreeTable.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table on which this operation is being perfomed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">op</td><td>the operation function that is invoked on each key of the table </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a class="anchor" id="a9f52daa4fdd229d469c79b9be9ed4edd"></a>
@@ -400,6 +433,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>A 'foreach loop' function that invokes the specified function on every value in the table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table on which this operation is being performed </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">op</td><td>the operation function that is invoked on each value of the table </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -453,6 +495,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns the first (lowest) key in the table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table in which the lookup is performed</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the first key </dd></dl>
 
 </div>
 </div>
@@ -531,6 +582,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Returns the last (highest) key in the table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table in which the lookup is performed</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the last key </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="ab9191ddc74151c6e401d4d6bff25618d"></a>
@@ -608,6 +668,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Checks whether or not the iterator has a next entry iterate over. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if the next entry exists or false if the iterator has reached the end of the table. </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a5074a92d25acf0df922ca506c7c517f0"></a>
@@ -633,6 +696,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Initializes the <a class="el" href="structTreeTableIter.html" title="TreeTable iterator object. ">TreeTableIter</a> structure. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator that is being initialized </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table over whose entries the iterator is going to iterate </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -660,6 +732,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Advances the iterator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator that is being advanced </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">entry</td><td>the next entry </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a class="anchor" id="ad13210ea75aa0427b3a0d814e64776d6"></a>
@@ -675,6 +756,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Removes the last returned table entry. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>The iterator on which this operation is performed </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -718,11 +807,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Allocates a new configured TreeTable based on the provided <a class="el" href="structTreeTableConf.html">TreeTableConf</a> object. </p>
-<p>The table is allocated using the memory allocators specified in the <a class="el" href="structTreeTableConf.html">TreeTableConf</a> object. In case the allocation of the table structure fails, NULL is returned. The <a class="el" href="structTreeTableConf.html">TreeTableConf</a> object is not modified by this function and can therefore be used for other tables.</p>
+<p>Allocates a new configured TreeTable based on the provided <a class="el" href="structTreeTableConf.html" title="TreeTable configuration object. ">TreeTableConf</a> object. </p>
+<p>The table is allocated using the memory allocators specified in the <a class="el" href="structTreeTableConf.html" title="TreeTable configuration object. ">TreeTableConf</a> object. In case the allocation of the table structure fails, NULL is returned. The <a class="el" href="structTreeTableConf.html" title="TreeTable configuration object. ">TreeTableConf</a> object is not modified by this function and can therefore be used for other tables.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">conf</td><td>the <a class="el" href="structTreeTableConf.html">TreeTableConf</a> object used to configure this new TreeTable</td></tr>
+    <tr><td class="paramname">conf</td><td>the <a class="el" href="structTreeTableConf.html" title="TreeTable configuration object. ">TreeTableConf</a> object used to configure this new TreeTable</td></tr>
   </table>
   </dd>
 </dl>
@@ -781,6 +870,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Removes all entries from the table. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table from which all entries are to be removed </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a class="anchor" id="a86ecded7d25f299ad778290a9427338d"></a>
@@ -797,6 +894,15 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Removes the frist (lowest) key from the specified table and returns the value taht was associated to the removed key, or NULL if the table is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table from which the first entry is being removed</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the value associated with the removed key. </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a2f836d8c27c0dd684788f6c751281a56"></a>
@@ -812,6 +918,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Removes the last (highest) key from the specified table and returns the value taht was associated to the removed key, or NULL if the table is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">table</td><td>the table from which the last entry is being removed</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the value associated with the removed key. </dd></dl>
 
 </div>
 </div>
@@ -844,7 +959,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

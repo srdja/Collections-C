@@ -90,24 +90,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Red-Black tree node.  
+ <a href="structRBNode.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="treetable_8h_source.html">treetable.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:abc1b516c945eb1b630bd59def9d1d3b3"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRBNode.html#abc1b516c945eb1b630bd59def9d1d3b3">key</a></td></tr>
+<tr class="memdesc:abc1b516c945eb1b630bd59def9d1d3b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Key in the table.  <a href="#abc1b516c945eb1b630bd59def9d1d3b3">More...</a><br /></td></tr>
 <tr class="separator:abc1b516c945eb1b630bd59def9d1d3b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3671a0da9cbac19174cc677ddf2360c3"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRBNode.html#a3671a0da9cbac19174cc677ddf2360c3">value</a></td></tr>
+<tr class="memdesc:a3671a0da9cbac19174cc677ddf2360c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value associated with the key.  <a href="#a3671a0da9cbac19174cc677ddf2360c3">More...</a><br /></td></tr>
 <tr class="separator:a3671a0da9cbac19174cc677ddf2360c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6bb477ce67497d4b7d78e674044eb02"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRBNode.html#ad6bb477ce67497d4b7d78e674044eb02">color</a></td></tr>
+<tr class="memdesc:ad6bb477ce67497d4b7d78e674044eb02"><td class="mdescLeft">&#160;</td><td class="mdescRight">The color of this node.  <a href="#ad6bb477ce67497d4b7d78e674044eb02">More...</a><br /></td></tr>
 <tr class="separator:ad6bb477ce67497d4b7d78e674044eb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab92b1355b3447ac537c13b3a4542bc5a"><td class="memItemLeft" align="right" valign="top">struct rbnode_s *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRBNode.html#ab92b1355b3447ac537c13b3a4542bc5a">parent</a></td></tr>
+<tr class="memdesc:ab92b1355b3447ac537c13b3a4542bc5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parent of this node.  <a href="#ab92b1355b3447ac537c13b3a4542bc5a">More...</a><br /></td></tr>
 <tr class="separator:ab92b1355b3447ac537c13b3a4542bc5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd568ba2fc282c860014e9c7e30a66fb"><td class="memItemLeft" align="right" valign="top">struct rbnode_s *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRBNode.html#abd568ba2fc282c860014e9c7e30a66fb">left</a></td></tr>
+<tr class="memdesc:abd568ba2fc282c860014e9c7e30a66fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Left child node.  <a href="#abd568ba2fc282c860014e9c7e30a66fb">More...</a><br /></td></tr>
 <tr class="separator:abd568ba2fc282c860014e9c7e30a66fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a839379b39d9ba7c061843291b3d71c81"><td class="memItemLeft" align="right" valign="top">struct rbnode_s *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRBNode.html#a839379b39d9ba7c061843291b3d71c81">right</a></td></tr>
+<tr class="memdesc:a839379b39d9ba7c061843291b3d71c81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Right child node.  <a href="#a839379b39d9ba7c061843291b3d71c81">More...</a><br /></td></tr>
 <tr class="separator:a839379b39d9ba7c061843291b3d71c81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Red-Black tree node. </p>
+<dl class="section note"><dt>Note</dt><dd>Modifying this structure may invalidate the table. </dd></dl>
+</div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="ad6bb477ce67497d4b7d78e674044eb02"></a>
 <div class="memitem">
 <div class="memproto">
@@ -117,6 +129,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The color of this node. </p>
 
 </div>
 </div>
@@ -130,6 +144,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Key in the table. </p>
+
 </div>
 </div>
 <a class="anchor" id="abd568ba2fc282c860014e9c7e30a66fb"></a>
@@ -141,6 +157,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Left child node. </p>
 
 </div>
 </div>
@@ -154,6 +172,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Parent of this node. </p>
+
 </div>
 </div>
 <a class="anchor" id="a839379b39d9ba7c061843291b3d71c81"></a>
@@ -165,6 +185,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Right child node. </p>
 
 </div>
 </div>
@@ -178,6 +200,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Value associated with the key. </p>
+
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
@@ -186,7 +210,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

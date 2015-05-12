@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['ar',['ar',['../structarray__iter__s.html#afc2bdb6ca5e4a0c0c3409b8b4b408785',1,'array_iter_s']]],
+  ['ar',['ar',['../structArrayIter.html#afc2bdb6ca5e4a0c0c3409b8b4b408785',1,'ArrayIter']]],
   ['array_2ec',['array.c',['../array_8c.html',1,'']]],
   ['array_2eh',['array.h',['../array_8h.html',1,'']]],
   ['array_5fadd',['array_add',['../array_8c.html#a0f538d39060bcbb95a7e15d1e9a84656',1,'array_add(Array *ar, void *element):&#160;array.c'],['../array_8h.html#a0f538d39060bcbb95a7e15d1e9a84656',1,'array_add(Array *ar, void *element):&#160;array.c']]],
@@ -24,7 +24,6 @@ var searchData=
   ['array_5fiter_5fnext',['array_iter_next',['../array_8c.html#abcb45a79aaae2005ae51480c7b6bd495',1,'array_iter_next(ArrayIter *iter):&#160;array.c'],['../array_8h.html#abcb45a79aaae2005ae51480c7b6bd495',1,'array_iter_next(ArrayIter *iter):&#160;array.c']]],
   ['array_5fiter_5fremove',['array_iter_remove',['../array_8c.html#a30cf02f64edf00efb83acfee90e31406',1,'array_iter_remove(ArrayIter *iter):&#160;array.c'],['../array_8h.html#a30cf02f64edf00efb83acfee90e31406',1,'array_iter_remove(ArrayIter *iter):&#160;array.c']]],
   ['array_5fiter_5freplace',['array_iter_replace',['../array_8c.html#a1552117378c38f913bff434ec999b5dc',1,'array_iter_replace(ArrayIter *iter, void *element):&#160;array.c'],['../array_8h.html#a1552117378c38f913bff434ec999b5dc',1,'array_iter_replace(ArrayIter *iter, void *element):&#160;array.c']]],
-  ['array_5fiter_5fs',['array_iter_s',['../structarray__iter__s.html',1,'']]],
   ['array_5fnew',['array_new',['../array_8c.html#adbcb929cd348c41fbef79ce5b448ba40',1,'array_new():&#160;array.c'],['../array_8h.html#a914dd9ae1216fc49d4e117fe6f54e3cc',1,'array_new(void):&#160;array.c']]],
   ['array_5fnew_5fconf',['array_new_conf',['../array_8c.html#aaea17531e99fa622a3593d2480afb25c',1,'array_new_conf(ArrayConf *conf):&#160;array.c'],['../array_8h.html#aaea17531e99fa622a3593d2480afb25c',1,'array_new_conf(ArrayConf *conf):&#160;array.c']]],
   ['array_5fremove',['array_remove',['../array_8c.html#a54622a0cc3ce7e2b02bc4a2bff2e8dc9',1,'array_remove(Array *ar, void *element):&#160;array.c'],['../array_8h.html#a54622a0cc3ce7e2b02bc4a2bff2e8dc9',1,'array_remove(Array *ar, void *element):&#160;array.c']]],
@@ -39,5 +38,6 @@ var searchData=
   ['array_5fsort',['array_sort',['../array_8c.html#a0da93b02bbb9e5292b2e9378f1c7260d',1,'array_sort(Array *ar, int(*cmp)(const void *, const void *)):&#160;array.c'],['../array_8h.html#a0da93b02bbb9e5292b2e9378f1c7260d',1,'array_sort(Array *ar, int(*cmp)(const void *, const void *)):&#160;array.c']]],
   ['array_5fsubarray',['array_subarray',['../array_8c.html#af022b124faef5b1074ed55b79b0d076e',1,'array_subarray(Array *ar, size_t b, size_t e):&#160;array.c'],['../array_8h.html#aef7fb9d0d9fe7fdbbbc97e6c6687fde2',1,'array_subarray(Array *ar, size_t from, size_t to):&#160;array.c']]],
   ['array_5ftrim_5fcapacity',['array_trim_capacity',['../array_8c.html#a1a526de0a359cd5a6d3784ebd5afe4c8',1,'array_trim_capacity(Array *ar):&#160;array.c'],['../array_8h.html#a1a526de0a359cd5a6d3784ebd5afe4c8',1,'array_trim_capacity(Array *ar):&#160;array.c']]],
-  ['arrayconf',['ArrayConf',['../structArrayConf.html',1,'']]]
+  ['arrayconf',['ArrayConf',['../structArrayConf.html',1,'']]],
+  ['arrayiter',['ArrayIter',['../structArrayIter.html',1,'']]]
 ];

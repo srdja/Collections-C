@@ -95,6 +95,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdeque__s.html">Deque</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A dynamic array that supports amortized constant time insertion and removal at both ends and constant time access.  <a href="structdeque__s.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -110,10 +111,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a46400a135a93c70be8166a1392e658b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty deque, or NULL if the allocation fails.  <a href="#a46400a135a93c70be8166a1392e658b4">More...</a><br /></td></tr>
 <tr class="separator:a46400a135a93c70be8166a1392e658b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afead3067f10e29c66cfa794314e93c5f"><td class="memItemLeft" align="right" valign="top">Deque *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#afead3067f10e29c66cfa794314e93c5f">deque_new_conf</a> (<a class="el" href="structDequeConf.html">DequeConf</a> *conf)</td></tr>
-<tr class="memdesc:afead3067f10e29c66cfa794314e93c5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty deque based on the specified <a class="el" href="structDequeConf.html">DequeConf</a> object.  <a href="#afead3067f10e29c66cfa794314e93c5f">More...</a><br /></td></tr>
+<tr class="memdesc:afead3067f10e29c66cfa794314e93c5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty deque based on the specified <a class="el" href="structDequeConf.html" title="Deque configuration object. ">DequeConf</a> object.  <a href="#afead3067f10e29c66cfa794314e93c5f">More...</a><br /></td></tr>
 <tr class="separator:afead3067f10e29c66cfa794314e93c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afabf96a1f67880c9f8be81c81088beb9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#afabf96a1f67880c9f8be81c81088beb9">deque_conf_init</a> (<a class="el" href="structDequeConf.html">DequeConf</a> *conf)</td></tr>
-<tr class="memdesc:afabf96a1f67880c9f8be81c81088beb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields of the <a class="el" href="structDequeConf.html">DequeConf</a> struct to default values.  <a href="#afabf96a1f67880c9f8be81c81088beb9">More...</a><br /></td></tr>
+<tr class="memdesc:afabf96a1f67880c9f8be81c81088beb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields of the <a class="el" href="structDequeConf.html" title="Deque configuration object. ">DequeConf</a> struct to default values.  <a href="#afabf96a1f67880c9f8be81c81088beb9">More...</a><br /></td></tr>
 <tr class="separator:afabf96a1f67880c9f8be81c81088beb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75f95e1ca7aee51075134a998cda7e75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a75f95e1ca7aee51075134a998cda7e75">deque_destroy</a> (Deque *deque)</td></tr>
 <tr class="memdesc:a75f95e1ca7aee51075134a998cda7e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the deque structure, but leaves the data it used to hold, intact.  <a href="#a75f95e1ca7aee51075134a998cda7e75">More...</a><br /></td></tr>
@@ -187,31 +188,31 @@ Functions</h2></td></tr>
 <tr class="memitem:ad84a8e47c81748aa87f8ea9b3ba8f337"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#ad84a8e47c81748aa87f8ea9b3ba8f337">deque_capacity</a> (Deque *deque)</td></tr>
 <tr class="memdesc:ad84a8e47c81748aa87f8ea9b3ba8f337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retruns the capacity of the specified deque.  <a href="#ad84a8e47c81748aa87f8ea9b3ba8f337">More...</a><br /></td></tr>
 <tr class="separator:ad84a8e47c81748aa87f8ea9b3ba8f337"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8f030ba6a992a359b2c463377e1a62a"><td class="memItemLeft" align="right" valign="top">void **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#ae8f030ba6a992a359b2c463377e1a62a">deque_get_buffer</a> (Deque *deque)</td></tr>
-<tr class="memdesc:ae8f030ba6a992a359b2c463377e1a62a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the underlying deque buffer.  <a href="#ae8f030ba6a992a359b2c463377e1a62a">More...</a><br /></td></tr>
-<tr class="separator:ae8f030ba6a992a359b2c463377e1a62a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac094377bd307a7791800b68cb114498"><td class="memItemLeft" align="right" valign="top">const void *const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#aac094377bd307a7791800b68cb114498">deque_get_buffer</a> (Deque *deque)</td></tr>
+<tr class="memdesc:aac094377bd307a7791800b68cb114498"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the underlying deque buffer.  <a href="#aac094377bd307a7791800b68cb114498">More...</a><br /></td></tr>
+<tr class="separator:aac094377bd307a7791800b68cb114498"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3cd6ede0517e9873c3d5da642d6975b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#ab3cd6ede0517e9873c3d5da642d6975b">deque_foreach</a> (Deque *deque, void(*op)(void *))</td></tr>
 <tr class="memdesc:ab3cd6ede0517e9873c3d5da642d6975b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 'foreach loop' function that invokes the specified function on each element of the deque.  <a href="#ab3cd6ede0517e9873c3d5da642d6975b">More...</a><br /></td></tr>
 <tr class="separator:ab3cd6ede0517e9873c3d5da642d6975b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29412a69b7c336cad1d3894639d4d16b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a29412a69b7c336cad1d3894639d4d16b">deque_iter_init</a> (DequeIter *iter, Deque *deque)</td></tr>
+<tr class="memitem:a29412a69b7c336cad1d3894639d4d16b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a29412a69b7c336cad1d3894639d4d16b">deque_iter_init</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter, Deque *deque)</td></tr>
 <tr class="memdesc:a29412a69b7c336cad1d3894639d4d16b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the iterator.  <a href="#a29412a69b7c336cad1d3894639d4d16b">More...</a><br /></td></tr>
 <tr class="separator:a29412a69b7c336cad1d3894639d4d16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fb7d7665d36c5c66e703cdd476555a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a0fb7d7665d36c5c66e703cdd476555a3">deque_iter_has_next</a> (DequeIter *iter)</td></tr>
+<tr class="memitem:a0fb7d7665d36c5c66e703cdd476555a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a0fb7d7665d36c5c66e703cdd476555a3">deque_iter_has_next</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter)</td></tr>
 <tr class="memdesc:a0fb7d7665d36c5c66e703cdd476555a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks wheteher or not the iterator has reached the end of the deque.  <a href="#a0fb7d7665d36c5c66e703cdd476555a3">More...</a><br /></td></tr>
 <tr class="separator:a0fb7d7665d36c5c66e703cdd476555a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab07ca4966b0051c86d7abf1cf93bcf79"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79">deque_iter_next</a> (DequeIter *iter)</td></tr>
+<tr class="memitem:ab07ca4966b0051c86d7abf1cf93bcf79"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79">deque_iter_next</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter)</td></tr>
 <tr class="memdesc:ab07ca4966b0051c86d7abf1cf93bcf79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next element in the sequence and advances the iterator.  <a href="#ab07ca4966b0051c86d7abf1cf93bcf79">More...</a><br /></td></tr>
 <tr class="separator:ab07ca4966b0051c86d7abf1cf93bcf79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb9553c4915975de166da5a1e0a013c4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#afb9553c4915975de166da5a1e0a013c4">deque_iter_remove</a> (DequeIter *iter)</td></tr>
+<tr class="memitem:afb9553c4915975de166da5a1e0a013c4"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#afb9553c4915975de166da5a1e0a013c4">deque_iter_remove</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter)</td></tr>
 <tr class="memdesc:afb9553c4915975de166da5a1e0a013c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes and returns the last returned element by <code><a class="el" href="deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79" title="Returns the next element in the sequence and advances the iterator. ">deque_iter_next()</a> </code> without invalidating the iterator.  <a href="#afb9553c4915975de166da5a1e0a013c4">More...</a><br /></td></tr>
 <tr class="separator:afb9553c4915975de166da5a1e0a013c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e97148e2c21516b59e78da589e55dbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a3e97148e2c21516b59e78da589e55dbe">deque_iter_add</a> (DequeIter *iter, void *element)</td></tr>
+<tr class="memitem:a3e97148e2c21516b59e78da589e55dbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a3e97148e2c21516b59e78da589e55dbe">deque_iter_add</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter, void *element)</td></tr>
 <tr class="memdesc:a3e97148e2c21516b59e78da589e55dbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a new element tothe deque after the last returned element by <code><a class="el" href="deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79" title="Returns the next element in the sequence and advances the iterator. ">deque_iter_next()</a></code> without invalidating the iterator.  <a href="#a3e97148e2c21516b59e78da589e55dbe">More...</a><br /></td></tr>
 <tr class="separator:a3e97148e2c21516b59e78da589e55dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47089d42d77120c6dad9e293ae38b169"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a47089d42d77120c6dad9e293ae38b169">deque_iter_replace</a> (DequeIter *iter, void *replacement)</td></tr>
+<tr class="memitem:a47089d42d77120c6dad9e293ae38b169"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a47089d42d77120c6dad9e293ae38b169">deque_iter_replace</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter, void *replacement)</td></tr>
 <tr class="memdesc:a47089d42d77120c6dad9e293ae38b169"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the last returned element by <code><a class="el" href="deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79" title="Returns the next element in the sequence and advances the iterator. ">deque_iter_next()</a></code> with the specified replacement element.  <a href="#a47089d42d77120c6dad9e293ae38b169">More...</a><br /></td></tr>
 <tr class="separator:a47089d42d77120c6dad9e293ae38b169"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a902f9e38749de307daa554e94084133f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a902f9e38749de307daa554e94084133f">deque_iter_index</a> (DequeIter *iter)</td></tr>
+<tr class="memitem:a902f9e38749de307daa554e94084133f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="deque_8c.html#a902f9e38749de307daa554e94084133f">deque_iter_index</a> (<a class="el" href="structDequeIter.html">DequeIter</a> *iter)</td></tr>
 <tr class="memdesc:a902f9e38749de307daa554e94084133f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the index of the last returned element by <code><a class="el" href="deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79" title="Returns the next element in the sequence and advances the iterator. ">deque_iter_next()</a> </code>.  <a href="#a902f9e38749de307daa554e94084133f">More...</a><br /></td></tr>
 <tr class="separator:a902f9e38749de307daa554e94084133f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -436,7 +437,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the fields of the <a class="el" href="structDequeConf.html">DequeConf</a> struct to default values. </p>
+<p>Initializes the fields of the <a class="el" href="structDequeConf.html" title="Deque configuration object. ">DequeConf</a> struct to default values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">conf</td><td>the configuration object that is being initialized </td></tr>
@@ -668,12 +669,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae8f030ba6a992a359b2c463377e1a62a"></a>
+<a class="anchor" id="aac094377bd307a7791800b68cb114498"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void** deque_get_buffer </td>
+          <td class="memname">const void* const* deque_get_buffer </td>
           <td>(</td>
           <td class="paramtype">Deque *&#160;</td>
           <td class="paramname"><em>deque</em></td><td>)</td>
@@ -683,7 +684,6 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the underlying deque buffer. </p>
-<dl class="section note"><dt>Note</dt><dd>Any direct modification of the buffer may invalidate the deque.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">deque</td><td>the deque whose underlying buffer is being returned</td></tr>
@@ -789,7 +789,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool deque_iter_add </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -825,7 +825,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool deque_iter_has_next </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -850,7 +850,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">size_t deque_iter_index </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -876,7 +876,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void deque_iter_init </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -911,7 +911,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void* deque_iter_next </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -936,7 +936,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void* deque_iter_remove </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em></td><td>)</td>
           <td></td>
         </tr>
@@ -961,7 +961,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">void* deque_iter_replace </td>
           <td>(</td>
-          <td class="paramtype">DequeIter *&#160;</td>
+          <td class="paramtype"><a class="el" href="structDequeIter.html">DequeIter</a> *&#160;</td>
           <td class="paramname"><em>iter</em>, </td>
         </tr>
         <tr>
@@ -982,7 +982,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator on which this operation is being performed </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">replacemenet</td><td>the replacement element</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">replacement</td><td>the replacement element</td></tr>
   </table>
   </dd>
 </dl>
@@ -1023,8 +1023,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a new empty deque based on the specified <a class="el" href="structDequeConf.html">DequeConf</a> object. </p>
-<p>The deque is allocated using the allocators specified the <a class="el" href="structDequeConf.html">DequeConf</a> object The allocation may fail if the underlying allocator fails.</p>
+<p>Returns a new empty deque based on the specified <a class="el" href="structDequeConf.html" title="Deque configuration object. ">DequeConf</a> object. </p>
+<p>The deque is allocated using the allocators specified the <a class="el" href="structDequeConf.html" title="Deque configuration object. ">DequeConf</a> object The allocation may fail if the underlying allocator fails.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>Deque configuration object. All fields must be initialized appropriate values.</td></tr>
@@ -1334,7 +1334,7 @@ This function should not be called on deques that have some of their element all
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

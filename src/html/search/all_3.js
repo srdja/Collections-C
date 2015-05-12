@@ -5,7 +5,7 @@ var searchData=
   ['default_5fcapacity',['DEFAULT_CAPACITY',['../array_8c.html#a2af6bf843475565a9681f9449a3d5cc2',1,'DEFAULT_CAPACITY():&#160;array.c'],['../deque_8c.html#a2af6bf843475565a9681f9449a3d5cc2',1,'DEFAULT_CAPACITY():&#160;deque.c'],['../hashtable_8c.html#a2af6bf843475565a9681f9449a3d5cc2',1,'DEFAULT_CAPACITY():&#160;hashtable.c']]],
   ['default_5fexpansion_5ffactor',['DEFAULT_EXPANSION_FACTOR',['../array_8c.html#ac36982708a1a76345461d2ecebb3e92e',1,'DEFAULT_EXPANSION_FACTOR():&#160;array.c'],['../deque_8c.html#ac36982708a1a76345461d2ecebb3e92e',1,'DEFAULT_EXPANSION_FACTOR():&#160;deque.c']]],
   ['default_5fload_5ffactor',['DEFAULT_LOAD_FACTOR',['../hashtable_8c.html#ab950cacb649a7a8182bd7721cb40c5ef',1,'hashtable.c']]],
-  ['deque',['deque',['../structdeque__iter__s.html#a433b1656519edda6d03fc02e5e60f3eb',1,'deque_iter_s']]],
+  ['deque',['deque',['../structDequeIter.html#a433b1656519edda6d03fc02e5e60f3eb',1,'DequeIter']]],
   ['deque_2ec',['deque.c',['../deque_8c.html',1,'']]],
   ['deque_2eh',['deque.h',['../deque_8h.html',1,'']]],
   ['deque_5fadd',['deque_add',['../deque_8c.html#a357fa89b1bd763df3e942b4b79861e38',1,'deque_add(Deque *deque, void *element):&#160;deque.c'],['../deque_8h.html#a357fa89b1bd763df3e942b4b79861e38',1,'deque_add(Deque *deque, void *element):&#160;deque.c']]],
@@ -21,7 +21,7 @@ var searchData=
   ['deque_5fdestroy_5ffree',['deque_destroy_free',['../deque_8c.html#a6eef16da4dd429cee060b64ddb89faf0',1,'deque_destroy_free(Deque *deque):&#160;deque.c'],['../deque_8h.html#a6eef16da4dd429cee060b64ddb89faf0',1,'deque_destroy_free(Deque *deque):&#160;deque.c']]],
   ['deque_5fforeach',['deque_foreach',['../deque_8c.html#ab3cd6ede0517e9873c3d5da642d6975b',1,'deque_foreach(Deque *deque, void(*op)(void *)):&#160;deque.c'],['../deque_8h.html#ab3cd6ede0517e9873c3d5da642d6975b',1,'deque_foreach(Deque *deque, void(*op)(void *)):&#160;deque.c']]],
   ['deque_5fget',['deque_get',['../deque_8c.html#a111a385f398b487be784974bc73874a0',1,'deque_get(Deque *deque, size_t index):&#160;deque.c'],['../deque_8h.html#a111a385f398b487be784974bc73874a0',1,'deque_get(Deque *deque, size_t index):&#160;deque.c']]],
-  ['deque_5fget_5fbuffer',['deque_get_buffer',['../deque_8c.html#ae8f030ba6a992a359b2c463377e1a62a',1,'deque_get_buffer(Deque *deque):&#160;deque.c'],['../deque_8h.html#ae8f030ba6a992a359b2c463377e1a62a',1,'deque_get_buffer(Deque *deque):&#160;deque.c']]],
+  ['deque_5fget_5fbuffer',['deque_get_buffer',['../deque_8c.html#aac094377bd307a7791800b68cb114498',1,'deque_get_buffer(Deque *deque):&#160;deque.c'],['../deque_8h.html#aac094377bd307a7791800b68cb114498',1,'deque_get_buffer(Deque *deque):&#160;deque.c']]],
   ['deque_5fget_5ffirst',['deque_get_first',['../deque_8c.html#a43992edcd8aaa7b35fc94834a2d288ef',1,'deque_get_first(Deque *deque):&#160;deque.c'],['../deque_8h.html#a43992edcd8aaa7b35fc94834a2d288ef',1,'deque_get_first(Deque *deque):&#160;deque.c']]],
   ['deque_5fget_5flast',['deque_get_last',['../deque_8c.html#a8a3e66468d4905b17194798e1a4974ac',1,'deque_get_last(Deque *deque):&#160;deque.c'],['../deque_8h.html#a8a3e66468d4905b17194798e1a4974ac',1,'deque_get_last(Deque *deque):&#160;deque.c']]],
   ['deque_5findex_5fof',['deque_index_of',['../deque_8c.html#a54fb8f5bc982658486b4d213daad4c8e',1,'deque_index_of(Deque *deque, void *element):&#160;deque.c'],['../deque_8h.html#a54fb8f5bc982658486b4d213daad4c8e',1,'deque_index_of(Deque *deque, void *element):&#160;deque.c']]],
@@ -32,7 +32,6 @@ var searchData=
   ['deque_5fiter_5fnext',['deque_iter_next',['../deque_8c.html#ab07ca4966b0051c86d7abf1cf93bcf79',1,'deque_iter_next(DequeIter *iter):&#160;deque.c'],['../deque_8h.html#ab07ca4966b0051c86d7abf1cf93bcf79',1,'deque_iter_next(DequeIter *iter):&#160;deque.c']]],
   ['deque_5fiter_5fremove',['deque_iter_remove',['../deque_8c.html#afb9553c4915975de166da5a1e0a013c4',1,'deque_iter_remove(DequeIter *iter):&#160;deque.c'],['../deque_8h.html#afb9553c4915975de166da5a1e0a013c4',1,'deque_iter_remove(DequeIter *iter):&#160;deque.c']]],
   ['deque_5fiter_5freplace',['deque_iter_replace',['../deque_8c.html#a47089d42d77120c6dad9e293ae38b169',1,'deque_iter_replace(DequeIter *iter, void *replacement):&#160;deque.c'],['../deque_8h.html#a47089d42d77120c6dad9e293ae38b169',1,'deque_iter_replace(DequeIter *iter, void *replacement):&#160;deque.c']]],
-  ['deque_5fiter_5fs',['deque_iter_s',['../structdeque__iter__s.html',1,'']]],
   ['deque_5fnew',['deque_new',['../deque_8c.html#a46400a135a93c70be8166a1392e658b4',1,'deque_new():&#160;deque.c'],['../deque_8h.html#ad0f49ed7fb2cb1645d32510321bd22b3',1,'deque_new(void):&#160;deque.c']]],
   ['deque_5fnew_5fconf',['deque_new_conf',['../deque_8c.html#afead3067f10e29c66cfa794314e93c5f',1,'deque_new_conf(DequeConf *conf):&#160;deque.c'],['../deque_8h.html#afead3067f10e29c66cfa794314e93c5f',1,'deque_new_conf(DequeConf *conf):&#160;deque.c']]],
   ['deque_5fremove',['deque_remove',['../deque_8c.html#a7d26ac1c9f6b1c4ea13879e84bdab699',1,'deque_remove(Deque *deque, void *element):&#160;deque.c'],['../deque_8h.html#a7d26ac1c9f6b1c4ea13879e84bdab699',1,'deque_remove(Deque *deque, void *element):&#160;deque.c']]],
@@ -47,5 +46,6 @@ var searchData=
   ['deque_5fsize',['deque_size',['../deque_8c.html#a6628e1ad1ca591098aa3d86ce0b4d30e',1,'deque_size(Deque *deque):&#160;deque.c'],['../deque_8h.html#a6628e1ad1ca591098aa3d86ce0b4d30e',1,'deque_size(Deque *deque):&#160;deque.c']]],
   ['deque_5ftrim_5fcapacity',['deque_trim_capacity',['../deque_8c.html#af79457668842671748d7f625dfbb9903',1,'deque_trim_capacity(Deque *deque):&#160;deque.c'],['../deque_8h.html#af79457668842671748d7f625dfbb9903',1,'deque_trim_capacity(Deque *deque):&#160;deque.c']]],
   ['dequeconf',['DequeConf',['../structDequeConf.html',1,'']]],
+  ['dequeiter',['DequeIter',['../structDequeIter.html',1,'']]],
   ['dummy',['dummy',['../structhashset__s.html#af9c6da37e9fe62525013d3ff1c0f9733',1,'hashset_s::dummy()'],['../structtreeset__s.html#ad2744dd7a78fdbe8559e0c90cd1d9f6f',1,'treeset_s::dummy()']]]
 ];

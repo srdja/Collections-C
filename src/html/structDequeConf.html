@@ -90,20 +90,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Deque configuration object.  
+ <a href="structDequeConf.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="deque_8h_source.html">deque.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:a710d33cbf1ac2c4d7a3fd83868190f67"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDequeConf.html#a710d33cbf1ac2c4d7a3fd83868190f67">capacity</a></td></tr>
+<tr class="memdesc:a710d33cbf1ac2c4d7a3fd83868190f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">The initial capacity of the deque.  <a href="#a710d33cbf1ac2c4d7a3fd83868190f67">More...</a><br /></td></tr>
 <tr class="separator:a710d33cbf1ac2c4d7a3fd83868190f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afde7ad9806984d933d677e33a0d44628"><td class="memItemLeft" align="right" valign="top">void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDequeConf.html#afde7ad9806984d933d677e33a0d44628">mem_alloc</a> )(size_t size)</td></tr>
+<tr class="memdesc:afde7ad9806984d933d677e33a0d44628"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory allocators used to allocate the Vector structure and the underlying data buffers.  <a href="#afde7ad9806984d933d677e33a0d44628">More...</a><br /></td></tr>
 <tr class="separator:afde7ad9806984d933d677e33a0d44628"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5325aa8bd81d7cee9f9de1e5e0285736"><td class="memItemLeft" align="right" valign="top">void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDequeConf.html#a5325aa8bd81d7cee9f9de1e5e0285736">mem_calloc</a> )(size_t blocks, size_t size)</td></tr>
 <tr class="separator:a5325aa8bd81d7cee9f9de1e5e0285736"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9e1da72606997433e388087daa1e034"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDequeConf.html#af9e1da72606997433e388087daa1e034">mem_free</a> )(void *block)</td></tr>
 <tr class="separator:af9e1da72606997433e388087daa1e034"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Deque configuration object. </p>
+<p>Used to initialize a new Deque with specific values. </p>
+</div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="a710d33cbf1ac2c4d7a3fd83868190f67"></a>
 <div class="memitem">
 <div class="memproto">
@@ -113,6 +121,9 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The initial capacity of the deque. </p>
+<p>Must be a power of two. if a non power of two is passed, it will be rounded to the closest upper power of two </p>
 
 </div>
 </div>
@@ -125,6 +136,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Memory allocators used to allocate the Vector structure and the underlying data buffers. </p>
 
 </div>
 </div>
@@ -158,7 +171,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

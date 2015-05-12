@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>Collections-C: Main Page</title>
+<title>Collections-C: HashSetIter Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,8 +39,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </script>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -60,7 +60,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
-</div><!-- top -->
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
+      <li><a href="classes.html"><span>Data&#160;Structure&#160;Index</span></a></li>
+      <li><a href="functions.html"><span>Data&#160;Fields</span></a></li>
+    </ul>
+  </div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -75,11 +81,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+</div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">Collections-C Documentation</div>  </div>
+<div class="title">HashSetIter Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>HashSet iterator object.  
+ <a href="structHashSetIter.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="hashset_8h_source.html">hashset.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a8e2d498b56a16d1991b8514ba518a260"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structHashTableIter.html">HashTableIter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashSetIter.html#a8e2d498b56a16d1991b8514ba518a260">iter</a></td></tr>
+<tr class="separator:a8e2d498b56a16d1991b8514ba518a260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>HashSet iterator object. </p>
+<p>Used to iterate over the elements of the set. The iterator also supports operations for safely removing elements during iteration.</p>
+<div class="fragment"><div class="line"><a class="code" href="structHashSetIter.html">HashSetIter</a> i;</div>
+<div class="line"><a class="code" href="hashset_8c.html#a0b1eadeec3fe821d415fa435ac06ff94">hashset_iter_init</a>(&amp;i);</div>
+<div class="line"></div>
+<div class="line"><span class="keywordflow">while</span> (<a class="code" href="hashset_8c.html#aded35bf4151698940ea5951845357d30">hashset_iter_has_next</a>(&amp;i)) {</div>
+<div class="line">    MyType *e = <a class="code" href="hashset_8c.html#a2cbf355b438e6181b557d80ecd1d14cc">hashset_iter_next</a>(&amp;i);</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="a8e2d498b56a16d1991b8514ba518a260"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structHashTableIter.html">HashTableIter</a> HashSetIter::iter</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li><a class="el" href="hashset_8h_source.html">hashset.h</a></li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

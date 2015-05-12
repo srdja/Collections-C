@@ -90,6 +90,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>List configuration object.  
+ <a href="structListConf.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="list_8h_source.html">list.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -101,7 +104,18 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a674b5d2ef9400cf0716cab31673dae8d"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListConf.html#a674b5d2ef9400cf0716cab31673dae8d">mem_free</a> )(void *block)</td></tr>
 <tr class="separator:a674b5d2ef9400cf0716cab31673dae8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>List configuration object. </p>
+<p>Used to initalize a new List with specific values.</p>
+<div class="fragment"><div class="line"><a class="code" href="structListConf.html">ListConf</a> c;</div>
+<div class="line"><a class="code" href="list_8c.html#a83f3aebf1e7382ad294ce807cf798b7e">list_conf_init</a>(&amp;c);</div>
+<div class="line"></div>
+<div class="line">c.<a class="code" href="structListConf.html#ae866326c9223eed04e470da4da63d853">mem_alloc</a>  = mymalloc;</div>
+<div class="line">c.<a class="code" href="structListConf.html#a674b5d2ef9400cf0716cab31673dae8d">mem_free</a>   = myfree;</div>
+<div class="line">c.<a class="code" href="structListConf.html#a71dbc93c81a1a2bd9503046ed2df12b2">mem_calloc</a> = mycalloc;</div>
+<div class="line"></div>
+<div class="line">List *l = <a class="code" href="list_8c.html#a7d0e7a284d7d3a024e88cec289ceeb7e">list_new_conf</a>(&amp;c);</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="ae866326c9223eed04e470da4da63d853"></a>
 <div class="memitem">
 <div class="memproto">
@@ -144,7 +158,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

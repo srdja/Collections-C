@@ -90,22 +90,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Array configuration object.  
+ <a href="structArrayConf.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="array_8h_source.html">array.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:acbb1116a258978d8449993e759170599"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayConf.html#acbb1116a258978d8449993e759170599">capacity</a></td></tr>
+<tr class="memdesc:acbb1116a258978d8449993e759170599"><td class="mdescLeft">&#160;</td><td class="mdescRight">The initial capacity of the array.  <a href="#acbb1116a258978d8449993e759170599">More...</a><br /></td></tr>
 <tr class="separator:acbb1116a258978d8449993e759170599"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1ef9877cabd49364407a72f6df54c45"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayConf.html#ac1ef9877cabd49364407a72f6df54c45">exp_factor</a></td></tr>
+<tr class="memdesc:ac1ef9877cabd49364407a72f6df54c45"><td class="mdescLeft">&#160;</td><td class="mdescRight">The rate at which the buffer expands (capacity * exp_factor).  <a href="#ac1ef9877cabd49364407a72f6df54c45">More...</a><br /></td></tr>
 <tr class="separator:ac1ef9877cabd49364407a72f6df54c45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6269e8d2479a680547c46c495239e30"><td class="memItemLeft" align="right" valign="top">void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayConf.html#ad6269e8d2479a680547c46c495239e30">mem_alloc</a> )(size_t size)</td></tr>
+<tr class="memdesc:ad6269e8d2479a680547c46c495239e30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory allocators used to allocate the Array structure and the underlying data buffers.  <a href="#ad6269e8d2479a680547c46c495239e30">More...</a><br /></td></tr>
 <tr class="separator:ad6269e8d2479a680547c46c495239e30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc2a9334bcdc009f1246f7e74c0c3407"><td class="memItemLeft" align="right" valign="top">void *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayConf.html#acc2a9334bcdc009f1246f7e74c0c3407">mem_calloc</a> )(size_t blocks, size_t size)</td></tr>
 <tr class="separator:acc2a9334bcdc009f1246f7e74c0c3407"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21e6af6d6fa83221c6069db881df821a"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structArrayConf.html#a21e6af6d6fa83221c6069db881df821a">mem_free</a> )(void *block)</td></tr>
 <tr class="separator:a21e6af6d6fa83221c6069db881df821a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Array configuration object. </p>
+<p>Used to initalize a new Array with specific values.</p>
+<div class="fragment"><div class="line"><a class="code" href="structArrayConf.html">ArrayConf</a> c;</div>
+<div class="line"><a class="code" href="array_8c.html#a254e01e0d7d4b92224b8edac9055723c">array_conf_init</a>(&amp;c);</div>
+<div class="line"></div>
+<div class="line">c.capcity = 32;</div>
+<div class="line"></div>
+<div class="line">Array *a = <a class="code" href="array_8c.html#aaea17531e99fa622a3593d2480afb25c">array_new_conf</a>(&amp;c);</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="acbb1116a258978d8449993e759170599"></a>
 <div class="memitem">
 <div class="memproto">
@@ -115,6 +130,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The initial capacity of the array. </p>
 
 </div>
 </div>
@@ -128,6 +145,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>The rate at which the buffer expands (capacity * exp_factor). </p>
+
 </div>
 </div>
 <a class="anchor" id="ad6269e8d2479a680547c46c495239e30"></a>
@@ -139,6 +158,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Memory allocators used to allocate the Array structure and the underlying data buffers. </p>
 
 </div>
 </div>
@@ -172,7 +193,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

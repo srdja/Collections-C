@@ -90,7 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>A configuration object used for configuring new hash tables.  
+<p>HashTable configuration object.  
  <a href="structHashTableConf.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="hashtable_8h_source.html">hashtable.h</a>&gt;</code></p>
@@ -124,8 +124,18 @@ Data Fields</h2></td></tr>
 <tr class="separator:aa0c756b4e93208e40519ad34d5aebb98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A configuration object used for configuring new hash tables. </p>
-</div><h2 class="groupheader">Field Documentation</h2>
+<div class="textblock"><p>HashTable configuration object. </p>
+<p>Used to initialize a new HashTable with specific values.</p>
+<div class="fragment"><div class="line"><a class="code" href="structHashTableConf.html">HashTableConf</a> c;</div>
+<div class="line"><a class="code" href="hashtable_8c.html#a3494e267d26d6512f8035cd7a524959c">hashtable_conf_init</a>(&amp;c);</div>
+<div class="line"></div>
+<div class="line">c.<a class="code" href="structHashTableConf.html#a5ebee621c3d8bdfdf5cc821df2c18c36">key_length</a>  = <span class="keyword">sizeof</span>(MyType);</div>
+<div class="line">c.<a class="code" href="structHashTableConf.html#a58e66947a6d5c1dbe8495268d7ea707a">key_compare</a> = my_cmp_function;</div>
+<div class="line">c.<a class="code" href="structHashTableConf.html#afde0b0bc7926df8c9e0c161b418b258f">hash</a>        = <a class="code" href="hashtable_8h.html#a38db5ea17dfab03d9d9c1008e03c7b94">GENERAL_HASH</a>;</div>
+<div class="line">c.<a class="code" href="structHashTableConf.html#adbef3b2566f8eaff0fb6ba9d8690594f">hash_seed</a>   = 12345;</div>
+<div class="line"></div>
+<div class="line">HashTable *t = <a class="code" href="hashtable_8c.html#a957c0ce15f9cdfb0b486a11de247bca5">hashtable_new_conf</a>(&amp;c);</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="afde0b0bc7926df8c9e0c161b418b258f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -255,7 +265,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

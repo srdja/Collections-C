@@ -90,20 +90,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Queue iterator object.  
+ <a href="structQueueIter.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="queue_8h_source.html">queue.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:ae5f5f9aa28806b7914a1546931f1f8a4"><td class="memItemLeft" align="right" valign="top">DequeIter&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueueIter.html#ae5f5f9aa28806b7914a1546931f1f8a4">i</a></td></tr>
+<tr class="memitem:ae5f5f9aa28806b7914a1546931f1f8a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDequeIter.html">DequeIter</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQueueIter.html#ae5f5f9aa28806b7914a1546931f1f8a4">i</a></td></tr>
 <tr class="separator:ae5f5f9aa28806b7914a1546931f1f8a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Queue iterator object. </p>
+<p>Used to iterate over the elements of a queue in an ascending order.</p>
+<div class="fragment"><div class="line"><a class="code" href="structQueueIter.html">QueueIter</a> <a class="code" href="structQueueIter.html#ae5f5f9aa28806b7914a1546931f1f8a4">i</a>;</div>
+<div class="line"><a class="code" href="queue_8c.html#a023aa4cb5bcf11eb005c575b289f9cab">queue_iter_init</a>(&amp;i);</div>
+<div class="line"></div>
+<div class="line"><span class="keywordflow">while</span> (<a class="code" href="queue_8c.html#ae99127591a27f4828b634dba621308fc">queue_iter_has_next</a>(&amp;i)) {</div>
+<div class="line">    MyType *e = <a class="code" href="queue_8c.html#a8e8ae8a23e932ccee66e9e0f8f7bc77e">queue_iter_next</a>(&amp;i);</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="ae5f5f9aa28806b7914a1546931f1f8a4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">DequeIter QueueIter::i</td>
+          <td class="memname"><a class="el" href="structDequeIter.html">DequeIter</a> QueueIter::i</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -116,7 +128,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

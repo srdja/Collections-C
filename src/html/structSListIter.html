@@ -90,6 +90,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>SList iterator object.  
+ <a href="structSListIter.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="slist_8h_source.html">slist.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -105,7 +108,16 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a5b39bf9576fea77192c68784a9f2cd8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structSNode.html">SNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSListIter.html#a5b39bf9576fea77192c68784a9f2cd8d">prev</a></td></tr>
 <tr class="separator:a5b39bf9576fea77192c68784a9f2cd8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>SList iterator object. </p>
+<p>Used to iterate over the elements of the list in an ascending order. The iterator also supports operations for safely adding and removing elements during iteration.</p>
+<div class="fragment"><div class="line"><a class="code" href="structSListIter.html">SListIter</a> i;</div>
+<div class="line"><a class="code" href="slist_8c.html#a83827924f490d2321863705527e555fc">slist_iter_init</a>(&amp;i);</div>
+<div class="line"></div>
+<div class="line"><span class="keywordflow">while</span> (<a class="code" href="slist_8c.html#a386fb815e95a065a5e21f52354cc9b30">slist_iter_has_next</a>(&amp;i)) {</div>
+<div class="line">    MyType *e = <a class="code" href="slist_8c.html#a4fb11ce17c595b1d33d3ccba49593535">slist_iter_next</a>(&amp;i);</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="ac07116fc26c2df8fbc4422773ff0e2bf"></a>
 <div class="memitem">
 <div class="memproto">
@@ -172,7 +184,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

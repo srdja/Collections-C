@@ -100,13 +100,13 @@ Data Structures</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a83f3aebf1e7382ad294ce807cf798b7e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="list_8c.html#a83f3aebf1e7382ad294ce807cf798b7e">list_conf_init</a> (<a class="el" href="structListConf.html">ListConf</a> *conf)</td></tr>
-<tr class="memdesc:a83f3aebf1e7382ad294ce807cf798b7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields of the <a class="el" href="structListConf.html">ListConf</a> struct to default values.  <a href="#a83f3aebf1e7382ad294ce807cf798b7e">More...</a><br /></td></tr>
+<tr class="memdesc:a83f3aebf1e7382ad294ce807cf798b7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields of the <a class="el" href="structListConf.html" title="List configuration object. ">ListConf</a> struct to default values.  <a href="#a83f3aebf1e7382ad294ce807cf798b7e">More...</a><br /></td></tr>
 <tr class="separator:a83f3aebf1e7382ad294ce807cf798b7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4014f5a2de9e5167f343fb75092adae0"><td class="memItemLeft" align="right" valign="top">List *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="list_8c.html#a4014f5a2de9e5167f343fb75092adae0">list_new</a> ()</td></tr>
 <tr class="memdesc:a4014f5a2de9e5167f343fb75092adae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty list, or NULL if the memory allocation fails.  <a href="#a4014f5a2de9e5167f343fb75092adae0">More...</a><br /></td></tr>
 <tr class="separator:a4014f5a2de9e5167f343fb75092adae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d0e7a284d7d3a024e88cec289ceeb7e"><td class="memItemLeft" align="right" valign="top">List *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="list_8c.html#a7d0e7a284d7d3a024e88cec289ceeb7e">list_new_conf</a> (<a class="el" href="structListConf.html">ListConf</a> *conf)</td></tr>
-<tr class="memdesc:a7d0e7a284d7d3a024e88cec289ceeb7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty list based on the specified <a class="el" href="structListConf.html">ListConf</a> struct.  <a href="#a7d0e7a284d7d3a024e88cec289ceeb7e">More...</a><br /></td></tr>
+<tr class="memdesc:a7d0e7a284d7d3a024e88cec289ceeb7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty list based on the specified <a class="el" href="structListConf.html" title="List configuration object. ">ListConf</a> struct.  <a href="#a7d0e7a284d7d3a024e88cec289ceeb7e">More...</a><br /></td></tr>
 <tr class="separator:a7d0e7a284d7d3a024e88cec289ceeb7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a087e11bba621f27c4cfbb437046d076a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="list_8c.html#a087e11bba621f27c4cfbb437046d076a">list_destroy</a> (List *list)</td></tr>
 <tr class="memdesc:a087e11bba621f27c4cfbb437046d076a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the list structure, but leaves the data that is holds intact.  <a href="#a087e11bba621f27c4cfbb437046d076a">More...</a><br /></td></tr>
@@ -494,8 +494,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the fields of the <a class="el" href="structListConf.html">ListConf</a> struct to default values. </p>
-<p>[in] conf the configuration struct that is being initialized </p>
+<p>Initializes the fields of the <a class="el" href="structListConf.html" title="List configuration object. ">ListConf</a> struct to default values. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>the configuration struct that is being initialized </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -766,6 +771,7 @@ Functions</h2></td></tr>
 <p>A descending iterator or a reverse iterator, is an iterator that traverses the list from tail to head. In case the memory allocation for the new iterator fails, NULL is returned.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">list</td><td>the list on which this iterator will operate.</td></tr>
   </table>
   </dd>
@@ -1155,7 +1161,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>Before this function is called, one should check whether the next element in the sequence exists by calling <code><a class="el" href="list_8c.html#ae8554a74ce47c26f26ce61ef65c951c1" title="Checks whether or not there are more elements to be iterated over. ">list_iter_has_next()</a></code>.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">the</td><td>iterator on which this operation is being performed.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">iter</td><td>the iterator on which this operation is being performed.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1259,8 +1265,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a new empty list based on the specified <a class="el" href="structListConf.html">ListConf</a> struct. </p>
-<p>The List is allocated using the allocators specified in the <a class="el" href="structListConf.html">ListConf</a> struct. The allocation may fail if the undelying allocator fails.</p>
+<p>Returns a new empty list based on the specified <a class="el" href="structListConf.html" title="List configuration object. ">ListConf</a> struct. </p>
+<p>The List is allocated using the allocators specified in the <a class="el" href="structListConf.html" title="List configuration object. ">ListConf</a> struct. The allocation may fail if the undelying allocator fails.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>the configuration</td></tr>
@@ -1770,7 +1776,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

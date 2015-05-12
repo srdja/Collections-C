@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>Collections-C: TreeTableIter Struct Reference</title>
+<title>Collections-C: HashTableIter Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -86,67 +86,81 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">TreeTableIter Struct Reference</div>  </div>
+<div class="title">HashTableIter Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>TreeTable iterator object.  
- <a href="structTreeTableIter.html#details">More...</a></p>
+<p>HashTable iterator object.  
+ <a href="structHashTableIter.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="treetable_8h_source.html">treetable.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="hashtable_8h_source.html">hashtable.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:ab70fbd44b6e4fa07cb3f938fb4f48050"><td class="memItemLeft" align="right" valign="top">TreeTable *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeTableIter.html#ab70fbd44b6e4fa07cb3f938fb4f48050">table</a></td></tr>
-<tr class="separator:ab70fbd44b6e4fa07cb3f938fb4f48050"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe4a56319ac10eac09745667d46f811b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRBNode.html">RBNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeTableIter.html#afe4a56319ac10eac09745667d46f811b">current</a></td></tr>
-<tr class="separator:afe4a56319ac10eac09745667d46f811b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44a09e8ed5c3b2ad0dc2417774f86c49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRBNode.html">RBNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structTreeTableIter.html#a44a09e8ed5c3b2ad0dc2417774f86c49">next</a></td></tr>
-<tr class="separator:a44a09e8ed5c3b2ad0dc2417774f86c49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9634d6e527e4c12ea70962426c39572b"><td class="memItemLeft" align="right" valign="top">HashTable *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashTableIter.html#a9634d6e527e4c12ea70962426c39572b">table</a></td></tr>
+<tr class="separator:a9634d6e527e4c12ea70962426c39572b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ab347f8007d6d627609376c7654a445"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashTableIter.html#a5ab347f8007d6d627609376c7654a445">bucket_index</a></td></tr>
+<tr class="separator:a5ab347f8007d6d627609376c7654a445"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada9c0b93d3f30a1731ccf0c525ccc1d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTableEntry.html">TableEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashTableIter.html#ada9c0b93d3f30a1731ccf0c525ccc1d6">prev_entry</a></td></tr>
+<tr class="separator:ada9c0b93d3f30a1731ccf0c525ccc1d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed79c64fff240cbca93ec19c000e631"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTableEntry.html">TableEntry</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHashTableIter.html#aaed79c64fff240cbca93ec19c000e631">next_entry</a></td></tr>
+<tr class="separator:aaed79c64fff240cbca93ec19c000e631"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>TreeTable iterator object. </p>
-<p>Used to iterate over the entries of the table. The iterator also supports operations for safely removing elements during iteration.</p>
-<div class="fragment"><div class="line"><a class="code" href="structTreeTableIter.html">TreeTableIter</a> i;</div>
-<div class="line"><a class="code" href="treetable_8c.html#a5074a92d25acf0df922ca506c7c517f0">treetable_iter_init</a>(&amp;i);</div>
+<div class="textblock"><p>HashTable iterator object. </p>
+<p>Used to iterate over the entries of the table in an undefined order. The iterator also supports operations for safely removing elements during iteration.</p>
+<div class="fragment"><div class="line"><a class="code" href="structHashTableIter.html">HashTableIter</a> i;</div>
+<div class="line"><a class="code" href="hashtable_8c.html#a0de287a1bd4d0e16949aa59733ba066c">hashtable_iter_init</a>(&amp;i);</div>
 <div class="line"></div>
-<div class="line"><span class="keywordflow">while</span> (<a class="code" href="treetable_8c.html#ad351646d7b8f0e390f530aea7c779933">treetable_iter_has_next</a>(&amp;i)) {</div>
-<div class="line">    <a class="code" href="structTreeTableEntry.html">TreeTableEntry</a> *e = <a class="code" href="treetable_8c.html#a9adbd64aae572bbe1f72378429dce328">treetable_iter_next</a>(&amp;i);</div>
-<div class="line">    e-&gt;<a class="code" href="structTreeTableEntry.html#a5238a85601513a661c22a194e8747230">key</a>;</div>
-<div class="line">    e-&gt;<a class="code" href="structTreeTableEntry.html#a4fe8b0e4503b5ab4405039d8665a460d">value</a>;</div>
+<div class="line"><span class="keywordflow">while</span> (<a class="code" href="hashtable_8c.html#ac6b2d725b973a3d925af9dc4afb24c08">hashtable_iter_has_next</a>(&amp;i)) {</div>
+<div class="line">    <a class="code" href="structTableEntry.html">TableEntry</a> *e = <a class="code" href="hashtable_8c.html#acda8e7d87164d59f4775d281a0c0500a">hashtable_iter_next</a>(&amp;i);</div>
+<div class="line">    e-&gt;<a class="code" href="structTableEntry.html#adc372ef24303fbcab8265f75bf12a81b">key</a>;</div>
+<div class="line">    e-&gt;<a class="code" href="structTableEntry.html#a33d7aa5795b83c6b98eed219922e062b">value</a>;</div>
 <div class="line">}</div>
 </div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>This structure should only be modified through the iterator functions. </dd></dl>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="afe4a56319ac10eac09745667d46f811b"></a>
+<a class="anchor" id="a5ab347f8007d6d627609376c7654a445"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structRBNode.html">RBNode</a>* TreeTableIter::current</td>
+          <td class="memname">size_t HashTableIter::bucket_index</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="a44a09e8ed5c3b2ad0dc2417774f86c49"></a>
+<a class="anchor" id="aaed79c64fff240cbca93ec19c000e631"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structRBNode.html">RBNode</a>* TreeTableIter::next</td>
+          <td class="memname"><a class="el" href="structTableEntry.html">TableEntry</a>* HashTableIter::next_entry</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="ab70fbd44b6e4fa07cb3f938fb4f48050"></a>
+<a class="anchor" id="ada9c0b93d3f30a1731ccf0c525ccc1d6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">TreeTable* TreeTableIter::table</td>
+          <td class="memname"><a class="el" href="structTableEntry.html">TableEntry</a>* HashTableIter::prev_entry</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9634d6e527e4c12ea70962426c39572b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">HashTable* HashTableIter::table</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -154,7 +168,7 @@ Data Fields</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="treetable_8h_source.html">treetable.h</a></li>
+<li><a class="el" href="hashtable_8h_source.html">hashtable.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

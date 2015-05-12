@@ -96,22 +96,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSNode.html">SNode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SList node.  <a href="structSNode.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSListIter.html">SListIter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SList iterator object.  <a href="structSListIter.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structSListConf.html">SListConf</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SList configuration object.  <a href="structSListConf.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6fd7f38a3a21cc5f373be2e48cc0cf6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slist_8h.html#a6fd7f38a3a21cc5f373be2e48cc0cf6d">slist_conf_init</a> (<a class="el" href="structSListConf.html">SListConf</a> *conf)</td></tr>
-<tr class="memdesc:a6fd7f38a3a21cc5f373be2e48cc0cf6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields <a class="el" href="structSListConf.html">SListConf</a> struct to default values.  <a href="#a6fd7f38a3a21cc5f373be2e48cc0cf6d">More...</a><br /></td></tr>
+<tr class="memdesc:a6fd7f38a3a21cc5f373be2e48cc0cf6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the fields <a class="el" href="structSListConf.html" title="SList configuration object. ">SListConf</a> struct to default values.  <a href="#a6fd7f38a3a21cc5f373be2e48cc0cf6d">More...</a><br /></td></tr>
 <tr class="separator:a6fd7f38a3a21cc5f373be2e48cc0cf6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06d520f3ea8ddadd56af97e8a350fcd4"><td class="memItemLeft" align="right" valign="top">SList *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slist_8h.html#a06d520f3ea8ddadd56af97e8a350fcd4">slist_new</a> (void)</td></tr>
 <tr class="memdesc:a06d520f3ea8ddadd56af97e8a350fcd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty list, or NULL if the memory allocation fails.  <a href="#a06d520f3ea8ddadd56af97e8a350fcd4">More...</a><br /></td></tr>
 <tr class="separator:a06d520f3ea8ddadd56af97e8a350fcd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79983f5d667038c94a784db069bd7a53"><td class="memItemLeft" align="right" valign="top">SList *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slist_8h.html#a79983f5d667038c94a784db069bd7a53">slist_new_conf</a> (<a class="el" href="structSListConf.html">SListConf</a> *conf)</td></tr>
-<tr class="memdesc:a79983f5d667038c94a784db069bd7a53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty SList based on the specified <a class="el" href="structSListConf.html">SListConf</a> struct.  <a href="#a79983f5d667038c94a784db069bd7a53">More...</a><br /></td></tr>
+<tr class="memdesc:a79983f5d667038c94a784db069bd7a53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new empty SList based on the specified <a class="el" href="structSListConf.html" title="SList configuration object. ">SListConf</a> struct.  <a href="#a79983f5d667038c94a784db069bd7a53">More...</a><br /></td></tr>
 <tr class="separator:a79983f5d667038c94a784db069bd7a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4db19328f2c594f3929298d0c9b9362a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slist_8h.html#a4db19328f2c594f3929298d0c9b9362a">slist_destroy</a> (SList *list)</td></tr>
 <tr class="memdesc:a4db19328f2c594f3929298d0c9b9362a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the list structure, but leaves the data that is holds intact.  <a href="#a4db19328f2c594f3929298d0c9b9362a">More...</a><br /></td></tr>
@@ -334,7 +337,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">list1</td><td>the list to which the elements are being added </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">the</td><td>list from which the elements are being taken </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">list2</td><td>the list from which the elements are being taken </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>position in the first list at which the elements should be added</td></tr>
   </table>
   </dd>
@@ -475,10 +478,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes the fields <a class="el" href="structSListConf.html">SListConf</a> struct to default values. </p>
+<p>Initializes the fields <a class="el" href="structSListConf.html" title="SList configuration object. ">SListConf</a> struct to default values. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>the <a class="el" href="structSListConf.html">SListConf</a> struct that is being initialized. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>the <a class="el" href="structSListConf.html" title="SList configuration object. ">SListConf</a> struct that is being initialized. </td></tr>
   </table>
   </dd>
 </dl>
@@ -550,7 +553,8 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>The new list is allocated using the original lists allocators and also inherits the configuration of the original list.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">list</td><td>list to be copied [in] cp the copy function that should return a pointer to the copy of the data.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">list</td><td>list to be copied </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cp</td><td>the copy function that should return a pointer to the copy of the data.</td></tr>
   </table>
   </dd>
 </dl>
@@ -626,7 +630,7 @@ Functions</h2></td></tr>
 
 <p>Destroys the list structure along with all the data it holds. </p>
 <p>This function returns true if the operation was successful, or false if the list was already empty.</p>
-<p>This function should not be called on a list that has some of it's elements allocated on the stack.</p>
+<dl class="section note"><dt>Note</dt><dd>This function should not be called on a list that has some of it's elements allocated on the stack.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">list</td><td>the list to be destroyed </td></tr>
@@ -1036,8 +1040,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns a new empty SList based on the specified <a class="el" href="structSListConf.html">SListConf</a> struct. </p>
-<p>The SList is allocated using the allocators specified in the <a class="el" href="structSListConf.html">SListConf</a> struct. THe allocation may fail if the underlying allocator fails.</p>
+<p>Returns a new empty SList based on the specified <a class="el" href="structSListConf.html" title="SList configuration object. ">SListConf</a> struct. </p>
+<p>The SList is allocated using the allocators specified in the <a class="el" href="structSListConf.html" title="SList configuration object. ">SListConf</a> struct. THe allocation may fail if the underlying allocator fails.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">conf</td><td>SList configuration. All fields must be initialized to appropriate values.</td></tr>
@@ -1463,8 +1467,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">list</td><td>the list from which the sublist is taken </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>The beginning index, ie., the first element to be included. Must be a positive integer and may not exceed the list size or the end index. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">e</td><td>The ending index, ie., the last element to be included. Must be a positive integer no greater that the list size and no smaller that the beginning index.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">from</td><td>The beginning index, ie., the first element to be included. Must be a positive integer and may not exceed the list size or the end index. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">to</td><td>The ending index, ie., the last element to be included. Must be a positive integer no greater that the list size and no smaller that the beginning index.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1501,7 +1505,7 @@ Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>

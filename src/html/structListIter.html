@@ -90,20 +90,36 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>List iterator object.  
+ <a href="structListIter.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="list_8h_source.html">list.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:a8792237fb20047d0bb6d56a18edc2a0b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListIter.html#a8792237fb20047d0bb6d56a18edc2a0b">index</a></td></tr>
+<tr class="memdesc:a8792237fb20047d0bb6d56a18edc2a0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current position of the iterator.  <a href="#a8792237fb20047d0bb6d56a18edc2a0b">More...</a><br /></td></tr>
 <tr class="separator:a8792237fb20047d0bb6d56a18edc2a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb86b7e090e2a13dbdfb6f8b819a9955"><td class="memItemLeft" align="right" valign="top">List *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListIter.html#adb86b7e090e2a13dbdfb6f8b819a9955">list</a></td></tr>
+<tr class="memdesc:adb86b7e090e2a13dbdfb6f8b819a9955"><td class="mdescLeft">&#160;</td><td class="mdescRight">The list associated with this iterator.  <a href="#adb86b7e090e2a13dbdfb6f8b819a9955">More...</a><br /></td></tr>
 <tr class="separator:adb86b7e090e2a13dbdfb6f8b819a9955"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7eac9f3d6f2f1f194ad387057a5e0844"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNode.html">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListIter.html#a7eac9f3d6f2f1f194ad387057a5e0844">last</a></td></tr>
+<tr class="memdesc:a7eac9f3d6f2f1f194ad387057a5e0844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last returned node.  <a href="#a7eac9f3d6f2f1f194ad387057a5e0844">More...</a><br /></td></tr>
 <tr class="separator:a7eac9f3d6f2f1f194ad387057a5e0844"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dbc19d09ee0bfa08a33aed4ba74e013"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structNode.html">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListIter.html#a0dbc19d09ee0bfa08a33aed4ba74e013">next</a></td></tr>
+<tr class="memdesc:a0dbc19d09ee0bfa08a33aed4ba74e013"><td class="mdescLeft">&#160;</td><td class="mdescRight">Next node in the sequence.  <a href="#a0dbc19d09ee0bfa08a33aed4ba74e013">More...</a><br /></td></tr>
 <tr class="separator:a0dbc19d09ee0bfa08a33aed4ba74e013"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Field Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>List iterator object. </p>
+<p>Used to iterate over the elements of the list in an ascending or descending order. The iterator also supports operations for safely adding and removing elements during iteration.</p>
+<div class="fragment"><div class="line"><a class="code" href="structListIter.html">ListIter</a> i;</div>
+<div class="line"><a class="code" href="list_8c.html#a9e4b6487df9b1ac58d87b4d9f73c5e1b">list_iter_init</a>(&amp;i);</div>
+<div class="line"></div>
+<div class="line"><span class="keywordflow">while</span> (<a class="code" href="list_8c.html#ae8554a74ce47c26f26ce61ef65c951c1">list_iter_has_next</a>(&amp;i)) {</div>
+<div class="line">    MyType *e = <a class="code" href="list_8c.html#af42ed4a47ccd391b4fea886c35d2f771">list_iter_next</a>(&amp;i);</div>
+<div class="line">}</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="a8792237fb20047d0bb6d56a18edc2a0b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -113,6 +129,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The current position of the iterator. </p>
 
 </div>
 </div>
@@ -126,6 +144,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Last returned node. </p>
+
 </div>
 </div>
 <a class="anchor" id="adb86b7e090e2a13dbdfb6f8b819a9955"></a>
@@ -137,6 +157,8 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>The list associated with this iterator. </p>
 
 </div>
 </div>
@@ -150,6 +172,8 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Next node in the sequence. </p>
+
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
@@ -158,7 +182,7 @@ Data Fields</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 11 2015 14:07:07 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 12 2015 14:58:15 for Collections-C by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.9.1
 </small></address>
