@@ -32,11 +32,17 @@
 #define KEY_LENGHT_LONG      sizeof(long)
 #define KEY_LENGTH_POINTER   sizeof(void*)
 
-typedef struct hashtable_s        HashTable;
-typedef struct hashtable_key_iter HashTableIter;
+/**
+ * An unordered key-value map. HashTable supports best case amortized
+ * constant time insertion, removal, and lookup of values. The worst
+ * case complexity for these operations is amortized linear time.
+ * The performance of the table depends greatly on the quality of the
+ * hash function being used.
+ */
+typedef struct hashtable_s HashTable;
 
 /**
- * A table entry.
+ * A HashTable table entry.
  *
  * @note modifying this structure may invalidate the table.
  */
@@ -59,20 +65,45 @@ typedef struct table_entry_s {
 } TableEntry;
 
 /**
- * An iterator object used to iterate over table entries.
+ * HashTable iterator object. Used to iterate over the entries of the table
+ * in an undefined order. The iterator also supports operations for safely
+ * removing elements during iteration.
  *
- * @note This structure should only be modified through the iterator
- * functions.
+ * @code
+ * HashTableIter i;
+ * hashtable_iter_init(&i);
+ *
+ * while (hashtable_iter_has_next(&i)) {
+ *     TableEntry *e = hashtable_iter_next(&i);
+ *     e->key;
+ *     e->value;
+ * }
+ * @endcode
+ *
+ * @note This structure should only be modified through the iterator functions.
  */
-struct hashtable_key_iter {
+typedef struct hashtable_iter {
     HashTable  *table;
     size_t      bucket_index;
     TableEntry *prev_entry;
     TableEntry *next_entry;
-};
+} HashTableIter;
 
 /**
- * A configuration object used for configuring new hash tables.
+ * HashTable configuration object. Used to initialize a new HashTable with
+ * specific values.
+ *
+ * @code
+ * HashTableConf c;
+ * hashtable_conf_init(&c);
+ *
+ * c.key_length  = sizeof(MyType);
+ * c.key_compare = my_cmp_function;
+ * c.hash        = GENERAL_HASH;
+ * c.hash_seed   = 12345;
+ *
+ * HashTable *t = hashtable_new_conf(&c);
+ * @endcode
  */
 typedef struct hashtable_conf_s {
     /**

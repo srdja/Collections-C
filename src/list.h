@@ -23,21 +23,71 @@
 
 #include "common.h"
 
+/**
+ * A doubly linked list. List is a sequential structure that supports insertion, deletion
+ * and lookup from both ends in constant time, while the worst case is O(n/2) at the middle
+ * of the list.
+ */
 typedef struct list_s List;
 
+/**
+ * List node.
+ *
+ * @note Modifying the links may invalidate the list structure.
+ */
 typedef struct node_s {
     void          *data;
     struct node_s *next;
     struct node_s *prev;
 } Node;
 
+/**
+ * List iterator object. Used to iterate over the elements of the list
+ * in an ascending or descending order. The iterator also supports
+ * operations for safely adding and removing elements during iteration.
+ *
+ * @code
+ * ListIter i;
+ * list_iter_init(&i);
+ *
+ * while (list_iter_has_next(&i)) {
+ *     MyType *e = list_iter_next(&i);
+ * }
+ * @endcode
+ */
 typedef struct list_iter_s {
+    /**
+     * The current position of the iterator.*/
     size_t  index;
+
+    /**
+     * The list associated with this iterator */
     List   *list;
+
+    /**
+     * Last returned node */
     Node   *last;
+
+    /**
+     * Next node in the sequence. */
     Node   *next;
 } ListIter;
 
+/**
+ * List configuration object. Used to initalize a new List with specific
+ * values.
+ *
+ * @code
+ * ListConf c;
+ * list_conf_init(&c);
+ *
+ * c.mem_alloc  = mymalloc;
+ * c.mem_free   = myfree;
+ * c.mem_calloc = mycalloc;
+ *
+ * List *l = list_new_conf(&c);
+ * @endcode
+ */
 typedef struct list_conf_s {
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);

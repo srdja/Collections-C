@@ -194,6 +194,13 @@ void *treetable_get_last_value(TreeTable *table)
     return NULL;
 }
 
+/**
+ * Returns the first (lowest) key in the table.
+ *
+ * @param[in] table the table in which the lookup is performed
+ *
+ * @return the first key
+ */
 void *treetable_get_first_key(TreeTable *table)
 {
     RBNode *node = tree_min(table, table->root);
@@ -204,6 +211,13 @@ void *treetable_get_first_key(TreeTable *table)
     return NULL;
 }
 
+/**
+ * Returns the last (highest) key in the table.
+ *
+ * @param[in] table the table in which the lookup is performed
+ *
+ * @return the last key
+ */
 void *treetable_get_last_key(TreeTable *table)
 {
     RBNode *node = tree_max(table, table->root);
@@ -284,6 +298,14 @@ bool treetable_contains_key(TreeTable *table, void *key)
     return false;
 }
 
+/**
+ * Checks whether or not the TreeTable contains the specified value.
+ *
+ * @param[in] table the table into which the lookup is performed
+ * @param[in] value the value that is being looked up
+ *
+ * @return number of occurrences of the specified value.
+ */
 size_t treetable_contains_value(TreeTable *table, void *value)
 {
     RBNode *node = tree_min(table, table->root);
@@ -554,8 +576,19 @@ void *treetable_remove(TreeTable *table, void *key)
     return val;
 }
 
+/**
+ * Removes the frist (lowest) key from the specified table and returns the
+ * value taht was associated to the removed key, or NULL if the table is empty.
+ *
+ * @param[in] table the table from which the first entry is being removed
+ *
+ * @return the value associated with the removed key.
+ */
 void *treetable_remove_first(TreeTable *table)
 {
+    if (table->size == 0)
+        return NULL;
+
     RBNode *node = tree_min(table, table->root);
     void   *val  = node->value;
 
@@ -563,6 +596,14 @@ void *treetable_remove_first(TreeTable *table)
     return val;
 }
 
+/**
+ * Removes the last (highest) key from the specified table and returns the
+ * value taht was associated to the removed key, or NULL if the table is empty.
+ *
+ * @param[in] table the table from which the last entry is being removed
+ *
+ * @return the value associated with the removed key.
+ */
 void *treetable_remove_last(TreeTable *table)
 {
     RBNode *node = tree_max(table, table->root);
@@ -572,6 +613,11 @@ void *treetable_remove_last(TreeTable *table)
     return val;
 }
 
+/**
+ * Removes all entries from the table.
+ *
+ * @param[in] table the table from which all entries are to be removed
+ */
 void treetable_remove_all(TreeTable *table)
 {
     tree_destroy(table, table->root);
@@ -579,6 +625,13 @@ void treetable_remove_all(TreeTable *table)
     table->root = table->sentinel;
 }
 
+/**
+ * Performs a right rotation on the specified table's RB tree at root <code>
+ * x</code>
+ *
+ * @param[in] table the table on which this operation is performed
+ * @param[in] x the node around which this operation is performed
+ */
 static void rotate_right(TreeTable *table, RBNode *x)
 {
     RBNode *y = x->left;
@@ -601,6 +654,13 @@ static void rotate_right(TreeTable *table, RBNode *x)
     x->parent = y;
 }
 
+/**
+ * Performs a left rotation on the specified table's RB tree at root <code>
+ * x</code>
+ *
+ * @param[in] table the table on which this operation is performed
+ * @param[in] x the node around which this operation is performed
+ */
 static void rotate_left(TreeTable *table, RBNode *x)
 {
     RBNode *y = x->right;
@@ -623,6 +683,14 @@ static void rotate_left(TreeTable *table, RBNode *x)
     x->parent = y;
 }
 
+/**
+ * Returns a tree node associated with the specified key.
+ *
+ * @param[in] table the table on which this opertaion is performed
+ * @param[in] key the key being looked up
+ *
+ * @return tree node associated with the key
+ */
 static RBNode *get_tree_node_by_key(TreeTable *table, void *key)
 {
     if (table->size == 0)
@@ -646,6 +714,14 @@ static RBNode *get_tree_node_by_key(TreeTable *table, void *key)
     return NULL;
 }
 
+/**
+ * Returns a successor node of the node <code>x</code>
+ *
+ * @param[in] table the table on which this operation is performed
+ * @param[in] x the node whose successor is being returned
+ *
+ * @return successor node of x
+ */
 static RBNode *get_successor_node(TreeTable *table, RBNode *x)
 {
     if (x == NULL)
@@ -663,6 +739,14 @@ static RBNode *get_successor_node(TreeTable *table, RBNode *x)
     return y;
 }
 
+/**
+ * Returns a predecessor node of the node <code>x</code>
+ *
+ * @param[in] table the table on which this operation is performed
+ * @param[in] x the node whose predecessor is being returned
+ *
+ * @return predecessor node of x
+ */
 static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
 {
     if (x == NULL)
@@ -680,6 +764,14 @@ static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
     return y;
 }
 
+/**
+ * A 'foreach loop' function that invokes the specified function on every key in
+ * the table. The operation function should not modify the key. Any modification
+ * of the key will invalidate the TreeTable.
+ *
+ * @param[in] table the table on which this operation is being perfomed
+ * @param[in] op the operation function that is invoked on each key of the table
+ */
 void treetable_foreach_key(TreeTable *table, void (*op) (const void *k))
 {
     RBNode *n = tree_min(table, table->root);
@@ -690,6 +782,14 @@ void treetable_foreach_key(TreeTable *table, void (*op) (const void *k))
     }
 }
 
+/**
+ * A 'foreach loop' function that invokes the specified function on every value
+ * in the table.
+ *
+ * @param[in] table the table on which this operation is being performed
+ * @param[in] op the operation function that is invoked on each value of the
+ *               table
+ */
 void treetable_foreach_value(TreeTable *table, void (*op) (void *k))
 {
     RBNode *n = tree_min(table, table->root);
@@ -700,6 +800,12 @@ void treetable_foreach_value(TreeTable *table, void (*op) (void *k))
     }
 }
 
+/**
+ * Initializes the TreeTableIter structure.
+ *
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] table the table over whose entries the iterator is going to iterate
+ */
 void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
 {
     iter->table   = table;
@@ -707,11 +813,23 @@ void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
     iter->next    = tree_min(table, table->root);
 }
 
+/**
+ * Checks whether or not the iterator has a next entry iterate over.
+ *
+ * @return true if the next entry exists or false if the iterator has reached
+ * the end of the table.
+ */
 bool treetable_iter_has_next(TreeTableIter *iter)
 {
     return iter->next != iter->table->sentinel ? true : false;
 }
 
+/**
+ * Advances the iterator.
+ *
+ * @param[in] iter the iterator that is being advanced
+ * @param[in, out] entry the next entry
+ */
 void treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
 {
     entry->value  = iter->next->value;
@@ -720,6 +838,11 @@ void treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
     iter->next    = get_successor_node(iter->table, iter->current);
 }
 
+/**
+ * Removes the last returned table entry
+ *
+ * @param[in] iter The iterator on which this operation is performed
+ */
 void treetable_iter_remove(TreeTableIter *iter)
 {
     remove_node(iter->table, iter->current);

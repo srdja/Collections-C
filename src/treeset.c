@@ -40,10 +40,9 @@ void treeset_conf_init(TreeSetConf *conf)
 }
 
 /**
- * Returns a new empty TreeSet configured based on the specified properties
+ * Returns a new empty TreeSet configured based on the specified configuration
  * object.
  *
- * @param[in] conf the configuration object used to configure the new HashSet
  * @param[in] cmp  the comparator function used to order elements
  *
  * @return a new empty TreeSet
@@ -182,7 +181,7 @@ void *treeset_get_lesser_than(TreeSet *set, void *element)
  * Checks whether an element is a part of the specified set.
  *
  * @param[in] set the set being searched for the specified element
- * @parma[in] element the element being seached for
+ * @param[in] element the element being seached for
  *
  * @return true if the specified element is an element of the set
  */

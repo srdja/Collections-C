@@ -18,11 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * A doubly linked list
- */
-
 #include "list.h"
+
 
 struct list_s {
     size_t  size;
@@ -53,7 +50,7 @@ static bool  link_all_externally (List *l, Node **h, Node **t);
 /**
  * Initializes the fields of the ListConf struct to default values.
  *
- * @parma[in] conf the configuration struct that is being initialized
+ * @param[in] conf the configuration struct that is being initialized
  */
 void list_conf_init(ListConf *conf)
 {
@@ -1016,7 +1013,7 @@ static INLINE void merge(Node **left, Node **right, size_t l_size,
     for (i = 0; i < size; i++) {
         int c = cmp(&(l_part->data), &(r_part->data));
 
-        if ((c == -1 || c == 0)) {
+        if ((c < 0 || c == 0)) {
             /* The two partitions are already sorted. */
             if (i == 0 && size == 2) {
                 break;
@@ -1191,7 +1188,7 @@ size_t list_iter_index(ListIter *iter)
  * @note Before this function is called, one should check whether the next
  * element in the sequence exists by calling <code>list_iter_has_next()</code>.
  *
- * @param the iterator on which this operation is being performed.
+ * @param[in] iter the iterator on which this operation is being performed.
  *
  * @return the next element in the sequence
  */
@@ -1210,6 +1207,7 @@ void *list_iter_next(ListIter *iter)
  * iterator, is an iterator that traverses the list from tail to head. In
  * case the memory allocation for the new iterator fails, NULL is returned.
  *
+ * @param[in] iter the iterator
  * @param[in] list the list on which this iterator will operate.
  *
  * @return a new descending iterator.

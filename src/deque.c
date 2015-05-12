@@ -718,15 +718,13 @@ size_t deque_capacity(Deque *deque)
 /**
  * Return the underlying deque buffer.
  *
- * @note Any direct modification of the buffer may invalidate the deque.
- *
  * @param[in] deque the deque whose underlying buffer is being returned
  *
  * @return the buffer
  */
-void **deque_get_buffer(Deque *deque)
+const void* const *deque_get_buffer(Deque *deque)
 {
-    return deque->buffer;
+    return (const void* const*) deque->buffer;
 }
 
 /**
@@ -932,7 +930,7 @@ bool deque_iter_add(DequeIter *iter, void *element)
  * with the specified replacement element.
  *
  * @param[in] iter the iterator on which this operation is being performed
- * @param[in] replacemenet the replacement element
+ * @param[in] replacement the replacement element
  *
  * @return the old element that was replaced
  */

@@ -23,29 +23,90 @@
 
 #include "common.h"
 
+/**
+ * An ordered key-value map. TreeTable support logarithmic time insertion,
+ * removal and lookup of values.
+ */
 typedef struct treetable_s TreeTable;
 
+/**
+ * Red-Black tree node.
+ *
+ * @note Modifying this structure may invalidate the table.
+ */
 typedef struct rbnode_s {
+    /**
+     * Key in the table. */
     void *key;
+
+    /**
+     * Value associated with the key */
     void *value;
+
+    /**
+     * The color of this node */
     char  color;
 
+    /**
+     * Parent of this node */
     struct rbnode_s *parent;
+
+    /**
+     * Left child node */
     struct rbnode_s *left;
+
+    /**
+     * Right child node */
     struct rbnode_s *right;
 } RBNode;
 
+/**
+ * TreeTable table entry.
+ */
 typedef struct tree_table_entry_s {
     void *key;
     void *value;
 } TreeTableEntry;
 
+/**
+ * TreeTable iterator object. Used to iterate over the entries of the table.
+ * The iterator also supports operations for safely removing elements during
+ * iteration.
+ *
+ * @code
+ * TreeTableIter i;
+ * treetable_iter_init(&i);
+ *
+ * while (treetable_iter_has_next(&i)) {
+ *     TreeTableEntry *e = treetable_iter_next(&i);
+ *     e->key;
+ *     e->value;
+ * }
+ * @endcode
+ *
+ * @note This structure should only be modified through the iterator functions.
+ */
 typedef struct tree_table_iter_s {
     TreeTable *table;
     RBNode    *current;
     RBNode    *next;
 } TreeTableIter;
 
+/**
+ * TreeTable configuration object. Used to initialize a new TreeTable with
+ * specific values.
+ *
+ * @code
+ * TreeTableConf c;
+ * treetable_conf_init(&c);
+ *
+ * c.cmp = mycmpfunc;
+ * c.mem_alloc = mymalloc;
+ * ...
+ *
+ * TreeTable *t = treetable_new_conf(&c);
+ * @endcode
+ */
 typedef struct treetable_conf_s {
     int    (*cmp)         (void *k1, void *k2);
     void  *(*mem_alloc)   (size_t size);

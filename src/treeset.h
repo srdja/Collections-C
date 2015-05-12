@@ -24,9 +24,34 @@
 #include "common.h"
 #include "treetable.h"
 
-typedef struct treeset_s     TreeSet;
-typedef        TreeTableConf TreeSetConf;
+/**
+ * An ordered set. The lookup, deletion, and insertion are performed in
+ * logarithmic time.
+ */
+typedef struct treeset_s TreeSet;
 
+/**
+ * TreeSet configuration object.
+ */
+typedef TreeTableConf TreeSetConf;
+
+/**
+ * TreeSet iterator object. Used to iterate over the elements of the set.
+ * The iterator also supports operations for safely removing elements
+ * during iteration.
+ *
+ * @code
+ * TreeSetIter i;
+ * treeset_iter_init(&i);
+ *
+ * int * const* e;
+ *
+ * while (treeset_iter_has_next(&i)) {
+ *     treeset_iter_next(&i, &e);
+ *     do_something(e);
+ * }
+ * @endcode
+ */
 typedef struct treeset_iter_s {
     TreeTableIter i;
 } TreeSetIter;

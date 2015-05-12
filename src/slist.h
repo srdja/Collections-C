@@ -18,19 +18,42 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef SLIST_H_
 #define SLIST_H_
 
 #include "common.h"
 
+/**
+ * A singly linked list. List is a sequential structure that supports constant time
+ * insertion, deletion  and lookup at the beginning of the list, while the worst
+ * case for these operations is linear time.
+ */
 typedef struct slist_s SList;
 
+/**
+ * SList node.
+ *
+ * @note Modifying the links may invalidate the list structure.
+ */
 typedef struct snode_s {
     void           *data;
     struct snode_s *next;
 } SNode;
 
+/**
+ * SList iterator object. Used to iterate over the elements of the list
+ * in an ascending order. The iterator also supports operations for safely
+ * adding and removing elements during iteration.
+ *
+ * @code
+ * SListIter i;
+ * slist_iter_init(&i);
+ *
+ * while (slist_iter_has_next(&i)) {
+ *     MyType *e = slist_iter_next(&i);
+ * }
+ * @endcode
+ */
 typedef struct slist_iter_s {
     size_t  index;
     SList  *list;
@@ -39,6 +62,21 @@ typedef struct slist_iter_s {
     SNode   *prev;
 } SListIter;
 
+/**
+ * SList configuration object. Used to initalize a new SList with specific
+ * values.
+ *
+ * @code
+ * SListConf c;
+ * slist_conf_init(&c);
+ *
+ * c.mem_alloc  = mymalloc;
+ * c.mem_free   = myfree;
+ * c.mem_calloc = mycalloc;
+ *
+ * SList *l = slist_new_conf(&c);
+ * @endcode
+ */
 typedef struct slist_conf_s {
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);

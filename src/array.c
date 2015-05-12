@@ -57,8 +57,7 @@ Array *array_new()
  * fail if the values of exp_factor and capacity in the ArrayConf do not meet
  * the following condition: <code>exp_factor < (MAX_ELEMENTS / capacity)</code>.
  *
- * @param[in] conf Array configuration struct. All fields must be initialized to
- *                 appropriate values.
+ * @param[in] conf Array configuration object
  *
  * @return a new array if the allocation was successful, or NULL if not.
  */
@@ -91,7 +90,7 @@ Array *array_new_conf(ArrayConf *conf)
 /**
  * Initializes the fields of the ArrayConf struct to default values.
  *
- * @param[in, out] conf the struct that is being initialized
+ * @param[in, out] conf ArrayConf being initialized
  */
 void array_conf_init(ArrayConf *conf)
 {
@@ -105,7 +104,7 @@ void array_conf_init(ArrayConf *conf)
 /**
  * Destroys the array structure, but leaves the data it used to hold, intact.
  *
- * @param[in] art the array that is to be destroyed.
+ * @param[in] ar the Array that is to be destroyed.
  */
 void array_destroy(Array *ar)
 {
@@ -114,13 +113,13 @@ void array_destroy(Array *ar)
 }
 
 /**
- * Destroys the array structure along with all the data it holds.
+ * Destroys the Array structure along with all the data it holds.
  *
  * @note
  * This function should not be called on a array that has some of its elements
  * allocated on the stack.
  *
- * @param[in] art the array that is being destroyed
+ * @param[in] ar the array that is being destroyed
  */
 void array_destroy_free(Array *ar)
 {
@@ -132,12 +131,12 @@ void array_destroy_free(Array *ar)
 }
 
 /**
- * Adds a new element to the array. The element is appended to the array making
- * it the last element (the one with the highest index) of the array. This
- * function returns a <code>bool</code> based on whether or not the space allocation
+ * Adds a new element to the Array. The element is appended to the array making
+ * it the last element (the one with the highest index) of the Array. This
+ * function returns a <code>bool</code> based on whether or not the memory allocation
  * for the new element was successful or not.
  *
- * @param[in] art the array to which the element is being added
+ * @param[in] ar the Array to which the element is being added
  * @param[in] element the element that is being added
  *
  * @return true if the operation was successful.
@@ -157,15 +156,15 @@ bool array_add(Array *ar, void *element)
  * Adds a new element to the array at a specified position by shifting all
  * subsequent elemnts by one. The specified index must be within the bounds
  * of the array, otherwise this operation will fail and false will be
- * returned to indicate failure. This function may also fail if the space
+ * returned to indicate failure. This function may also fail if the memory
  * allocation for the new element was unsuccessful.
  *
- * @param[in] art the array to which the element is being added
+ * @param[in] ar the Array to which the element is being added
  * @param[in] element the element that is being added
  * @param[in] index the position in the array at which the element is being
- *            added that must be within bounds of the array
+ *            added
  *
- * @return true if the operation was successful, false if not
+ * @return true if the operation was successful
  */
 bool array_add_at(Array *ar, void *element, size_t index)
 {
@@ -189,14 +188,14 @@ bool array_add_at(Array *ar, void *element, size_t index)
 
 /**
  * Replaces a array element at the specified index and returns the replaced
- * element. The specified index must be within the bounds of the array,
+ * element. The specified index must be within the bounds of the Array,
  * otherwise NULL is returned. NULL can also be returned if the replaced element
  * was NULL. In this case calling <code>array_contains()</code> before this
  * function can resolve this ambiguity.
  *
- * @param[in] art the array whose element is being replaced
+ * @param[in] ar the Array whose element is being replaced
  * @param[in] element the replacement element
- * @param[in] index the index at which the replacement element should be placed
+ * @param[in] index the index at which the replacement element should be inserted
  *
  * @return the replaced element or NULL if the index was out of bounds.
  */
@@ -217,7 +216,7 @@ void *array_replace_at(Array *ar, void *element, size_t index)
  * returned if the specified element is NULL. In this case calling <code>
  * array_contains()</code> before this function can resolve this ambiguity.
  *
- * @param[in] art the array from which the element is being removed
+ * @param[in] ar the Array from which the element is being removed
  * @param[in] element the element being removed
  *
  * @return the removed element, or NULL if the operation has failed
@@ -247,7 +246,7 @@ void *array_remove(Array *ar, void *element)
  * be returned if the removed element was NULL. To resolve this ambiguity call
  * <code>array_contains()</code> before this function.
  *
- * @param[in] art the array from which the element is being removed
+ * @param[in] ar the array from which the element is being removed
  * @param[in] index the index of the element being removed.
  *
  * @return the removed element, or NULL if the operation fails
@@ -277,7 +276,7 @@ void *array_remove_at(Array *ar, size_t index)
  * is NULL value. This ambiguity can be resolved by calling <code>array_size()
  * </code>before this function.
  *
- * @param[in] the array whose last element is being removed
+ * @param[in] ar the array whose last element is being removed
  *
  * @return the last element of the array ie. the element at the highest index
  */
@@ -290,7 +289,7 @@ void *array_remove_last(Array *ar)
  * Removes all elements from the specified array. This function does not shrink
  * the array capacity.
  *
- * @param[in] art the array from which all elements are to be removed
+ * @param[in] ar the array from which all elements are to be removed
  */
 void array_remove_all(Array *ar)
 {
@@ -301,7 +300,7 @@ void array_remove_all(Array *ar)
  * Removes and frees all elements from the specified array. This function does
  * not shrink the array capacity.
  *
- * @param[in] art the array from which all elements are to be removed
+ * @param[in] ar the array from which all elements are to be removed
  */
 void array_remove_all_free(Array *ar)
 {
@@ -318,7 +317,7 @@ void array_remove_all_free(Array *ar)
  * returned if the element at the specified index is NULL. This ambiguity can be
  * resolved by calling <code>array_contains()</code> before this function.
  *
- * @param[in] art the array from which the element is being retrieved
+ * @param[in] ar the array from which the element is being retrieved
  * @param[in] index the index of the array element
  *
  * @return array element at the specified index, or NULL if the operation has
@@ -338,7 +337,7 @@ void *array_get(Array *ar, size_t index)
  * of the array is NULL. This ambiguity can be resolved by calling <code>
  * array_size()</code> before this function.
  *
- * @param[in] the array whose last element is being returned
+ * @param[in] ar the array whose last element is being returned
  *
  * @return the last element of the specified array
  */
@@ -352,7 +351,7 @@ void *array_get_last(Array *ar)
  *
  * @note Any direct modification of the buffer may invalidate the array.
  *
- * @param[in] art the array whose underlying buffer is being returned
+ * @param[in] ar the array whose underlying buffer is being returned
  *
  * @return the buffer
  */
@@ -365,7 +364,7 @@ const void * const*array_get_buffer(Array *ar)
  * Returns the index of the first occurrence of the specified array element, or
  * NO_SUCH_INDEX if the element could not be found.
  *
- * @param[in] art array being searched
+ * @param[in] ar array being searched
  * @param[in] element the element whose index is being looked up
  *
  * @return the index of the specified element, or NO_SUCH_INDEX if the element is not found
@@ -427,7 +426,7 @@ Array *array_subarray(Array *ar, size_t b, size_t e)
  * @note The new array is allocated using the original arrays allocators
  *       and also inherits the configuration of the original array.
  *
- * @param[in] art the array to be copied
+ * @param[in] ar the array to be copied
  *
  * @return a shallow copy of the specified array
  */
@@ -457,7 +456,7 @@ Array *array_copy_shallow(Array *ar)
  * @note The new array is allocated using the original arrays allocators
  *       and also inherits the configuration of the original array.
  *
- * @param[in] art the array to be copied
+ * @param[in] ar the array to be copied
  * @param[in] cp the copy function that returns a copy of a array element
  *
  * @return a deep copy of the specified array
@@ -484,7 +483,7 @@ Array *array_copy_deep(Array *ar, void *(*cp) (void *))
 /**
  * Reverses the order of elements in the specified array.
  *
- * @param[in] art the array that is being reversed.
+ * @param[in] ar the array that is being reversed.
  */
 void array_reverse(Array *ar)
 {
@@ -502,7 +501,7 @@ void array_reverse(Array *ar)
  * the number of elements in the specified array, however the capacity will
  * never shrink below 1.
  *
- * @param[in] art the array whose capacity is being trimmed.
+ * @param[in] ar the array whose capacity is being trimmed.
  */
 void array_trim_capacity(Array *ar)
 {
@@ -522,7 +521,7 @@ void array_trim_capacity(Array *ar)
 /**
  * Returns the number of occurrences of the element within the specified array.
  *
- * @param[in] art the array that is being searched
+ * @param[in] ar the array that is being searched
  * @param[in] element the element that is being searched for
  *
  * @return the number of occurrences of the element
@@ -542,7 +541,7 @@ size_t array_contains(Array *ar, void *element)
  * Returns the size of the specified array. The size of the array is the
  * number of elements contained within the array.
  *
- * @param[in] art the array whose size is being returned
+ * @param[in] ar the array whose size is being returned
  *
  * @return the the number of element within the array
  */
@@ -555,7 +554,7 @@ size_t array_size(Array *ar)
  * Returns the capacity of the specified array. The capacity of the array is
  * the maximum number of elements a array can hold before it has to be resized.
  *
- * @param[in] art array whose capacity is being returned
+ * @param[in] ar array whose capacity is being returned
  *
  * @return the capacity of the array
  */
@@ -573,7 +572,22 @@ size_t array_capacity(Array *ar)
  * dereferencing will be required before the data can be used for comparison:
  * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
  *
- * @param[in] art array to be sorted
+ * @code
+ * int mycmp(const void *e1, const void *e2) {
+ *     MyType el1 = *(*((int**) e1));
+ *     MyType el2 = *(*((int**) e2));
+ *
+ *     if (el1 < el2) return -1;
+ *     if (el1 > el2) return 1;
+ *     return 0;
+ * }
+ *
+ * ...
+ *
+ * array_sort(array, mycmp);
+ * @endcode
+ *
+ * @param[in] ar array to be sorted
  * @param[in] cmp the comparator function that must be of type <code>
  *                int cmp(const void e1*, const void e2*)</code> that
  *                returns < 0 if the first element goes before the second,
@@ -592,7 +606,7 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
  * is already at the maximum capacity, no new buffer is allocated and
  * false is returned to indicate the failure.
  *
- * @param[in] art array whose capacity is being expanded
+ * @param[in] ar array whose capacity is being expanded
  *
  * @return true if the operation was successful
  */
@@ -627,7 +641,7 @@ static bool expand_capacity(Array *ar)
  * A 'foreach loop' function that invokes the specified function on each element
  * in the array.
  *
- * @param[in] art the array on which this operation is performed
+ * @param[in] ar the array on which this operation is performed
  * @param[in] op the operation function that is to be invoked on each array
  *               element
  */
@@ -646,7 +660,7 @@ void array_foreach(Array *ar, void (*op) (void *e))
  */
 void array_iter_init(ArrayIter *iter, Array *ar)
 {
-    iter->ar   = ar;
+    iter->ar    = ar;
     iter->index = 0;
 }
 
@@ -689,10 +703,10 @@ void *array_iter_remove(ArrayIter *iter)
 
 /**
  * Adds a new element to the array after the last retuned element by
- * <code>array_iter_next()</code> without invalidating the iterator.
+ * <code>array_iter_next()</code>, without invalidating the iterator.
  *
  * @param[in] iter the iterator on which this operation is being performed
- * @parma[in] element the element being added
+ * @param[in] element the element being added
  *
  * @return true if the element was successfully added or false if the allocation
  *         for the new element failed.

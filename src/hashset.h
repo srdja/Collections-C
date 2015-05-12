@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -24,13 +24,34 @@
 #include "common.h"
 #include "hashtable.h"
 
-typedef struct hashset_s      HashSet;
-typedef struct hashset_iter_s HashSetIter;
-typedef        HashTableConf  HashSetConf;
+/**
+ * An unordered set. The lookup, deletion, and insertion are performed in
+ * amortized constant time and in the worst case in amortized linear time.
+ */
+typedef struct hashset_s HashSet;
 
-struct hashset_iter_s {
+/**
+ * HashSet configuration object.
+ */
+typedef HashTableConf HashSetConf;
+
+/**
+ * HashSet iterator object. Used to iterate over the elements of the set.
+ * The iterator also supports operations for safely removing elements
+ * during iteration.
+ *
+ * @code
+ * HashSetIter i;
+ * hashset_iter_init(&i);
+ *
+ * while (hashset_iter_has_next(&i)) {
+ *     MyType *e = hashset_iter_next(&i);
+ * }
+ * @endcode
+ */
+typedef struct hashset_iter_s {
     HashTableIter iter;
-};
+} HashSetIter;
 
 void        hashset_conf_init     (HashSetConf *conf);
 

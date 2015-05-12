@@ -820,7 +820,7 @@ TableEntry *hashtable_iter_next(HashTableIter *iter)
 /**
  * Removes the last returned table entry
  *
- * @param[in] The iterator on which this operation is performed
+ * @param[in] iter The iterator on which this operation is performed
  */
 void hashtable_iter_remove(HashTableIter *iter)
 {

@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -23,26 +23,54 @@
 
 #include "common.h"
 
-typedef struct deque_s      Deque;
-typedef struct deque_iter_s DequeIter;
+/**
+ * A dynamic array that supports amortized constant time insertion and removal
+ * at both ends and constant time access.
+ */
+typedef struct deque_s Deque;
 
+/**
+ * Deque configuration object. Used to initialize a new Deque with specific
+ * values.
+ */
 typedef struct deque_conf_s {
-    /* The initial capacity of the deque. Must be a power of two.
+    /**
+     * The initial capacity of the deque. Must be a power of two.
      * if a non power of two is passed, it will be rounded to the
      * closest upper power of two */
     size_t capacity;
 
-    /* Memory allocators used to allocate the Vector structure and the
+    /**
+     * Memory allocators used to allocate the Vector structure and the
      * underlying data buffers. */
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
 } DequeConf;
 
-struct deque_iter_s {
+/**
+ * Deque iterator object. Used to iterate over the elements of a deque
+ * in an ascending order. The iterator also supports operations for safely
+ * removing and adding elements during iteration.
+ *
+ * @code
+ * DequeIter i;
+ * deque_iter_init(&i);
+ *
+ * while (deque_iter_has_next(&i)) {
+ *     MyType *e = deque_iter_next(&i);
+ * }
+ * @endcode
+ */
+typedef struct deque_iter_s {
+    /**
+     * The deque associated with this iterator.*/
     Deque *deque;
+
+    /**
+     * The current logical position of the iterator. */
     size_t index;
-};
+} DequeIter;
 
 Deque*     deque_new             (void);
 Deque*     deque_new_conf        (DequeConf *conf);
@@ -77,7 +105,6 @@ void       deque_trim_capacity   (Deque *deque);
 size_t     deque_contains        (Deque *deque, void *element);
 size_t     deque_size            (Deque *deque);
 size_t     deque_capacity        (Deque *deque);
-void**     deque_get_buffer      (Deque *deque);
 
 size_t     deque_index_of        (Deque *deque, void *element);
 
@@ -90,5 +117,7 @@ void*      deque_iter_remove     (DequeIter *iter);
 bool       deque_iter_add        (DequeIter *iter, void *element);
 void*      deque_iter_replace    (DequeIter *iter, void *replacement);
 size_t     deque_iter_index      (DequeIter *iter);
+
+const void* const* deque_get_buffer(Deque *deque);
 
 #endif /* DEQUE_H_ */

@@ -24,8 +24,16 @@
 #include "common.h"
 #include "array.h"
 
-typedef struct stack_s    Stack;
-typedef        ArrayConf StackConf;
+/**
+ * A LIFO (last in first out) structure. Supports constant time time insertion, removal
+ * and lookup.
+ */
+typedef struct stack_s Stack;
+
+/**
+ * Stack configuration object.
+ */
+typedef ArrayConf StackConf;
 
 void    stack_conf_init   (StackConf *conf);
 

@@ -132,7 +132,7 @@ void hashset_remove_all(HashSet *set)
  * Checks whether an element is a part of the specified set.
  *
  * @param[in] set the set being searched for the specified element
- * @parma[in] element the element being seached for
+ * @param[in] element the element being seached for
  *
  * @return true if the specified element is an element of the set
  */

@@ -24,9 +24,30 @@
 #include "common.h"
 #include "deque.h"
 
-typedef struct queue_s   Queue;
-typedef        DequeConf QueueConf;
+/**
+ * A FIFO (first in first out) structure. Supports constant time insertion, removal
+ * and lookup.
+ */
+typedef struct queue_s Queue;
 
+/**
+ * Queue configuration object.
+ */
+typedef DequeConf QueueConf;
+
+/**
+ * Queue iterator object. Used to iterate over the elements of a queue
+ * in an ascending order.
+ *
+ * @code
+ * QueueIter i;
+ * queue_iter_init(&i);
+ *
+ * while (queue_iter_has_next(&i)) {
+ *     MyType *e = queue_iter_next(&i);
+ * }
+ * @endcode
+ */
 typedef struct queue_iter_s {
     DequeIter i;
 } QueueIter;

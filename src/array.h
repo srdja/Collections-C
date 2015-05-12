@@ -1,6 +1,6 @@
 /*
  * Collections-C
- * Copyright (C) 2013-2014 Srđan Panić <srdja.panic@gmail.com>
+ * Copyright (C) 2013-2015 Srđan Panić <srdja.panic@gmail.com>
  *
  * This file is part of Collections-C.
  *
@@ -23,27 +23,66 @@
 
 #include "common.h"
 
+/**
+ * A dynamic array that expands automatically as elements are added. The array supports
+ * amortized constant time insertion and removal of elements at the end of the array, as
+ * well as constant time access.
+ */
 typedef struct array_s Array;
-typedef struct array_iter_s ArrayIter;
 
+/**
+ * Array configuration object. Used to initalize a new Array with specific
+ * values.
+ *
+ * @code
+ * ArrayConf c;
+ * array_conf_init(&c);
+ *
+ * c.capcity = 32;
+ *
+ * Array *a = array_new_conf(&c);
+ * @endcode
+ */
 typedef struct array_conf_s {
-    /* The initial capacity of the array */
+    /**
+     * The initial capacity of the array */
     size_t capacity;
 
-    /* The rate at which the buffer expands (capacity * exp_factor). */
+    /**
+     * The rate at which the buffer expands (capacity * exp_factor). */
     float  exp_factor;
 
-    /* Memory allocators used to allocate the Array structure and the
+    /**
+     * Memory allocators used to allocate the Array structure and the
      * underlying data buffers. */
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
 } ArrayConf;
 
-struct array_iter_s {
+/**
+ * Array iterator object. Used to iterate over the elements of the array
+ * in an ascending order. The iterator also supports operations for safely
+ * adding and removing elements during iteration.
+ *
+ * @code
+ * ArrayIter i;
+ * array_iter_init(&i);
+ *
+ * while (array_iter_has_next(&i)) {
+ *     MyType *e = array_iter_next(&i);
+ * }
+ * @endcode
+ */
+typedef struct array_iter_s {
+    /**
+     * The array associated with this iterator */
     Array  *ar;
+
+    /**
+     * The current position of the iterator.*/
     size_t  index;
-};
+} ArrayIter;
 
 Array*       array_new             (void);
 Array*       array_new_conf        (ArrayConf *conf);

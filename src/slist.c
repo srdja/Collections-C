@@ -103,7 +103,7 @@ bool slist_destroy(SList *list)
  * returns true if the operation was successful, or false if the list was already
  * empty.
  *
- * @node
+ * @note
  * This function should not be called on a list that has some of it's elements
  * allocated on the stack.
  *
@@ -278,7 +278,7 @@ bool slist_add_all(SList *list1, SList *list2)
  * fails.
  *
  * @param[in] list1 the list to which the elements are being added
- * @param[in] the list from which the elements are being taken
+ * @param[in] list2 the list from which the elements are being taken
  * @param[in] index position in the first list at which the elements should be
  *                  added
  *
@@ -710,10 +710,10 @@ void slist_reverse(SList *list)
  *       inherits the configuration of the original list.
  *
  * @param[in] list the list from which the sublist is taken
- * @param[in] b    The beginning index, ie., the first element to be included.
+ * @param[in] from The beginning index, ie., the first element to be included.
  *                 Must be a positive integer and may not exceed the list size
  *                 or the end index.
- * @param[in] e    The ending index, ie., the last element to be included. Must
+ * @param[in] to   The ending index, ie., the last element to be included. Must
  *                 be a positive integer no greater that the list size and no
  *                 smaller that the beginning index.
  *
@@ -773,7 +773,7 @@ SList *slist_copy_shallow(SList *list)
  *       inherits the configuration of the original list.
  *
  * @param[in] list list to be copied
- * @parama[in] cp  the copy function that should return a pointer to the copy of
+ * @param[in] cp  the copy function that should return a pointer to the copy of
  *                 the data.
  *
  * @return a deep copy of the list
