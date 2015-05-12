@@ -71,8 +71,8 @@ void test_deque_add_first()
               cc_msg("deque_add_first: Unexpected size."));
 
     size_t m = deque_capacity(deque);
-    void **u = deque_get_buffer(deque);
-    void  *e = u[m - 1];
+    const void * const* u = deque_get_buffer(deque);
+    const void *e = u[m - 1];
 
     cc_assert(e == &a,
               cc_msg("deque_add_first: Expected %d at index %d,"
@@ -107,8 +107,8 @@ void test_deque_add_last()
               cc_msg("deque_add_last: Unexpected size."));
 
     size_t m = deque_capacity(deque);
-    void **u = deque_get_buffer(deque);
-    void  *e = u[0];
+    const void * const*u = deque_get_buffer(deque);
+    const void *e = u[0];
 
     cc_assert(e == &a,
               cc_msg("deque_add_last: Expected %d at index %d,"
@@ -170,39 +170,39 @@ void test_deque_buffer_expansion()
                      " was %d, but got %d", 8, capacity));
 
     /* The expansion should align the elements.*/
-    void **buff = deque_get_buffer(deque);
-    int    elem = *((int*) buff[0]);
+    const void * const* buff = deque_get_buffer(deque);
+    const int elem = *((int*) buff[0]);
 
     cc_assert(elem == c,
               cc_msg("deque_buffer_expansion: Expected element "
                      "at index 0 was %d, but got %d", c, elem));
 
-    elem = *((int*) buff[1]);
-    cc_assert(elem == a,
+    const int elem1 = *((int*) buff[1]);
+    cc_assert(elem1 == a,
               cc_msg("deque_buffer_expansion: Expected element "
-                     "at index 1 was %d, but got %d", a, elem));
+                     "at index 1 was %d, but got %d", a, elem1));
 
-    elem = *((int*) buff[2]);
-    cc_assert(elem == b,
+    const int elem2 = *((int*) buff[2]);
+    cc_assert(elem2 == b,
               cc_msg("deque_buffer_expansion: Expected element "
-                     "at index 2 was %d, but got %d", b, elem));
+                     "at index 2 was %d, but got %d", b, elem2));
 
-    elem = *((int*) buff[3]);
-    cc_assert(elem == d,
+    const int elem3 = *((int*) buff[3]);
+    cc_assert(elem3 == d,
               cc_msg("deque_buffer_expansion: Expected element "
-                     "at index 3 was %d, but got %d", d, elem));
+                     "at index 3 was %d, but got %d", d, elem3));
 
-    elem = *((int*) buff[7]);
-    cc_assert(elem == e,
+    const int elem4 = *((int*) buff[7]);
+    cc_assert(elem4 == e,
               cc_msg("deque_buffer_expansion: Expected element "
-                     "at index 7 was %d, but got %d", e, elem));
+                     "at index 7 was %d, but got %d", e, elem4));
 
     deque_add_last(deque, &f);
 
-    elem = *((int*) buff[4]);
-    cc_assert(elem == f,
+    const int elem5 = *((int*) buff[4]);
+    cc_assert(elem5 == f,
               cc_msg("deque_buffer_expansion: Expected element "
-                     "at index 7 was %d, but got %d", f, elem));
+                     "at index 7 was %d, but got %d", f, elem5));
 
     deque_destroy(deque);
 }
@@ -231,25 +231,25 @@ void test_deque_add_at_case1()
 
     deque_add_at(deque, &g, 4);
 
-    void **buff = deque_get_buffer(deque);
-    void  *elem = buff[4];
+    const void * const* buff = deque_get_buffer(deque);
+    const void *elem = buff[4];
 
     cc_assert(buff[4] == &g,
               cc_msg("deque_add_at / case1:"
                      " inserted element expected at index 4"
                      " , but was found", *((int*) (elem))));
 
-    elem = buff[5];
-    cc_assert(elem == &e,
+    const void *elem1 = buff[5];
+    cc_assert(elem1 == &e,
               cc_msg("deque_add_at / case1:"
                      " moved element expected at index"
-                     "  5, but got %d", *((int*) (elem))));
+                     "  5, but got %d", *((int*) (elem1))));
 
-    elem = buff[6];
-    cc_assert(elem == &f,
+    const void *elem2 = buff[6];
+    cc_assert(elem2 == &f,
               cc_msg("deque_add_at / case1:"
                      " last element expected to be %d, "
-                     " but got %d", f, *((int*) (elem))));
+                     " but got %d", f, *((int*) (elem2))));
 
     deque_destroy(deque);
 }
@@ -278,31 +278,31 @@ void test_deque_add_at_case2()
 
     deque_add_at(deque, &g, 1);
 
-    void **buff = deque_get_buffer(deque);
-    void  *elem = buff[5];
+    const void * const *buff = deque_get_buffer(deque);
+    const void *elem = buff[5];
 
     cc_assert(elem == &g,
                cc_msg("deque_add_at / case2:"
                       " inserted elment expcted to be at"
                       " index 5, but got %d", *((int*) (elem))));
 
-    elem = buff[0];
-    cc_assert(elem == &a,
+    const *elem1 = buff[0];
+    cc_assert(elem1 == &a,
               cc_msg("deque_add_at / case2: "
                      "expected element %d at index 0, but"
-                     " got %d instead!", a, *((int*) (elem))));
+                     " got %d instead!", a, *((int*) (elem1))));
 
-    elem = buff[7];
-    cc_assert(elem == &c,
+    const *elem2 = buff[7];
+    cc_assert(elem2 == &c,
               cc_msg("deque_add_at / case2: "
                      "expected element %d at index 7, but got"
-                     " %d instead!", c, *((int*) (elem))));
+                     " %d instead!", c, *((int*) (elem2))));
 
-    elem = buff[3];
-    cc_assert(elem == &f,
+    const *elem3 = buff[3];
+    cc_assert(elem3 == &f,
               cc_msg("deque_add_at / case2: "
                      "expected element %d at index 3, but got"
-                     " %d instead!", f, *((int*) (elem))));
+                     " %d instead!", f, *((int*) (elem3))));
 
     deque_destroy(deque);
 }
@@ -331,31 +331,31 @@ void test_deque_add_at_case3()
 
     deque_add_at(deque, &g, 3);
 
-    void **buff = deque_get_buffer(deque);
+    const void * const* buff = deque_get_buffer(deque);
 
-    void *elem = buff[6];
+    const void *elem = buff[6];
     cc_assert(elem == &g,
                cc_msg("deque_add_at [case 3]:"
                       " inserted elment expcted to be at"
                       " index 6, but got %d", *((int*) (elem))));
 
-    elem = buff[0];
-    cc_assert(elem == &b,
+    const void *elem1 = buff[0];
+    cc_assert(elem1 == &b,
               cc_msg("deque_add_at [case 3]: "
                      "expected element %d at index 0, but"
-                     " got %d instead!", b, *((int*) (elem))));
+                     " got %d instead!", b, *((int*) (elem1))));
 
-    elem = buff[7];
-    cc_assert(elem == &c,
+    const void *elem2 = buff[7];
+    cc_assert(elem2 == &c,
               cc_msg("deque_add_at [case 3]: "
                      "expected element %d at index 7, but got"
-                     " %d instead!", c, *((int*) (elem))));
+                     " %d instead!", c, *((int*) (elem2))));
 
-    elem = buff[1];
-    cc_assert(elem == &a,
+    const void *elem3 = buff[1];
+    cc_assert(elem3 == &a,
               cc_msg("deque_add_at [case 3]: "
                      "expected element %d at index 1, but got"
-                     " %d instead!", a, *((int*) (elem))));
+                     " %d instead!", a, *((int*) (elem3))));
 
     deque_destroy(deque);
 }
@@ -384,31 +384,31 @@ void test_deque_add_at_case4()
 
     deque_add_at(deque, &g, 1);
 
-    void **buff = deque_get_buffer(deque);
-    int    elem = *((int*) buff[0]);
+    const void * const*buff = deque_get_buffer(deque);
+    const int elem = *((int*) buff[0]);
 
     cc_assert(elem == g,
               cc_msg("deque_add_at [case 4]:"
                      " inserted element expected at index 0"
                      " , but %d was found", elem));
 
-    elem = *((int*) buff[4]);
-    cc_assert(elem == e,
+    const elem1 = *((int*) buff[4]);
+    cc_assert(elem1 == e,
               cc_msg("deque_add_at [case 4]:"
                      " moved element expected at index"
-                     "  4, but got %d", elem));
+                     "  4, but got %d", elem1));
 
-    elem = *((int*) buff[6]);
-    cc_assert(elem == f,
+    const elem2 = *((int*) buff[6]);
+    cc_assert(elem2 == f,
               cc_msg("deque_add_at [case 4]: "
                      "Expected element %d at index 6, but "
-                     "got %d", f, elem));
+                     "got %d", f, elem2));
 
-    elem = *((int*) buff[7]);
-    cc_assert(elem == a,
+    const elem3 = *((int*) buff[7]);
+    cc_assert(elem3 == a,
               cc_msg("deque_add_at [case 4]: "
                      "Expected element %d at index 7, but "
-                     "got %d", a, elem));
+                     "got %d", a, elem3));
 
     deque_destroy(deque);
 }
@@ -436,31 +436,31 @@ void test_deque_add_at_case5()
 
     deque_add_at(deque, &g, 1);
 
-    void **buff = deque_get_buffer(deque);
-    int    elem = *((int*) buff[7]);
+    const void * const* buff = deque_get_buffer(deque);
+    const int elem = *((int*) buff[7]);
 
     cc_assert(elem == a,
               cc_msg("deque_add_at [case 5]: "
                      "Expected element %d at index 7, but "
                      "got %d", a, elem));
 
-    elem = *((int*) buff[0]);
-    cc_assert(elem == b,
+    const int elem1 = *((int*) buff[0]);
+    cc_assert(elem1 == b,
               cc_msg("deque_add_at [case 5]: "
                      "Expected element %d at index 7, but "
-                     "got %d", b, elem));
+                     "got %d", b, elem1));
 
-    elem = *((int*) buff[5]);
-    cc_assert(elem == f,
+    const int elem2 = *((int*) buff[5]);
+    cc_assert(elem2 == f,
               cc_msg("deque_add_at [case 5]: "
                      "Expected element %d at index 7, but "
-                     "got %d", f, elem));
+                     "got %d", f, elem2));
 
-    elem = *((int*) buff[1]);
-    cc_assert(elem == g,
+    const int elem3 = *((int*) buff[1]);
+    cc_assert(elem3 == g,
               cc_msg("deque_add_at [case 5]: "
                      "Expected element %d at index 7, but "
-                     "got %d", g, elem));
+                     "got %d", g, elem3));
 
     deque_destroy(deque);
 }
