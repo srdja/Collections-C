@@ -63,21 +63,26 @@ Array *array_new()
  */
 Array *array_new_conf(ArrayConf *conf)
 {
+    float ex;
+    
+    /* The expansion factor must be greater than one for the 
+     * array to grow */
+    if (conf->exp_factor <= 1)
+        ex = DEFAULT_EXPANSION_FACTOR;
+    else 
+        ex = conf->exp_factor;
+    
+    /* Needed to avoid an integer overflow on the first resize and
+     * to easily check for any future oveflows. */
+    if (!conf->capacity || ex >= MAX_ELEMENTS / conf->capacity)
+        return NULL;
+    
     Array *ar = conf->mem_calloc(1, sizeof(Array));
 
     if (ar == NULL)
         return NULL;
-
-    if (conf->exp_factor <= 1)
-        ar->exp_factor = DEFAULT_EXPANSION_FACTOR;
-
-    /* Needed to avoid an integer overflow on the first resize and
-     * to easily check for any future oveflows. */
-    else if (conf->exp_factor >= MAX_ELEMENTS / conf->capacity)
-        return NULL;
-    else
-        ar->exp_factor = conf->exp_factor;
-
+    
+    ar->exp_factor = ex;
     ar->capacity   = conf->capacity;
     ar->mem_alloc  = conf->mem_alloc;
     ar->mem_calloc = conf->mem_calloc;
