@@ -1,7 +1,7 @@
 Collections-C
 =============
 
-A library of generic container types including a list, array, hashtable, deque etc..
+A library of generic data structures including a list, array, hashtable, deque etc..
 
 ####Dependencies
 - gcc
