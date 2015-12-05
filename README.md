@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/srdja/Collections-C.svg?branch=master)](https://travis-ci.org/srdja/Collections-C)
+
 Collections-C
 =============
 
