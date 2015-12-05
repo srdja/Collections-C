@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "../src/treetable.h"
 #include "../src/deque.h"
 #include "test.h"

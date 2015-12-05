@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "../src/hashtable.h"
 #include "test.h"
 #include <string.h>
