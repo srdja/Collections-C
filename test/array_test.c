@@ -1,3 +1,5 @@
+#include <time.h>
+
 #include "../src/array.h"
 #include "test.h"
 

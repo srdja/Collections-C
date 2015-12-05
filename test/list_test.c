@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../src/list.h"
 #include "test.h"
 

@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../src/slist.h"
 #include "test.h"
 
