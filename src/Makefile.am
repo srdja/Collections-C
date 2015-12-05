@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libcollectc.la
 
-libcollectc_la_CFLAGS= -O2 -Werror -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wall -pedantic -std=c99 -Wcast-qual -Wshadow
+libcollectc_la_CFLAGS= -O2 -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wall -pedantic -std=c99 -Wcast-qual -Wshadow
 
 libcollectc_la_LDFLAGS= -module -avoid-version -shared
 
