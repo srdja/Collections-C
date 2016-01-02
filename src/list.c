@@ -315,7 +315,7 @@ bool list_add_all_at(List *list1, List *list2, size_t index)
         return false;
 
     /* Link the new nodes together outside of the list so
-       that if anything goes wrong we don't have leave
+       that if anything goes wrong we don't have to leave
        garbage in the actual list. */
     Node *head = NULL;
     Node *tail = NULL;
