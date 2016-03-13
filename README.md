@@ -67,8 +67,8 @@ HashTable *table = hashtable_new();
 hashtable_add(table, "some_key", "some_value");
 hashtable_add(table, "foo", "bar");
 
-char *value   = hashtable_get("foo");    // returns "bar"
-char *removed = hashtable_remove("foo"); // removes the key and returns the value
+char *value   = hashtable_get(table, "foo");    // returns "bar"
+char *removed = hashtable_remove(table, "foo"); // removes the key and returns the value
 
 hashtable_destroy(table);
 ```
