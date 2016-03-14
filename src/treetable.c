@@ -93,11 +93,17 @@ TreeTable *treetable_new(int (*cmp) (void *, void *))
  */
 TreeTable *treetable_new_conf(TreeTableConf *conf)
 {
-    TreeTable *table  = conf->mem_calloc(1, sizeof(TreeTable));
-    RBNode *sentinel  = conf->mem_calloc(1, sizeof(RBNode));
+    TreeTable *table = conf->mem_calloc(1, sizeof(TreeTable));
 
-    if (!table || !sentinel)
+    if (!table)
         return NULL;
+
+    RBNode *sentinel = conf->mem_calloc(1, sizeof(RBNode));
+
+    if (!sentinel) {
+        conf->mem_free(table);
+        return NULL;
+    }
 
     sentinel->color   = RB_BLACK;
 

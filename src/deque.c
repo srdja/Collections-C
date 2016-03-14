@@ -66,8 +66,13 @@ Deque *deque_new_conf(DequeConf *conf)
 {
     Deque *deque = conf->mem_calloc(1, sizeof(Deque));
 
-    if (deque == NULL)
+    if (!deque)
         return NULL;
+
+    if (!(deque->buffer = conf->mem_alloc(conf->capacity * sizeof(void*)))) {
+        conf->mem_free(deque);
+        return NULL;
+    }
 
     deque->mem_alloc  = conf->mem_alloc;
     deque->mem_calloc = conf->mem_calloc;
@@ -76,7 +81,6 @@ Deque *deque_new_conf(DequeConf *conf)
     deque->first      = 0;
     deque->last       = 0;
     deque->size       = 0;
-    deque->buffer     = deque->mem_alloc(deque->capacity * sizeof(void*));
 
     return deque;
 }
@@ -547,12 +551,18 @@ Deque* deque_copy_shallow(Deque *deque)
 {
     Deque *copy = deque->mem_alloc(sizeof(Deque));
 
+    if (!copy)
+        return NULL;
+
+    if (!(copy->buffer = deque->mem_alloc(deque->capacity * sizeof(void*)))) {
+        deque->mem_free(copy);
+        return NULL;
+    }
     copy->size       = deque->size;
     copy->capacity   = deque->capacity;
     copy->mem_alloc  = deque->mem_alloc;
     copy->mem_calloc = deque->mem_calloc;
     copy->mem_free   = deque->mem_free;
-    copy->buffer     = copy->mem_alloc(copy->capacity * sizeof(void*));
 
     copy_buffer(deque, copy->buffer, NULL);
 
@@ -578,17 +588,24 @@ Deque* deque_copy_deep(Deque *deque, void *(*cp) (void*))
 {
     Deque *copy = deque->mem_alloc(sizeof(Deque));
 
+    if (!copy)
+        return NULL;
+
+    if (!(copy->buffer = deque->mem_alloc(deque->capacity * sizeof(void*)))) {
+        deque->mem_free(copy);
+        return NULL;
+    }
+
     copy->size       = deque->size;
     copy->capacity   = deque->capacity;
     copy->mem_alloc  = deque->mem_alloc;
     copy->mem_calloc = deque->mem_calloc;
     copy->mem_free   = deque->mem_free;
-    copy->buffer     = copy->mem_alloc(copy->capacity * sizeof(void*));
 
     copy_buffer(deque, copy->buffer, cp);
 
     copy->first = 0;
-    copy->last  = copy->size; // XXX
+    copy->last  = copy->size;
 
     return copy;
 }
@@ -599,17 +616,20 @@ Deque* deque_copy_deep(Deque *deque, void *(*cp) (void*))
  *
  * @param[in] deque the deque on which this operation is being performed
  */
-void deque_trim_capacity(Deque *deque)
+bool deque_trim_capacity(Deque *deque)
 {
     if (deque->capacity == deque->size)
-        return;
+        return false;
 
     size_t new_size = upper_pow_two(deque->size);
 
     if (new_size == deque->capacity)
-        return;
+        return false;
 
     void **new_buff = deque->mem_alloc(sizeof(void*) * new_size);
+
+    if (!new_buff)
+        return false;
 
     copy_buffer(deque, new_buff, NULL);
 
@@ -617,6 +637,7 @@ void deque_trim_capacity(Deque *deque)
     deque->first    = 0;
     deque->last     = deque->size;
     deque->capacity = new_size;
+    return true;
 }
 
 /**
@@ -798,8 +819,11 @@ static bool expand_capacity(Deque *deque)
     if (deque->capacity == MAX_POW_TWO)
         return false;
 
-    size_t   new_capacity = deque->capacity << 1;
-    void   **new_buffer   = deque->mem_calloc(new_capacity, sizeof(void*));
+    size_t new_capacity = deque->capacity << 1;
+    void **new_buffer = deque->mem_calloc(new_capacity, sizeof(void*));
+
+    if (!new_buffer)
+        return false;
 
     copy_buffer(deque, new_buffer, NULL);
 

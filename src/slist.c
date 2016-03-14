@@ -77,6 +77,9 @@ SList *slist_new_conf(SListConf *conf)
 {
     SList *list = conf->mem_calloc(1, sizeof(SList));
 
+    if (!list)
+        return NULL;
+
     list->mem_alloc  = conf->mem_alloc;
     list->mem_calloc = conf->mem_calloc;
     list->mem_free   = conf->mem_free;
@@ -851,7 +854,11 @@ size_t slist_index_of(SList *list, void *element)
 void **slist_to_array(SList *list)
 {
     void **array = list->mem_alloc(list->size * sizeof(void*));
-    SNode  *node  = list->head;
+
+    if (!array)
+        return NULL;
+
+    SNode *node = list->head;
 
     size_t i;
     for (i = 0; i < list->size; i++) {
@@ -878,13 +885,17 @@ void **slist_to_array(SList *list)
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
+bool slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
 {
     if (list->size == 1)
-        return;
+        return false;
 
     void **elements = slist_to_array(list);
-    SNode  *node     = list->head;
+
+    if (!elements)
+        return false;
+
+    SNode *node = list->head;
 
     qsort(elements, list->size, sizeof(void*), cmp);
 
@@ -894,6 +905,7 @@ void slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
         node       = node->next;
     }
     list->mem_free(elements);
+    return true;
 }
 
 /**

@@ -85,6 +85,9 @@ List *list_new_conf(ListConf *conf)
 {
     List *list = conf->mem_calloc(1, sizeof(List));
 
+    if (!list)
+        return NULL;
+
     list->mem_alloc  = conf->mem_alloc;
     list->mem_calloc = conf->mem_calloc;
     list->mem_free   = conf->mem_free;
@@ -739,8 +742,17 @@ List *list_sublist(List *list, size_t b, size_t e)
     conf.mem_calloc = list->mem_calloc;
     conf.mem_free   = list->mem_free;
 
-    List *sub  = list_new_conf(&conf);
+    List *sub = list_new_conf(&conf);
+
+    if (!sub)
+        return NULL;
+
     Node *node = get_node_at(list, b);
+
+    if (!node) {
+        list->mem_free(sub);
+        return NULL;
+    }
 
     size_t i;
     for (i = b; i <= e; i++) {
@@ -768,7 +780,16 @@ List *list_copy_shallow(List *list)
     conf.mem_free   = list->mem_free;
 
     List *copy = list_new_conf(&conf);
+
+    if (!copy)
+        return NULL;
+
     Node *node = list->head;
+
+    if (!node) {
+        list->mem_free(copy);
+        return NULL;
+    }
 
     while (node) {
         list_add(copy, node->data);
@@ -798,7 +819,16 @@ List *list_copy_deep(List *list, void *(*cp) (void *e1))
     conf.mem_free   = list->mem_free;
 
     List *copy = list_new_conf(&conf);
+
+    if (!copy)
+        return NULL;
+
     Node *node = list->head;
+
+    if (!node) {
+        list->mem_free(copy);
+        return NULL;
+    }
 
     while (node) {
         list_add(copy, cp(node->data));
@@ -820,8 +850,17 @@ List *list_copy_deep(List *list, void *(*cp) (void *e1))
  */
 void **list_to_array(List *list)
 {
-    void   **array = list->mem_calloc(list->size, sizeof(void*));
-    Node    *node  = list->head;
+    void **array = list->mem_calloc(list->size, sizeof(void*));
+
+    if (!array)
+        return NULL;
+
+    Node *node = list->head;
+
+    if (!node) {
+        list->mem_free(array);
+        return NULL;
+    }
 
     size_t   i;
     for (i = 0; i < list->size; i++) {
@@ -907,10 +946,14 @@ size_t list_size(List *list)
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void list_sort(List *list, int (*cmp) (void const *e1, void const *e2))
+bool list_sort(List *list, int (*cmp) (void const *e1, void const *e2))
 {
     void **elements = list_to_array(list);
-    Node  *node     = list->head;
+
+    if (!elements)
+        return false;
+
+    Node *node = list->head;
 
     qsort(elements, list->size, sizeof(void*), cmp);
 
@@ -920,6 +963,7 @@ void list_sort(List *list, int (*cmp) (void const *e1, void const *e2))
         node       = node->next;
     }
     list->mem_free(elements);
+    return true;
 }
 
 static Node *split(List *, Node *b, size_t l, int (*cmp) (void const *e1, void const *e2));
@@ -1127,6 +1171,10 @@ void *list_iter_remove(ListIter *iter)
 bool list_iter_add(ListIter *iter, void *element)
 {
     Node *new_node = iter->list->mem_calloc(1, sizeof(Node));
+
+    if (!new_node)
+        return false;
+
     new_node->data = element;
 
     link_behind(iter->next, new_node);

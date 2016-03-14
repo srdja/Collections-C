@@ -123,7 +123,7 @@ size_t     slist_index_of        (SList *list, void *element);
 void**     slist_to_array        (SList *list);
 
 void       slist_reverse         (SList *list);
-void       slist_sort            (SList *list, int (*cmp) (void const*, void const*));
+bool       slist_sort            (SList *list, int (*cmp) (void const*, void const*));
 size_t     slist_size            (SList *list);
 
 void       slist_foreach         (SList *list, void (*op) (void *));

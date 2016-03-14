@@ -100,7 +100,7 @@ Deque*     deque_copy_shallow    (Deque *deque);
 Deque*     deque_copy_deep       (Deque *deque, void *(*cp) (void*));
 
 void       deque_reverse         (Deque *deque);
-void       deque_trim_capacity   (Deque *deque);
+bool       deque_trim_capacity   (Deque *deque);
 
 size_t     deque_contains        (Deque *deque, void *element);
 size_t     deque_size            (Deque *deque);
