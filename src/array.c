@@ -64,24 +64,24 @@ Array *array_new()
 Array *array_new_conf(ArrayConf *conf)
 {
     float ex;
-    
-    /* The expansion factor must be greater than one for the 
+
+    /* The expansion factor must be greater than one for the
      * array to grow */
     if (conf->exp_factor <= 1)
         ex = DEFAULT_EXPANSION_FACTOR;
-    else 
+    else
         ex = conf->exp_factor;
-    
+
     /* Needed to avoid an integer overflow on the first resize and
      * to easily check for any future oveflows. */
     if (!conf->capacity || ex >= MAX_ELEMENTS / conf->capacity)
         return NULL;
-    
+
     Array *ar = conf->mem_calloc(1, sizeof(Array));
 
     if (ar == NULL)
         return NULL;
-    
+
     ar->exp_factor = ex;
     ar->capacity   = conf->capacity;
     ar->mem_alloc  = conf->mem_alloc;
@@ -409,13 +409,22 @@ Array *array_subarray(Array *ar, size_t b, size_t e)
     if (b > e || e > ar->size)
         return NULL;
 
-    Array *sub_ar     = ar->mem_calloc(1, sizeof(Array));
+    Array *sub_ar = ar->mem_calloc(1, sizeof(Array));
+
+    if (!sub_ar)
+        return NULL;
+
+    /* Try to allocate the buffer */
+    if (!(sub_ar->buffer = ar->mem_alloc(sub_ar->capacity * sizeof(void*)))) {
+        ar->mem_free(sub_ar);
+        return NULL;
+    }
+
     sub_ar->mem_alloc  = ar->mem_alloc;
     sub_ar->mem_calloc = ar->mem_calloc;
     sub_ar->mem_free   = ar->mem_free;
     sub_ar->size       = e - b + 1;
     sub_ar->capacity   = sub_ar->size;
-    sub_ar->buffer     = ar->mem_alloc(sub_ar->capacity * sizeof(void*));
 
     memcpy(sub_ar->buffer,
            &(ar->buffer[b]),
@@ -433,16 +442,22 @@ Array *array_subarray(Array *ar, size_t b, size_t e)
  *
  * @param[in] ar the array to be copied
  *
- * @return a shallow copy of the specified array
+ * @return a shallow copy of the specified array, or NULL if the allocation failed
  */
 Array *array_copy_shallow(Array *ar)
 {
     Array *copy = ar->mem_alloc(sizeof(Array));
 
+    if (!copy)
+        return NULL;
+
+    if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
+        ar->mem_free(copy);
+        return NULL;
+    }
     copy->exp_factor = ar->exp_factor;
     copy->size       = ar->size;
     copy->capacity   = ar->capacity;
-    copy->buffer     = ar->mem_calloc(copy->capacity, sizeof(void*));
     copy->mem_alloc  = ar->mem_alloc;
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
@@ -464,16 +479,23 @@ Array *array_copy_shallow(Array *ar)
  * @param[in] ar the array to be copied
  * @param[in] cp the copy function that returns a copy of a array element
  *
- * @return a deep copy of the specified array
+ * @return a deep copy of the specified array, or NULL if the allocation failed
  */
 Array *array_copy_deep(Array *ar, void *(*cp) (void *))
 {
-    Array *copy   = ar->mem_alloc(sizeof(Array));
+    Array *copy = ar->mem_alloc(sizeof(Array));
+
+    if (!copy)
+        return NULL;
+
+    if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
+        ar->mem_free(copy);
+        return NULL;
+    }
 
     copy->exp_factor = ar->exp_factor;
     copy->size       = ar->size;
     copy->capacity   = ar->capacity;
-    copy->buffer     = ar->mem_calloc(copy->capacity, sizeof(void*));
     copy->mem_alloc  = ar->mem_alloc;
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
@@ -507,20 +529,27 @@ void array_reverse(Array *ar)
  * never shrink below 1.
  *
  * @param[in] ar the array whose capacity is being trimmed.
+ *
+ * @return true if the operation was successful
  */
-void array_trim_capacity(Array *ar)
+bool array_trim_capacity(Array *ar)
 {
     if (ar->size == ar->capacity)
-        return;
+        return false;
 
-    void   **new_buff = ar->mem_calloc(ar->size, sizeof(void*));
-    size_t   size     = ar->size < 1 ? 1 : ar->size;
+    void **new_buff = ar->mem_calloc(ar->size, sizeof(void*));
+
+    if (!new_buff)
+        return false;
+
+    size_t size = ar->size < 1 ? 1 : ar->size;
 
     memcpy(new_buff, ar->buffer, size * sizeof(void*));
     ar->mem_free(ar->buffer);
 
     ar->buffer   = new_buff;
     ar->capacity = ar->size;
+    return true;
 }
 
 /**

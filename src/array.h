@@ -109,7 +109,7 @@ Array*       array_copy_shallow    (Array *ar);
 Array*       array_copy_deep       (Array *ar, void *(*cp) (void*));
 
 void         array_reverse         (Array *ar);
-void         array_trim_capacity   (Array *ar);
+bool         array_trim_capacity   (Array *ar);
 
 size_t       array_contains        (Array *ar, void *element);
 size_t       array_size            (Array *ar);

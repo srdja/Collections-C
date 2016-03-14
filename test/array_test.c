@@ -428,9 +428,7 @@ void test_array_trim_capacity()
     array_add(v, &c);
 
     size_t c1 = array_capacity(v);
-
-    array_trim_capacity(v);
-
+    bool   op = array_trim_capacity(v);
     size_t c2 = array_capacity(v);
 
     cc_assert(c1 == 20,
