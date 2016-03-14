@@ -5,6 +5,38 @@ Collections-C
 
 A library of generic data structures including a list, array, hashtable, deque etc..
 
+## Examples
+Check the [documentation](https://srdja.github.io/Collections-C/) for details.
+
+HashTable:
+```c
+HashTable *table = hashtable_new();
+
+hashtable_add(table, "some_key", "some_value");
+hashtable_add(table, "foo", "bar");
+
+char *value   = hashtable_get(table, "foo");    // returns "bar"
+char *removed = hashtable_remove(table, "foo"); // removes the key and returns the value
+
+hashtable_destroy(table);
+```
+Array (dynamic array):
+```c
+Array *vec = array_new();
+
+array_add(vec, "foo");
+array_add(vec, "bar");
+array_add(vec, "baz");
+
+char *foo = array_get(vec, 0);
+char *baz = array_get(vec, 2);
+
+char *removed = array_remove_at(vec, 1);
+
+array_destroy(vec);
+```
+## Installation
+
 ####Dependencies
 - gcc
 - autoconf
@@ -57,56 +89,6 @@ We can now build and statically link the library to our program:
 gcc hello.c -I/path/to/library/include/ -static -L/path/to/library/lib/ -lcollectc -o hello
 ```
 
-#### Examples
-Check the [documentation](https://srdja.github.io/Collections-C/) for details.
+## Contributors
 
-HashTable:
-```c
-HashTable *table = hashtable_new();
-
-hashtable_add(table, "some_key", "some_value");
-hashtable_add(table, "foo", "bar");
-
-char *value   = hashtable_get(table, "foo");    // returns "bar"
-char *removed = hashtable_remove(table, "foo"); // removes the key and returns the value
-
-hashtable_destroy(table);
-```
-Array (dynamic array):
-```c
-Array *vec = array_new();
-
-array_add(vec, "foo");
-array_add(vec, "bar");
-array_add(vec, "baz");
-
-char *foo = array_get(vec, 0);
-char *baz = array_get(vec, 2);
-
-char *removed = array_remove_at(vec, 1);
-
-array_destroy(vec);
-```
-TreeSet (sorted set):
-```c
-int cmp(void *e1, void *e2) {
-    if (*((int*) e1) < *((int*) e2)) return -1;
-    if (*((int*) e1) > *((int*) e2)) return 1;
-    return 0;
-}
-
-TreeSet *set = treeset_new(cmp);
-
-int a = 1;
-int b = 2;
-int c = 3;
-
-treeset_add(set, &c);
-treeset_add(set, &d);
-treeset_add(set, &a);
-treeset_add(set, &c); // does nothing since the element is already in the set
-
-int first = *((int*) treeset_get_first(set)); // the set is sorted so this returns a
-
-treeset_destroy(set);
-```
+Contributions are very much welcome.
