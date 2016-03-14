@@ -6,7 +6,7 @@ Collections-C
 A library of generic data structures including a list, array, hashtable, deque etc..
 
 ## Examples
-Check the [documentation](https://srdja.github.io/Collections-C/) for details.
+Check the [documentation](https://srdja.github.io/Collections-C/) for details. And the [wiki](https://github.com/srdja/Collections-C/wiki) for more detailed examples (currently in progress).
 
 HashTable:
 ```c
