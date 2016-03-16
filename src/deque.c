@@ -152,7 +152,7 @@ CCStat deque_add(Deque *deque, void *element)
  */
 CCStat deque_add_first(Deque *deque, void *element)
 {
-    if (deque->size >= deque->capacity && !expand_capacity(deque))
+    if (deque->size >= deque->capacity && expand_capacity(deque) != CC_OK)
         return CC_ERR_ALLOC;
 
     deque->first = (deque->first - 1) & (deque->capacity - 1);
@@ -174,7 +174,7 @@ CCStat deque_add_first(Deque *deque, void *element)
  */
 CCStat deque_add_last(Deque *deque, void *element)
 {
-    if (deque->capacity == deque->size && !expand_capacity(deque))
+    if (deque->capacity == deque->size && expand_capacity(deque) != CC_OK)
         return CC_ERR_ALLOC;
 
     deque->buffer[deque->last] = element;
@@ -201,7 +201,7 @@ CCStat deque_add_at(Deque *deque, void *element, size_t index)
     if (index >= deque->size)
         return CC_ERR_NO_SUCH_INDEX;
 
-    if (deque->capacity == deque->size && !expand_capacity(deque))
+    if (deque->capacity == deque->size && expand_capacity(deque) != CC_OK)
         return CC_ERR_ALLOC;
 
     const size_t c = deque->capacity - 1;

@@ -41,7 +41,6 @@ typedef enum cc_stat_e {
     CC_ERR_MAX_CAPACITY     = 4,
     CC_ERR_KEY_NOT_FOUND    = 6,
     CC_ERR_NO_SUCH_INDEX    = 7,
-    CC_MAX_ELEMENTS         = 8,
 } CCStat;
 
 /*
@@ -52,8 +51,9 @@ typedef enum cc_stat_e {
 #define CC_ERR_MAX_CAPACITY 4
 #define CC_ERR_KEY_NOT_FOUND 6
 #define CC_ERR_NO_SUCH_INDEX ((size_t) - 1)
-#define CC_MAX_ELEMENTS  ((size_t) - 2)
 */
+#define CC_MAX_ELEMENTS ((size_t) - 2)
+
 #if defined(_MSC_VER)
 
 #define       INLINE __inline

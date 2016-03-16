@@ -80,16 +80,17 @@ CCStat array_new_conf(const ArrayConf const* conf, Array **out)
 
     Array *ar = conf->mem_calloc(1, sizeof(Array));
 
-    if (ar == NULL)
+    if (!ar)
         return CC_ERR_ALLOC;
 
-    ar->buffer = ar->mem_calloc(ar->capacity, sizeof(void*));
+    void **buff = conf->mem_alloc(conf->capacity * sizeof(void*));
 
-    if (!ar->buffer) {
+    if (!buff) {
         conf->mem_free(ar);
         return CC_ERR_ALLOC;
     }
 
+    ar->buffer     = buff;
     ar->exp_factor = ex;
     ar->capacity   = conf->capacity;
     ar->mem_alloc  = conf->mem_alloc;
@@ -156,7 +157,7 @@ void array_destroy_free(Array *ar)
  */
 CCStat array_add(Array *ar, void *element)
 {
-    if (ar->size >= ar->capacity && (expand_capacity(ar) == CC_ERR_ALLOC))
+    if (ar->size >= ar->capacity && expand_capacity(ar) != CC_OK)
         return CC_ERR_ALLOC;
 
     ar->buffer[ar->size] = element;
@@ -184,7 +185,7 @@ CCStat array_add_at(Array *ar, void *element, size_t index)
     if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
         return CC_ERR_NO_SUCH_INDEX;
 
-    if (ar->size == ar->capacity && (expand_capacity(ar) == CC_ERR_ALLOC))
+    if (ar->size == ar->capacity && (expand_capacity(ar) != CC_OK))
         return CC_ERR_ALLOC;
 
     size_t shift = (ar->size - index) * sizeof(void*);
