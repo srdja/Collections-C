@@ -55,12 +55,12 @@ typedef struct hashset_iter_s {
 
 void        hashset_conf_init     (HashSetConf *conf);
 
-HashSet    *hashset_new           (void);
-HashSet    *hashset_new_conf      (HashSetConf *properties);
+int         hashset_new           (HashSet **hs);
+int         hashset_new_conf      (const HashSetConf const* conf, HashSet **hs);
 void        hashset_destroy       (HashSet *set);
 
-bool        hashset_add           (HashSet *set, void *element);
-void       *hashset_remove        (HashSet *set, void *element);
+int         hashset_add           (HashSet *set, void *element);
+int         hashset_remove        (HashSet *set, void *element, void **out);
 void        hashset_remove_all    (HashSet *set);
 
 bool        hashset_contains      (HashSet *set, void *element);
@@ -72,6 +72,6 @@ void        hashset_foreach       (HashSet *set, void (*op) (const void*));
 void        hashset_iter_init     (HashSetIter *iter, HashSet *set);
 bool        hashset_iter_has_next (HashSetIter *iter);
 const void *hashset_iter_next     (HashSetIter *iter);
-void       *hashset_iter_remove   (HashSetIter *iter);
+int         hashset_iter_remove   (HashSetIter *iter, void **out);
 
 #endif /* HASHSET_H_ */

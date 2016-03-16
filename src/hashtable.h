@@ -145,13 +145,13 @@ typedef struct hashtable_conf_s {
 
 
 void        hashtable_conf_init       (HashTableConf *conf);
-HashTable  *hashtable_new             (void);
-HashTable  *hashtable_new_conf        (HashTableConf *conf);
+int         hashtable_new             (HashTable **out);
+int         hashtable_new_conf        (const HashTableConf const* conf, HashTable **out);
 
 void        hashtable_destroy         (HashTable *table);
-bool        hashtable_add             (HashTable *table, void *key, void *val);
-void       *hashtable_get             (HashTable *table, void *key);
-void       *hashtable_remove          (HashTable *table, void *key);
+int         hashtable_add             (HashTable *table, void *key, void *val);
+int         hashtable_get             (HashTable *table, void *key, void **out);
+int         hashtable_remove          (HashTable *table, void *key, void **out);
 void        hashtable_remove_all      (HashTable *table);
 bool        hashtable_contains_key    (HashTable *table, void *key);
 
@@ -179,8 +179,8 @@ void        hashtable_foreach_value   (HashTable *table, void (*op) (void *));
 
 void        hashtable_iter_init       (HashTableIter *iter, HashTable *table);
 bool        hashtable_iter_has_next   (HashTableIter *iter);
-TableEntry *hashtable_iter_next       (HashTableIter *iter);
-void        hashtable_iter_remove     (HashTableIter *iter);
+void        hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
+int         hashtable_iter_remove     (HashTableIter *iter, void **out);
 
 #define CMP_STRING   hashtable_string_key_cmp
 #define CMP_FLOAT    hashtable_float_key_cmp
