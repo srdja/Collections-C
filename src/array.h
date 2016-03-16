@@ -116,7 +116,7 @@ size_t  array_size            (Array *ar);
 size_t  array_capacity        (Array *ar);
 
 size_t  array_index_of        (Array *ar, void *element);
-void    array_sort            (Array *ar, CCStat (*cmp) (const void*, const void*));
+void    array_sort            (Array *ar, int (*cmp) (const void*, const void*));
 
 void    array_foreach         (Array *ar, void (*op) (void *));
 
