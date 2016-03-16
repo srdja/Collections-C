@@ -120,6 +120,20 @@ void test_array_add_at()
               cc_msg("array_add_at: Expected %d at index 3, but got %d", c, i3));
 
     array_destroy(v);
+
+
+    Array *ar = array_new();
+    size_t s  = array_size(ar);
+
+    cc_assert(s == 0,
+              cc_msg("array_add_at: Expected size 0, but got %d", s));
+
+    bool status = array_add_at(ar, &a, 1);
+
+    cc_assert(!status,
+              cc_msg("array_add_at: Expected operation failure"));
+
+    array_destroy(ar);
 }
 
 
