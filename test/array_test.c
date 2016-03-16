@@ -55,6 +55,9 @@ void test_array_add()
     Array *v;
     int stat = array_new(&v);
 
+    cc_assert(stat == CC_OK,
+              cc_msg("array_add: Expected status %d but got %d instead", CC_OK, stat));
+
     int a = 5;
     int b = 12;
     int c = 848;

@@ -472,7 +472,8 @@ void test_rb_structure()
     char *dummy = "dummy";
 
     /* Easy tracking of how many keys are available after removal */
-    Deque     *keys = deque_new();
+    Deque *keys;
+    deque_new(&keys);
     TreeTable *tree = treetable_new(cmp);
 
     /* Populate the tree and assert RB validity on each insert */
@@ -491,11 +492,12 @@ void test_rb_structure()
     /* Remove keys at random until all keys are removed and assert Red Black */
     /* validity on each remove. */
     for (i = 0; i < nkeys; i++) {
-        int *key = deque_get(keys, (rand() % (deque_size(keys)) -1));
+        int *key;
+        deque_get(keys, (rand() % (deque_size(keys)) -1), (void*)&key);
 
         if (key != NULL) {
             treetable_remove(tree, key);
-            deque_remove(keys, key);
+            deque_remove(keys, key, NULL);
         }
         int status = treetable_assert_rb_rules(tree);
         cc_assert(status  == RB_ERROR_OK,
