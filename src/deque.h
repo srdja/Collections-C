@@ -72,50 +72,50 @@ typedef struct deque_iter_s {
     size_t index;
 } DequeIter;
 
-int        deque_new             (Deque **deque);
-int        deque_new_conf        (const DequeConf const* conf, Deque **deque);
+CCStat     deque_new             (Deque **deque);
+CCStat     deque_new_conf        (const DequeConf const* conf, Deque **deque);
 void       deque_conf_init       (DequeConf *conf);
 
 void       deque_destroy         (Deque *deque);
 void       deque_destroy_free    (Deque *deque);
 
-int        deque_add             (Deque *deque, void *element);
-int        deque_add_first       (Deque *deque, void *element);
-int        deque_add_last        (Deque *deque, void *element);
-int        deque_add_at          (Deque *deque, void *element, size_t index);
-int        deque_replace_at      (Deque *deque, void *element, size_t index, void **out);
+CCStat     deque_add             (Deque *deque, void *element);
+CCStat     deque_add_first       (Deque *deque, void *element);
+CCStat     deque_add_last        (Deque *deque, void *element);
+CCStat     deque_add_at          (Deque *deque, void *element, size_t index);
+CCStat     deque_replace_at      (Deque *deque, void *element, size_t index, void **out);
 
-int        deque_remove          (Deque *deque, void *element, void **out);
-int        deque_remove_at       (Deque *deque, size_t index, void **out);
-int        deque_remove_first    (Deque *deque, void **out);
-int        deque_remove_last     (Deque *deque, void **out);
+CCStat     deque_remove          (Deque *deque, void *element, void **out);
+CCStat     deque_remove_at       (Deque *deque, size_t index, void **out);
+CCStat     deque_remove_first    (Deque *deque, void **out);
+CCStat     deque_remove_last     (Deque *deque, void **out);
 void       deque_remove_all      (Deque *deque);
 void       deque_remove_all_free (Deque *deque);
 
-int        deque_get             (Deque *deque, size_t index, void **out);
-int        deque_get_first       (Deque *deque, void **out);
-int        deque_get_last        (Deque *deque, void **out);
+CCStat     deque_get             (Deque *deque, size_t index, void **out);
+CCStat     deque_get_first       (Deque *deque, void **out);
+CCStat     deque_get_last        (Deque *deque, void **out);
 
-int        deque_copy_shallow    (Deque *deque, Deque **out);
-int        deque_copy_deep       (Deque *deque, void *(*cp) (void*), Deque **out);
+CCStat     deque_copy_shallow    (Deque *deque, Deque **out);
+CCStat     deque_copy_deep       (Deque *deque, void *(*cp) (void*), Deque **out);
 
 void       deque_reverse         (Deque *deque);
-int        deque_trim_capacity   (Deque *deque);
+CCStat     deque_trim_capacity   (Deque *deque);
 
 size_t     deque_contains        (Deque *deque, void *element);
 size_t     deque_size            (Deque *deque);
 size_t     deque_capacity        (Deque *deque);
 
-size_t     deque_index_of        (Deque *deque, void *element);
+CCStat     deque_index_of        (Deque *deque, void *element, size_t *i);
 
 void       deque_foreach         (Deque *deque, void (*op) (void *));
 
 void       deque_iter_init       (DequeIter *iter, Deque *deque);
 bool       deque_iter_has_next   (DequeIter *iter);
 void       deque_iter_next       (DequeIter *iter, void **out);
-int        deque_iter_remove     (DequeIter *iter, void **out);
-int        deque_iter_add        (DequeIter *iter, void *element);
-int        deque_iter_replace    (DequeIter *iter, void *replacement, void **out);
+CCStat     deque_iter_remove     (DequeIter *iter, void **out);
+CCStat     deque_iter_add        (DequeIter *iter, void *element);
+CCStat     deque_iter_replace    (DequeIter *iter, void *replacement, void **out);
 size_t     deque_iter_index      (DequeIter *iter);
 
 const void* const* deque_get_buffer(Deque *deque);

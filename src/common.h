@@ -32,6 +32,19 @@
 #define MAX_POW_TWO (((size_t) 1) << 31)
 #endif /* ARCH_64 */
 
+
+typedef enum cc_stat_e {
+    CC_OK                   = 0,
+    CC_ERR_ALLOC            = 1,
+    CC_ERR_INVALID_CAPACITY = 2,
+    CC_ERR_INVALID_RANGE    = 3,
+    CC_ERR_MAX_CAPACITY     = 4,
+    CC_ERR_KEY_NOT_FOUND    = 6,
+    CC_ERR_NO_SUCH_INDEX    = 7,
+    CC_MAX_ELEMENTS         = 8,
+} CCStat;
+
+/*
 #define CC_OK 0
 #define CC_ERR_ALLOC 1
 #define CC_ERR_INVALID_CAPACITY 2
@@ -40,7 +53,7 @@
 #define CC_ERR_KEY_NOT_FOUND 6
 #define CC_ERR_NO_SUCH_INDEX ((size_t) - 1)
 #define CC_MAX_ELEMENTS  ((size_t) - 2)
-
+*/
 #if defined(_MSC_VER)
 
 #define       INLINE __inline

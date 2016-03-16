@@ -34,7 +34,7 @@ struct array_s {
     void  (*mem_free)   (void *block);
 };
 
-static int expand_capacity(Array *vec);
+static CCStat expand_capacity(Array *vec);
 
 
 /**
@@ -42,7 +42,7 @@ static int expand_capacity(Array *vec);
  *
  * @return a new array if the allocation was successful, or NULL if it was not.
  */
-int array_new(Array **out)
+CCStat array_new(Array **out)
 {
     ArrayConf c;
     array_conf_init(&c);
@@ -61,7 +61,7 @@ int array_new(Array **out)
  *
  * @return a new array if the allocation was successful, or NULL if not.
  */
-int array_new_conf(const ArrayConf const* conf, Array **out)
+CCStat array_new_conf(const ArrayConf const* conf, Array **out)
 {
     float ex;
 
@@ -72,7 +72,7 @@ int array_new_conf(const ArrayConf const* conf, Array **out)
     else
         ex = conf->exp_factor;
 
-    /* Needed to avoid an integer overflow on the first resize and
+    /* Needed to avoid an CCStateger overflow on the first resize and
      * to easily check for any future oveflows. */
     if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity) {
         return CC_ERR_INVALID_CAPACITY;
@@ -109,7 +109,7 @@ void array_conf_init(ArrayConf *conf)
 }
 
 /**
- * Destroys the array structure, but leaves the data it used to hold, intact.
+ * Destroys the array structure, but leaves the data it used to hold, CCStatact.
  *
  * @param[in] ar the Array that is to be destroyed.
  */
@@ -148,7 +148,7 @@ void array_destroy_free(Array *ar)
  *
  * @return true if the operation was successful.
  */
-int array_add(Array *ar, void *element)
+CCStat array_add(Array *ar, void *element)
 {
     if (ar->size >= ar->capacity && (expand_capacity(ar) == CC_ERR_ALLOC))
         return CC_ERR_ALLOC;
@@ -173,7 +173,7 @@ int array_add(Array *ar, void *element)
  *
  * @return true if the operation was successful
  */
-int array_add_at(Array *ar, void *element, size_t index)
+CCStat array_add_at(Array *ar, void *element, size_t index)
 {
     if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
         return CC_ERR_NO_SUCH_INDEX;
@@ -206,7 +206,7 @@ int array_add_at(Array *ar, void *element, size_t index)
  *
  * @return the replaced element or NULL if the index was out of bounds.
  */
-int array_replace_at(Array *ar, void *element, size_t index, void **out)
+CCStat array_replace_at(Array *ar, void *element, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_NO_SUCH_INDEX;
@@ -230,7 +230,7 @@ int array_replace_at(Array *ar, void *element, size_t index, void **out)
  *
  * @return the removed element, or NULL if the operation has failed
  */
-int array_remove(Array *ar, void *element, void **out)
+CCStat array_remove(Array *ar, void *element, void **out)
 {
     size_t index = array_index_of(ar, element);
 
@@ -263,7 +263,7 @@ int array_remove(Array *ar, void *element, void **out)
  *
  * @return the removed element, or NULL if the operation fails
  */
-int array_remove_at(Array *ar, size_t index, void **out)
+CCStat array_remove_at(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_NO_SUCH_INDEX;
@@ -293,7 +293,7 @@ int array_remove_at(Array *ar, size_t index, void **out)
  *
  * @return the last element of the array ie. the element at the highest index
  */
-int array_remove_last(Array *ar, void **out)
+CCStat array_remove_last(Array *ar, void **out)
 {
     return array_remove_at(ar, ar->size - 1, out);
 }
@@ -336,7 +336,7 @@ void array_remove_all_free(Array *ar)
  * @return array element at the specified index, or NULL if the operation has
  *         failed
  */
-int array_get(Array *ar, size_t index, void **out)
+CCStat array_get(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_NO_SUCH_INDEX;
@@ -355,7 +355,7 @@ int array_get(Array *ar, size_t index, void **out)
  *
  * @return the last element of the specified array
  */
-int array_get_last(Array *ar, void **out)
+CCStat array_get_last(Array *ar, void **out)
 {
     return array_get(ar, ar->size - 1, out);
 }
@@ -413,7 +413,7 @@ size_t array_index_of(Array *ar, void *element)
  *
  * @return a subarray of the specified array, or NULL
  */
-int array_subarray(Array *ar, size_t b, size_t e, Array **out)
+CCStat array_subarray(Array *ar, size_t b, size_t e, Array **out)
 {
     if (b > e || e > ar->size)
         return CC_ERR_INVALID_RANGE;
@@ -454,7 +454,7 @@ int array_subarray(Array *ar, size_t b, size_t e, Array **out)
  *
  * @return a shallow copy of the specified array, or NULL if the allocation failed
  */
-int array_copy_shallow(Array *ar, Array **out)
+CCStat array_copy_shallow(Array *ar, Array **out)
 {
     Array *copy = ar->mem_alloc(sizeof(Array));
 
@@ -492,7 +492,7 @@ int array_copy_shallow(Array *ar, Array **out)
  *
  * @return a deep copy of the specified array, or NULL if the allocation failed
  */
-int array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
+CCStat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
 {
     Array *copy = ar->mem_alloc(sizeof(Array));
 
@@ -545,7 +545,7 @@ void array_reverse(Array *ar)
  *
  * @return true if the operation was successful
  */
-int array_trim_capacity(Array *ar)
+CCStat array_trim_capacity(Array *ar)
 {
     if (ar->size == ar->capacity)
         return CC_OK;
@@ -615,15 +615,15 @@ size_t array_capacity(Array *ar)
  * Sorts the specified array.
  *
  * @note
- * Pointers passed to the comparator function will be pointers to the array
+ * PoCCStaters passed to the comparator function will be poCCStaters to the array
  * elements that are of type (void*) ie. void**. So an extra step of
  * dereferencing will be required before the data can be used for comparison:
  * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
  *
  * @code
- * int mycmp(const void *e1, const void *e2) {
- *     MyType el1 = *(*((int**) e1));
- *     MyType el2 = *(*((int**) e2));
+ * CCStat mycmp(const void *e1, const void *e2) {
+ *     MyType el1 = *(*((CCStat**) e1));
+ *     MyType el2 = *(*((CCStat**) e2));
  *
  *     if (el1 < el2) return -1;
  *     if (el1 > el2) return 1;
@@ -637,12 +637,12 @@ size_t array_capacity(Array *ar)
  *
  * @param[in] ar array to be sorted
  * @param[in] cmp the comparator function that must be of type <code>
- *                int cmp(const void e1*, const void e2*)</code> that
+ *                CCStat cmp(const void e1*, const void e2*)</code> that
  *                returns < 0 if the first element goes before the second,
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void array_sort(Array *ar, int (*cmp) (const void*, const void*))
+void array_sort(Array *ar, CCStat (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
 }
@@ -658,7 +658,7 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
  *
  * @return true if the operation was successful
  */
-static int expand_capacity(Array *ar)
+static CCStat expand_capacity(Array *ar)
 {
     if (ar->capacity == CC_MAX_ELEMENTS)
         return CC_ERR_MAX_CAPACITY;
@@ -666,7 +666,7 @@ static int expand_capacity(Array *ar)
     size_t new_capacity = ar->capacity * ar->exp_factor;
 
     /* As long as the capacity is greater that the expansion factor
-     * at the point of overflow, this is check is valid. */
+     * at the poCCStat of overflow, this is check is valid. */
     if (new_capacity <= ar->capacity)
         ar->capacity = CC_MAX_ELEMENTS;
     else
@@ -733,7 +733,8 @@ bool array_iter_has_next(ArrayIter *iter)
  */
 void array_iter_next(ArrayIter *iter, void **out)
 {
-    *out = iter->ar->buffer[iter->index++];
+    if (out)
+        *out = iter->ar->buffer[iter->index++];
 }
 
 /**
@@ -744,7 +745,7 @@ void array_iter_next(ArrayIter *iter, void **out)
  *
  * @return the removed element
  */
-int array_iter_remove(ArrayIter *iter, void **out)
+CCStat array_iter_remove(ArrayIter *iter, void **out)
 {
     return array_remove_at(iter->ar, iter->index - 1, out);
 }
@@ -759,7 +760,7 @@ int array_iter_remove(ArrayIter *iter, void **out)
  * @return true if the element was successfully added or false if the allocation
  *         for the new element failed.
  */
-int array_iter_add(ArrayIter *iter, void *element)
+CCStat array_iter_add(ArrayIter *iter, void *element)
 {
     return array_add_at(iter->ar, element, iter->index++);
 }
@@ -773,7 +774,7 @@ int array_iter_add(ArrayIter *iter, void *element)
  *
  * @return the old element that was replaced by the new one
  */
-int array_iter_replace(ArrayIter *iter, void *element, void **out)
+CCStat array_iter_replace(ArrayIter *iter, void *element, void **out)
 {
     return array_replace_at(iter->ar, element, iter->index, out);
 }
