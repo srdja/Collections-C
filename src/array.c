@@ -55,7 +55,7 @@ Array *array_new()
  * The array is allocated using the allocators specified in the ArrayConf
  * struct. The allocation may fail if underlying allocator fails. It may also
  * fail if the values of exp_factor and capacity in the ArrayConf do not meet
- * the following condition: <code>exp_factor < (MAX_ELEMENTS / capacity)</code>.
+ * the following condition: <code>exp_factor < (CC_MAX_ELEMENTS / capacity)</code>.
  *
  * @param[in] conf Array configuration object
  *
@@ -74,7 +74,7 @@ Array *array_new_conf(ArrayConf *conf)
 
     /* Needed to avoid an integer overflow on the first resize and
      * to easily check for any future oveflows. */
-    if (!conf->capacity || ex >= MAX_ELEMENTS / conf->capacity)
+    if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity)
         return NULL;
 
     Array *ar = conf->mem_calloc(1, sizeof(Array));
@@ -230,7 +230,7 @@ void *array_remove(Array *ar, void *element)
 {
     size_t index = array_index_of(ar, element);
 
-    if (index == NO_SUCH_INDEX)
+    if (index == CC_ERR_NO_SUCH_INDEX)
         return NULL;
 
     if (index != ar->size - 1) {
@@ -367,7 +367,7 @@ const void * const*array_get_buffer(Array *ar)
 
 /**
  * Returns the index of the first occurrence of the specified array element, or
- * NO_SUCH_INDEX if the element could not be found.
+ * CC_ERR_NO_SUCH_INDEX if the element could not be found.
  *
  * @param[in] ar array being searched
  * @param[in] element the element whose index is being looked up
@@ -381,7 +381,7 @@ size_t array_index_of(Array *ar, void *element)
         if (ar->buffer[i] == element)
             return i;
     }
-    return NO_SUCH_INDEX;
+    return CC_ERR_NO_SUCH_INDEX;
 }
 
 /**
@@ -646,7 +646,7 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
  */
 static bool expand_capacity(Array *ar)
 {
-    if (ar->capacity == MAX_ELEMENTS)
+    if (ar->capacity == CC_MAX_ELEMENTS)
         return false;
 
     size_t new_capacity = ar->capacity * ar->exp_factor;
@@ -654,7 +654,7 @@ static bool expand_capacity(Array *ar)
     /* As long as the capacity is greater that the expansion factor
      * at the point of overflow, this is check is valid. */
     if (new_capacity <= ar->capacity)
-        ar->capacity = MAX_ELEMENTS;
+        ar->capacity = CC_MAX_ELEMENTS;
     else
         ar->capacity = new_capacity;
 

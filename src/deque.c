@@ -321,7 +321,7 @@ void *deque_remove(Deque *deque, void *element)
 {
     size_t index = deque_index_of(deque, element);
 
-    if (index == NO_SUCH_INDEX)
+    if (index == CC_ERR_NO_SUCH_INDEX)
         return NULL;
 
     return deque_remove_at(deque, index);
@@ -340,7 +340,7 @@ void *deque_remove(Deque *deque, void *element)
  */
 void *deque_remove_at(Deque *deque, size_t index)
 {
-    if (index >= deque->size || index == NO_SUCH_INDEX)
+    if (index >= deque->size || index == CC_ERR_NO_SUCH_INDEX)
         return NULL;
 
     const size_t c = deque->capacity - 1;
@@ -688,7 +688,7 @@ size_t deque_contains(Deque *deque, void *element)
 
 /**
  * Returns the index of the first occurence of the specified deque element, or
- * NO_SUCH_INDEX if the element could not be found.
+ * CC_ERR_NO_SUCH_INDEX if the element could not be found.
  *
  * @param[in] deque deque being searched
  * @param[in] element the element whose index is being looked up
@@ -706,7 +706,7 @@ size_t deque_index_of(Deque *deque, void *element)
         if (deque->buffer[p] == element)
             return i;
     }
-    return NO_SUCH_INDEX;
+    return CC_ERR_NO_SUCH_INDEX;
 }
 
 /**

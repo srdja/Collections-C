@@ -893,14 +893,14 @@ size_t list_contains(List *list, void *element)
 }
 
 /**
- * Returns the index of the specified element, or <code>NO_SUCH_INDEX</code> if
+ * Returns the index of the specified element, or <code>CC_ERR_NO_SUCH_INDEX</code> if
  * the element is not found. The returned index is the index of the first
  * occurrence of the element starting from the beginning of the list.
  *
  * @param[in] list    the list on which this operation is performed
  * @param[in] element the element whose index is being looked up
  *
- * @return the index of the specified element or <code>NO_SUCH_INDEX</code> if
+ * @return the index of the specified element or <code>CC_ERR_NO_SUCH_INDEX</code> if
  *         the element is not found.
  */
 size_t list_index_of(List *list, void *element)
@@ -914,7 +914,7 @@ size_t list_index_of(List *list, void *element)
         i++;
         node = node->next;
     }
-    return NO_SUCH_INDEX;
+    return CC_ERR_NO_SUCH_INDEX;
 }
 
 /**
