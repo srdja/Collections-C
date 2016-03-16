@@ -36,7 +36,7 @@ struct deque_s {
 };
 
 static size_t upper_pow_two   (size_t);
-static bool   expand_capacity (Deque *deque);
+static int    expand_capacity (Deque *deque);
 static void   copy_buffer     (Deque *deque, void **buff, void *(*cp) (void*));
 
 /**
@@ -44,11 +44,11 @@ static void   copy_buffer     (Deque *deque, void **buff, void *(*cp) (void*));
  *
  * @return a new deque if the allocation was successful, or NULL if it was not.
  */
-Deque *deque_new()
+int deque_new(Deque **deque)
 {
     DequeConf conf;
     deque_conf_init(&conf);
-    return deque_new_conf(&conf);
+    return deque_new_conf(&conf, deque);
 }
 
 /**
@@ -62,16 +62,16 @@ Deque *deque_new()
  *
  * @return a new deque if the allocation was successful, or NULL if not.
  */
-Deque *deque_new_conf(DequeConf *conf)
+int deque_new_conf(const DequeConf const* conf, Deque **d)
 {
     Deque *deque = conf->mem_calloc(1, sizeof(Deque));
 
     if (!deque)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     if (!(deque->buffer = conf->mem_alloc(conf->capacity * sizeof(void*)))) {
         conf->mem_free(deque);
-        return NULL;
+        return CC_ERR_ALLOC;
     }
 
     deque->mem_alloc  = conf->mem_alloc;
@@ -82,7 +82,8 @@ Deque *deque_new_conf(DequeConf *conf)
     deque->last       = 0;
     deque->size       = 0;
 
-    return deque;
+    *d = deque;
+    return CC_OK;
 }
 
 /**
@@ -134,7 +135,7 @@ void deque_destroy_free(Deque *deque)
  *
  * @return true if the operation was successful
  */
-bool deque_add(Deque *deque, void *element)
+int deque_add(Deque *deque, void *element)
 {
     return deque_add_last(deque, element);
 }
@@ -149,16 +150,16 @@ bool deque_add(Deque *deque, void *element)
  *
  * @return true if the operation was successful
  */
-bool deque_add_first(Deque *deque, void *element)
+int deque_add_first(Deque *deque, void *element)
 {
     if (deque->size >= deque->capacity && !expand_capacity(deque))
-        return false;
+        return CC_ERR_ALLOC;
 
     deque->first = (deque->first - 1) & (deque->capacity - 1);
     deque->buffer[deque->first] = element;
     deque->size++;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -171,16 +172,16 @@ bool deque_add_first(Deque *deque, void *element)
  *
  * @return true if the operation was successful
  */
-bool deque_add_last(Deque *deque, void *element)
+int deque_add_last(Deque *deque, void *element)
 {
     if (deque->capacity == deque->size && !expand_capacity(deque))
-        return false;
+        return CC_ERR_ALLOC;
 
     deque->buffer[deque->last] = element;
     deque->last = (deque->last + 1) & (deque->capacity - 1);
     deque->size++;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -195,13 +196,13 @@ bool deque_add_last(Deque *deque, void *element)
  *
  * @return true if the the operation was successful
  */
-bool deque_add_at(Deque *deque, void *element, size_t index)
+int deque_add_at(Deque *deque, void *element, size_t index)
 {
     if (index >= deque->size)
-        return false;
+        return CC_ERR_NO_SUCH_INDEX;
 
     if (deque->capacity == deque->size && !expand_capacity(deque))
-        return false;
+        return CC_ERR_ALLOC;
 
     const size_t c = deque->capacity - 1;
     const size_t l = deque->last & c;
@@ -277,7 +278,7 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
     deque->buffer[p] = element;
     deque->size++;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -293,17 +294,19 @@ bool deque_add_at(Deque *deque, void *element, size_t index)
  *
  * @return replaced element, or NULL if the index was out of bounds.
  */
-void *deque_replace_at(Deque *deque, void *element, size_t index)
+int deque_replace_at(Deque *deque, void *element, size_t index, void **out)
 {
     if (index >= deque->size)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    size_t  i   = (deque->first + index) & (deque->capacity - 1);
-    void   *old = deque->buffer[i];
+    size_t i = (deque->first + index) & (deque->capacity - 1);
+
+    if (out)
+        *out = deque->buffer[i];
 
     deque->buffer[i] = element;
 
-    return old;
+    return CC_OK;
 }
 
 /**
@@ -317,14 +320,14 @@ void *deque_replace_at(Deque *deque, void *element, size_t index)
  *
  * @return removed element, or NULL if the operation fails
  */
-void *deque_remove(Deque *deque, void *element)
+int deque_remove(Deque *deque, void *element, void **out)
 {
     size_t index = deque_index_of(deque, element);
 
     if (index == CC_ERR_NO_SUCH_INDEX)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    return deque_remove_at(deque, index);
+    return deque_remove_at(deque, index, out);
 }
 
 /**
@@ -338,10 +341,10 @@ void *deque_remove(Deque *deque, void *element)
  *
  * @return the removed element, or NULL if the operation fails
  */
-void *deque_remove_at(Deque *deque, size_t index)
+int deque_remove_at(Deque *deque, size_t index, void **out)
 {
     if (index >= deque->size || index == CC_ERR_NO_SUCH_INDEX)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
     const size_t c = deque->capacity - 1;
     const size_t l = deque->last & c;
@@ -351,10 +354,10 @@ void *deque_remove_at(Deque *deque, size_t index)
     void *removed  = deque->buffer[index];
 
     if (index == 0)
-        return deque_remove_first(deque);
+        return deque_remove_first(deque, out);
 
     if (index == c)
-        return deque_remove_last(deque);
+        return deque_remove_last(deque, out);
 
     if (index <= (deque->size / 2) - 1) {
         if (p < f) {
@@ -401,7 +404,9 @@ void *deque_remove_at(Deque *deque, size_t index)
     }
     deque->size--;
 
-    return removed;
+    if (out)
+        *out = removed;
+    return CC_OK;
 }
 
 /**
@@ -414,16 +419,19 @@ void *deque_remove_at(Deque *deque, size_t index)
  *
  * @return the removed element
  */
-void* deque_remove_first(Deque *deque)
+int deque_remove_first(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
     void *element = deque->buffer[deque->first];
     deque->first = (deque->first + 1) & (deque->capacity - 1);
     deque->size--;
 
-    return element;
+    if (out)
+        *out = element;
+
+    return CC_OK;
 }
 
 /**
@@ -436,17 +444,20 @@ void* deque_remove_first(Deque *deque)
  *
  * @return the removed element
  */
-void* deque_remove_last(Deque *deque)
+int deque_remove_last(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
     size_t  last    = (deque->last - 1) & (deque->capacity - 1);
     void   *element = deque->buffer[last];
     deque->last = last;
     deque->size--;
 
-    return element;
+    if (out)
+        *out = element;
+
+    return CC_OK;
 }
 
 /**
@@ -490,13 +501,14 @@ void deque_remove_all_free(Deque *deque)
  * @return element at the specified index, or NULL if the operation has
  *         failed.
  */
-void* deque_get(Deque *deque, size_t index)
+int deque_get(Deque *deque, size_t index, void **out)
 {
     if (index > deque->size)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
     size_t i = (deque->first + index) & (deque->capacity - 1);
-    return deque->buffer[i];
+    *out = deque->buffer[i];
+    return CC_OK;
 }
 
 /**
@@ -509,12 +521,13 @@ void* deque_get(Deque *deque, size_t index)
  *
  * @return the first element of the specified deque
  */
-void* deque_get_first(Deque *deque)
+int deque_get_first(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    return deque->buffer[deque->first];
+    *out = deque->buffer[deque->first];
+    return CC_OK;
 }
 
 /**
@@ -527,13 +540,14 @@ void* deque_get_first(Deque *deque)
  *
  * @return the last element of the specified deque
  */
-void* deque_get_last(Deque *deque)
+int deque_get_last(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
     size_t last = (deque->last - 1) & (deque->capacity - 1);
-    return deque->buffer[last];
+    *out = deque->buffer[last];
+    return CC_OK;
 }
 
 /**
@@ -547,16 +561,16 @@ void* deque_get_last(Deque *deque)
  *
  * @return a shallow copy of the specified deque
  */
-Deque* deque_copy_shallow(Deque *deque)
+int deque_copy_shallow(Deque *deque, Deque **out)
 {
     Deque *copy = deque->mem_alloc(sizeof(Deque));
 
     if (!copy)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     if (!(copy->buffer = deque->mem_alloc(deque->capacity * sizeof(void*)))) {
         deque->mem_free(copy);
-        return NULL;
+        return CC_ERR_ALLOC;
     }
     copy->size       = deque->size;
     copy->capacity   = deque->capacity;
@@ -569,7 +583,8 @@ Deque* deque_copy_shallow(Deque *deque)
     copy->first = 0;
     copy->last  = copy->size;
 
-    return copy;
+    *out = copy;
+    return CC_OK;
 }
 
 /**
@@ -584,16 +599,16 @@ Deque* deque_copy_shallow(Deque *deque)
  *
  * @return a deep copy of the specified deque
  */
-Deque* deque_copy_deep(Deque *deque, void *(*cp) (void*))
+int deque_copy_deep(Deque *deque, void *(*cp) (void*), Deque **out)
 {
     Deque *copy = deque->mem_alloc(sizeof(Deque));
 
     if (!copy)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     if (!(copy->buffer = deque->mem_alloc(deque->capacity * sizeof(void*)))) {
         deque->mem_free(copy);
-        return NULL;
+        return CC_ERR_ALLOC;
     }
 
     copy->size       = deque->size;
@@ -607,7 +622,9 @@ Deque* deque_copy_deep(Deque *deque, void *(*cp) (void*))
     copy->first = 0;
     copy->last  = copy->size;
 
-    return copy;
+    *out = copy;
+
+    return CC_OK;
 }
 
 /**
@@ -616,20 +633,20 @@ Deque* deque_copy_deep(Deque *deque, void *(*cp) (void*))
  *
  * @param[in] deque the deque on which this operation is being performed
  */
-bool deque_trim_capacity(Deque *deque)
+int deque_trim_capacity(Deque *deque)
 {
     if (deque->capacity == deque->size)
-        return false;
+        return CC_OK;
 
     size_t new_size = upper_pow_two(deque->size);
 
     if (new_size == deque->capacity)
-        return false;
+        return CC_OK;
 
     void **new_buff = deque->mem_alloc(sizeof(void*) * new_size);
 
     if (!new_buff)
-        return false;
+        return CC_ERR_ALLOC;
 
     copy_buffer(deque, new_buff, NULL);
 
@@ -637,7 +654,7 @@ bool deque_trim_capacity(Deque *deque)
     deque->first    = 0;
     deque->last     = deque->size;
     deque->capacity = new_size;
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -814,16 +831,16 @@ static void copy_buffer(Deque *deque, void **buff, void *(*cp) (void *))
  *
  * @return true if the operation was successful
  */
-static bool expand_capacity(Deque *deque)
+static int expand_capacity(Deque *deque)
 {
     if (deque->capacity == MAX_POW_TWO)
-        return false;
+        return CC_ERR_MAX_CAPACITY;
 
     size_t new_capacity = deque->capacity << 1;
     void **new_buffer = deque->mem_calloc(new_capacity, sizeof(void*));
 
     if (!new_buffer)
-        return false;
+        return CC_ERR_ALLOC;
 
     copy_buffer(deque, new_buffer, NULL);
 
@@ -832,7 +849,7 @@ static bool expand_capacity(Deque *deque)
     deque->capacity = new_capacity;
     deque->buffer   = new_buffer;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -904,13 +921,14 @@ bool deque_iter_has_next(DequeIter *iter)
  *
  * @return the next element in the sequence
  */
-void *deque_iter_next(DequeIter *iter)
+void deque_iter_next(DequeIter *iter, void **out)
 {
     const size_t c = iter->deque->capacity - 1;
     const size_t i = (iter->deque->first + iter->index) & c;
 
     iter->index++;
-    return iter->deque->buffer[i];
+    if (out)
+        *out = iter->deque->buffer[i];
 }
 
 /**
@@ -921,13 +939,17 @@ void *deque_iter_next(DequeIter *iter)
  *
  * @return the removed element
  */
-void *deque_iter_remove(DequeIter *iter)
+int deque_iter_remove(DequeIter *iter, void **out)
 {
-    void *rm = deque_remove_at(iter->deque, iter->index);
-    if (rm != NULL)
+    void *rm;
+    int stat = deque_remove_at(iter->deque, iter->index, &rm);
+    if (stat == 0)
         iter->index--;
 
-    return rm;
+    if (out)
+        *out = rm;
+
+    return stat;
 }
 
 /**
@@ -940,13 +962,13 @@ void *deque_iter_remove(DequeIter *iter)
  * @return true if the elmenet was successfully added or false if the allocation
  *         for the new element failed.
  */
-bool deque_iter_add(DequeIter *iter, void *element)
+int deque_iter_add(DequeIter *iter, void *element)
 {
-    bool rm = deque_add_at(iter->deque, element, iter->index);
-    if (rm)
+    int stat = deque_add_at(iter->deque, element, iter->index);
+    if (stat == 0)
         iter->index++;
 
-    return rm;
+    return stat;
 }
 
 /**
@@ -958,9 +980,9 @@ bool deque_iter_add(DequeIter *iter, void *element)
  *
  * @return the old element that was replaced
  */
-void *deque_iter_replace(DequeIter *iter, void *replacement)
+int deque_iter_replace(DequeIter *iter, void *replacement, void **out)
 {
-    return deque_replace_at(iter->deque, replacement, iter->index);
+    return deque_replace_at(iter->deque, replacement, iter->index, out);
 }
 
 /**

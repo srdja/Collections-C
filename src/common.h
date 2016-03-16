@@ -37,8 +37,8 @@
 #define CC_ERR_INVALID_CAPACITY 2
 #define CC_ERR_INVALID_RANGE 3
 #define CC_ERR_MAX_CAPACITY 4
-#define CC_ERR_NO_SUCH_INDEX 5
 #define CC_ERR_KEY_NOT_FOUND 6
+#define CC_ERR_NO_SUCH_INDEX ((size_t) - 1)
 #define CC_MAX_ELEMENTS  ((size_t) - 2)
 
 #if defined(_MSC_VER)

@@ -54,21 +54,21 @@ typedef struct queue_iter_s {
 
 void   queue_conf_init    (QueueConf *conf);
 
-Queue *queue_new          (void);
-Queue *queue_new_conf     (QueueConf *conf);
+int    queue_new          (Queue **q);
+int    queue_new_conf     (const QueueConf const* conf, Queue **q);
 void   queue_destroy      (Queue *queue);
 void   queue_destroy_free (Queue *queue);
 
-void  *queue_peek         (Queue *queue);
-void  *queue_poll         (Queue *queue);
-bool   queue_enqueue      (Queue *queue, void *element);
+int    queue_peek         (Queue *queue, void **out);
+int    queue_poll         (Queue *queue, void **out);
+int    queue_enqueue      (Queue *queue, void *element);
 
 size_t queue_size         (Queue *queue);
 void   queue_foreach      (Queue *queue, void (*op) (void*));
 
 void   queue_iter_init    (QueueIter *iter, Queue *queue);
 bool   queue_iter_has_next(QueueIter *iter);
-void*  queue_iter_next    (QueueIter *iter);
-void*  queue_iter_replace (QueueIter *iter, void *replacement);
+void   queue_iter_next    (QueueIter *iter, void **out);
+int    queue_iter_replace (QueueIter *iter, void *replacement, void **out);
 
 #endif /* QUEUE_H_ */
