@@ -92,3 +92,5 @@ gcc hello.c -I/path/to/library/include/ -static -L/path/to/library/lib/ -lcollec
 ## Contributors
 
 Contributions are very much welcome.
+
+Main work is done on the [development](https://github.com/srdja/Collections-C/tree/development) branch
