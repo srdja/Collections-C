@@ -451,6 +451,9 @@ char *error_code_to_string(int code)
     case RB_ERROR_TREE_STRUCTURE:
         m = "RB_ERROR_TREE_STRUCTURE";
         return strcpy(msg, m);
+    default:
+	m = "UNKNOWN_CODE";
+	return strcpy(msg, m);
     }
 }
 
