@@ -449,11 +449,11 @@ char *error_code_to_string(int code)
         m = "RB_ERROR_BLACK_HEIGHT";
         return strcpy(msg, m);
     case RB_ERROR_TREE_STRUCTURE:
-        m = "RB_ERROR_TREE_STRUCTURE";
+	m = "RB_ERROR_TREE_STRUCTURE";
         return strcpy(msg, m);
     default:
-	m = "UNKNOWN_CODE";
-	return strcpy(msg, m);
+	sprintf(msg, "UNKNOWN_ERR_CODE: %d", code);
+        return msg;
     }
 }
 

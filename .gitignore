@@ -55,3 +55,5 @@ test/hashtable_test
 test/hashset_test
 
 test/array_test
+
+test/deque_test
