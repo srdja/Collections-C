@@ -173,7 +173,7 @@ bool array_add(Array *ar, void *element)
  */
 bool array_add_at(Array *ar, void *element, size_t index)
 {
-    if (index > (ar->size - 1))
+    if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
         return false;
 
     if (ar->size == ar->capacity && !expand_capacity(ar))
