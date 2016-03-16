@@ -522,20 +522,20 @@ bool hashtable_contains_key(HashTable *table, void *key)
  *
  * @return a Array of values or NULL
  */
-Array *hashtable_get_values(HashTable *table)
+int hashtable_get_values(HashTable *table, Array **out)
 {
-    ArrayConf vc;
-    array_conf_init(&vc);
+    ArrayConf ac;
+    array_conf_init(&ac);
 
-    vc.capacity   = table->size;
-    vc.mem_alloc  = table->mem_alloc;
-    vc.mem_calloc = table->mem_calloc;
-    vc.mem_free   = table->mem_free;
+    ac.capacity   = table->size;
+    ac.mem_alloc  = table->mem_alloc;
+    ac.mem_calloc = table->mem_calloc;
+    ac.mem_free   = table->mem_free;
 
-    Array *v = array_new_conf(&vc);
-
-    if (!v)
-        return NULL;
+    Array *values;
+    int stat;
+    if (!(stat = array_new_conf(&ac, &values)))
+        return stat;
 
     size_t i;
     for (i = 0; i <table->capacity; i++) {
@@ -545,11 +545,16 @@ Array *hashtable_get_values(HashTable *table)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            array_add(v, entry->value);
-            entry = entry->next;
+            if (!(stat = array_add(values, entry->value))) {
+                entry = entry->next;
+            } else {
+                array_destroy(values);
+                return stat;
+            }
         }
     }
-    return v;
+    *out = values;
+    return CC_OK;
 }
 
 /**
@@ -561,7 +566,7 @@ Array *hashtable_get_values(HashTable *table)
  *
  * @return a Array of keys or NULL
  */
-Array *hashtable_get_keys(HashTable *table)
+int hashtable_get_keys(HashTable *table, Array **out)
 {
     ArrayConf vc;
     array_conf_init(&vc);
@@ -571,10 +576,10 @@ Array *hashtable_get_keys(HashTable *table)
     vc.mem_calloc = table->mem_calloc;
     vc.mem_free   = table->mem_free;
 
-    Array *keys = array_new_conf(&vc);
-
-    if (!keys)
-        return NULL;
+    Array *keys;
+    int stat = array_new_conf(&vc, &keys);
+    if (!stat)
+        return stat;
 
     size_t i;
     for (i = 0; i < table->capacity; i++) {
@@ -584,11 +589,16 @@ Array *hashtable_get_keys(HashTable *table)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            array_add(keys, entry->key);
-            entry = entry->next;
+            if (!(stat = array_add(keys, entry->key))) {
+                entry = entry->next;
+            } else {
+                array_destroy(keys);
+                return stat;
+            }
         }
     }
-    return keys;
+    *out = keys;
+    return CC_OK;
 }
 
 /**

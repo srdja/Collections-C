@@ -158,8 +158,8 @@ bool        hashtable_contains_key    (HashTable *table, void *key);
 size_t      hashtable_size            (HashTable *table);
 size_t      hashtable_capacity        (HashTable *table);
 
-Array      *hashtable_get_keys        (HashTable *table);
-Array      *hashtable_get_values      (HashTable *table);
+int         hashtable_get_keys        (HashTable *table, Array **out);
+int         hashtable_get_values      (HashTable *table, Array **out);
 
 bool        hashtable_string_key_cmp  (void *key1, void *key2);
 bool        hashtable_float_key_cmp   (void *key1, void *key2);

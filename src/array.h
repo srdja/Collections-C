@@ -84,32 +84,32 @@ typedef struct array_iter_s {
     size_t  index;
 } ArrayIter;
 
-Array*       array_new             (void);
-Array*       array_new_conf        (ArrayConf *conf);
+int          array_new             (Array **out);
+int          array_new_conf        (const ArrayConf const* conf, Array **out);
 void         array_conf_init       (ArrayConf *conf);
 
 void         array_destroy         (Array *ar);
 void         array_destroy_free    (Array *ar);
 
-bool         array_add             (Array *ar, void *element);
-bool         array_add_at          (Array *ar, void *element, size_t index);
-void*        array_replace_at      (Array *ar, void *element, size_t index);
+int          array_add             (Array *ar, void *element);
+int          array_add_at          (Array *ar, void *element, size_t index);
+int          array_replace_at      (Array *ar, void *element, size_t index, void **out);
 
-void*        array_remove          (Array *ar, void *element);
-void*        array_remove_at       (Array *ar, size_t index);
-void*        array_remove_last     (Array *ar);
+int          array_remove          (Array *ar, void *element, void **out);
+int          array_remove_at       (Array *ar, size_t index, void **out);
+int          array_remove_last     (Array *ar, void **out);
 void         array_remove_all      (Array *ar);
 void         array_remove_all_free (Array *ar);
 
-void*        array_get             (Array *ar, size_t index);
-void*        array_get_last        (Array *ar);
+int          array_get             (Array *ar, size_t index, void **out);
+int          array_get_last        (Array *ar, void **out);
 
-Array*       array_subarray        (Array *ar, size_t from, size_t to);
-Array*       array_copy_shallow    (Array *ar);
-Array*       array_copy_deep       (Array *ar, void *(*cp) (void*));
+int          array_subarray        (Array *ar, size_t from, size_t to, Array **out);
+int          array_copy_shallow    (Array *ar, Array **out);
+int          array_copy_deep       (Array *ar, void *(*cp) (void*), Array **out);
 
 void         array_reverse         (Array *ar);
-bool         array_trim_capacity   (Array *ar);
+int          array_trim_capacity   (Array *ar);
 
 size_t       array_contains        (Array *ar, void *element);
 size_t       array_size            (Array *ar);
@@ -120,12 +120,12 @@ void         array_sort            (Array *ar, int (*cmp) (const void*, const vo
 
 void         array_foreach         (Array *ar, void (*op) (void *));
 
-void         array_iter_init       (ArrayIter *iter, Array *vec);
+void         array_iter_init       (ArrayIter *iter, Array *ar);
 bool         array_iter_has_next   (ArrayIter *iter);
-void*        array_iter_next       (ArrayIter *iter);
-void*        array_iter_remove     (ArrayIter *iter);
-bool         array_iter_add        (ArrayIter *iter, void *element);
-void*        array_iter_replace    (ArrayIter *iter, void *element);
+void         array_iter_next       (ArrayIter *iter, void **out);
+int          array_iter_remove     (ArrayIter *iter, void **out);
+int          array_iter_add        (ArrayIter *iter, void *element);
+int          array_iter_replace    (ArrayIter *iter, void *element, void **out);
 size_t       array_iter_index      (ArrayIter *iter);
 
 const void* const* array_get_buffer(Array *ar);

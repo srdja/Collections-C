@@ -37,14 +37,14 @@ typedef ArrayConf StackConf;
 
 void    stack_conf_init   (StackConf *conf);
 
-Stack  *stack_new         (void);
-Stack  *stack_new_conf    (StackConf *conf);
+int     stack_new         (Stack **out);
+int     stack_new_conf    (const StackConf const* conf, Stack **out);
 void    stack_destroy     (Stack *stack);
 void    stack_destroy_free(Stack *stack);
 
-bool    stack_push        (Stack *stack, void *element);
-void   *stack_peek        (Stack *stack);
-void   *stack_pop         (Stack *stack);
+int     stack_push        (Stack *stack, void *element);
+int     stack_peek        (Stack *stack, void **out);
+int     stack_pop         (Stack *stack, void **out);
 
 size_t  stack_size        (Stack *stack);
 

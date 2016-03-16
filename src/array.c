@@ -34,7 +34,7 @@ struct array_s {
     void  (*mem_free)   (void *block);
 };
 
-static bool expand_capacity(Array *vec);
+static int expand_capacity(Array *vec);
 
 
 /**
@@ -42,11 +42,11 @@ static bool expand_capacity(Array *vec);
  *
  * @return a new array if the allocation was successful, or NULL if it was not.
  */
-Array *array_new()
+int array_new(Array **out)
 {
     ArrayConf c;
     array_conf_init(&c);
-    return array_new_conf(&c);
+    return array_new_conf(&c, out);
 }
 
 /**
@@ -61,7 +61,7 @@ Array *array_new()
  *
  * @return a new array if the allocation was successful, or NULL if not.
  */
-Array *array_new_conf(ArrayConf *conf)
+int array_new_conf(const ArrayConf const* conf, Array **out)
 {
     float ex;
 
@@ -74,13 +74,14 @@ Array *array_new_conf(ArrayConf *conf)
 
     /* Needed to avoid an integer overflow on the first resize and
      * to easily check for any future oveflows. */
-    if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity)
-        return NULL;
+    if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity) {
+        return CC_ERR_INVALID_CAPACITY;
+    }
 
     Array *ar = conf->mem_calloc(1, sizeof(Array));
 
     if (ar == NULL)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     ar->exp_factor = ex;
     ar->capacity   = conf->capacity;
@@ -89,7 +90,8 @@ Array *array_new_conf(ArrayConf *conf)
     ar->mem_free   = conf->mem_free;
     ar->buffer     = ar->mem_calloc(ar->capacity, sizeof(void*));
 
-    return ar;
+    *out = ar;
+    return CC_OK;
 }
 
 /**
@@ -146,15 +148,15 @@ void array_destroy_free(Array *ar)
  *
  * @return true if the operation was successful.
  */
-bool array_add(Array *ar, void *element)
+int array_add(Array *ar, void *element)
 {
-    if (ar->size >= ar->capacity && !expand_capacity(ar))
-        return false;
+    if (ar->size >= ar->capacity && (expand_capacity(ar) == CC_ERR_ALLOC))
+        return CC_ERR_ALLOC;
 
     ar->buffer[ar->size] = element;
     ar->size++;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -171,13 +173,13 @@ bool array_add(Array *ar, void *element)
  *
  * @return true if the operation was successful
  */
-bool array_add_at(Array *ar, void *element, size_t index)
+int array_add_at(Array *ar, void *element, size_t index)
 {
     if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
-        return false;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    if (ar->size == ar->capacity && !expand_capacity(ar))
-        return false;
+    if (ar->size == ar->capacity && (expand_capacity(ar) == CC_ERR_ALLOC))
+        return CC_ERR_ALLOC;
 
     size_t shift = (ar->size - index) * sizeof(void*);
 
@@ -188,7 +190,7 @@ bool array_add_at(Array *ar, void *element, size_t index)
     ar->buffer[index] = element;
     ar->size++;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -204,15 +206,17 @@ bool array_add_at(Array *ar, void *element, size_t index)
  *
  * @return the replaced element or NULL if the index was out of bounds.
  */
-void *array_replace_at(Array *ar, void *element, size_t index)
+int array_replace_at(Array *ar, void *element, size_t index, void **out)
 {
     if (index >= ar->size)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    void *old_e = ar->buffer[index];
+    if (out)
+        *out = ar->buffer[index];
+
     ar->buffer[index] = element;
 
-    return old_e;
+    return CC_OK;
 }
 
 /**
@@ -226,12 +230,12 @@ void *array_replace_at(Array *ar, void *element, size_t index)
  *
  * @return the removed element, or NULL if the operation has failed
  */
-void *array_remove(Array *ar, void *element)
+int array_remove(Array *ar, void *element, void **out)
 {
     size_t index = array_index_of(ar, element);
 
     if (index == CC_ERR_NO_SUCH_INDEX)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
     if (index != ar->size - 1) {
         size_t block_size = (ar->size - index) * sizeof(void*);
@@ -242,7 +246,10 @@ void *array_remove(Array *ar, void *element)
     }
     ar->size--;
 
-    return element;
+    if (out)
+        *out = element;
+
+    return CC_OK;
 }
 
 /**
@@ -256,12 +263,13 @@ void *array_remove(Array *ar, void *element)
  *
  * @return the removed element, or NULL if the operation fails
  */
-void *array_remove_at(Array *ar, size_t index)
+int array_remove_at(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    void *e = ar->buffer[index];
+    if (out)
+        *out = ar->buffer[index];
 
     if (index != ar->size - 1) {
         size_t block_size = (ar->size - index) * sizeof(void*);
@@ -272,7 +280,7 @@ void *array_remove_at(Array *ar, size_t index)
     }
     ar->size--;
 
-    return e;
+    return CC_OK;
 }
 
 /**
@@ -285,9 +293,9 @@ void *array_remove_at(Array *ar, size_t index)
  *
  * @return the last element of the array ie. the element at the highest index
  */
-void *array_remove_last(Array *ar)
+int array_remove_last(Array *ar, void **out)
 {
-    return array_remove_at(ar, ar->size - 1);
+    return array_remove_at(ar, ar->size - 1, out);
 }
 
 /**
@@ -328,12 +336,13 @@ void array_remove_all_free(Array *ar)
  * @return array element at the specified index, or NULL if the operation has
  *         failed
  */
-void *array_get(Array *ar, size_t index)
+int array_get(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
-        return NULL;
+        return CC_ERR_NO_SUCH_INDEX;
 
-    return ar->buffer[index];
+    *out = ar->buffer[index];
+    return CC_OK;
 }
 
 /**
@@ -346,9 +355,9 @@ void *array_get(Array *ar, size_t index)
  *
  * @return the last element of the specified array
  */
-void *array_get_last(Array *ar)
+int array_get_last(Array *ar, void **out)
 {
-    return array_get(ar, ar->size - 1);
+    return array_get(ar, ar->size - 1, out);
 }
 
 /**
@@ -404,20 +413,20 @@ size_t array_index_of(Array *ar, void *element)
  *
  * @return a subarray of the specified array, or NULL
  */
-Array *array_subarray(Array *ar, size_t b, size_t e)
+int array_subarray(Array *ar, size_t b, size_t e, Array **out)
 {
     if (b > e || e > ar->size)
-        return NULL;
+        return CC_ERR_INVALID_RANGE;
 
     Array *sub_ar = ar->mem_calloc(1, sizeof(Array));
 
     if (!sub_ar)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     /* Try to allocate the buffer */
     if (!(sub_ar->buffer = ar->mem_alloc(sub_ar->capacity * sizeof(void*)))) {
         ar->mem_free(sub_ar);
-        return NULL;
+        return CC_ERR_ALLOC;
     }
 
     sub_ar->mem_alloc  = ar->mem_alloc;
@@ -430,7 +439,8 @@ Array *array_subarray(Array *ar, size_t b, size_t e)
            &(ar->buffer[b]),
            sub_ar->size * sizeof(void*));
 
-    return sub_ar;
+    *out = sub_ar;
+    return CC_OK;
 }
 
 /**
@@ -444,16 +454,16 @@ Array *array_subarray(Array *ar, size_t b, size_t e)
  *
  * @return a shallow copy of the specified array, or NULL if the allocation failed
  */
-Array *array_copy_shallow(Array *ar)
+int array_copy_shallow(Array *ar, Array **out)
 {
     Array *copy = ar->mem_alloc(sizeof(Array));
 
     if (!copy)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
         ar->mem_free(copy);
-        return NULL;
+        return CC_ERR_ALLOC;
     }
     copy->exp_factor = ar->exp_factor;
     copy->size       = ar->size;
@@ -466,7 +476,8 @@ Array *array_copy_shallow(Array *ar)
            ar->buffer,
            copy->size * sizeof(void*));
 
-    return copy;
+    *out = copy;
+    return CC_OK;
 }
 
 /**
@@ -481,16 +492,16 @@ Array *array_copy_shallow(Array *ar)
  *
  * @return a deep copy of the specified array, or NULL if the allocation failed
  */
-Array *array_copy_deep(Array *ar, void *(*cp) (void *))
+int array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
 {
     Array *copy = ar->mem_alloc(sizeof(Array));
 
     if (!copy)
-        return NULL;
+        return CC_ERR_ALLOC;
 
     if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
         ar->mem_free(copy);
-        return NULL;
+        return CC_ERR_ALLOC;
     }
 
     copy->exp_factor = ar->exp_factor;
@@ -504,7 +515,9 @@ Array *array_copy_deep(Array *ar, void *(*cp) (void *))
     for (i = 0; i < copy->size; i++)
         copy->buffer[i] = cp(ar->buffer[i]);
 
-    return copy;
+    *out = copy;
+
+    return CC_OK;
 }
 
 /**
@@ -532,15 +545,15 @@ void array_reverse(Array *ar)
  *
  * @return true if the operation was successful
  */
-bool array_trim_capacity(Array *ar)
+int array_trim_capacity(Array *ar)
 {
     if (ar->size == ar->capacity)
-        return false;
+        return CC_OK;
 
     void **new_buff = ar->mem_calloc(ar->size, sizeof(void*));
 
     if (!new_buff)
-        return false;
+        return CC_ERR_ALLOC;
 
     size_t size = ar->size < 1 ? 1 : ar->size;
 
@@ -549,7 +562,8 @@ bool array_trim_capacity(Array *ar)
 
     ar->buffer   = new_buff;
     ar->capacity = ar->size;
-    return true;
+
+    return CC_OK;
 }
 
 /**
@@ -644,10 +658,10 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
  *
  * @return true if the operation was successful
  */
-static bool expand_capacity(Array *ar)
+static int expand_capacity(Array *ar)
 {
     if (ar->capacity == CC_MAX_ELEMENTS)
-        return false;
+        return CC_ERR_MAX_CAPACITY;
 
     size_t new_capacity = ar->capacity * ar->exp_factor;
 
@@ -660,15 +674,15 @@ static bool expand_capacity(Array *ar)
 
     void **new_buff = ar->mem_alloc(new_capacity * sizeof(void*));
 
-    if (new_buff == NULL)
-        return false;
+    if (!new_buff)
+        return CC_ERR_ALLOC;
 
     memcpy(new_buff, ar->buffer, ar->size * sizeof(void*));
 
     ar->mem_free(ar->buffer);
     ar->buffer = new_buff;
 
-    return true;
+    return CC_OK;
 }
 
 /**
@@ -717,9 +731,9 @@ bool array_iter_has_next(ArrayIter *iter)
  *
  * @return the next element in the sequence
  */
-void *array_iter_next(ArrayIter *iter)
+void array_iter_next(ArrayIter *iter, void **out)
 {
-    return iter->ar->buffer[iter->index++];
+    *out = iter->ar->buffer[iter->index++];
 }
 
 /**
@@ -730,9 +744,9 @@ void *array_iter_next(ArrayIter *iter)
  *
  * @return the removed element
  */
-void *array_iter_remove(ArrayIter *iter)
+int array_iter_remove(ArrayIter *iter, void **out)
 {
-    return array_remove_at(iter->ar, iter->index - 1);
+    return array_remove_at(iter->ar, iter->index - 1, out);
 }
 
 /**
@@ -745,7 +759,7 @@ void *array_iter_remove(ArrayIter *iter)
  * @return true if the element was successfully added or false if the allocation
  *         for the new element failed.
  */
-bool array_iter_add(ArrayIter *iter, void *element)
+int array_iter_add(ArrayIter *iter, void *element)
 {
     return array_add_at(iter->ar, element, iter->index++);
 }
@@ -759,9 +773,9 @@ bool array_iter_add(ArrayIter *iter, void *element)
  *
  * @return the old element that was replaced by the new one
  */
-void *array_iter_replace(ArrayIter *iter, void *element)
+int array_iter_replace(ArrayIter *iter, void *element, void **out)
 {
-    return array_replace_at(iter->ar, element, iter->index);
+    return array_replace_at(iter->ar, element, iter->index, out);
 }
 
 /**
