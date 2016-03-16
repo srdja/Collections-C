@@ -83,12 +83,18 @@ CCStat array_new_conf(const ArrayConf const* conf, Array **out)
     if (ar == NULL)
         return CC_ERR_ALLOC;
 
+    ar->buffer = ar->mem_calloc(ar->capacity, sizeof(void*));
+
+    if (!ar->buffer) {
+        conf->mem_free(ar);
+        return CC_ERR_ALLOC;
+    }
+
     ar->exp_factor = ex;
     ar->capacity   = conf->capacity;
     ar->mem_alloc  = conf->mem_alloc;
     ar->mem_calloc = conf->mem_calloc;
     ar->mem_free   = conf->mem_free;
-    ar->buffer     = ar->mem_calloc(ar->capacity, sizeof(void*));
 
     *out = ar;
     return CC_OK;
@@ -642,7 +648,7 @@ size_t array_capacity(Array *ar)
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
  */
-void array_sort(Array *ar, CCStat (*cmp) (const void*, const void*))
+void array_sort(Array *ar, int (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
 }
