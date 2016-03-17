@@ -42,6 +42,8 @@ enum cc_stat {
     CC_ERR_KEY_NOT_FOUND    = 6,
     CC_ERR_VALUE_NOT_FOUND  = 7,
     CC_ERR_NO_SUCH_INDEX    = 8,
+    CC_ERR_OUT_OF_RANGE     = 9,
+    CC_END                  = 10,
 };
 
 #define CC_MAX_ELEMENTS ((size_t) - 2)
