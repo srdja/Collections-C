@@ -1110,8 +1110,11 @@ enum cc_stat slist_iter_replace(SListIter *iter, void *element, void **out)
  *
  * @return the next element in the sequence
  */
-void slist_iter_next(SListIter *iter, void **out)
+enum cc_stat slist_iter_next(SListIter *iter, void **out)
 {
+    if (!iter->next)
+        return CC_ITER_END;
+
     void *data = iter->next->data;
 
     if (iter->current)
@@ -1122,6 +1125,7 @@ void slist_iter_next(SListIter *iter, void **out)
     iter->index++;
 
     *out = data;
+    return CC_OK;
 }
 
 /**
@@ -1135,18 +1139,6 @@ void slist_iter_next(SListIter *iter, void **out)
 size_t slist_iter_index(SListIter *iter)
 {
     return iter->index - 1;
-}
-
-/**
- * Checks whether or not the iterator has reached the end of the list
- *
- * @param[in] iter iterator whose position is being checked
- *
- * @return true if there are more element to be iterated over, or false if not
- */
-bool slist_iter_has_next(SListIter *iter)
-{
-    return iter->next ? true : false;
 }
 
 /**

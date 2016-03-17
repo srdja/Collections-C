@@ -90,9 +90,8 @@ void test_slist_validate_structure(SList *list, char *test_name)
     SListIter i;
     slist_iter_init(&i, list);
 
-    while (slist_iter_has_next(&i)) {
-        void *e;
-        slist_iter_next(&i, &e);
+    void *e;
+    while (slist_iter_next(&i, &e) != CC_ITER_END) {
         if (fw_size == 0) {
             cc_assert(head == e,
                       cc_msg("slist_structure_validate: "
@@ -101,19 +100,11 @@ void test_slist_validate_structure(SList *list, char *test_name)
                              test_name));
         }
         fw_size++;
-
-        if (!slist_iter_has_next(&i)) {
-            cc_assert(tail == e,
-                      cc_msg("slist_structure_validate: "
-                             "tail not as expected during"
-                             " ascending iteration at %s",
-                             test_name));
-        }
     }
     cc_assert(fw_size == expected_size,
               cc_msg("slist_structure_validate: "
-                     "unexpected forward size at ts",
-                     test_name));
+                     "unexpected forward size at %s. Expected %d, but got %d",
+                     test_name, expected_size, fw_size));
 }
 
 
@@ -893,10 +884,8 @@ void test_slist_iter_add()
     SListIter iter;
     slist_iter_init(&iter, list);
 
-    for (;slist_iter_has_next(&iter);) {
-        int *e;
-        slist_iter_next(&iter, (void*) &e);
-
+    int *e;
+    while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (*e == 3) {
             int i = slist_iter_index(&iter);
             slist_iter_add(&iter, &ins);
@@ -937,9 +926,8 @@ void test_slist_iter_remove()
     SListIter iter;
     slist_iter_init(&iter, list);
 
-    for(;slist_iter_has_next(&iter);) {
-        int *e;
-        slist_iter_next(&iter, (void*) &e);
+    int *e;
+    while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (*e == 3) {
             slist_iter_remove(&iter, NULL);
         }
@@ -960,8 +948,8 @@ void test_slist_iter_remove()
 
 void test_slist_iter()
 {
-    //test_slist_iter_add();
-     test_slist_iter_remove();
+//    test_slist_iter_add();
+    test_slist_iter_remove();
 }
 
 
@@ -1008,17 +996,12 @@ void test_slist_sort()
     void *current = 0;
     void *e;
 
-    slist_iter_next(&iter, &e);
     slist_iter_next(&iter, &prev);
-    while (slist_iter_has_next(&iter)) {
-        slist_iter_next(&iter, &e);
-        current = e;
-
-        cc_assert(*((int*)prev) <= *((int*)current),
+    while (slist_iter_next(&iter, &e) != CC_ITER_END) {
+        cc_assert(*((int*)prev) <= *((int*)e),
                   cc_msg("slist_sort: preceding "
                          "element greater than the current"));
-
-        prev = current;
+        prev = e;
     }
     slist_destroy_free(l);
 }

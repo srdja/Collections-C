@@ -131,8 +131,7 @@ void          slist_iter_init       (SListIter *iter, SList *list);
 enum cc_stat  slist_iter_remove     (SListIter *iter, void **out);
 enum cc_stat  slist_iter_add        (SListIter *iter, void *element);
 enum cc_stat  slist_iter_replace    (SListIter *iter, void *element, void **out);
-void          slist_iter_next       (SListIter *iter, void **out);
+enum cc_stat  slist_iter_next       (SListIter *iter, void **out);
 size_t        slist_iter_index      (SListIter *iter);
-bool          slist_iter_has_next   (SListIter *iter);
 
 #endif /* SLIST_H_ */
