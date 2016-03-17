@@ -116,24 +116,24 @@ typedef struct treetable_conf_s {
 
 
 void       treetable_conf_init        (TreeTableConf *conf);
-TreeTable *treetable_new              (int (*cmp) (void *, void *));
-TreeTable *treetable_new_conf         (TreeTableConf *conf);
+enum cc_stat     treetable_new              (int (*cmp) (void *, void *), TreeTable **tt);
+enum cc_stat     treetable_new_conf         (const TreeTableConf const *conf, TreeTable **tt);
 
 void       treetable_destroy          (TreeTable *table);
-bool       treetable_add              (TreeTable *table, void *key, void *val);
+enum cc_stat     treetable_add              (TreeTable *table, void *key, void *val);
 
-void      *treetable_remove           (TreeTable *table, void *key);
+enum cc_stat     treetable_remove           (TreeTable *table, void *key, void **out);
 void       treetable_remove_all       (TreeTable *table);
-void      *treetable_remove_first     (TreeTable *table);
-void      *treetable_remove_last      (TreeTable *table);
+enum cc_stat     treetable_remove_first     (TreeTable *table, void **out);
+enum cc_stat     treetable_remove_last      (TreeTable *table, void **out);
 
-void      *treetable_get              (TreeTable *table, void *key);
-void      *treetable_get_first_value  (TreeTable *table);
-void      *treetable_get_first_key    (TreeTable *table);
-void      *treetable_get_last_value   (TreeTable *table);
-void      *treetable_get_last_key     (TreeTable *table);
-void      *treetable_get_greater_than (TreeTable *table, void *key);
-void      *treetable_get_lesser_than  (TreeTable *table, void *key);
+enum cc_stat     treetable_get              (TreeTable *table, void *key, void **out);
+enum cc_stat     treetable_get_first_value  (TreeTable *table, void **out);
+enum cc_stat     treetable_get_first_key    (TreeTable *table, void **out);
+enum cc_stat     treetable_get_last_value   (TreeTable *table, void **out);
+enum cc_stat     treetable_get_last_key     (TreeTable *table, void **out);
+enum cc_stat     treetable_get_greater_than (TreeTable *table, void *key, void **out);
+enum cc_stat     treetable_get_lesser_than  (TreeTable *table, void *key, void **out);
 
 size_t     treetable_size             (TreeTable *table);
 bool       treetable_contains_key     (TreeTable *table, void *key);
