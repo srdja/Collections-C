@@ -121,8 +121,7 @@ void          array_sort            (Array *ar, int (*cmp) (const void*, const v
 void          array_foreach         (Array *ar, void (*op) (void *));
 
 void          array_iter_init       (ArrayIter *iter, Array *ar);
-bool          array_iter_has_next   (ArrayIter *iter);
-void          array_iter_next       (ArrayIter *iter, void **out);
+enum cc_stat  array_iter_next       (ArrayIter *iter, void **out);
 enum cc_stat  array_iter_remove     (ArrayIter *iter, void **out);
 enum cc_stat  array_iter_add        (ArrayIter *iter, void *element);
 enum cc_stat  array_iter_replace    (ArrayIter *iter, void *element, void **out);

@@ -638,13 +638,10 @@ void test_array_iter_remove()
     ArrayIter iter;
     array_iter_init(&iter, v);
 
-    for (;array_iter_has_next(&iter);) {
-        int *e;
-        array_iter_next(&iter, (void*)&e);
-
-        if (*e == c) {
+    int *e;
+    while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+        if (*e == c)
             array_iter_remove(&iter, NULL);
-        }
     }
 
     cc_assert(array_contains(v, &c) == 0,
@@ -673,12 +670,10 @@ void test_array_iter_add()
     ArrayIter iter;
     array_iter_init(&iter, v);
 
-    for (;array_iter_has_next(&iter);) {
-        int *e;
-        array_iter_next(&iter, (void*)&e);
-
+    int *e;
+    while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (array_iter_index(&iter) == 2)
-            array_iter_add(&iter, (void*)&new);
+            array_iter_add(&iter, (void*) &new);
     }
 
     cc_assert(array_contains(v, &new) == 1,

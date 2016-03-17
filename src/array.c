@@ -720,28 +720,21 @@ void array_iter_init(ArrayIter *iter, Array *ar)
 }
 
 /**
- * Checks whether or not the iterator has reached the end of the array
- *
- * @param[in] iter iterator whose position is being checked
- *
- * @return true if there are more elements to be iterated over, or false if not
- */
-bool array_iter_has_next(ArrayIter *iter)
-{
-    return iter->index < iter->ar->size;
-}
-
-/**
  * Returns the next element in the sequence and advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  *
  * @return the next element in the sequence
  */
-void array_iter_next(ArrayIter *iter, void **out)
+enum cc_stat array_iter_next(ArrayIter *iter, void **out)
 {
+    if (iter->index >= iter->ar->size)
+        return CC_ITER_END;
+
     if (out)
         *out = iter->ar->buffer[iter->index++];
+
+    return CC_OK;
 }
 
 /**
