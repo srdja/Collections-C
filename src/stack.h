@@ -35,19 +35,17 @@ typedef struct stack_s Stack;
  */
 typedef ArrayConf StackConf;
 
-void    stack_conf_init   (StackConf *conf);
+void          stack_conf_init   (StackConf *conf);
+enum cc_stat  stack_new         (Stack **out);
+enum cc_stat  stack_new_conf    (const StackConf const* conf, Stack **out);
+void          stack_destroy     (Stack *stack);
+void          stack_destroy_free(Stack *stack);
 
-enum cc_stat     stack_new         (Stack **out);
-enum cc_stat     stack_new_conf    (const StackConf const* conf, Stack **out);
-void    stack_destroy     (Stack *stack);
-void    stack_destroy_free(Stack *stack);
+enum cc_stat  stack_push        (Stack *stack, void *element);
+enum cc_stat  stack_peek        (Stack *stack, void **out);
+enum cc_stat  stack_pop         (Stack *stack, void **out);
 
-enum cc_stat     stack_push        (Stack *stack, void *element);
-enum cc_stat     stack_peek        (Stack *stack, void **out);
-enum cc_stat     stack_pop         (Stack *stack, void **out);
-
-size_t  stack_size        (Stack *stack);
-
-void    stack_foreach     (Stack *stack, void (*op) (void *));
+size_t        stack_size        (Stack *stack);
+void          stack_foreach     (Stack *stack, void (*op) (void *));
 
 #endif /* STACK_H_ */

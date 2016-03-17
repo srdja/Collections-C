@@ -94,12 +94,11 @@ typedef struct list_conf_s {
     void   (*mem_free)   (void *block);
 } ListConf;
 
-void       list_conf_init       (ListConf *conf);
-
-enum cc_stat      list_new             (List **list);
-enum cc_stat      list_new_conf        (const ListConf const* conf, List **list);
-bool       list_destroy         (List *list);
-bool       list_destroy_free    (List *list);
+void          list_conf_init       (ListConf *conf);
+enum cc_stat  list_new             (List **list);
+enum cc_stat  list_new_conf        (const ListConf const* conf, List **list);
+bool          list_destroy         (List *list);
+bool          list_destroy_free    (List *list);
 
 enum cc_stat  list_splice          (List *list1, List *list2);
 enum cc_stat  list_splice_at       (List *list, List *list2, size_t index);
@@ -123,37 +122,37 @@ enum cc_stat  list_get_at          (List *list, size_t index, void **out);
 enum cc_stat  list_get_first       (List *list, void **out);
 enum cc_stat  list_get_last        (List *list, void **out);
 
-enum cc_stat     list_sublist         (List *list, size_t from, size_t to, List **out);
-enum cc_stat     list_copy_shallow    (List *list, List **out);
-enum cc_stat    list_copy_deep       (List *list, void *(*cp) (void*), List **out);
+enum cc_stat  list_sublist         (List *list, size_t from, size_t to, List **out);
+enum cc_stat  list_copy_shallow    (List *list, List **out);
+enum cc_stat  list_copy_deep       (List *list, void *(*cp) (void*), List **out);
 
-enum cc_stat      list_replace_at      (List *list, void *element, size_t index, void **out);
+enum cc_stat  list_replace_at      (List *list, void *element, size_t index, void **out);
 
-size_t     list_contains        (List *list, void *element);
-enum cc_stat     list_index_of        (List *list, void *element, size_t *index);
-enum cc_stat     list_to_array        (List *list, void ***out);
+size_t        list_contains        (List *list, void *element);
+enum cc_stat  list_index_of        (List *list, void *element, size_t *index);
+enum cc_stat  list_to_array        (List *list, void ***out);
 
-void       list_reverse         (List *list);
-enum cc_stat       list_sort    (List *list, int (*cmp) (void const*, void const*));
-void       list_sort_in_place   (List *list, int (*cmp) (void const*, void const*));
-size_t     list_size            (List *list);
+void          list_reverse         (List *list);
+enum cc_stat  list_sort            (List *list, int (*cmp) (void const*, void const*));
+void          list_sort_in_place   (List *list, int (*cmp) (void const*, void const*));
+size_t        list_size            (List *list);
 
-void       list_foreach         (List *list, void (*op) (void *));
+void          list_foreach         (List *list, void (*op) (void *));
 
-void       list_iter_init       (ListIter *iter, List *list);
-enum cc_stat      list_iter_remove     (ListIter *iter, void **out);
-enum cc_stat       list_iter_add        (ListIter *iter,  void *element);
-enum cc_stat      list_iter_replace    (ListIter *iter, void *element, void **out);
-bool       list_iter_has_next   (ListIter *iter);
-size_t     list_iter_index      (ListIter *iter);
-void      list_iter_next       (ListIter *iter, void **out);
+void          list_iter_init       (ListIter *iter, List *list);
+enum cc_stat  list_iter_remove     (ListIter *iter, void **out);
+enum cc_stat  list_iter_add        (ListIter *iter,  void *element);
+enum cc_stat  list_iter_replace    (ListIter *iter, void *element, void **out);
+bool          list_iter_has_next   (ListIter *iter);
+size_t        list_iter_index      (ListIter *iter);
+void          list_iter_next       (ListIter *iter, void **out);
 
-void       list_diter_init      (ListIter *iter, List *list);
-enum cc_stat      list_diter_remove    (ListIter *iter, void **out);
-enum cc_stat       list_diter_add       (ListIter *iter, void *element);
-enum cc_stat     list_diter_replace   (ListIter *iter, void *element, void **out);
-bool       list_diter_has_next  (ListIter *iter);
-size_t     list_diter_index     (ListIter *iter);
-void      list_diter_next      (ListIter *iter, void **out);
+void          list_diter_init      (ListIter *iter, List *list);
+enum cc_stat  list_diter_remove    (ListIter *iter, void **out);
+enum cc_stat  list_diter_add       (ListIter *iter, void *element);
+enum cc_stat  list_diter_replace   (ListIter *iter, void *element, void **out);
+bool          list_diter_has_next  (ListIter *iter);
+size_t        list_diter_index     (ListIter *iter);
+void          list_diter_next      (ListIter *iter, void **out);
 
 #endif /* LIST_H_ */

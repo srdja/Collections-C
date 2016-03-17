@@ -83,57 +83,56 @@ typedef struct slist_conf_s {
     void   (*mem_free)   (void *block);
 } SListConf;
 
-void       slist_conf_init       (SListConf *conf);
+void          slist_conf_init       (SListConf *conf);
+enum cc_stat  slist_new             (SList **list);
+enum cc_stat  slist_new_conf        (const SListConf const* conf, SList **list);
+bool          slist_destroy         (SList *list);
+bool          slist_destroy_free    (SList *list);
 
-enum cc_stat slist_new             (SList **list);
-enum cc_stat slist_new_conf        (const SListConf const* conf, SList **list);
-bool       slist_destroy         (SList *list);
-bool       slist_destroy_free    (SList *list);
+enum cc_stat  slist_splice          (SList *list1, SList *list2);
+enum cc_stat  slist_splice_at       (SList *list1, SList *list2, size_t index);
 
-enum cc_stat       slist_splice          (SList *list1, SList *list2);
-enum cc_stat       slist_splice_at       (SList *list1, SList *list2, size_t index);
+enum cc_stat  slist_add             (SList *list, void *element);
+enum cc_stat  slist_add_at          (SList *list, void *element, size_t index);
+enum cc_stat  slist_add_all         (SList *list1, SList *list2);
+enum cc_stat  slist_add_all_at      (SList *list1, SList *list2, size_t index);
+enum cc_stat  slist_add_first       (SList *list, void *element);
+enum cc_stat  slist_add_last        (SList *list, void *element);
 
-enum cc_stat       slist_add             (SList *list, void *element);
-enum cc_stat       slist_add_at          (SList *list, void *element, size_t index);
-enum cc_stat       slist_add_all         (SList *list1, SList *list2);
-enum cc_stat       slist_add_all_at      (SList *list1, SList *list2, size_t index);
-enum cc_stat       slist_add_first       (SList *list, void *element);
-enum cc_stat       slist_add_last        (SList *list, void *element);
+enum cc_stat  slist_remove          (SList *list, void *element, void **out);
+enum cc_stat  slist_remove_first    (SList *list, void **out);
+enum cc_stat  slist_remove_last     (SList *list, void **out);
+enum cc_stat  slist_remove_at       (SList *list, size_t index, void **out);
 
-enum cc_stat      slist_remove          (SList *list, void *element, void **out);
-enum cc_stat      slist_remove_first    (SList *list, void **out);
-enum cc_stat      slist_remove_last     (SList *list, void **out);
-enum cc_stat      slist_remove_at       (SList *list, size_t index, void **out);
+enum cc_stat  slist_remove_all      (SList *list);
+enum cc_stat  slist_remove_all_free (SList *list);
 
-enum cc_stat       slist_remove_all      (SList *list);
-enum cc_stat       slist_remove_all_free (SList *list);
+enum cc_stat  slist_get_at          (SList *list, size_t index, void **out);
+enum cc_stat  slist_get_first       (SList *list, void **out);
+enum cc_stat  slist_get_last        (SList *list, void **out);
 
-enum cc_stat      slist_get_at             (SList *list, size_t index, void **out);
-enum cc_stat      slist_get_first       (SList *list, void **out);
-enum cc_stat      slist_get_last        (SList *list, void **out);
+enum cc_stat  slist_sublist         (SList *list, size_t from, size_t to, SList **out);
+enum cc_stat  slist_copy_shallow    (SList *list, SList **out);
+enum cc_stat  slist_copy_deep       (SList *list, void *(*cp) (void*), SList **out);
 
-enum cc_stat     slist_sublist         (SList *list, size_t from, size_t to, SList **out);
-enum cc_stat     slist_copy_shallow    (SList *list, SList **out);
-enum cc_stat     slist_copy_deep       (SList *list, void *(*cp) (void*), SList **out);
+enum cc_stat  slist_replace_at      (SList *list, void *element, size_t index, void **out);
 
-enum cc_stat      slist_replace_at      (SList *list, void *element, size_t index, void **out);
+size_t        slist_contains        (SList *list, void *element);
+enum cc_stat  slist_index_of        (SList *list, void *element, size_t *index);
+enum cc_stat  slist_to_array        (SList *list, void ***out);
 
-size_t     slist_contains        (SList *list, void *element);
-enum cc_stat    slist_index_of        (SList *list, void *element, size_t *index);
-enum cc_stat     slist_to_array        (SList *list, void ***out);
+void          slist_reverse         (SList *list);
+enum cc_stat  slist_sort            (SList *list, int (*cmp) (void const*, void const*));
+size_t        slist_size            (SList *list);
 
-void       slist_reverse         (SList *list);
-enum cc_stat       slist_sort            (SList *list, int (*cmp) (void const*, void const*));
-size_t     slist_size            (SList *list);
+void          slist_foreach         (SList *list, void (*op) (void *));
 
-void       slist_foreach         (SList *list, void (*op) (void *));
-
-void       slist_iter_init       (SListIter *iter, SList *list);
-enum cc_stat      slist_iter_remove     (SListIter *iter, void **out);
-enum cc_stat       slist_iter_add        (SListIter *iter, void *element);
-enum cc_stat      slist_iter_replace    (SListIter *iter, void *element, void **out);
-void      slist_iter_next       (SListIter *iter, void **out);
-size_t     slist_iter_index      (SListIter *iter);
-bool       slist_iter_has_next   (SListIter *iter);
+void          slist_iter_init       (SListIter *iter, SList *list);
+enum cc_stat  slist_iter_remove     (SListIter *iter, void **out);
+enum cc_stat  slist_iter_add        (SListIter *iter, void *element);
+enum cc_stat  slist_iter_replace    (SListIter *iter, void *element, void **out);
+void          slist_iter_next       (SListIter *iter, void **out);
+size_t        slist_iter_index      (SListIter *iter);
+bool          slist_iter_has_next   (SListIter *iter);
 
 #endif /* SLIST_H_ */

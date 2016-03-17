@@ -86,10 +86,10 @@ typedef struct array_iter_s {
 
 enum cc_stat  array_new             (Array **out);
 enum cc_stat  array_new_conf        (const ArrayConf const* conf, Array **out);
-void    array_conf_init       (ArrayConf *conf);
+void          array_conf_init       (ArrayConf *conf);
 
-void    array_destroy         (Array *ar);
-void    array_destroy_free    (Array *ar);
+void          array_destroy         (Array *ar);
+void          array_destroy_free    (Array *ar);
 
 enum cc_stat  array_add             (Array *ar, void *element);
 enum cc_stat  array_add_at          (Array *ar, void *element, size_t index);
@@ -98,8 +98,8 @@ enum cc_stat  array_replace_at      (Array *ar, void *element, size_t index, voi
 enum cc_stat  array_remove          (Array *ar, void *element, void **out);
 enum cc_stat  array_remove_at       (Array *ar, size_t index, void **out);
 enum cc_stat  array_remove_last     (Array *ar, void **out);
-void    array_remove_all      (Array *ar);
-void    array_remove_all_free (Array *ar);
+void          array_remove_all      (Array *ar);
+void          array_remove_all_free (Array *ar);
 
 enum cc_stat  array_get             (Array *ar, size_t index, void **out);
 enum cc_stat  array_get_last        (Array *ar, void **out);
@@ -108,25 +108,25 @@ enum cc_stat  array_subarray        (Array *ar, size_t from, size_t to, Array **
 enum cc_stat  array_copy_shallow    (Array *ar, Array **out);
 enum cc_stat  array_copy_deep       (Array *ar, void *(*cp) (void*), Array **out);
 
-void    array_reverse         (Array *ar);
+void          array_reverse         (Array *ar);
 enum cc_stat  array_trim_capacity   (Array *ar);
 
-size_t  array_contains        (Array *ar, void *element);
-size_t  array_size            (Array *ar);
-size_t  array_capacity        (Array *ar);
+size_t        array_contains        (Array *ar, void *element);
+size_t        array_size            (Array *ar);
+size_t        array_capacity        (Array *ar);
 
-size_t  array_index_of        (Array *ar, void *element);
-void    array_sort            (Array *ar, int (*cmp) (const void*, const void*));
+size_t        array_index_of        (Array *ar, void *element);
+void          array_sort            (Array *ar, int (*cmp) (const void*, const void*));
 
-void    array_foreach         (Array *ar, void (*op) (void *));
+void          array_foreach         (Array *ar, void (*op) (void *));
 
-void    array_iter_init       (ArrayIter *iter, Array *ar);
-bool    array_iter_has_next   (ArrayIter *iter);
-void    array_iter_next       (ArrayIter *iter, void **out);
+void          array_iter_init       (ArrayIter *iter, Array *ar);
+bool          array_iter_has_next   (ArrayIter *iter);
+void          array_iter_next       (ArrayIter *iter, void **out);
 enum cc_stat  array_iter_remove     (ArrayIter *iter, void **out);
 enum cc_stat  array_iter_add        (ArrayIter *iter, void *element);
 enum cc_stat  array_iter_replace    (ArrayIter *iter, void *element, void **out);
-size_t  array_iter_index      (ArrayIter *iter);
+size_t        array_iter_index      (ArrayIter *iter);
 
 const void* const* array_get_buffer(Array *ar);
 
