@@ -45,7 +45,7 @@ void hashset_conf_init(HashSetConf *conf)
  *
  * @return a new empty HashSet
  */
-int hashset_new(HashSet **hs)
+enum cc_stat hashset_new(HashSet **hs)
 {
     HashSetConf hsc;
     hashset_conf_init(&hsc);
@@ -62,7 +62,7 @@ int hashset_new(HashSet **hs)
  *
  * @return a new empty HashSet
  */
-int hashset_new_conf(const HashSetConf const* conf, HashSet **hs)
+enum cc_stat hashset_new_conf(const HashSetConf const* conf, HashSet **hs)
 {
     HashSet *set = conf->mem_calloc(1, sizeof(HashSet));
 
@@ -108,7 +108,7 @@ void hashset_destroy(HashSet *set)
  *
  * @return true if the element was successfuly added to the set
  */
-int hashset_add(HashSet *set, void *element)
+enum cc_stat hashset_add(HashSet *set, void *element)
 {
     return hashtable_add(set->table, element, set->dummy);
 }
@@ -123,7 +123,7 @@ int hashset_add(HashSet *set, void *element)
  *
  * @return the removed element, or NULL if the element was not found
  */
-int hashset_remove(HashSet *set, void *element, void **out)
+enum cc_stat hashset_remove(HashSet *set, void *element, void **out)
 {
     /* Since the value is never null, a returned null can only
      * mean that the element is not present */
@@ -236,7 +236,7 @@ const void *hashset_iter_next(HashSetIter *iter)
  *
  * @return the removed element
  */
-int hashset_iter_remove(HashSetIter *iter, void **out)
+enum cc_stat hashset_iter_remove(HashSetIter *iter, void **out)
 {
     void *element = iter->iter.prev_entry->key;
     int stat = hashtable_iter_remove(&(iter->iter), out);

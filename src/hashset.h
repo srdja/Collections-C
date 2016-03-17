@@ -53,25 +53,25 @@ typedef struct hashset_iter_s {
     HashTableIter iter;
 } HashSetIter;
 
-void        hashset_conf_init     (HashSetConf *conf);
+void          hashset_conf_init     (HashSetConf *conf);
 
-int         hashset_new           (HashSet **hs);
-int         hashset_new_conf      (const HashSetConf const* conf, HashSet **hs);
-void        hashset_destroy       (HashSet *set);
+enum cc_stat  hashset_new           (HashSet **hs);
+enum cc_stat  hashset_new_conf      (const HashSetConf const* conf, HashSet **hs);
+void          hashset_destroy       (HashSet *set);
 
-int         hashset_add           (HashSet *set, void *element);
-int         hashset_remove        (HashSet *set, void *element, void **out);
-void        hashset_remove_all    (HashSet *set);
+enum cc_stat  hashset_add           (HashSet *set, void *element);
+enum cc_stat  hashset_remove        (HashSet *set, void *element, void **out);
+void          hashset_remove_all    (HashSet *set);
 
-bool        hashset_contains      (HashSet *set, void *element);
-size_t      hashset_size          (HashSet *set);
-size_t      hashset_capacity      (HashSet *set);
+bool          hashset_contains      (HashSet *set, void *element);
+size_t        hashset_size          (HashSet *set);
+size_t        hashset_capacity      (HashSet *set);
 
-void        hashset_foreach       (HashSet *set, void (*op) (const void*));
+void          hashset_foreach       (HashSet *set, void (*op) (const void*));
 
-void        hashset_iter_init     (HashSetIter *iter, HashSet *set);
-bool        hashset_iter_has_next (HashSetIter *iter);
-const void *hashset_iter_next     (HashSetIter *iter);
-int         hashset_iter_remove   (HashSetIter *iter, void **out);
+void          hashset_iter_init     (HashSetIter *iter, HashSet *set);
+bool          hashset_iter_has_next (HashSetIter *iter);
+const void   *hashset_iter_next     (HashSetIter *iter);
+enum cc_stat  hashset_iter_remove   (HashSetIter *iter, void **out);
 
 #endif /* HASHSET_H_ */

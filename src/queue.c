@@ -43,7 +43,7 @@ void queue_conf_init(QueueConf *conf)
  *
  * @return a new queue if the allocation was successful, or NULL.
  */
-int queue_new(Queue **queue)
+enum cc_stat queue_new(Queue **queue)
 {
     QueueConf conf;
     queue_conf_init(&conf);
@@ -60,7 +60,7 @@ int queue_new(Queue **queue)
  *
  * @return a new queue if the allocation was successful, or NULL.
  */
-int queue_new_conf(const QueueConf const* conf, Queue **q)
+enum cc_stat queue_new_conf(const QueueConf const* conf, Queue **q)
 {
     Queue *queue = conf->mem_calloc(1, sizeof(Queue));
 
@@ -118,7 +118,7 @@ void queue_destroy_free(Queue *queue)
  *
  * @return the element at the front of the queue
  */
-int queue_peek(Queue *queue, void **out)
+enum cc_stat queue_peek(Queue *queue, void **out)
 {
     return deque_get_last(queue->d, out);
 }
@@ -130,7 +130,7 @@ int queue_peek(Queue *queue, void **out)
  *
  * @return the element that was at the front of the queue
  */
-int queue_poll(Queue *queue, void **out)
+enum cc_stat queue_poll(Queue *queue, void **out)
 {
     return deque_remove_last(queue->d, out);
 }
@@ -144,7 +144,7 @@ int queue_poll(Queue *queue, void **out)
  *
  * @return true if the operation was successful
  */
-int queue_enqueue(Queue *queue, void *element)
+enum cc_stat queue_enqueue(Queue *queue, void *element)
 {
     return deque_add_first(queue->d, element);
 }
@@ -217,7 +217,7 @@ void queue_iter_next(QueueIter *iter, void **out)
  *
  * @return the old element that was replaced
  */
-int queue_iter_replace(QueueIter *iter, void *replacement, void **out)
+enum cc_stat queue_iter_replace(QueueIter *iter, void *replacement, void **out)
 {
     return deque_iter_replace(&(iter->i), replacement, out);
 }
