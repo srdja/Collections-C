@@ -44,7 +44,7 @@ void stack_conf_init(StackConf *conf)
  *
  * @return a new empty stack, or NULL.
  */
-int stack_new(Stack **out)
+enum cc_stat stack_new(Stack **out)
 {
     StackConf conf;
     stack_conf_init(&conf);
@@ -61,7 +61,7 @@ int stack_new(Stack **out)
  *
  * @return a new empty stack, or NULL if the allocation fails
  */
-int stack_new_conf(const StackConf const* conf, Stack **out)
+enum cc_stat stack_new_conf(const StackConf const* conf, Stack **out)
 {
     Stack *stack = conf->mem_calloc(1, sizeof(Stack));
 
@@ -73,7 +73,7 @@ int stack_new_conf(const StackConf const* conf, Stack **out)
     stack->mem_free   = conf->mem_free;
 
     Array *array;
-    int status;
+    enum cc_stat status;
     if (!(status = array_new_conf(conf, &array))) {
         stack->v = array;
     } else {
@@ -116,7 +116,7 @@ void stack_destroy_free(Stack *stack)
  *
  * @return true if the operation was successful, false if not
  */
-int stack_push(Stack *stack, void *element)
+enum cc_stat stack_push(Stack *stack, void *element)
 {
     return array_add(stack->v, element);
 }
@@ -128,7 +128,7 @@ int stack_push(Stack *stack, void *element)
  *
  * @return the top element of the stack
  */
-int stack_peek(Stack *stack, void **out)
+enum cc_stat stack_peek(Stack *stack, void **out)
 {
     return array_get_last(stack->v, out);
 }
@@ -140,7 +140,7 @@ int stack_peek(Stack *stack, void **out)
  *
  * @return the top element of the stack
  */
-int stack_pop(Stack *stack, void **out)
+enum cc_stat stack_pop(Stack *stack, void **out)
 {
     return array_remove_last(stack->v, out);
 }

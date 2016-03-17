@@ -39,13 +39,14 @@ struct hashtable_s {
     void    (*mem_free)   (void *block);
 };
 
-static size_t  get_table_index  (HashTable *table, void *key);
-static int     resize           (HashTable *t, size_t new_capacity);
-static size_t  round_pow_two    (size_t n);
-static int     get_null_key     (HashTable *table, void **out);
-static int     add_null_key     (HashTable *table, void *val);
-static int     remove_null_key  (HashTable *table, void **out);
-static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
+static enum cc_stat resize          (HashTable *t, size_t new_capacity);
+static enum cc_stat get_null_key    (HashTable *table, void **out);
+static enum cc_stat add_null_key    (HashTable *table, void *val);
+static enum cc_stat remove_null_key (HashTable *table, void **out);
+
+static size_t get_table_index  (HashTable *table, void *key);
+static size_t round_pow_two    (size_t n);
+static void   move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
                                  size_t src_size, size_t dest_size);
 
 /**
@@ -55,7 +56,7 @@ static void    move_entries     (TableEntry **src_bucket, TableEntry **dest_buck
  *
  * @return a new HashTable or NULL if the memory allocation fails.
  */
-int hashtable_new(HashTable **out)
+enum cc_stat hashtable_new(HashTable **out)
 {
     HashTableConf htc;
     hashtable_conf_init(&htc);
@@ -73,7 +74,7 @@ int hashtable_new(HashTable **out)
  *
  * @return a new HashTable or NULL if the memory allocation fails.
  */
-int hashtable_new_conf(const HashTableConf const* conf, HashTable **out)
+enum cc_stat hashtable_new_conf(const HashTableConf const* conf, HashTable **out)
 {
     HashTable *table = conf->mem_calloc(1, sizeof(HashTable));
 
@@ -156,9 +157,9 @@ void hashtable_destroy(HashTable *table)
  *
  * @return true if the operation was successful
  */
-int hashtable_add(HashTable *table, void *key, void *val)
+enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
 {
-    int stat;
+    enum cc_stat stat;
     if (table->size >= table->threshold) {
         if ((stat = resize(table, table->capacity << 1)) != CC_OK)
             return stat;
@@ -205,7 +206,7 @@ int hashtable_add(HashTable *table, void *key, void *val)
  *
  * @return true if the operation was successful
  */
-static int add_null_key(HashTable *table, void *val)
+static enum cc_stat add_null_key(HashTable *table, void *val)
 {
     TableEntry *replace = table->buckets[0];
 
@@ -245,7 +246,7 @@ static int add_null_key(HashTable *table, void *val)
  * @return the value mapped to the specified key, or null if the mapping doesn't
  *         exit
  */
-int hashtable_get(HashTable *table, void *key, void **out)
+enum cc_stat hashtable_get(HashTable *table, void *key, void **out)
 {
     if (!key)
         return get_null_key(table, out);
@@ -273,7 +274,7 @@ int hashtable_get(HashTable *table, void *key, void **out)
  *
  * @return the value mapped to the NULL key, or NULL
  */
-static int get_null_key(HashTable *table, void **out)
+static enum cc_stat get_null_key(HashTable *table, void **out)
 {
     TableEntry *bucket = table->buckets[0];
 
@@ -300,7 +301,7 @@ static int get_null_key(HashTable *table, void **out)
  * @return the value associated with the removed key, or NULL if the key doesn't
  *         exist
  */
-int hashtable_remove(HashTable *table, void *key, void **out)
+enum cc_stat hashtable_remove(HashTable *table, void *key, void **out)
 {
     if (!key)
         return remove_null_key(table, out);
@@ -345,7 +346,7 @@ int hashtable_remove(HashTable *table, void *key, void **out)
  * @return the value associated with the NULL key, or NULL if the NULL key was
  * not mapped
  */
-int remove_null_key(HashTable *table, void **out)
+enum cc_stat remove_null_key(HashTable *table, void **out)
 {
     TableEntry *e = table->buckets[0];
 
@@ -405,7 +406,7 @@ void hashtable_remove_all(HashTable *table)
  *
  * @return true if the resize was successfull
  */
-static int resize(HashTable *t, size_t new_capacity)
+static enum cc_stat resize(HashTable *t, size_t new_capacity)
 {
     if (t->capacity == MAX_POW_TWO)
         return CC_ERR_MAX_CAPACITY;
@@ -541,7 +542,7 @@ bool hashtable_contains_key(HashTable *table, void *key)
  *
  * @return a Array of values or NULL
  */
-int hashtable_get_values(HashTable *table, Array **out)
+enum cc_stat hashtable_get_values(HashTable *table, Array **out)
 {
     ArrayConf ac;
     array_conf_init(&ac);
@@ -552,7 +553,7 @@ int hashtable_get_values(HashTable *table, Array **out)
     ac.mem_free   = table->mem_free;
 
     Array *values;
-    int stat;
+    enum cc_stat stat;
     if (!(stat = array_new_conf(&ac, &values)))
         return stat;
 
@@ -585,7 +586,7 @@ int hashtable_get_values(HashTable *table, Array **out)
  *
  * @return a Array of keys or NULL
  */
-int hashtable_get_keys(HashTable *table, Array **out)
+enum cc_stat hashtable_get_keys(HashTable *table, Array **out)
 {
     ArrayConf vc;
     array_conf_init(&vc);
@@ -596,7 +597,7 @@ int hashtable_get_keys(HashTable *table, Array **out)
     vc.mem_free   = table->mem_free;
 
     Array *keys;
-    int stat = array_new_conf(&vc, &keys);
+    enum cc_stat stat = array_new_conf(&vc, &keys);
     if (!stat)
         return stat;
 
@@ -853,7 +854,7 @@ void hashtable_iter_next(HashTableIter *iter, TableEntry **te)
  *
  * @param[in] iter The iterator on which this operation is performed
  */
-int hashtable_iter_remove(HashTableIter *iter, void **out)
+enum cc_stat hashtable_iter_remove(HashTableIter *iter, void **out)
 {
     return hashtable_remove(iter->table, iter->prev_entry->key, out);
 }
