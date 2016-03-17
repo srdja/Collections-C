@@ -566,10 +566,10 @@ enum cc_stat list_remove_first(List *list, void **out)
     if (!list->size)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    Node *node = unlink(list, list->head);
+    void *e = unlink(list, list->head);
 
     if (out)
-        *out = node->data;
+        *out = e;
 
     return CC_OK;
 }
