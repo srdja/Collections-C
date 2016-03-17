@@ -33,7 +33,8 @@ int cmp(void *k1, void *k2)
 
 void test_treeset_add()
 {
-    TreeSet *set = treeset_new(cmp);
+    TreeSet *set;
+    treeset_new(cmp, &set);
 
     int a = 1;
     int b = 2;
@@ -60,7 +61,8 @@ void test_treeset_add()
 
 void test_treeset_remove()
 {
-    TreeSet *set = treeset_new(cmp);
+    TreeSet *set;
+    treeset_new(cmp, &set);
 
     int a = 1;
     int b = 2;
@@ -70,7 +72,7 @@ void test_treeset_remove()
     treeset_add(set, &b);
     treeset_add(set, &c);
 
-    treeset_remove(set, &a);
+    treeset_remove(set, &a, NULL);
 
     size_t size = treeset_size(set);
 
@@ -87,7 +89,8 @@ void test_treeset_remove()
 
 void test_treeset_remove_all()
 {
-    TreeSet *set = treeset_new(cmp);
+    TreeSet *set;
+    treeset_new(cmp, &set);
 
     int a = 1;
     int b = 2;
@@ -115,7 +118,8 @@ void test_treeset_remove_all()
 
 void test_treeset_size()
 {
-    TreeSet *set = treeset_new(cmp);
+    TreeSet *set;
+    treeset_new(cmp, &set);
 
     int a = 1;
     int b = 2;
@@ -133,7 +137,8 @@ void test_treeset_size()
 
 void test_treeset_iter_next()
 {
-    TreeSet *t = treeset_new(cmp);
+    TreeSet *t;
+    treeset_new(cmp, &t);
 
     int a = 1;
     int b = 2;
@@ -182,7 +187,8 @@ void test_treeset_iter_next()
 
 void test_treeset_iter_remove()
 {
-    TreeSet *t = treeset_new(cmp);
+    TreeSet *t;
+    treeset_new(cmp, &t);
 
     int a = 1;
     int b = 2;
