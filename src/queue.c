@@ -186,27 +186,15 @@ void queue_iter_init(QueueIter *iter, Queue *queue)
 }
 
 /**
- * Checks whether or not the iterator has reached the end of the queue.
- *
- * @param[in] iter iterator whose position is being checked
- *
- * @return true if the are more elements to be iterated over
- */
-bool queue_iter_has_next(QueueIter *iter)
-{
-    return deque_iter_has_next(&(iter->i));
-}
-
-/**
  * Retruns the next element in the sequence and advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  *
  * @return the next element in the sequence
  */
-void queue_iter_next(QueueIter *iter, void **out)
+enum cc_stat queue_iter_next(QueueIter *iter, void **out)
 {
-    deque_iter_next(&(iter->i), out);
+    return deque_iter_next(&(iter->i), out);
 }
 
 /**

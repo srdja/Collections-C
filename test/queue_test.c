@@ -101,10 +101,8 @@ void test_queue_iter()
     QueueIter iter;
     queue_iter_init(&iter, q);
 
-    while (queue_iter_has_next(&iter)) {
-        int *e;
-        queue_iter_next(&iter, (void*) &e);
-
+    int *e;
+    while (queue_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (e == &a)
             x++;
 

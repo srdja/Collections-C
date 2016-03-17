@@ -111,8 +111,7 @@ enum cc_stat  deque_index_of        (Deque *deque, void *element, size_t *i);
 void          deque_foreach         (Deque *deque, void (*op) (void *));
 
 void          deque_iter_init       (DequeIter *iter, Deque *deque);
-bool          deque_iter_has_next   (DequeIter *iter);
-void          deque_iter_next       (DequeIter *iter, void **out);
+enum cc_stat  deque_iter_next       (DequeIter *iter, void **out);
 enum cc_stat  deque_iter_remove     (DequeIter *iter, void **out);
 enum cc_stat  deque_iter_add        (DequeIter *iter, void *element);
 enum cc_stat  deque_iter_replace    (DequeIter *iter, void *replacement, void **out);

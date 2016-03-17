@@ -947,9 +947,7 @@ void test_deque_iterator_add()
 
     size_t i = 0;
 
-    while (deque_iter_has_next(&iter)) {
-        deque_iter_next(&iter, NULL);
-
+    while (deque_iter_next(&iter, NULL) != CC_ITER_END) {
         if (deque_iter_index(&iter) == 3)
             deque_iter_add(&iter, &g);
 
@@ -996,9 +994,7 @@ void test_deque_iterator_remove()
     deque_iter_init(&iter, deque);
 
     size_t i = 0;
-    while (deque_iter_has_next(&iter)) {
-        deque_iter_next(&iter, NULL);
-
+    while (deque_iter_next(&iter, NULL) != CC_ITER_END) {
         if (i == 3)
             deque_iter_remove(&iter, NULL);
 
@@ -1046,20 +1042,18 @@ void test_deque_iterator_next()
 
     size_t i = 0;
 
-    while (deque_iter_has_next(&iter)) {
-        cc_assert(iter.index == i,
-                  cc_msg("deque_iterator: Iterator index invalid. "
-                         "Expected %d but got %d instead", i, iter.index));
-
-        void *e;
-        deque_iter_next(&iter, &e);
-
+    void *el;
+    while (deque_iter_next(&iter, &el) != CC_ITER_END) {
         void *k;
         deque_get(deque, i, &k);
-        cc_assert(e == k,
+        cc_assert(el == k,
                   cc_msg("deque_iterator: Element returned by "
                          "deque_iter_next not as expected"));
         i++;
+
+        cc_assert(iter.index == i,
+                  cc_msg("deque_iterator: Iterator index invalid. "
+                         "Expected %d but got %d instead", i, iter.index));
     }
     deque_destroy(deque);
 }

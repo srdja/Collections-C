@@ -66,8 +66,7 @@ size_t        queue_size         (Queue *queue);
 void          queue_foreach      (Queue *queue, void (*op) (void*));
 
 void          queue_iter_init    (QueueIter *iter, Queue *queue);
-bool          queue_iter_has_next(QueueIter *iter);
-void          queue_iter_next    (QueueIter *iter, void **out);
+enum cc_stat  queue_iter_next    (QueueIter *iter, void **out);
 enum cc_stat  queue_iter_replace (QueueIter *iter, void *replacement, void **out);
 
 #endif /* QUEUE_H_ */

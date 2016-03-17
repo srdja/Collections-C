@@ -899,39 +899,28 @@ void deque_iter_init(DequeIter *iter, Deque *deque)
 }
 
 /**
- * Checks wheteher or not the iterator has reached the end of the deque
- *
- * @param[in] iter iterator whose position is being checked
- *
- * @return true if there are more elemnets to be iterated over
- */
-bool deque_iter_has_next(DequeIter *iter)
-{
-    const size_t c     = (iter->deque->capacity - 1);
-    const size_t last  = (iter->deque->last) & c;
-    const size_t first = (iter->deque->first) & c;
-
-    if (last == first || iter->index >= iter->deque->size)
-        return false;
-
-    return true;
-}
-
-/**
  * Returns the next element in the sequence and advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  *
  * @return the next element in the sequence
  */
-void deque_iter_next(DequeIter *iter, void **out)
+enum cc_stat deque_iter_next(DequeIter *iter, void **out)
 {
-    const size_t c = iter->deque->capacity - 1;
+    const size_t c     = (iter->deque->capacity - 1);
+    const size_t last  = (iter->deque->last) & c;
+    const size_t first = (iter->deque->first) & c;
+
+    if (last == first || iter->index >= iter->deque->size)
+        return CC_ITER_END;
+
     const size_t i = (iter->deque->first + iter->index) & c;
 
     iter->index++;
     if (out)
         *out = iter->deque->buffer[i];
+
+    return CC_OK;
 }
 
 /**
