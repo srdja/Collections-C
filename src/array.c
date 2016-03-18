@@ -731,10 +731,10 @@ enum cc_stat array_iter_next(ArrayIter *iter, void **out)
     if (iter->index >= iter->ar->size)
         return CC_ITER_END;
 
-    iter->index++;
-
     if (out)
         *out = iter->ar->buffer[iter->index];
+
+    iter->index++;
 
     return CC_OK;
 }
