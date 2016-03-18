@@ -764,7 +764,7 @@ enum cc_stat array_iter_remove(ArrayIter *iter, void **out)
  */
 enum cc_stat array_iter_add(ArrayIter *iter, void *element)
 {
-    return array_add_at(iter->ar, element, iter->index++);
+    return array_add_at(iter->ar, element, iter->index++ - 1);
 }
 
 /**
