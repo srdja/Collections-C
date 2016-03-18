@@ -1065,14 +1065,15 @@ enum cc_stat slist_iter_add(SListIter *iter, void *element)
     if (!new_node)
         return CC_ERR_ALLOC;
 
-    new_node->data      = element;
-    new_node->next      = iter->next;
+    new_node->data = element;
+    new_node->next = iter->current;
 
-    iter->prev->next    = iter->current;
-    iter->prev          = iter->current;
-    iter->current->next = new_node;
+    if (iter->prev)
+        iter->prev->next = new_node;
 
-    if (iter->index == iter->list->size - 1)
+    iter->prev = new_node;
+
+    if ((iter->index - 1) == 0)
         iter->list->head = new_node;
 
     iter->index++;
