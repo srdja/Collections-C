@@ -884,12 +884,10 @@ void test_slist_iter_add()
     SListIter iter;
     slist_iter_init(&iter, list);
 
-    int *e;
-    while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
-        if (*e == 3) {
-            int i = slist_iter_index(&iter);
+    while (slist_iter_next(&iter, NULL) != CC_ITER_END) {
+        int i = slist_iter_index(&iter);
+        if (i == 3)
             slist_iter_add(&iter, &ins);
-        }
     }
 
     cc_assert(slist_size(list) == 5,
@@ -909,6 +907,24 @@ void test_slist_iter_add()
     cc_assert(*li4 == 4,
               cc_msg("slist_iter_add: Expected element at"
                      " index 4 was 4, but got %d,", *li4));
+
+
+    slist_iter_init(&iter, list);
+    while (slist_iter_next(&iter, NULL) != CC_ITER_END) {
+        if (slist_iter_index(&iter) == 0)
+            slist_iter_add(&iter, &ins);
+    }
+
+    void *e;
+    slist_get_first(list, &e);
+
+    cc_assert(*((int*) e) == ins,
+              cc_msg("slist_iter_add: Expected first element to be %d"
+                     ", but got %d instead", ins, *((int*)e)));
+
+    cc_assert(slist_size(list) == 6,
+              cc_msg("slist_iter_add: Expected size "
+                     "was 6 but got %d", slist_size(list)));
 
     test_slist_validate_structure(list, "list_iter_add");
 
@@ -948,7 +964,7 @@ void test_slist_iter_remove()
 
 void test_slist_iter()
 {
-//    test_slist_iter_add();
+    test_slist_iter_add();
     test_slist_iter_remove();
 }
 
