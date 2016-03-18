@@ -1437,7 +1437,8 @@ enum cc_stat list_diter_next(ListIter *iter, void **out)
     iter->next = iter->next->prev;
     iter->index++;
 
-    *out = data;
+    if (out)
+        *out = data;
 
     return CC_OK;
 }
