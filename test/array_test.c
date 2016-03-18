@@ -676,6 +676,13 @@ void test_array_iter_add()
             array_iter_add(&iter, (void*) &new);
     }
 
+    void *n;
+    array_get(v, 2, &n);
+
+    cc_assert(*((int*)n) == new,
+              cc_msg("array_iter_add: Expected element at index 2 was %d"
+                     ", but got %d instead", new, *((int*)n)));
+
     cc_assert(array_contains(v, &new) == 1,
               cc_msg("array_iter_add: Element not present after being added"));
 
