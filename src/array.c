@@ -239,9 +239,10 @@ enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out
  */
 enum cc_stat array_remove(Array *ar, void *element, void **out)
 {
-    size_t index = array_index_of(ar, element);
+    size_t index;
+    enum cc_stat status = array_index_of(ar, element, &index);
 
-    if (index == CC_ERR_OUT_OF_RANGE)
+    if (status == CC_ERR_OUT_OF_RANGE)
         return CC_ERR_OUT_OF_RANGE;
 
     if (index != ar->size - 1) {
@@ -390,12 +391,13 @@ const void * const*array_get_buffer(Array *ar)
  *
  * @return the index of the specified element, or CC_ERR_OUT_OF_RANGE if the element is not found
  */
-size_t array_index_of(Array *ar, void *element)
+enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 {
     size_t i;
     for (i = 0; i < ar->size; i++) {
         if (ar->buffer[i] == element)
-            return i;
+            *index = i;
+            return CC_OK;
     }
     return CC_ERR_OUT_OF_RANGE;
 }

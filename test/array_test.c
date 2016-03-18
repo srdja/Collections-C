@@ -317,8 +317,11 @@ void test_array_index_of()
     array_add(v, (void*)&b);
     array_add(v, (void*)&c);
 
-    int ai = array_index_of(v, &a);
-    int ci = array_index_of(v, &c);
+    size_t ai;
+    array_index_of(v, &a, &ai);
+
+    size_t ci;
+    array_index_of(v, &c, &ci);
 
     cc_assert(ai == 0,
               cc_msg("array_index_of: Expected index was 0, but got %d", ai));
