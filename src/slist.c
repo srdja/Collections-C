@@ -1124,7 +1124,9 @@ enum cc_stat slist_iter_next(SListIter *iter, void **out)
     iter->next = iter->next->next;
     iter->index++;
 
-    *out = data;
+    if (out)
+        *out = data;
+
     return CC_OK;
 }
 

@@ -854,8 +854,10 @@ bool treetable_iter_has_next(TreeTableIter *iter)
  */
 void treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
 {
-    entry->value  = iter->next->value;
-    entry->key    = iter->next->key;
+    if (entry) {
+        entry->value  = iter->next->value;
+        entry->key    = iter->next->key;
+    }
     iter->current = iter->next;
     iter->next    = get_successor_node(iter->table, iter->current);
 }

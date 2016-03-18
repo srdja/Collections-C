@@ -846,7 +846,8 @@ void hashtable_iter_next(HashTableIter *iter, TableEntry **te)
             break;
         }
     }
-    *te = iter->prev_entry;
+    if (te)
+        *te = iter->prev_entry;
 }
 
 /**

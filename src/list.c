@@ -1314,7 +1314,9 @@ void list_iter_next(ListIter *iter, void **out)
     iter->last = iter->next;
     iter->next = iter->next->next;
     iter->index++;
-    *out = data;
+
+    if (out)
+        *out = data;
 }
 
 
