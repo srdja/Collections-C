@@ -101,7 +101,7 @@ enum cc_stat  array_remove_last     (Array *ar, void **out);
 void          array_remove_all      (Array *ar);
 void          array_remove_all_free (Array *ar);
 
-enum cc_stat  array_get             (Array *ar, size_t index, void **out);
+enum cc_stat  array_get_at          (Array *ar, size_t index, void **out);
 enum cc_stat  array_get_last        (Array *ar, void **out);
 
 enum cc_stat  array_subarray        (Array *ar, size_t from, size_t to, Array **out);

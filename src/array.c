@@ -344,7 +344,7 @@ void array_remove_all_free(Array *ar)
  * @return array element at the specified index, or NULL if the operation has
  *         failed
  */
-enum cc_stat array_get(Array *ar, size_t index, void **out)
+enum cc_stat array_get_at(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_OUT_OF_RANGE;
@@ -365,7 +365,7 @@ enum cc_stat array_get(Array *ar, size_t index, void **out)
  */
 enum cc_stat array_get_last(Array *ar, void **out)
 {
-    return array_get(ar, ar->size - 1, out);
+    return array_get_at(ar, ar->size - 1, out);
 }
 
 /**
