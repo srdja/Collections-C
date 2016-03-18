@@ -1242,10 +1242,14 @@ enum cc_stat list_iter_add(ListIter *iter, void *element)
 
     new_node->data = element;
 
-    link_behind(iter->next, new_node);
+    link_behind(iter->last, new_node);
+
+    if ((iter->index - 1) == 0)
+        iter->list->head = new_node;
+
     iter->list->size++;
     iter->index++;
-    iter->last = new_node;
+
     return CC_OK;
 }
 
@@ -1322,7 +1326,7 @@ enum cc_stat list_iter_next(ListIter *iter, void **out)
  */
 void list_diter_init(ListIter *iter, List *list)
 {
-    iter->index = list->size - 1;
+    iter->index = list->size;
     iter->list  = list;
     iter->last  = NULL;
     iter->next  = list->tail;
@@ -1347,11 +1351,11 @@ enum cc_stat list_diter_add(ListIter *iter, void *element)
 
     new_node->data = element;
 
-    if (iter->index == iter->list->size - 1)
+    if (iter->index == 0)
         iter->list->head = new_node;
 
-    iter->index++;
-    link_after(iter->next, new_node);
+    link_behind(iter->last, new_node);
+
     iter->list->size++;
     iter->last = new_node;
     return CC_OK;
@@ -1435,7 +1439,7 @@ enum cc_stat list_diter_next(ListIter *iter, void **out)
     void *data = iter->next->data;
     iter->last = iter->next;
     iter->next = iter->next->prev;
-    iter->index++;
+    iter->index--;
 
     if (out)
         *out = data;
