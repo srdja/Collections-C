@@ -143,16 +143,14 @@ void          list_iter_init       (ListIter *iter, List *list);
 enum cc_stat  list_iter_remove     (ListIter *iter, void **out);
 enum cc_stat  list_iter_add        (ListIter *iter,  void *element);
 enum cc_stat  list_iter_replace    (ListIter *iter, void *element, void **out);
-bool          list_iter_has_next   (ListIter *iter);
 size_t        list_iter_index      (ListIter *iter);
-void          list_iter_next       (ListIter *iter, void **out);
+enum cc_stat  list_iter_next       (ListIter *iter, void **out);
 
 void          list_diter_init      (ListIter *iter, List *list);
 enum cc_stat  list_diter_remove    (ListIter *iter, void **out);
 enum cc_stat  list_diter_add       (ListIter *iter, void *element);
 enum cc_stat  list_diter_replace   (ListIter *iter, void *element, void **out);
-bool          list_diter_has_next  (ListIter *iter);
 size_t        list_diter_index     (ListIter *iter);
-void          list_diter_next      (ListIter *iter, void **out);
+enum cc_stat  list_diter_next      (ListIter *iter, void **out);
 
 #endif /* LIST_H_ */

@@ -1272,21 +1272,6 @@ enum cc_stat list_iter_replace(ListIter *iter, void *element, void **out)
 }
 
 /**
- * Checks whether or not there are more elements to be iterated over. Returns
- * true if the next element is available, or false if the end of the list has
- * been reached.
- *
- * @param[in] iter the iterator on which this operation is performed
- *
- * @return true if there is at least one more element in the sequence or false
- * if the end of the list has been reached.
- */
-bool list_iter_has_next(ListIter *iter)
-{
-    return iter->next != NULL;
-}
-
-/**
  * Returns the index of the previously returned element.
  *
  * @param[in] iter the iterator on which this operation is performed.
@@ -1308,8 +1293,11 @@ size_t list_iter_index(ListIter *iter)
  *
  * @return the next element in the sequence
  */
-void list_iter_next(ListIter *iter, void **out)
+enum cc_stat list_iter_next(ListIter *iter, void **out)
 {
+    if (!iter->next)
+        return CC_ITER_END;
+
     void *data = iter->next->data;
     iter->last = iter->next;
     iter->next = iter->next->next;
@@ -1317,6 +1305,8 @@ void list_iter_next(ListIter *iter, void **out)
 
     if (out)
         *out = data;
+
+    return CC_OK;
 }
 
 
@@ -1428,21 +1418,6 @@ size_t list_diter_index(ListIter *iter)
 }
 
 /**
- * Checks whether or not there are more element to be iterated over. This
- * function returns true if the next element in the sequence is available, or
- * false if the end of the list has been reached.
- *
- * @param[in] iter the iterator on which this operation is performed
- *
- * @return true if there is at least one more element in the sequence or false
- * if the end of the list has been reached.
- */
-bool list_diter_has_next(ListIter *iter)
-{
-    return iter->next != NULL;
-}
-
-/**
  * Returns the next element in the sequence and advances the iterator.
  *
  * @note Before this function is called, one should check whether the next
@@ -1452,13 +1427,19 @@ bool list_diter_has_next(ListIter *iter)
  *
  * @return the next element in the sequence
  */
-void list_diter_next(ListIter *iter, void **out)
+enum cc_stat list_diter_next(ListIter *iter, void **out)
 {
+    if (!iter->next)
+        return CC_ITER_END;
+
     void *data = iter->next->data;
     iter->last = iter->next;
     iter->next = iter->next->prev;
     iter->index++;
+
     *out = data;
+
+    return CC_OK;
 }
 
 /**
