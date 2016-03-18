@@ -326,7 +326,7 @@ void test_array_index_of()
     cc_assert(ai == 0,
               cc_msg("array_index_of: Expected index was 0, but got %d", ai));
 
-     cc_assert(ci == 2,
+    cc_assert(ci == 2,
               cc_msg("array_index_of: Expected index was 2, but got %d", ci));
 
     array_destroy(v);

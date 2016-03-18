@@ -395,9 +395,10 @@ enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 {
     size_t i;
     for (i = 0; i < ar->size; i++) {
-        if (ar->buffer[i] == element)
+        if (ar->buffer[i] == element) {
             *index = i;
             return CC_OK;
+        }
     }
     return CC_ERR_OUT_OF_RANGE;
 }
