@@ -56,28 +56,30 @@ typedef struct treeset_iter_s {
     TreeTableIter i;
 } TreeSetIter;
 
-void      treeset_conf_init        (TreeSetConf *conf);
-TreeSet  *treeset_new              (int (*cmp) (void*, void*));
-TreeSet  *treeset_new_conf         (TreeSetConf *conf);
-void      treeset_destroy          (TreeSet *set);
 
-bool      treeset_add              (TreeSet *set, void *element);
-void     *treeset_remove           (TreeSet *set, void *element);
-void      treeset_remove_all       (TreeSet *set);
+void          treeset_conf_init        (TreeSetConf *conf);
+enum cc_stat  treeset_new              (int (*cmp) (void*, void*), TreeSet **set);
+enum cc_stat  treeset_new_conf         (const TreeSetConf const* conf, TreeSet **set);
 
-void     *treeset_get_first        (TreeSet *set);
-void     *treeset_get_last         (TreeSet *set);
-void     *treeset_get_greater_than (TreeSet *set, void *element);
-void     *treeset_get_lesser_than  (TreeSet *set, void *element);
+void          treeset_destroy          (TreeSet *set);
 
-bool      treeset_contains         (TreeSet *set, void *element);
-size_t    treeset_size             (TreeSet *set);
+enum cc_stat  treeset_add              (TreeSet *set, void *element);
+enum cc_stat  treeset_remove           (TreeSet *set, void *element, void **out);
+void          treeset_remove_all       (TreeSet *set);
 
-void      treeset_foreach          (TreeSet *set, void (*op) (const void*));
+enum cc_stat  treeset_get_first        (TreeSet *set, void **out);
+enum cc_stat  treeset_get_last         (TreeSet *set, void **out);
+enum cc_stat  treeset_get_greater_than (TreeSet *set, void *element, void **out);
+enum cc_stat  treeset_get_lesser_than  (TreeSet *set, void *element, void **out);
 
-void      treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
-bool      treeset_iter_has_next    (TreeSetIter *iter);
-void      treeset_iter_next        (TreeSetIter *iter, void **element);
-void      treeset_iter_remove      (TreeSetIter *iter);
+bool          treeset_contains         (TreeSet *set, void *element);
+size_t        treeset_size             (TreeSet *set);
+
+void          treeset_foreach          (TreeSet *set, void (*op) (const void*));
+
+void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
+bool          treeset_iter_has_next    (TreeSetIter *iter);
+void          treeset_iter_next        (TreeSetIter *iter, void **element);
+void          treeset_iter_remove      (TreeSetIter *iter);
 
 #endif

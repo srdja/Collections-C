@@ -19,7 +19,8 @@ int main(int argc, char **argv)
 
 void test_queue_enqueue()
 {
-    Queue *q = queue_new();
+    Queue *q;
+    queue_new(&q);
 
     int a = 1;
     int b = 2;
@@ -31,12 +32,16 @@ void test_queue_enqueue()
     cc_assert(queue_size(q) == 2,
               cc_msg("queue_enqueue: Qeueu size not as expected"));
 
-    cc_assert(queue_peek(q) == &a,
+
+    void *p;
+    queue_peek(q, &p);
+    cc_assert(p == &a,
               cc_msg("queue_enqueue: Front element not as expected."));
 
     queue_enqueue(q, &c);
 
-    cc_assert(queue_peek(q) == &a,
+    queue_peek(q, &p);
+    cc_assert(p == &a,
               cc_msg("queue_enqueue: Front element not as expected."));
 
     queue_destroy(q);
@@ -44,7 +49,8 @@ void test_queue_enqueue()
 
 void test_queue_poll()
 {
-    Queue *q = queue_new();
+    Queue *q;
+    queue_new(&q);
 
     int a = 1;
     int b = 2;
@@ -54,16 +60,22 @@ void test_queue_poll()
     queue_enqueue(q, &b);
     queue_enqueue(q, &c);
 
-    cc_assert(queue_poll(q) == &a,
+    void *p;
+
+    queue_poll(q, &p);
+    cc_assert(p == &a,
               cc_msg("queue_peek: Front element not as expected."));
 
-    cc_assert(queue_peek(q) == &b,
+    queue_peek(q, &p);
+    cc_assert(p == &b,
               cc_msg("queue_peek: Front element not as expected."));
 
-    cc_assert(queue_poll(q) == &b,
+    queue_poll(q, &p);
+    cc_assert(p == &b,
               cc_msg("queue_peek: Front element not as expected."));
 
-    cc_assert(queue_peek(q) == &c,
+    queue_peek(q, &p);
+    cc_assert(p == &c,
               cc_msg("queue_peek: Front element not as expected."));
 
     queue_destroy(q);
@@ -71,7 +83,8 @@ void test_queue_poll()
 
 void test_queue_iter()
 {
-    Queue *q = queue_new();
+    Queue *q;
+    queue_new(&q);
 
     int a = 1;
     int b = 2;
@@ -88,9 +101,8 @@ void test_queue_iter()
     QueueIter iter;
     queue_iter_init(&iter, q);
 
-    while (queue_iter_has_next(&iter)) {
-        int *e = queue_iter_next(&iter);
-
+    int *e;
+    while (queue_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (e == &a)
             x++;
 

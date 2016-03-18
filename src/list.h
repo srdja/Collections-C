@@ -94,66 +94,63 @@ typedef struct list_conf_s {
     void   (*mem_free)   (void *block);
 } ListConf;
 
-void       list_conf_init       (ListConf *conf);
+void          list_conf_init       (ListConf *conf);
+enum cc_stat  list_new             (List **list);
+enum cc_stat  list_new_conf        (const ListConf const* conf, List **list);
+bool          list_destroy         (List *list);
+bool          list_destroy_free    (List *list);
 
-List*      list_new             (void);
-List*      list_new_conf        (ListConf *conf);
-bool       list_destroy         (List *list);
-bool       list_destroy_free    (List *list);
+enum cc_stat  list_splice          (List *list1, List *list2);
+enum cc_stat  list_splice_at       (List *list, List *list2, size_t index);
 
-bool       list_splice          (List *list1, List *list2);
-bool       list_splice_at       (List *list, List *list2, size_t index);
+enum cc_stat  list_add             (List *list, void *element);
+enum cc_stat  list_add_at          (List *list, void *element, size_t index);
+enum cc_stat  list_add_all         (List *list1, List *list2);
+enum cc_stat  list_add_all_at      (List *list, List *list2, size_t index);
+enum cc_stat  list_add_first       (List *list, void *element);
+enum cc_stat  list_add_last        (List *list, void *element);
 
-bool       list_add             (List *list, void *element);
-bool       list_add_at          (List *list, void *element, size_t index);
-bool       list_add_all         (List *list1, List *list2);
-bool       list_add_all_at      (List *list, List *list2, size_t index);
-bool       list_add_first       (List *list, void *element);
-bool       list_add_last        (List *list, void *element);
+enum cc_stat  list_remove          (List *list, void *element, void **out);
+enum cc_stat  list_remove_first    (List *list, void **out);
+enum cc_stat  list_remove_last     (List *list, void **out);
+enum cc_stat  list_remove_at       (List *list, size_t index, void **out);
 
-void*      list_remove          (List *list, void *element);
-void*      list_remove_first    (List *list);
-void*      list_remove_last     (List *list);
-void*      list_remove_at       (List *list, size_t index);
+enum cc_stat  list_remove_all      (List *list);
+enum cc_stat  list_remove_all_free (List *list);
 
-bool       list_remove_all      (List *list);
-bool       list_remove_all_free (List *list);
+enum cc_stat  list_get_at          (List *list, size_t index, void **out);
+enum cc_stat  list_get_first       (List *list, void **out);
+enum cc_stat  list_get_last        (List *list, void **out);
 
-void*      list_get             (List *list, size_t index);
-void*      list_get_first       (List *list);
-void*      list_get_last        (List *list);
+enum cc_stat  list_sublist         (List *list, size_t from, size_t to, List **out);
+enum cc_stat  list_copy_shallow    (List *list, List **out);
+enum cc_stat  list_copy_deep       (List *list, void *(*cp) (void*), List **out);
 
-List*      list_sublist         (List *list, size_t from, size_t to);
-List*      list_copy_shallow    (List *list);
-List*      list_copy_deep       (List *list, void *(*cp) (void*));
+enum cc_stat  list_replace_at      (List *list, void *element, size_t index, void **out);
 
-void*      list_replace_at      (List *list, void *element, size_t index);
+size_t        list_contains        (List *list, void *element);
+enum cc_stat  list_index_of        (List *list, void *element, size_t *index);
+enum cc_stat  list_to_array        (List *list, void ***out);
 
-size_t     list_contains        (List *list, void *element);
-size_t     list_index_of        (List *list, void *element);
-void**     list_to_array        (List *list);
+void          list_reverse         (List *list);
+enum cc_stat  list_sort            (List *list, int (*cmp) (void const*, void const*));
+void          list_sort_in_place   (List *list, int (*cmp) (void const*, void const*));
+size_t        list_size            (List *list);
 
-void       list_reverse         (List *list);
-bool       list_sort            (List *list, int (*cmp) (void const*, void const*));
-void       list_sort_in_place   (List *list, int (*cmp) (void const*, void const*));
-size_t     list_size            (List *list);
+void          list_foreach         (List *list, void (*op) (void *));
 
-void       list_foreach         (List *list, void (*op) (void *));
+void          list_iter_init       (ListIter *iter, List *list);
+enum cc_stat  list_iter_remove     (ListIter *iter, void **out);
+enum cc_stat  list_iter_add        (ListIter *iter,  void *element);
+enum cc_stat  list_iter_replace    (ListIter *iter, void *element, void **out);
+size_t        list_iter_index      (ListIter *iter);
+enum cc_stat  list_iter_next       (ListIter *iter, void **out);
 
-void       list_iter_init       (ListIter *iter, List *list);
-void*      list_iter_remove     (ListIter *iter);
-bool       list_iter_add        (ListIter *iter,  void *element);
-void*      list_iter_replace    (ListIter *iter, void *element);
-bool       list_iter_has_next   (ListIter *iter);
-size_t     list_iter_index      (ListIter *iter);
-void*      list_iter_next       (ListIter *iter);
-
-void       list_diter_init      (ListIter *iter, List *list);
-void*      list_diter_remove    (ListIter *iter);
-bool       list_diter_add       (ListIter *iter, void *element);
-void*      list_diter_replace   (ListIter *iter, void *element);
-bool       list_diter_has_next  (ListIter *iter);
-size_t     list_diter_index     (ListIter *iter);
-void*      list_diter_next      (ListIter *iter);
+void          list_diter_init      (ListIter *iter, List *list);
+enum cc_stat  list_diter_remove    (ListIter *iter, void **out);
+enum cc_stat  list_diter_add       (ListIter *iter, void *element);
+enum cc_stat  list_diter_replace   (ListIter *iter, void *element, void **out);
+size_t        list_diter_index     (ListIter *iter);
+enum cc_stat  list_diter_next      (ListIter *iter, void **out);
 
 #endif /* LIST_H_ */

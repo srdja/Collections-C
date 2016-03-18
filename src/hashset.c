@@ -45,11 +45,11 @@ void hashset_conf_init(HashSetConf *conf)
  *
  * @return a new empty HashSet
  */
-HashSet *hashset_new()
+enum cc_stat hashset_new(HashSet **hs)
 {
     HashSetConf hsc;
     hashset_conf_init(&hsc);
-    return hashset_new_conf(&hsc);
+    return hashset_new_conf(&hsc, hs);
 }
 
 /**
@@ -62,19 +62,31 @@ HashSet *hashset_new()
  *
  * @return a new empty HashSet
  */
-HashSet *hashset_new_conf(HashSetConf *conf)
+enum cc_stat hashset_new_conf(const HashSetConf const* conf, HashSet **hs)
 {
-    HashSet *set    = conf->mem_calloc(1, sizeof(HashSet));
+    HashSet *set = conf->mem_calloc(1, sizeof(HashSet));
 
-    set->table      = hashtable_new_conf(conf);
+    if (!set)
+        return CC_ERR_ALLOC;
+
+    HashTable *table;
+    int stat = hashtable_new_conf(conf, &table);
+
+    if (stat != 0) {
+        conf->mem_free(set);
+        return stat;
+    }
+
+    set->table      = table;
     set->mem_alloc  = conf->mem_alloc;
     set->mem_calloc = conf->mem_calloc;
     set->mem_free   = conf->mem_free;
 
     /* A dummy pointer that is never actually dereferenced
     *  that must not be null.*/
-    set->dummy      = (int*) 1;
-    return set;
+    set->dummy = (int*) 1;
+    *hs = set;
+    return CC_OK;
 }
 
 /**
@@ -96,7 +108,7 @@ void hashset_destroy(HashSet *set)
  *
  * @return true if the element was successfuly added to the set
  */
-bool hashset_add(HashSet *set, void *element)
+enum cc_stat hashset_add(HashSet *set, void *element)
 {
     return hashtable_add(set->table, element, set->dummy);
 }
@@ -111,11 +123,11 @@ bool hashset_add(HashSet *set, void *element)
  *
  * @return the removed element, or NULL if the element was not found
  */
-void *hashset_remove(HashSet *set, void *element)
+enum cc_stat hashset_remove(HashSet *set, void *element, void **out)
 {
     /* Since the value is never null, a returned null can only
      * mean that the element is not present */
-    return hashtable_remove(set->table, element) == NULL ? NULL : element;
+    return hashtable_remove(set->table, element, out);
 }
 
 /**
@@ -211,7 +223,8 @@ bool hashset_iter_has_next(HashSetIter *iter)
  */
 const void *hashset_iter_next(HashSetIter *iter)
 {
-    TableEntry *entry = hashtable_iter_next(&(iter->iter));
+    TableEntry *entry;
+    hashtable_iter_next(&(iter->iter), &entry);
     return entry->key;
 }
 
@@ -223,9 +236,11 @@ const void *hashset_iter_next(HashSetIter *iter)
  *
  * @return the removed element
  */
-void *hashset_iter_remove(HashSetIter *iter)
+enum cc_stat hashset_iter_remove(HashSetIter *iter, void **out)
 {
     void *element = iter->iter.prev_entry->key;
-    hashtable_iter_remove(&(iter->iter));
-    return element;
+    int stat = hashtable_iter_remove(&(iter->iter), out);
+    if (out)
+        *out = element;
+    return stat;
 }

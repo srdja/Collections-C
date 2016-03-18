@@ -47,12 +47,12 @@ void treeset_conf_init(TreeSetConf *conf)
  *
  * @return a new empty TreeSet
  */
-TreeSet *treeset_new(int (*cmp) (void*, void*))
+enum cc_stat treeset_new(int (*cmp) (void*, void*), TreeSet **set)
 {
     TreeSetConf conf;
     treeset_conf_init(&conf);
     conf.cmp = cmp;
-    return treeset_new_conf(&conf);
+    return treeset_new_conf(&conf, set);
 }
 
 /**
@@ -65,17 +65,28 @@ TreeSet *treeset_new(int (*cmp) (void*, void*))
  *
  * @return a new empty TreeSet
  */
-TreeSet *treeset_new_conf(TreeSetConf *conf)
+enum cc_stat treeset_new_conf(const TreeSetConf const* conf, TreeSet **tset)
 {
     TreeSet *set = conf->mem_calloc(1, sizeof(TreeSet));
 
-    set->t          = treetable_new_conf(conf);
+    if (!set)
+        return CC_ERR_ALLOC;
+
+    TreeTable *table;
+    enum cc_stat s = treetable_new_conf(conf, &table);
+
+    if (s != CC_OK) {
+        conf->mem_free(set);
+        return s;
+    }
+    set->t          = table;
     set->dummy      = (int*) 1;
     set->mem_alloc  = conf->mem_alloc;
     set->mem_calloc = conf->mem_calloc;
     set->mem_free   = conf->mem_free;
 
-    return set;
+    *tset = set;
+    return CC_OK;
 }
 
 /**
@@ -97,7 +108,7 @@ void treeset_destroy(TreeSet *set)
  *
  * @return true if the element was successfully added to the set
  */
-bool treeset_add(TreeSet *set, void *element)
+enum cc_stat treeset_add(TreeSet *set, void *element)
 {
     return treetable_add(set->t, element, set->dummy);
 }
@@ -112,9 +123,9 @@ bool treeset_add(TreeSet *set, void *element)
  *
  * @return the removed element, or NULL if the element was not found
  */
-void *treeset_remove(TreeSet *set, void *element)
+enum cc_stat treeset_remove(TreeSet *set, void *element, void **out)
 {
-    return treetable_remove(set->t, element);
+    return treetable_remove(set->t, element, out);
 }
 
 /**
@@ -134,9 +145,9 @@ void treeset_remove_all(TreeSet *set)
  *
  * @return the first (lowest) element in the set
  */
-void *treeset_get_first(TreeSet *set)
+enum cc_stat treeset_get_first(TreeSet *set, void **out)
 {
-    return treetable_get_first_key(set->t);
+    return treetable_get_first_key(set->t, out);
 }
 
 /**
@@ -146,9 +157,9 @@ void *treeset_get_first(TreeSet *set)
  *
  * @return the last element in the set
  */
-void *treeset_get_last(TreeSet *set)
+enum cc_stat treeset_get_last(TreeSet *set, void **out)
 {
-    return treetable_get_last_key(set->t);
+    return treetable_get_last_key(set->t, out);
 }
 
 /**
@@ -159,9 +170,9 @@ void *treeset_get_last(TreeSet *set)
  *
  * @return successor of the element, or NULL if there is no successor element
  */
-void *treeset_get_greater_than(TreeSet *set, void *element)
+enum cc_stat treeset_get_greater_than(TreeSet *set, void *element, void **out)
 {
-    return treetable_get_greater_than(set->t, element);
+    return treetable_get_greater_than(set->t, element, out);
 }
 
 /**
@@ -172,9 +183,9 @@ void *treeset_get_greater_than(TreeSet *set, void *element)
  *
  * @return predecessor of the element, or NULL if there is no predecessor element
  */
-void *treeset_get_lesser_than(TreeSet *set, void *element)
+enum cc_stat treeset_get_lesser_than(TreeSet *set, void *element, void **out)
 {
-    return treetable_get_lesser_than(set->t, element);
+    return treetable_get_lesser_than(set->t, element, out);
 }
 
 /**

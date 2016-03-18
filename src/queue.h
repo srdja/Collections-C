@@ -52,23 +52,21 @@ typedef struct queue_iter_s {
     DequeIter i;
 } QueueIter;
 
-void   queue_conf_init    (QueueConf *conf);
+void          queue_conf_init    (QueueConf *conf);
+enum cc_stat  queue_new          (Queue **q);
+enum cc_stat  queue_new_conf     (const QueueConf const* conf, Queue **q);
+void          queue_destroy      (Queue *queue);
+void          queue_destroy_free (Queue *queue);
 
-Queue *queue_new          (void);
-Queue *queue_new_conf     (QueueConf *conf);
-void   queue_destroy      (Queue *queue);
-void   queue_destroy_free (Queue *queue);
+enum cc_stat  queue_peek         (Queue *queue, void **out);
+enum cc_stat  queue_poll         (Queue *queue, void **out);
+enum cc_stat  queue_enqueue      (Queue *queue, void *element);
 
-void  *queue_peek         (Queue *queue);
-void  *queue_poll         (Queue *queue);
-bool   queue_enqueue      (Queue *queue, void *element);
+size_t        queue_size         (Queue *queue);
+void          queue_foreach      (Queue *queue, void (*op) (void*));
 
-size_t queue_size         (Queue *queue);
-void   queue_foreach      (Queue *queue, void (*op) (void*));
-
-void   queue_iter_init    (QueueIter *iter, Queue *queue);
-bool   queue_iter_has_next(QueueIter *iter);
-void*  queue_iter_next    (QueueIter *iter);
-void*  queue_iter_replace (QueueIter *iter, void *replacement);
+void          queue_iter_init    (QueueIter *iter, Queue *queue);
+enum cc_stat  queue_iter_next    (QueueIter *iter, void **out);
+enum cc_stat  queue_iter_replace (QueueIter *iter, void *replacement, void **out);
 
 #endif /* QUEUE_H_ */

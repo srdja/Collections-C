@@ -12,8 +12,8 @@
 #include "../src/list.h"
 #include "test.h"
 
-List *list_1234();
-List *list_5677();
+void list_1234(List **l);
+void list_5677(List **l);
 
 void test_list_new();
 void test_list_destroy();
@@ -30,7 +30,7 @@ void test_list_remove_at();
 void test_list_remove_all();
 void test_list_get_first();
 void test_list_get_last();
-void test_list_get();
+void test_list_get_at();
 void test_list_index_of();
 void test_list_contains();
 void test_list_replace_at();
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
      test_list_remove_all();
      test_list_get_first();
      test_list_get_last();
-     test_list_get();
+     test_list_get_at();
      test_list_contains();
      test_list_replace_at();
      test_list_copy_shallow();
@@ -95,14 +95,17 @@ void test_list_validate_structure(List *list, char *test_name)
     size_t bw_size = 0;
     size_t fw_size = 0;
 
-    void *head = list_get_first(list);
-    void *tail = list_get_last(list);
+    void *head;
+    list_get_first(list, &head);
+
+    void *tail;
+    list_get_last(list, &tail);
 
     ListIter i;
     list_diter_init(&i, list);
 
-    while (list_diter_has_next(&i)) {
-        void *e = list_diter_next(&i);
+    void *e;
+    while (list_diter_next(&i, &e) != CC_ITER_END) {
         if (bw_size == 0) {
             cc_assert(tail == e,
                       cc_msg("list_validate_structure: "
@@ -110,28 +113,20 @@ void test_list_validate_structure(List *list, char *test_name)
                              " descending iteration at %s",
                              test_name));
         }
-
         bw_size++;
-
-        if (!list_diter_has_next(&i)) {
-            cc_assert(head == e,
-                      cc_msg("list_validate_structure:"
-                             " head not as expected during"
-                             " descending iteration at %s",
-                             test_name));
-        }
     }
 
     cc_assert(bw_size == expected_size,
               cc_msg("list_validate_structure: "
-                     "uexpected backward size at %s",
-                     test_name));
+                     "uexpected backward size at %s. Expected "
+                     "%d, but got %d",
+                     test_name, expected_size, bw_size));
 
     ListIter i2;
     list_iter_init(&i2, list);
 
-    while (list_iter_has_next(&i2)) {
-        void *e = list_iter_next(&i2);
+
+    while (list_iter_next(&i2, &e) != CC_ITER_END) {
         if (fw_size == 0) {
             cc_assert(head == e,
                       cc_msg("list_structure_validate: "
@@ -139,37 +134,36 @@ void test_list_validate_structure(List *list, char *test_name)
                              " ascending iteration at %s",
                              test_name));
         }
-
         fw_size++;
-
-        if (!list_iter_has_next(&i2)) {
-            cc_assert(tail == e,
-                      cc_msg("list_structure_validate: "
-                             "tail not as expected during"
-                             " ascending iteration at %s",
-                             test_name));
-        }
     }
 
     cc_assert(fw_size == expected_size,
               cc_msg("list_structure_validate: "
-                     "unexpected forward size at ts",
-                     test_name));
+                     "unexpected forward size at %s:"
+                     " expected %d, but got %d",
+                     test_name, expected_size, fw_size));
 }
 
 
 void test_list_new()
 {
-    List *list  = list_new();
-    List *list2 = list_new();
+    List *list;
+    list_new(&list);
+    List *list2;
+    list_new(&list2);
 
     if (list == NULL || list2 == NULL)
       goto exit;
 
-    cc_assert(list_get_first(list) == NULL,
+    void *first = NULL;
+    void *last  = NULL;
+
+    list_get_first(list, &first);
+    cc_assert(first == NULL,
               cc_msg("list_new: Expected NULL first element."));
 
-    cc_assert(list_get_last(list) == NULL,
+    list_get_last(list, &last);
+    cc_assert(last == NULL,
               cc_msg("list_new: Expected NULL last element."));
 
     cc_assert(list_size(list) == 0,
@@ -187,26 +181,31 @@ exit:
 
 void test_list_add()
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     char *s1 = "e1", *s2 = "e2", *s3 = "e3", *s4 = "e4";
 
-    bool r1 = list_add(list, s1);
-    bool r2 = list_add(list, s2);
-    bool r3 = list_add(list, s3);
-    bool r4 = list_add(list, s4);
+    enum cc_stat r1 = list_add(list, s1);
+    enum cc_stat r2 = list_add(list, s2);
+    enum cc_stat r3 = list_add(list, s3);
+    enum cc_stat r4 = list_add(list, s4);
 
-    if (r1 && r2 && r3 && r4) {
+    if (r1 == CC_OK && r2 == CC_OK && r3 == CC_OK && r4 == CC_OK) {
          cc_assert(list_size(list) == 4,
                    cc_msg("list_add: Expected "
                           "size 4, but got %d",
                           list_size(list)));
     }
-    cc_assert(list_get_first(list) != NULL,
+    void *first;
+    list_get_first(list, &first);
+    cc_assert(first != NULL,
               cc_msg("list_add: First element"
                      " not expected to be NULL!"));
 
-    cc_assert(list_get_last(list) != NULL,
+    void *last;
+    list_get_last(list, &last);
+    cc_assert(last != NULL,
               cc_msg("list_add: Last element"
                      " not expected to be NULL!"));
 
@@ -219,7 +218,8 @@ void test_list_add()
 
 void test_list_add_last()
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     int a = 8;
     int b = 3;
@@ -234,30 +234,32 @@ void test_list_add_last()
     list_add(list, &d);
 
     int size = list_size(list);
-    int last = *((int*) list_get_last(list));
+
+    int *last;
+    list_get_last(list, (void*) &last);
 
     cc_assert(size == 4,
               cc_msg("list_add_last: Expected size"
                      " was 4, but got %d!", size));
 
-    cc_assert(last == d,
+    cc_assert(*last == d,
            cc_msg("list_add_last: Expected last"
                   " element was %d, but got %d!",
-                  d, last));
+                  d, *last));
 
     list_add_last(list, &append);
 
     size = list_size(list);
-    last = *((int*) list_get_last(list));
+    list_get_last(list, (void*) &last);
 
     cc_assert(size == 5,
               cc_msg("list_add_last: Expected size"
                      " was 5, but got %d!", size));
 
-    cc_assert(last == append,
+    cc_assert(*last == append,
               cc_msg("list_add_last: Expected last "
                      "element was %d, but got %d!",
-                     append, last));
+                     append, *last));
 
     test_list_validate_structure(list, "list_add_last");
 
@@ -267,7 +269,8 @@ void test_list_add_last()
 
 void test_list_add_first()
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     int a = 8;
     int b = 3;
@@ -282,30 +285,31 @@ void test_list_add_first()
     list_add(list, &d);
 
     int size = list_size(list);
-    int first = *((int*) list_get_first(list));
+    int *first;
+    list_get_first(list, (void*) &first);
 
     cc_assert(size == 4,
               cc_msg("list_add_first: Expected size"
                      " was 4, but got %d!", size));
 
-    cc_assert(first == a,
+    cc_assert(*first == a,
               cc_msg("list_add_first: Expectd first"
                      " element was %d, but got %d!",
-                     prepend, first));
+                     prepend, *first));
 
     list_add_first(list, &prepend);
 
     size = list_size(list);
-    first = *((int*) list_get_first(list));
+    list_get_first(list, (void*) &first);
 
     cc_assert(size == 5,
               cc_msg("list_add_first: Expected size"
                      " was 4, but got %d!", size));
 
-    cc_assert(first == prepend,
+    cc_assert(*first == prepend,
               cc_msg("list_add_first: Expected first"
                      " element was %d, but got %d",
-                     prepend, first));
+                     prepend, *first));
 
     test_list_validate_structure(list, "list_add_first");
 
@@ -315,7 +319,8 @@ void test_list_add_first()
 
 void test_list_add_at()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
     int ins = 90;
 
@@ -325,23 +330,27 @@ void test_list_add_at()
               cc_msg("list_add_at: Expected size "
                      "was 5, but got %d!", list_size(list)));
 
-    int new = *((int*) list_get(list, 3));
+    int *new;
+    list_get_at(list, 3, (void*) &new);
 
-    cc_assert(new == ins,
+    cc_assert(*new == ins,
               cc_msg("list_add_at: Expected element"
-                     " at index 2 was %d, but got %d!", ins, new));
+                     " at index 2 was %d, but got %d!", ins, *new));
 
     test_list_validate_structure(list, "list_add_at");
 
-    list_remove(list, &ins);
+    list_remove(list, &ins, NULL);
     list_destroy_free(list);
 }
 
 
 void test_list_add_all_at()
 {
-    List *list  = list_1234();
-    List *list2 = list_5677();
+    List *list;
+    list_1234(&list);
+
+    List *list2;
+    list_5677(&list2);
 
     list_add_all_at(list, list2, 2);
 
@@ -353,17 +362,20 @@ void test_list_add_all_at()
               cc_msg("list_add_all_at: Expected size"
                      " was 8, but got %d!", list_size(list)));
 
-    int last = *((int*) list_get_last(list));
-    int l1i5 = *((int*) list_get(list, 5));
-    int l2i2 = *((int*) list_get(list2, 2));
+    int *last;
+    list_get_last(list, (void*) &last);
+    int *l1i5;
+    list_get_at(list, 5, (void*) &l1i5);
+    int *l2i2;
+    list_get_at(list2, 2, (void*) &l2i2);
 
-    cc_assert(last == 4,
+    cc_assert(*last == 4,
               cc_msg("list_add_all_at: Expected last"
-                     " element was 4, but got %d!", last));
+                     " element was 4, but got %d!", *last));
 
-    cc_assert(l1i5 == l2i2,
+    cc_assert(*l1i5 == *l2i2,
               cc_msg("list_add_all_at: Expected element"
-                     " at index 5 was %d, but got %d!", l1i5, l2i2));
+                     " at index 5 was %d, but got %d!", *l1i5, *l2i2));
 
     test_list_validate_structure(list, "list_add_at");
 
@@ -380,35 +392,51 @@ void test_list_iter()
 
 void test_list_iter_add()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
+
     int ins = 32;
 
     ListIter iter;
     list_iter_init(&iter, list);
 
-    for (;list_iter_has_next(&iter);) {
-        int e = *((int*) list_iter_next(&iter));
-
-        if (e == 3) {
-            int i = list_iter_index(&iter);
+    while (list_iter_next(&iter, NULL) != CC_ITER_END) {
+        if (list_iter_index(&iter) == 3)
             list_iter_add(&iter, &ins);
-        }
     }
 
     cc_assert(list_size(list) == 5,
               cc_msg("list_iter_add: Expected size"
                      " was 5, but got %d", list_size(list)));
 
-    int li3 = *((int*) list_get(list, 3));
-    int li4 = *((int*) list_get(list, 4));
+    int *li3;
+    list_get_at(list, 3, (void*) &li3);
 
-    cc_assert(li3 == ins,
-              cc_msg("list_iter_add: Expected element at"
-                     " index 3 was %d, but got %d", ins, li3));
+    int *li4;
+    list_get_at(list, 4, (void*) &li4);
 
-    cc_assert(li4 == 4,
+    cc_assert(*li3 == ins,
               cc_msg("list_iter_add: Expected element at"
-                     " index 4 was 4, but got %d,", li4));
+                     " index 3 was %d, but got %d", ins, *li3));
+
+    cc_assert(*li4 == 4,
+              cc_msg("list_iter_add: Expected element at"
+                     " index 4 was 4, but got %d,", *li4));
+
+
+    list_iter_init(&iter, list);
+
+    while (list_iter_next(&iter, NULL) != CC_ITER_END) {
+        if (list_iter_index(&iter) == 0)
+            list_iter_add(&iter, &ins);
+    }
+
+    void *e;
+    list_get_first(list, &e);
+
+    cc_assert(*((int*)e) == ins,
+              cc_msg("list_iter_add: Expected first element"
+                     " to be %d, but got %d instead", ins, *((int*)e)));
 
     test_list_validate_structure(list, "list_iter_add");
 
@@ -417,17 +445,19 @@ void test_list_iter_add()
 
 void test_list_iter_remove()
 {
-    List *list = list_1234();
-    int  *rm   = list_get(list, 2);
+    List *list;
+    list_1234(&list);
+
+    int *rm;
+    list_get_at(list, 2, (void*) &rm);
 
     ListIter iter;
     list_iter_init(&iter, list);
 
-    for(;list_iter_has_next(&iter);) {
-        int e = *((int*) list_iter_next(&iter));
-        if (e == 3) {
-             list_iter_remove(&iter);
-        }
+    int *e;
+    while (list_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+        if (*e == 3)
+            list_iter_remove(&iter, NULL);
     }
     cc_assert(list_size(list) == 3,
               cc_msg("list_iter_remove: Expected size"
@@ -451,16 +481,16 @@ void test_list_iter_desc()
 
 void test_list_iter_desc_remove()
 {
-    List     *list = list_1234();
+    List *list;
+    list_1234(&list);
 
     ListIter iter;
     list_diter_init(&iter, list);
 
-    for (;list_diter_has_next(&iter);) {
-        int i = *((int*)list_diter_next(&iter));
-
-        if (i == 1 || i == 3)
-            list_diter_remove(&iter);
+    int *i;
+    while (list_diter_next(&iter, (void*) &i) != CC_ITER_END) {
+        if (*i == 1 || *i == 3)
+            list_diter_remove(&iter, NULL);
     }
     int size = list_size(list);
 
@@ -469,21 +499,26 @@ void test_list_iter_desc_remove()
                      " expected size 2 but got %d",
                      size));
 
-    int first = *((int*) list_get_first(list));
-    int last  = *((int*) list_get_last(list));
-    int i1    = *((int*) list_get(list, 1));
+    int *first;
+    list_get_first(list, (void*) &first);
 
-    cc_assert(first == 2,
-              cc_msg("list_iter_desc_remove: expected"
-                     " first element was 2, but got %d", first));
+    int *last;
+    list_get_last(list, (void*) &last);
 
-    cc_assert(last == 4,
-              cc_msg("list_iter_desc_remove: expected"
-                     " last element was 4, but got %d", last));
+    int *i1;
+    list_get_at(list, 1, (void*) &i1);
 
-    cc_assert(i1 == 4,
+    cc_assert(*first == 2,
               cc_msg("list_iter_desc_remove: expected"
-                     " element at index 1 was, but got %d", i1));
+                     " first element was 2, but got %d", *first));
+
+    cc_assert(*last == 4,
+              cc_msg("list_iter_desc_remove: expected"
+                     " last element was 4, but got %d", *last));
+
+    cc_assert(*i1 == 4,
+              cc_msg("list_iter_desc_remove: expected"
+                     " element at index 1 was, but got %d", *i1));
 
     test_list_validate_structure(list, "list_diter_remove");
 
@@ -493,7 +528,8 @@ void test_list_iter_desc_remove()
 
 void test_list_iter_desc_add()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
     int *a = (int*) malloc(sizeof(int));
     int *b = (int*) malloc(sizeof(int));
@@ -503,43 +539,49 @@ void test_list_iter_desc_add()
     ListIter iter;
     list_diter_init(&iter, list);
 
-    for (;list_diter_has_next(&iter);) {
-        int i = *((int*)list_diter_next(&iter));
-
-        if (i == 4)
+    int *i;
+    while (list_diter_next(&iter, (void*) &i) != CC_ITER_END) {
+        if (*i == 4) // add to tail
             list_diter_add(&iter, a);
 
-        if (i == 3)
+        if (*i == 3)
             list_diter_add(&iter, b);
     }
 
     int size  = list_size(list);
-    int first = *((int*)list_get_first(list));
-    int last  = *((int*)list_get_last(list));
-    int i2    = *((int*)list_get(list, 2));
-    int i4    = *((int*)list_get(list, 4));
+    int *first;
+    list_get_first(list, (void*) &first);
+
+    int *last;
+    list_get_last(list, (void*) &last);
+
+    int *i2;
+    list_get_at(list, 2, (void*) &i2);
+
+    int *i4;
+    list_get_at(list, 4, (void*) &i4);
 
     cc_assert(size == 6,
               cc_msg("list_iter_desc_add: Expected"
                      " size 6, but got %d", size));
 
-    cc_assert(first == 1,
+    cc_assert(*first == 1,
               cc_msg("list_iter_desc_add: Expected"
-                     " first 1, but got %d", first));
+                     " first 1, but got %d", *first));
 
-    cc_assert(last == 4,
+    cc_assert(*last == 4,
               cc_msg("list_iter_desc_add: Expected"
-                     " last 4, but got %d", last));
+                     " last 4, but got %d", *last));
 
-    cc_assert(i2 == *b,
+    cc_assert(*i2 == *b,
               cc_msg("list_iter_desc_add: Expected"
-                     " element at index 2 to be %d, but got %d",
-                     *b, i2));
+                     " element at index 3 to be %d, but got %d",
+                     *b, *i2));
 
-    cc_assert(i4 == *a,
+    cc_assert(*i4 == *a,
               cc_msg("list_iter_desc_add: Expected"
                      " element at index 4 to be %d, but got %d",
-                     *a, i4));
+                     *a, *i4));
 
     test_list_validate_structure(list, "list_diter_add");
 
@@ -548,24 +590,31 @@ void test_list_iter_desc_add()
 
 void test_list_reverse()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
-    int *last_old = list_get_last(list);
+    int *last_old;
+    list_get_last(list, (void*) &last_old);
 
     list_reverse(list);
 
-    int a = *((int*)list_get(list, 0));
-    int b = *((int*)list_get(list, 2));
+    int *a;
+    list_get_at(list, 0, (void*) &a);
 
-    cc_assert(a == 4,
+    int *b;
+    list_get_at(list, 2, (void*) &b);
+
+    cc_assert(*a == 4,
               cc_msg("list_reverse: expected 4,"
-                     " but got %d", a));
+                     " but got %d", *a));
 
-    cc_assert(b == 2,
+    cc_assert(*b == 2,
               cc_msg("list_reverse: expected 2,"
-                     " but got %d", b));
+                     " but got %d", *b));
 
-    cc_assert(list_get_first(list) == last_old,
+    int *first;
+    list_get_first(list, (void*) &first);
+    cc_assert(first == last_old,
               cc_msg("list_reverse: unexpected"
                      " list head after reverse"));
 
@@ -577,18 +626,24 @@ void test_list_reverse()
 
 void test_list_to_array()
 {
-    List *list = list_1234();
-    int **array = (int**) list_to_array(list);
+    List *list;
+    list_1234(&list);
+    int **array;
+    list_to_array(list, (void*)&array);
 
-    cc_assert(list_get(list, 0) == array[0],
+    void *e;
+    list_get_at(list, 0, &e);
+    cc_assert(e == array[0],
               cc_msg("list_to_array: Array index 0"
                      " does not match list index 0"));
 
-    cc_assert(list_get(list, 2) == array[2],
+    list_get_at(list, 2, &e);
+    cc_assert(e == array[2],
               cc_msg("list_to_array: Array index 2"
                      " does not match list index 2"));
 
-    cc_assert(list_get(list, 3) == array[3],
+    list_get_at(list, 3, &e);
+    cc_assert(e == array[3],
               cc_msg("list_to_array: Array index 3"
                      " does not match list index 3"));
 
@@ -599,7 +654,8 @@ void test_list_to_array()
 
 void test_list_index_of()
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     int a = 8;
     int b = 3;
@@ -611,8 +667,11 @@ void test_list_index_of()
     list_add(list, &c);
     list_add(list, &d);
 
-    int i0 = list_index_of(list, &a);
-    int i1 = list_index_of(list, &c);
+    size_t i0;
+    list_index_of(list, &a, &i0);
+
+    size_t i1;
+    list_index_of(list, &c, &i1);
 
     cc_assert(i0 == 0,
               cc_msg("list_index_of: Expected "
@@ -641,7 +700,8 @@ int cmp(void const *e1, void const *e2)
 
 void test_list_sort()
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     srand(time(NULL));
 
@@ -659,17 +719,14 @@ void test_list_sort()
     ListIter iter;
     list_iter_init(&iter, list);
 
-    int prev;
-    for (prev = *((int *) list_iter_next(&iter));
-         list_iter_has_next(&iter);)
-    {
-        void *e = list_iter_next(&iter);
-
-        cc_assert(prev <= *((int*) e),
+    void *prev;
+    void *e;
+    list_iter_next(&iter, &prev);
+    while (list_iter_next(&iter, &e) != CC_ITER_END) {
+        cc_assert(*((int*)prev) <= *((int*) e),
                   cc_msg("list_sort: preceding elment "
                          "greater than the current"));
-
-        prev = *((int *) e);
+        prev = e;
     }
 
     test_list_validate_structure(list, "list_sort");
@@ -680,8 +737,10 @@ void test_list_sort()
 
 void test_list_splice_at()
 {
-    List *list = list_1234();
-    List *list2 = list_5677();
+    List *list;
+    list_1234(&list);
+    List *list2;
+    list_5677(&list2);
 
     list_splice_at(list, list2, 2);
 
@@ -693,21 +752,26 @@ void test_list_splice_at()
               cc_msg("list_splice_after: Expected"
                      " size was 0, but got %d!", list_size(list2)));
 
-    int first = *((int*) list_get_first(list));
-    int last  = *((int*) list_get_last(list));
-    int i2    = *((int*) list_get(list, 2));
+    int *first;
+    list_get_first(list, (void*) &first);
 
-    cc_assert(first == 1,
-              cc_msg("list_splice_after: Expected"
-                     " first element was 1, but got %d!", first));
+    int *last;
+    list_get_last(list, (void*) &last);
 
-    cc_assert(last == 4,
-              cc_msg("list_splice_after: Expected"
-                     " last element was 4, but got %d!", last));
+    int *i2;
+    list_get_at(list, 2, (void*) &i2);
 
-    cc_assert(i2 == 5,
+    cc_assert(*first == 1,
               cc_msg("list_splice_after: Expected"
-                     " element at index 2 was 5, but got %d", i2));
+                     " first element was 1, but got %d!", *first));
+
+    cc_assert(*last == 4,
+              cc_msg("list_splice_after: Expected"
+                     " last element was 4, but got %d!", *last));
+
+    cc_assert(*i2 == 5,
+              cc_msg("list_splice_after: Expected"
+                     " element at index 2 was 5, but got %d", *i2));
 
     test_list_validate_structure(list, "list_splice_at");
 
@@ -717,8 +781,11 @@ void test_list_splice_at()
 
 void test_list_splice()
 {
-    List *list = list_1234();
-    List *list2 = list_5677();
+    List *list;
+    list_1234(&list);
+
+    List *list2;
+    list_5677(&list2);
 
     list_splice(list, list2);
 
@@ -732,24 +799,29 @@ void test_list_splice()
                      "size was 0, but got %d!",
                      list_size(list2)));
 
-    int last = *((int*) list_get_last(list));
-    int first = *((int*) list_get_first(list));
-    int i4 = *((int*) list_get(list, 4));
+    int *last;
+    list_get_last(list, (void*) &last);
 
-    cc_assert(last == 7,
+    int *first;
+    list_get_first(list, (void*) &first);
+
+    int *i4;
+    list_get_at(list, 4, (void*) &i4);
+
+    cc_assert(*last == 7,
               cc_msg("list_splice: Expected last"
                      " element was 7, but got %d!",
-                     last));
+                     *last));
 
-    cc_assert(first == 1,
+    cc_assert(*first == 1,
               cc_msg("list_splice: Expected first"
                      " element was 1, but got %d!",
-                     first));
+                     *first));
 
-    cc_assert(i4 == 5,
+    cc_assert(*i4 == 5,
               cc_msg("list_splice: Expected element"
                      " at index 4 was 5, but got %d!",
-                     i4));
+                     *i4));
 
     test_list_validate_structure(list, "list_splice");
 
@@ -759,8 +831,10 @@ void test_list_splice()
 
 void test_list_add_all()
 {
-    List *list = list_1234();
-    List *list2 = list_5677();
+    List *list;
+    list_1234(&list);
+    List *list2;
+    list_5677(&list2);
 
     list_add_all(list2, list);
 
@@ -768,13 +842,16 @@ void test_list_add_all()
               cc_msg("list_add_all: Expected size"
                      " was 8, but got %d!", list_size(list2)));
 
-    int l1last = *((int*) list_get_last(list));
-    int l2last = *((int*) list_get_last(list2));
+    int *l1last;
+    list_get_last(list, (void*) &l1last);
 
-    cc_assert(l1last == l2last,
+    int *l2last;
+    list_get_last(list2, (void*) &l2last);
+
+    cc_assert(*l1last == *l2last,
               cc_msg("list_add_all: Expected last"
                      " element was %d, but got %d!",
-                     l1last, l2last));
+                     *l1last, *l2last));
 
     test_list_validate_structure(list, "list_add_all");
 
@@ -785,10 +862,12 @@ void test_list_add_all()
 
 void test_list_remove()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
-    int *e = list_get(list, 1);
-    list_remove(list, e);
+    int *e;
+    list_get_at(list, 1, (void*) &e);
+    list_remove(list, e, NULL);
 
     cc_assert(list_size(list) == 3,
               cc_msg("list_remove: Expected size"
@@ -806,21 +885,23 @@ void test_list_remove()
 
 void test_list_remove_first()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
-    list_remove_first(list);
+    list_remove_first(list, NULL);
 
     cc_assert(list_size(list) == 3,
               cc_msg("list_remove_first: Expected "
                      "size was 3, but got %d!",
                      list_size(list)));
 
-    int first = *((int*) list_get_first(list));
+    int *first;
+    list_get_first(list, (void*) &first);
 
-    cc_assert(first == 2,
+    cc_assert(*first == 2,
               cc_msg("list_remove_first: Expected "
                      "first element was 2, but got %d!",
-                     first));
+                     *first));
 
     test_list_validate_structure(list, "list_remove_first");
 
@@ -830,21 +911,25 @@ void test_list_remove_first()
 
 void test_list_remove_last()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
-    list_remove_last(list);
+    list_remove_last(list, NULL);
 
     cc_assert(list_size(list) == 3,
               cc_msg("list_remove_last: Expected"
                      " size was 3, but got %d!",
                      list_size(list)));
 
-    int last = *((int*) list_get_last(list));
+    int *last = NULL;
+    enum cc_stat status = list_get_last(list, (void*) &last);
+    cc_assert(status == CC_OK,
+              cc_msg("list_remove_last: Status is not CC_OK"));
 
-    cc_assert(last == 3,
+    cc_assert(*last == 3,
               cc_msg("list_remove_last: Expected"
                      " last element was 3, but got %d!",
-                     last));
+                     *last));
 
     test_list_validate_structure(list, "list_remove_last");
 
@@ -854,27 +939,29 @@ void test_list_remove_last()
 
 void test_list_remove_at()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
-    list_remove_at(list, 2);
+    list_remove_at(list, 2, NULL);
 
-    int e = *((int*) list_get(list, 2));
+    int *e;
+    list_get_at(list, 2, (void*) &e);
 
-    cc_assert(e == 4,
+    cc_assert(*e == 4,
            cc_msg("list_remove_at: Expected element"
-                  " was 4, but got %d!", e));
+                  " was 4, but got %d!", *e));
 
     cc_assert(list_size(list) == 3,
               cc_msg("list_remove_at: Expected size"
                      " was 3, but got %d!", list_size(list)));
 
-    list_remove_at(list, 0);
+    list_remove_at(list, 0, NULL);
 
-    e = *((int*) list_get(list, 0));
+    list_get_at(list, 0, (void*) &e);
 
-    cc_assert(e == 2,
+    cc_assert(*e == 2,
               cc_msg("list_remove_at: Expected element"
-                     " was 2, but got %d!", e));
+                     " was 2, but got %d!", *e));
 
     test_list_validate_structure(list, "list_remove_at");
 
@@ -884,14 +971,17 @@ void test_list_remove_at()
 
 void test_list_remove_all()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
     list_remove_all(list);
 
     cc_assert(list_size(list) == 0,
               cc_msg("list_remove_all: Expected size"
                      " was 0, but got %d", list_size(list)));
 
-    cc_assert(list_get_first(list) == NULL,
+    void *first = NULL;
+    list_get_first(list, &first);
+    cc_assert(first == NULL,
               cc_msg("list_remove_all: First not NULL,"
                      "as expected"));
 
@@ -901,12 +991,15 @@ void test_list_remove_all()
 
 void test_list_get_first()
 {
-    List *list = list_1234();
-    int first = *((int*) list_get_first(list));
+    List *list;
+    list_1234(&list);
 
-    cc_assert(first == 1,
+    int *first;
+    list_get_first(list, (void*) &first);
+
+    cc_assert(*first == 1,
               cc_msg("list_get_first: Expected first"
-                     " element was 1, but got %d", first));
+                     " element was 1, but got %d", *first));
 
     list_destroy_free(list);
 }
@@ -914,25 +1007,31 @@ void test_list_get_first()
 
 void test_list_get_last()
 {
-    List *list = list_1234();
-    int last = *((int*) list_get_last(list));
+    List *list;
+    list_1234(&list);
 
-    cc_assert(last == 4,
+    int *last;
+    list_get_last(list, (void*) &last);
+
+    cc_assert(*last == 4,
               cc_msg("list_get_last: Expected last"
-                     " element was 4, but got %d", last));
+                     " element was 4, but got %d", *last));
 
     list_destroy_free(list);
 }
 
 
-void test_list_get()
+void test_list_get_at()
 {
-    List *list = list_1234();
-    int e = *((int*) list_get(list, 1));
+    List *list;
+    list_1234(&list);
 
-    cc_assert(e == 2,
+    int *e;
+    list_get_at(list, 1, (void*) &e);
+
+    cc_assert(*e == 2,
               cc_msg("list_get: Expected element at"
-                     " index 1 was 2, but got %d", e));
+                     " index 1 was 2, but got %d", *e));
 
     list_destroy_free(list);
 }
@@ -940,13 +1039,17 @@ void test_list_get()
 
 void test_list_replace_at()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
+
     int *replacement = (int*) malloc(sizeof(int));
     *replacement = 32;
 
-    list_replace_at(list, replacement, 2);
+    list_replace_at(list, replacement, 2, NULL);
 
-    cc_assert(list_get(list, 2) == replacement,
+    void *r;
+    list_get_at(list, 2, &r);
+    cc_assert((int*) r == replacement,
               cc_msg("list_replace_at: Unexpected"
                      " element at index 2"));
 
@@ -956,7 +1059,8 @@ void test_list_replace_at()
 
 void test_list_contains()
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     int a = 8;
     int b = 3;
@@ -970,9 +1074,9 @@ void test_list_contains()
     list_add(list, &c);
     list_add(list, &d);
 
-    int c1 = list_contains(list, &b);
-    int c2 = list_contains(list, &d);
-    int c3 = list_contains(list, &e);
+    size_t c1 = list_contains(list, &b);
+    size_t c2 = list_contains(list, &d);
+    size_t c3 = list_contains(list, &e);
 
     cc_assert(c1 == 2,
               cc_msg("list_contains: Expected number"
@@ -992,20 +1096,31 @@ void test_list_contains()
 
 void test_list_copy_shallow()
 {
-    List *list = list_1234();
-    List *cp = list_copy_shallow(list);
+    List *list;
+    list_1234(&list);
+
+    List *cp;
+    list_copy_shallow(list, &cp);
 
     cc_assert(list_size(cp) == 4,
               cc_msg("list_copy_shallow: Expected "
                      "size was 4, but got %d", list_size(cp)));
 
-    cc_assert(list_get_first(cp) == list_get_first(list),
+    void *f1;
+    void *f2;
+    list_get_first(cp, &f1);
+    list_get_first(list, &f2);
+    cc_assert(f1 == f2,
               cc_msg("list_copy_shallow: First element missmatch"));
 
-    cc_assert(list_get_last(cp) == list_get_last(list),
+    list_get_last(cp, &f1);
+    list_get_last(list, &f2);
+    cc_assert(f1 == f2,
               cc_msg("list_copy_shallow: Last element missmatch"));
 
-    cc_assert(list_get(cp, 3) == list_get(list, 3),
+    list_get_at(cp, 3, &f1);
+    list_get_at(list, 3, &f2);
+    cc_assert(f1 == f2,
               cc_msg("list_copy_shallow: Element at "
                      "index 3 missmatch"));
 
@@ -1024,20 +1139,28 @@ void *copy(void *e1)
 
 void test_list_copy_deep()
 {
-    List *list = list_1234();
-    List *cp = list_copy_deep(list, copy);
+    List *list;
+    list_1234(&list);
+
+    List *cp;
+    list_copy_deep(list, copy, &cp);
 
     cc_assert(list_size(cp) == 4,
               cc_msg("list_copy_deep: Expected size"
                      " was 4, but got %d", list_size(cp)));
 
-    int e = *((int*) list_get(cp, 2));
+    int *e;
+    list_get_at(cp, 2, (void*) &e);
 
-    cc_assert(e == *((int*)list_get(list, 2)),
+    int *le;
+    list_get_at(list, 2, (void*) &le);
+    cc_assert(*e == *le,
               cc_msg("list_copy_deep: Expected element"
-                     " at index 2 was 3, but got %d", e));
+                     " at index 2 was 3, but got %d", *e));
 
-    cc_assert(list_get(cp, 2) != list_get(list, 2),
+    list_get_at(cp, 2, (void*) &e);
+    list_get_at(list, 2, (void*) &le);
+    cc_assert(e != le,
               cc_msg("list_copy_deep: Both lists point"
                      " to the same value at index 2"));
 
@@ -1048,20 +1171,25 @@ void test_list_copy_deep()
 
 void test_list_sublist()
 {
-    List *list = list_1234();
+    List *list;
+    list_1234(&list);
 
-    List *sub = list_sublist(list, 1, 2);
+    List *sub;
+    list_sublist(list, 1, 2, &sub);
 
     cc_assert(list_size(sub) == 2,
               cc_msg("list_sublist: Expected size"
                      " was 2 but got %d", list_size(sub)));
 
-    int s1 = *((int*)list_get(sub, 1));
-    int l2 = *((int*)list_get(list, 2));
+    int *s1;
+    list_get_at(sub, 1, (void*) &s1);
 
-    cc_assert(s1 == l2,
+    int *l2;
+    list_get_at(list, 2, (void*) &l2);
+
+    cc_assert(*s1 == *l2,
               cc_msg("list_sublist: Expected element"
-                     " at index 1 was %d, but got %d", l2, s1));
+                     " at index 1 was %d, but got %d", *l2, *s1));
 
     list_destroy(sub);
     list_destroy_free(list);
@@ -1074,9 +1202,10 @@ void test_list_destroy()
 }
 
 
-List *list_1234()
+void list_1234(List **l)
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     int *a = (int*) malloc(sizeof(int));
     int *b = (int*) malloc(sizeof(int));
@@ -1093,13 +1222,14 @@ List *list_1234()
     list_add(list, c);
     list_add(list, d);
 
-    return list;
+    *l = list;
 }
 
 
-List *list_5677()
+void list_5677(List **l)
 {
-    List *list = list_new();
+    List *list;
+    list_new(&list);
 
     int *a = (int*) malloc(sizeof(int));
     int *b = (int*) malloc(sizeof(int));
@@ -1116,5 +1246,5 @@ List *list_5677()
     list_add(list, c);
     list_add(list, d);
 
-    return list;
+    *l = list;
 }

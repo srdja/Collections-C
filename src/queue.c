@@ -43,11 +43,11 @@ void queue_conf_init(QueueConf *conf)
  *
  * @return a new queue if the allocation was successful, or NULL.
  */
-Queue *queue_new()
+enum cc_stat queue_new(Queue **queue)
 {
     QueueConf conf;
     queue_conf_init(&conf);
-    return queue_new_conf(&conf);
+    return queue_new_conf(&conf, queue);
 }
 
 /**
@@ -60,16 +60,29 @@ Queue *queue_new()
  *
  * @return a new queue if the allocation was successful, or NULL.
  */
-Queue *queue_new_conf(QueueConf *conf)
+enum cc_stat queue_new_conf(const QueueConf const* conf, Queue **q)
 {
-    Queue *queue      = conf->mem_calloc(1, sizeof(Queue));
+    Queue *queue = conf->mem_calloc(1, sizeof(Queue));
 
-    queue->d          = deque_new_conf(conf);
+    if (!queue)
+        return CC_ERR_ALLOC;
+
+    Deque *deque;
+    deque_new_conf(conf, &deque);
+
+    if (!deque) {
+        conf->mem_free(queue);
+        return CC_ERR_ALLOC;
+    }
+
+    queue->d          = deque;
     queue->mem_alloc  = conf->mem_alloc;
     queue->mem_calloc = conf->mem_calloc;
     queue->mem_free   = conf->mem_free;
 
-    return queue;
+    *q = queue;
+
+    return CC_OK;
 }
 
 /**
@@ -105,9 +118,9 @@ void queue_destroy_free(Queue *queue)
  *
  * @return the element at the front of the queue
  */
-void *queue_peek(Queue *queue)
+enum cc_stat queue_peek(Queue *queue, void **out)
 {
-    return deque_get_last(queue->d);
+    return deque_get_last(queue->d, out);
 }
 
 /**
@@ -117,9 +130,9 @@ void *queue_peek(Queue *queue)
  *
  * @return the element that was at the front of the queue
  */
-void *queue_poll(Queue *queue)
+enum cc_stat queue_poll(Queue *queue, void **out)
 {
-    return deque_remove_last(queue->d);
+    return deque_remove_last(queue->d, out);
 }
 
 /**
@@ -131,7 +144,7 @@ void *queue_poll(Queue *queue)
  *
  * @return true if the operation was successful
  */
-bool queue_enqueue(Queue *queue, void *element)
+enum cc_stat queue_enqueue(Queue *queue, void *element)
 {
     return deque_add_first(queue->d, element);
 }
@@ -173,27 +186,15 @@ void queue_iter_init(QueueIter *iter, Queue *queue)
 }
 
 /**
- * Checks whether or not the iterator has reached the end of the queue.
- *
- * @param[in] iter iterator whose position is being checked
- *
- * @return true if the are more elements to be iterated over
- */
-bool queue_iter_has_next(QueueIter *iter)
-{
-    return deque_iter_has_next(&(iter->i));
-}
-
-/**
  * Retruns the next element in the sequence and advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  *
  * @return the next element in the sequence
  */
-void* queue_iter_next(QueueIter *iter)
+enum cc_stat queue_iter_next(QueueIter *iter, void **out)
 {
-    return deque_iter_next(&(iter->i));
+    return deque_iter_next(&(iter->i), out);
 }
 
 /**
@@ -204,7 +205,7 @@ void* queue_iter_next(QueueIter *iter)
  *
  * @return the old element that was replaced
  */
-void* queue_iter_replace(QueueIter *iter, void *replacement)
+enum cc_stat queue_iter_replace(QueueIter *iter, void *replacement, void **out)
 {
-    return deque_iter_replace(&(iter->i), replacement);
+    return deque_iter_replace(&(iter->i), replacement, out);
 }

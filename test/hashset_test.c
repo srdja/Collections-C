@@ -27,7 +27,8 @@ void test_hashset_new()
     hashset_conf_init(&conf);
     conf.initial_capacity = 7;
 
-    HashSet *set = hashset_new_conf(&conf);
+    HashSet *set;
+    hashset_new_conf(&conf, &set);
 
     cc_assert(hashset_size(set) == 0,
               cc_msg("hashset_new: Initial size not 0"));
@@ -44,7 +45,8 @@ void test_hashset_new()
 
 void test_hashset_add()
 {
-    HashSet *hs = hashset_new();
+    HashSet *hs;
+    hashset_new(&hs);
 
     char *a = "foo";
     char *b = "bar";
@@ -73,7 +75,8 @@ void test_hashset_add()
 
 void test_hashset_remove()
 {
-    HashSet *hs = hashset_new();
+    HashSet *hs;
+    hashset_new(&hs);
 
     char *a = "foo";
     char *b = "bar";
@@ -85,7 +88,7 @@ void test_hashset_remove()
     hashset_add(hs, c);
     hashset_add(hs, d);
 
-    hashset_remove(hs, "bar");
+    hashset_remove(hs, "bar", NULL);
 
     size_t size = hashset_size(hs);
 
@@ -103,7 +106,8 @@ void test_hashset_remove()
 
 void test_hashset_remove_all()
 {
-    HashSet *hs = hashset_new();
+    HashSet *hs;
+    hashset_new(&hs);
 
     char *a = "foo";
     char *b = "bar";
@@ -133,7 +137,8 @@ void test_hashset_remove_all()
 
 void test_hashset_iter_next()
 {
-    HashSet *hs = hashset_new();
+    HashSet *hs;
+    hashset_new(&hs);
 
     char *a = "foo";
     char *b = "bar";
@@ -172,7 +177,8 @@ void test_hashset_iter_next()
 
 void test_hashset_iter_remove()
 {
-    HashSet *hs = hashset_new();
+    HashSet *hs;
+    hashset_new(&hs);
 
     char *a = "foo";
     char *b = "bar";
@@ -189,7 +195,7 @@ void test_hashset_iter_remove()
         char const *e = hashset_iter_next(&iter);
 
         if (!strcmp(e, "bar"))
-            hashset_iter_remove(&iter);
+            hashset_iter_remove(&iter, NULL);
     }
 
     cc_assert(hashset_size(hs) == 2,

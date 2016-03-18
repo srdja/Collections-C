@@ -72,51 +72,50 @@ typedef struct deque_iter_s {
     size_t index;
 } DequeIter;
 
-Deque*     deque_new             (void);
-Deque*     deque_new_conf        (DequeConf *conf);
-void       deque_conf_init       (DequeConf *conf);
+enum cc_stat  deque_new             (Deque **deque);
+enum cc_stat  deque_new_conf        (const DequeConf const* conf, Deque **deque);
+void          deque_conf_init       (DequeConf *conf);
 
-void       deque_destroy         (Deque *deque);
-void       deque_destroy_free    (Deque *deque);
+void          deque_destroy         (Deque *deque);
+void          deque_destroy_free    (Deque *deque);
 
-bool       deque_add             (Deque *deque, void *element);
-bool       deque_add_first       (Deque *deque, void *element);
-bool       deque_add_last        (Deque *deque, void *element);
-bool       deque_add_at          (Deque *deque, void *element, size_t index);
-void*      deque_replace_at      (Deque *deque, void *element, size_t index);
+enum cc_stat  deque_add             (Deque *deque, void *element);
+enum cc_stat  deque_add_first       (Deque *deque, void *element);
+enum cc_stat  deque_add_last        (Deque *deque, void *element);
+enum cc_stat  deque_add_at          (Deque *deque, void *element, size_t index);
+enum cc_stat  deque_replace_at      (Deque *deque, void *element, size_t index, void **out);
 
-void*      deque_remove          (Deque *deque, void *element);
-void*      deque_remove_at       (Deque *deque, size_t index);
-void*      deque_remove_first    (Deque *deque);
-void*      deque_remove_last     (Deque *deque);
-void       deque_remove_all      (Deque *deque);
-void       deque_remove_all_free (Deque *deque);
+enum cc_stat  deque_remove          (Deque *deque, void *element, void **out);
+enum cc_stat  deque_remove_at       (Deque *deque, size_t index, void **out);
+enum cc_stat  deque_remove_first    (Deque *deque, void **out);
+enum cc_stat  deque_remove_last     (Deque *deque, void **out);
+void          deque_remove_all      (Deque *deque);
+void          deque_remove_all_free (Deque *deque);
 
-void*      deque_get             (Deque *deque, size_t index);
-void*      deque_get_first       (Deque *deque);
-void*      deque_get_last        (Deque *deque);
+enum cc_stat  deque_get             (Deque *deque, size_t index, void **out);
+enum cc_stat  deque_get_first       (Deque *deque, void **out);
+enum cc_stat  deque_get_last        (Deque *deque, void **out);
 
-Deque*     deque_copy_shallow    (Deque *deque);
-Deque*     deque_copy_deep       (Deque *deque, void *(*cp) (void*));
+enum cc_stat  deque_copy_shallow    (Deque *deque, Deque **out);
+enum cc_stat  deque_copy_deep       (Deque *deque, void *(*cp) (void*), Deque **out);
 
-void       deque_reverse         (Deque *deque);
-bool       deque_trim_capacity   (Deque *deque);
+void          deque_reverse         (Deque *deque);
+enum cc_stat  deque_trim_capacity   (Deque *deque);
 
-size_t     deque_contains        (Deque *deque, void *element);
-size_t     deque_size            (Deque *deque);
-size_t     deque_capacity        (Deque *deque);
+size_t        deque_contains        (Deque *deque, void *element);
+size_t        deque_size            (Deque *deque);
+size_t        deque_capacity        (Deque *deque);
 
-size_t     deque_index_of        (Deque *deque, void *element);
+enum cc_stat  deque_index_of        (Deque *deque, void *element, size_t *i);
 
-void       deque_foreach         (Deque *deque, void (*op) (void *));
+void          deque_foreach         (Deque *deque, void (*op) (void *));
 
-void       deque_iter_init       (DequeIter *iter, Deque *deque);
-bool       deque_iter_has_next   (DequeIter *iter);
-void*      deque_iter_next       (DequeIter *iter);
-void*      deque_iter_remove     (DequeIter *iter);
-bool       deque_iter_add        (DequeIter *iter, void *element);
-void*      deque_iter_replace    (DequeIter *iter, void *replacement);
-size_t     deque_iter_index      (DequeIter *iter);
+void          deque_iter_init       (DequeIter *iter, Deque *deque);
+enum cc_stat  deque_iter_next       (DequeIter *iter, void **out);
+enum cc_stat  deque_iter_remove     (DequeIter *iter, void **out);
+enum cc_stat  deque_iter_add        (DequeIter *iter, void *element);
+enum cc_stat  deque_iter_replace    (DequeIter *iter, void *replacement, void **out);
+size_t        deque_iter_index      (DequeIter *iter);
 
 const void* const* deque_get_buffer(Deque *deque);
 
