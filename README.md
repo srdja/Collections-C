@@ -10,28 +10,56 @@ Check the [documentation](https://srdja.github.io/Collections-C/) for details. A
 
 HashTable:
 ```c
-HashTable *table = hashtable_new();
 
-hashtable_add(table, "some_key", "some_value");
-hashtable_add(table, "foo", "bar");
+// Crate a new table
+HashTable *table
+if (hashtable_new(&table) != CC_OK) {
+    // something went wrong
+    ...
+}
 
-char *value   = hashtable_get(table, "foo");    // returns "bar"
-char *removed = hashtable_remove(table, "foo"); // removes the key and returns the value
+// Add key-value pair
+if (hashtable_add(table, "some_key", "some_value") != CC_OK) {
+    // something went wrong
+    ...
+}
+
+// Retrieve a value associated with a key
+char *value;
+if (hashtable_get(table, "some_key", (void*) &value) == CC_OK)
+    printf("%s", value);
+
+// Remove a key
+hashtable_remove(table, "foo", NULL);
 
 hashtable_destroy(table);
 ```
 Array (dynamic array):
 ```c
-Array *vec = array_new();
+// Create a new array
+Array *ar;
+if (array_new(&ar) != CC_OK) {
+    // something went wrong
+    ...
+}
 
-array_add(vec, "foo");
-array_add(vec, "bar");
-array_add(vec, "baz");
+// Add an element
+enum cc_stat status = array_add(vec, "foo");
+if (status == CC_OK) {
+    ...
+} else if (status == CC_ERR_ALLOC) {
+    ...
+} else {
+    ...
+}
 
-char *foo = array_get(vec, 0);
-char *baz = array_get(vec, 2);
+// Retrieve a value
+char *foo;
+array_get(vec, 0, (void*) &foo);
 
-char *removed = array_remove_at(vec, 1);
+// Remove a value
+char *removed;
+array_remove_at(vec, 0, (void*) &removed);
 
 array_destroy(vec);
 ```
@@ -76,10 +104,13 @@ make check
 #include <array.h>
 
 int main(int argc, char **argv) {
-    Array *ar = array_new();
+    Array *ar;
+    array_new(&ar);
     array_add(ar, "Hello World!\n");
     
-    printf("%s", (char*) array_get(ar, 0));
+    char *str;
+    array_get(ar, 0, (void*) &str);
+    printf("%s", str);
     
     return 0;
 }
