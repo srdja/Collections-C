@@ -199,7 +199,7 @@ enum cc_stat deque_add_last(Deque *deque, void *element)
 enum cc_stat deque_add_at(Deque *deque, void *element, size_t index)
 {
     if (index >= deque->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     if (deque->capacity == deque->size && expand_capacity(deque) != CC_OK)
         return CC_ERR_ALLOC;
@@ -297,7 +297,7 @@ enum cc_stat deque_add_at(Deque *deque, void *element, size_t index)
 enum cc_stat deque_replace_at(Deque *deque, void *element, size_t index, void **out)
 {
     if (index >= deque->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     size_t i = (deque->first + index) & (deque->capacity - 1);
 
@@ -344,8 +344,8 @@ enum cc_stat deque_remove(Deque *deque, void *element, void **out)
  */
 enum cc_stat deque_remove_at(Deque *deque, size_t index, void **out)
 {
-    if (index >= deque->size || index == CC_ERR_NO_SUCH_INDEX)
-        return CC_ERR_NO_SUCH_INDEX;
+    if (index >= deque->size || index == CC_ERR_OUT_OF_RANGE)
+        return CC_ERR_OUT_OF_RANGE;
 
     const size_t c = deque->capacity - 1;
     const size_t l = deque->last & c;
@@ -423,7 +423,7 @@ enum cc_stat deque_remove_at(Deque *deque, size_t index, void **out)
 enum cc_stat deque_remove_first(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     void *element = deque->buffer[deque->first];
     deque->first = (deque->first + 1) & (deque->capacity - 1);
@@ -448,7 +448,7 @@ enum cc_stat deque_remove_first(Deque *deque, void **out)
 enum cc_stat deque_remove_last(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     size_t  last    = (deque->last - 1) & (deque->capacity - 1);
     void   *element = deque->buffer[last];
@@ -505,7 +505,7 @@ void deque_remove_all_free(Deque *deque)
 enum cc_stat deque_get(Deque *deque, size_t index, void **out)
 {
     if (index > deque->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     size_t i = (deque->first + index) & (deque->capacity - 1);
     *out = deque->buffer[i];
@@ -525,7 +525,7 @@ enum cc_stat deque_get(Deque *deque, size_t index, void **out)
 enum cc_stat deque_get_first(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     *out = deque->buffer[deque->first];
     return CC_OK;
@@ -544,7 +544,7 @@ enum cc_stat deque_get_first(Deque *deque, void **out)
 enum cc_stat deque_get_last(Deque *deque, void **out)
 {
     if (deque->size == 0)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     size_t last = (deque->last - 1) & (deque->capacity - 1);
     *out = deque->buffer[last];
@@ -706,7 +706,7 @@ size_t deque_contains(Deque *deque, void *element)
 
 /**
  * Returns the index of the first occurence of the specified deque element, or
- * CC_ERR_NO_SUCH_INDEX if the element could not be found.
+ * CC_ERR_OUT_OF_RANGE if the element could not be found.
  *
  * @param[in] deque deque being searched
  * @param[in] element the element whose index is being looked up
@@ -726,7 +726,7 @@ enum cc_stat deque_index_of(Deque *deque, void *element, size_t *index)
             return CC_OK;
         }
     }
-    return CC_ERR_NO_SUCH_INDEX;
+    return CC_ERR_OUT_OF_RANGE;
 }
 
 /**

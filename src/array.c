@@ -183,7 +183,7 @@ enum cc_stat array_add(Array *ar, void *element)
 enum cc_stat array_add_at(Array *ar, void *element, size_t index)
 {
     if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     if (ar->size == ar->capacity && (expand_capacity(ar) != CC_OK))
         return CC_ERR_ALLOC;
@@ -216,7 +216,7 @@ enum cc_stat array_add_at(Array *ar, void *element, size_t index)
 enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out)
 {
     if (index >= ar->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     if (out)
         *out = ar->buffer[index];
@@ -241,8 +241,8 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
 {
     size_t index = array_index_of(ar, element);
 
-    if (index == CC_ERR_NO_SUCH_INDEX)
-        return CC_ERR_NO_SUCH_INDEX;
+    if (index == CC_ERR_OUT_OF_RANGE)
+        return CC_ERR_OUT_OF_RANGE;
 
     if (index != ar->size - 1) {
         size_t block_size = (ar->size - index) * sizeof(void*);
@@ -273,7 +273,7 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
 enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     if (out)
         *out = ar->buffer[index];
@@ -346,7 +346,7 @@ void array_remove_all_free(Array *ar)
 enum cc_stat array_get(Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     *out = ar->buffer[index];
     return CC_OK;
@@ -383,12 +383,12 @@ const void * const*array_get_buffer(Array *ar)
 
 /**
  * Returns the index of the first occurrence of the specified array element, or
- * CC_ERR_NO_SUCH_INDEX if the element could not be found.
+ * CC_ERR_OUT_OF_RANGE if the element could not be found.
  *
  * @param[in] ar array being searched
  * @param[in] element the element whose index is being looked up
  *
- * @return the index of the specified element, or NO_SUCH_INDEX if the element is not found
+ * @return the index of the specified element, or CC_ERR_OUT_OF_RANGE if the element is not found
  */
 size_t array_index_of(Array *ar, void *element)
 {
@@ -397,7 +397,7 @@ size_t array_index_of(Array *ar, void *element)
         if (ar->buffer[i] == element)
             return i;
     }
-    return CC_ERR_NO_SUCH_INDEX;
+    return CC_ERR_OUT_OF_RANGE;
 }
 
 /**

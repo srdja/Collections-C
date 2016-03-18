@@ -416,7 +416,7 @@ enum cc_stat slist_splice_at(SList *list1, SList *list2, size_t index)
         return CC_OK;
 
     if (index >= list1->size)
-        return CC_ERR_NO_SUCH_INDEX;
+        return CC_ERR_OUT_OF_RANGE;
 
     SNode *prev = NULL;
     SNode *node = NULL;
@@ -899,14 +899,14 @@ size_t slist_contains(SList *list, void *element)
 }
 
 /**
- * Returns the index of the specified element, or <code>CC_ERR_NO_SUCH_INDEX</code> if
+ * Returns the index of the specified element, or <code>CC_ERR_OUT_OF_RANGE</code> if
  * the element is not found. The returned index is the index of the first
  * occurrence of the element starting from the beginning of the list.
  *
  * @param[in] list    the list on which this operation is performed
  * @param[in] element the element whose index is being looked up
  *
- * @return the index of the specified element or <code>CC_ERR_NO_SUCH_INDEX</code> if
+ * @return the index of the specified element or <code>CC_ERR_OUT_OF_RANGE</code> if
  *         the element is not found.
  */
 enum cc_stat slist_index_of(SList *list, void *element, size_t *index)
@@ -922,7 +922,7 @@ enum cc_stat slist_index_of(SList *list, void *element, size_t *index)
         i++;
         node = node->next;
     }
-    return CC_ERR_NO_SUCH_INDEX;
+    return CC_ERR_OUT_OF_RANGE;
 }
 
 /**

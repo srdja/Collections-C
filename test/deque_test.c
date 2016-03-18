@@ -582,8 +582,8 @@ void test_deque_remove_all()
     void *last;
     int stat2 = deque_get_last(deque, &last);
 
-    cc_assert(stat1 == CC_ERR_NO_SUCH_INDEX &&
-              stat2 == CC_ERR_NO_SUCH_INDEX,
+    cc_assert(stat1 == CC_ERR_OUT_OF_RANGE &&
+              stat2 == CC_ERR_OUT_OF_RANGE,
               cc_msg("deque_remove_all: "
                      "First and last elements still reachable "
                      "after the deque has been cleared"));
@@ -620,7 +620,7 @@ void test_deque_get()
                      "Expected returned element was %d, but"
                      " got %d instead", b, *((int*) e)));
 
-    cc_assert(status == CC_ERR_NO_SUCH_INDEX,
+    cc_assert(status == CC_ERR_OUT_OF_RANGE,
               cc_msg("deque_get: "
                      "Expected element from a OOB index was NULL."));
 
