@@ -930,6 +930,7 @@ void test_deque_iterator_add()
     int d = 4;
     int e = 5;
     int f = 6;
+
     int g = 7;
 
     Deque *deque;
@@ -967,6 +968,15 @@ void test_deque_iterator_add()
         }
         i++;
     }
+
+
+    void *ret;
+    deque_get(deque, 3, &ret);
+
+    cc_assert(*((int*)ret) == g,
+              cc_msg("deque_iterator: Expected value at index 3 was %d,"
+                     " but got %d instead", g, *((int*)ret)));
+
     deque_destroy(deque);
 }
 
