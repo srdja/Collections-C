@@ -122,6 +122,191 @@
 
           <h1 id="array">Array</h1>
 
+<h2 id="creating-a-new-array">Creating a new Array</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+
+<span class="c1">// Check if the array was initialized correctly
+</span><span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">CC_ERR_ALLOC</span><span class="p">)</span>
+    <span class="p">...</span>
+</code></pre>
+
+<p>New arrays can be created with <code class="prettyprint">array_new</code>. This will create a new empty array with default parameters. <code class="prettyprint">array_new</code> takes a pointer to a pointer to an Array structure and initializes it with the new Array and then returns a status code to indicate success or failure. </p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_new(Array**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array**</td>
+<td>out</td>
+<td>Pointer to an array that is being initialized</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the array was successfully initialized</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation failed</td>
+</tr>
+</tbody></table>
+
+<h2 id="array-configuration">Array configuration</h2>
+<pre class="highlight c"><code><span class="n">ArrayConf</span> <span class="n">ac</span><span class="p">;</span>
+
+<span class="c1">// Initialize all fields to default values
+</span><span class="n">array_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+
+
+<span class="c1">// change the default initial capacity
+</span><span class="n">ac</span><span class="p">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+
+
+<span class="c1">// Now we can create a new array with an initial capacity of 100
+</span><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">array_new_conf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ac</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+</code></pre>
+
+<p>ArrayConf struct lets you pass additional parameters when creating a new Array.</p>
+
+<p>Perhaps you would like to initialize the array with a different initial capacity, or perhaps you might want to change the rate at which the array buffer grows. To do this you can pass a <code class="prettyprint">ArrayConf</code> struct to <code class="prettyprint">array_new_conf()</code> to get new customized Array.</p>
+
+<p>To use the <code class="prettyprint">ArrayConf</code> struct we first initialize all of its fields to default values with <code class="prettyprint">array_conf_init(ArrayConf*)</code>, and then we overwrite individual fields that we&rsquo;re interested in.</p>
+
+<p>If we simply passed <code class="prettyprint">ArrayConf</code> to <code class="prettyprint">array_conf_new()</code> after initializing it with <code class="prettyprint">array_conf_init</code> without changing any values, it would have the same effect as calling <code class="prettyprint">array_new()</code> without using the configuration struct.</p>
+
+<h3 id="struct">Struct</h3>
+
+<p><code class="prettyprint">ArrayConf</code></p>
+
+<table><thead>
+<tr>
+<th>field</th>
+<th>type</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>capacity</td>
+<td>size_t</td>
+<td>The initial capacity of the newly created array</td>
+</tr>
+<tr>
+<td>exp_factor</td>
+<td>float</td>
+<td>The rate at which the internal buffer expands (capacity * exp_factor). For example if the exp_factor is set to 0.5, then the internal buffer would grow by 50% on each resize.</td>
+</tr>
+<tr>
+<td>mem_alloc</td>
+<td>void <em>(</em>) (size_t)</td>
+<td>Pointer to a user specified &ldquo;malloc&rdquo;</td>
+</tr>
+<tr>
+<td>mem_calloc</td>
+<td>void*(*) (size_t, size_t)</td>
+<td>Pointer to a user specified &ldquo;calloc&rdquo;</td>
+</tr>
+<tr>
+<td>mem_free</td>
+<td>void (<em>) (void</em>)</td>
+<td>Pointer to a user specified &ldquo;free&rdquo;</td>
+</tr>
+</tbody></table>
+
+<aside class="warning"> Make sure that all fields are initialized before passing it to <b>array_new_conf()</b> either by manually setting each field or by initializing the struct with <b>array_conf_init()</b>. </aside>
+
+<h2 id="creating-an-array-with-parameters">Creating an array with parameters</h2>
+<pre class="highlight c"><code><span class="n">ArrayConf</span> <span class="n">conf</span><span class="p">;</span>
+<span class="n">array_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">conf</span><span class="p">);</span>
+
+<span class="n">conf</span><span class="p">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
+<span class="n">conf</span><span class="p">.</span><span class="n">exp_factor</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">7</span><span class="n">f</span><span class="p">;</span>
+
+<span class="c1">// Create a new array with with additional parameters
+</span><span class="n">Array</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_new_conf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">conf</span><span class="p">);</span>
+
+<span class="c1">// Handle errors
+</span><span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">CC_ERR_ALLOC</span><span class="p">)</span>
+    <span class="p">...</span>
+
+</code></pre>
+
+<p>Arrays can be created with additional parameters by calling <code class="prettyprint">array_new_conf</code> instead of <code class="prettyprint">array_new</code>. The <code class="prettyprint">array_new_conf</code> function takes a pointer to a pointer to an Array structure and also a pointer to an <code class="prettyprint">ArrayConf</code> structure through which additional parameters are passed. <code class="prettyprint">array_new_conf</code> returns a status code to indicate success or failure.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_new_conf(const ArrayConf const*, Array**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>const ArrayConf const*</td>
+<td>in</td>
+<td>Pointer to a config struct</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Array**</td>
+<td>out</td>
+<td>Pointer to an array that is being initialized</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the array was successfully initialized</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation failed</td>
+</tr>
+</tbody></table>
+
+<aside class="notice"> The <b>ArrayConf</b> struct is not modified by <b>array_new_conf</b>. All of its values are copied into the Array structure and no reference to it is stored in the Array structure, which means that the conf struct can be reused for creating other arrays.</aside>
+
       </div>
       <div class="dark-box">
           <div class="lang-selector">
