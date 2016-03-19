@@ -246,7 +246,7 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
     enum cc_stat status = array_index_of(ar, element, &index);
 
     if (status == CC_ERR_OUT_OF_RANGE)
-        return CC_ERR_OUT_OF_RANGE;
+        return CC_ERR_VALUE_NOT_FOUND;
 
     if (index != ar->size - 1) {
         size_t block_size = (ar->size - index) * sizeof(void*);
