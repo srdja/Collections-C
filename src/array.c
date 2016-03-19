@@ -182,6 +182,9 @@ enum cc_stat array_add(Array *ar, void *element)
  */
 enum cc_stat array_add_at(Array *ar, void *element, size_t index)
 {
+    if (index == ar->size)
+        return array_add(ar, element);
+
     if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
         return CC_ERR_OUT_OF_RANGE;
 
