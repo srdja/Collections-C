@@ -259,6 +259,8 @@
 
 <p>Arrays can be created with additional parameters by calling <code class="prettyprint">array_new_conf</code> instead of <code class="prettyprint">array_new</code>. The <code class="prettyprint">array_new_conf</code> function takes a pointer to a pointer to an Array structure and also a pointer to an <code class="prettyprint">ArrayConf</code> structure through which additional parameters are passed. <code class="prettyprint">array_new_conf</code> returns a status code to indicate success or failure.</p>
 
+<p>The array is allocated using the allocators passed in by <code class="prettyprint">ArrayConf</code>.</p>
+
 <h3 id="function">Function</h3>
 
 <p><code class="prettyprint">enum cc_stat array_new_conf(const ArrayConf const*, Array**)</code></p>
@@ -303,9 +305,300 @@
 <td>CC_ERR_ALLOC</td>
 <td>if memory allocation failed</td>
 </tr>
+<tr>
+<td>CC_ERR_INVALID_CAPACITY</td>
+<td>if the capacity in the <code class="prettyprint">ArrayConf</code> does not meet the following condition: <code class="prettyprint">exp_factor &lt; (CC_MAX_ELEMENTS / capacity)</code></td>
+</tr>
 </tbody></table>
 
 <aside class="notice"> The <b>ArrayConf</b> struct is not modified by <b>array_new_conf</b>. All of its values are copied into the Array structure and no reference to it is stored in the Array structure, which means that the conf struct can be reused for creating other arrays.</aside>
+
+<h2 id="destroying-arrays">Destroying arrays</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+
+<span class="n">array_destroy</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Arrays can be destroyed by passing a pointer of the Array structure to <code class="prettyprint">array_destroy</code>. The Array structure is freed using the <code class="prettyprint">mem_free</code> function that is specified during Array creation.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_destroy(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>int</td>
+<td>Pointer to an array that is to be destroyed</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="destroying-arrays-and-elements">Destroying arrays and elements</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+
+<span class="n">array_destroy_free</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Destroying an Array along with all the data it holds can be done by calling  <code class="prettyprint">array_destroy_free</code> on a Array struct.</p>
+
+<p>The Array structure and the contents are freed using the <code class="prettyprint">mem_free</code> function that is specified during Array creation.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_destroy_free(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to an array that is to be destroyed</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<aside class="warning">When using this function make sure that the array doesn&rsquo;t contain any elements allocated on the stack.</aside>
+
+<h2 id="adding-an-element">Adding an element</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Add "foo" string to the array and check the return code
+</span><span class="k">if</span> <span class="p">(</span><span class="n">array_add</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="c1">// someting bad happened
+</span>    <span class="p">...</span>
+
+</code></pre>
+
+<p>Adding elements to an array can be done via <code class="prettyprint">array_add</code>. Which appends the new element to the end of the Array, making it the element with the highest index. This function returns a status code to indicate success or failure.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_add(Array*, void*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to an array that is to be destroyed</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Pointer to an element that is being added</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfuly added to the array</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation for the new element failed</td>
+</tr>
+</tbody></table>
+
+<h2 id="adding-element-at-specific-position">Adding element at specific position</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Insert an element at index 0 and check for errors
+</span><span class="k">if</span> <span class="p">(</span><span class="n">array_add_at</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="c1">// something bad happened
+</span>    <span class="p">...</span>
+
+</code></pre>
+
+<p>Elements can be added to specific position within the array via <code class="prettyprint">array_add_at</code>. Which adds an element to a specific index while shifting all subsequent elements by one. </p>
+
+<p>The element must be inserted at an already existing or an index that is <code class="prettyprint">hightest-index + 1</code>. So that for example if the array&rsquo;s highest index is 5 you could insert at index 6 because that would append an element to the end of the array even though the index isn&rsquo;t occupied.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_add_at(Array*, void*, size_t)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to an array that is to be destroyed</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Pointer to an element that is being added</td>
+</tr>
+<tr>
+<td>3</td>
+<td>size_t</td>
+<td>in</td>
+<td>Index at which the element is to be added</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfuly added to the array</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation for the new element failed</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>If the index is out of range</td>
+</tr>
+</tbody></table>
+
+<h2 id="replacing-elements-at-specific-locations">Replacing elements at specific locations</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Replace an element at index 3 with "foo" and store the old value at 'replaced'
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">replaced</span><span class="p">;</span>
+<span class="n">array_replace_at</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">replaced</span><span class="p">);</span>
+
+<span class="c1">// Replace an element at index 10 but ignore the old value
+</span><span class="n">array_replace_at</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Existing elements can be replaced with <code class="prettyprint">array_replace_at</code>.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_replace_at(Array*, void*, size_t, void **)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to an array that is to be destroyed</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Pointer to a replacement element</td>
+</tr>
+<tr>
+<td>3</td>
+<td>size_t</td>
+<td>in</td>
+<td>Index of the replaced element</td>
+</tr>
+<tr>
+<td>4</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer at which the replaced element is stored. Can be NULL if you wish to ignore it.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfuly replaced</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>If the index is out of range</td>
+</tr>
+</tbody></table>
 
       </div>
       <div class="dark-box">
