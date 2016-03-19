@@ -7,7 +7,7 @@ A library of generic data structures including a list, array, hashtable, deque e
 
 ## Examples
 Check the [documentation page](https://srdja.github.io/Collections-C/) for mode detailed examples. (This is still in progress).  
-The source for the documentation can be found [here](https://srdja.github.io/cc-doc-slate).
+The source of the documentation can be found [here](https://github.com/srdja/cc-doc-slate).
 
 HashTable:
 ```c
