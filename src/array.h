@@ -85,7 +85,7 @@ typedef struct array_iter_s {
 } ArrayIter;
 
 enum cc_stat  array_new             (Array **out);
-enum cc_stat  array_new_conf        (const ArrayConf const* conf, Array **out);
+enum cc_stat  array_new_conf        (ArrayConf const * const conf, Array **out);
 void          array_conf_init       (ArrayConf *conf);
 
 void          array_destroy         (Array *ar);

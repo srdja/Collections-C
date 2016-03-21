@@ -91,7 +91,7 @@ enum cc_stat treetable_new(int (*cmp) (void *, void *), TreeTable **tt)
  *
  * @return a new TreeTable or NULL if the memory allocation fails.
  */
-enum cc_stat treetable_new_conf(const TreeTableConf const* conf, TreeTable **tt)
+enum cc_stat treetable_new_conf(TreeTableConf const * const conf, TreeTable **tt)
 {
     TreeTable *table = conf->mem_calloc(1, sizeof(TreeTable));
 

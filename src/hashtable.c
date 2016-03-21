@@ -74,7 +74,7 @@ enum cc_stat hashtable_new(HashTable **out)
  *
  * @return a new HashTable or NULL if the memory allocation fails.
  */
-enum cc_stat hashtable_new_conf(const HashTableConf const* conf, HashTable **out)
+enum cc_stat hashtable_new_conf(HashTableConf const * const conf, HashTable **out)
 {
     HashTable *table = conf->mem_calloc(1, sizeof(HashTable));
 

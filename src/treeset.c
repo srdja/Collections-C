@@ -65,7 +65,7 @@ enum cc_stat treeset_new(int (*cmp) (void*, void*), TreeSet **set)
  *
  * @return a new empty TreeSet
  */
-enum cc_stat treeset_new_conf(const TreeSetConf const* conf, TreeSet **tset)
+enum cc_stat treeset_new_conf(TreeSetConf const * const conf, TreeSet **tset)
 {
     TreeSet *set = conf->mem_calloc(1, sizeof(TreeSet));
 

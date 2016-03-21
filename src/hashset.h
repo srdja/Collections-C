@@ -56,7 +56,7 @@ typedef struct hashset_iter_s {
 void          hashset_conf_init     (HashSetConf *conf);
 
 enum cc_stat  hashset_new           (HashSet **hs);
-enum cc_stat  hashset_new_conf      (const HashSetConf const* conf, HashSet **hs);
+enum cc_stat  hashset_new_conf      (HashSetConf const * const conf, HashSet **hs);
 void          hashset_destroy       (HashSet *set);
 
 enum cc_stat  hashset_add           (HashSet *set, void *element);
