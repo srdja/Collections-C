@@ -61,7 +61,7 @@ enum cc_stat array_new(Array **out)
  *
  * @return a new array if the allocation was successful, or NULL if not.
  */
-enum cc_stat array_new_conf(const ArrayConf const* conf, Array **out)
+enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
 {
     float ex;
 

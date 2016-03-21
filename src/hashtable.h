@@ -146,7 +146,7 @@ typedef struct hashtable_conf_s {
 
 void          hashtable_conf_init       (HashTableConf *conf);
 enum cc_stat  hashtable_new             (HashTable **out);
-enum cc_stat  hashtable_new_conf        (const HashTableConf const* conf, HashTable **out);
+enum cc_stat  hashtable_new_conf        (HashTableConf const * const conf, HashTable **out);
 
 void          hashtable_destroy         (HashTable *table);
 enum cc_stat  hashtable_add             (HashTable *table, void *key, void *val);

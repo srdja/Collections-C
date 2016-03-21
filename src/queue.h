@@ -54,7 +54,7 @@ typedef struct queue_iter_s {
 
 void          queue_conf_init    (QueueConf *conf);
 enum cc_stat  queue_new          (Queue **q);
-enum cc_stat  queue_new_conf     (const QueueConf const* conf, Queue **q);
+enum cc_stat  queue_new_conf     (QueueConf const * const conf, Queue **q);
 void          queue_destroy      (Queue *queue);
 void          queue_destroy_free (Queue *queue);
 
