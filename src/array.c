@@ -709,11 +709,11 @@ static enum cc_stat expand_capacity(Array *ar)
  * @param[in] op the operation function that is to be invoked on each array
  *               element
  */
-void array_foreach(Array *ar, void (*op) (void *e))
+void array_map(Array *ar, void (*fn) (void *e))
 {
     size_t i;
     for (i = 0; i < ar->size; i++)
-        op(ar->buffer[i]);
+        fn(ar->buffer[i]);
 }
 
 /**

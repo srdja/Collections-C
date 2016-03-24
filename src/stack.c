@@ -165,7 +165,7 @@ size_t stack_size(Stack *stack)
  * @param[in] op the operation function that is to be invoked on each
  *               element of the stack
  */
-void stack_foreach(Stack *stack, void (*op) (void *))
+void stack_map(Stack *stack, void (*fn) (void *))
 {
-    array_foreach(stack->v, op);
+    array_map(stack->v, fn);
 }

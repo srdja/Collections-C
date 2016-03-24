@@ -118,7 +118,7 @@ size_t        array_capacity        (Array *ar);
 enum cc_stat  array_index_of        (Array *ar, void *element, size_t *index);
 void          array_sort            (Array *ar, int (*cmp) (const void*, const void*));
 
-void          array_foreach         (Array *ar, void (*op) (void *));
+void          array_map             (Array *ar, void (*fn) (void *));
 
 void          array_iter_init       (ArrayIter *iter, Array *ar);
 enum cc_stat  array_iter_next       (ArrayIter *iter, void **out);

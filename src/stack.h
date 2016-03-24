@@ -46,6 +46,6 @@ enum cc_stat  stack_peek        (Stack *stack, void **out);
 enum cc_stat  stack_pop         (Stack *stack, void **out);
 
 size_t        stack_size        (Stack *stack);
-void          stack_foreach     (Stack *stack, void (*op) (void *));
+void          stack_map         (Stack *stack, void (*fn) (void *));
 
 #endif /* STACK_H_ */
