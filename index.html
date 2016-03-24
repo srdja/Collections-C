@@ -122,7 +122,7 @@
 
           <h1 id="array">Array</h1>
 
-<h2 id="creating-a-new-array">Creating a new Array</h2>
+<h2 id="array_new">array_new</h2>
 <pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
 <span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
 
@@ -174,7 +174,7 @@
 </tr>
 </tbody></table>
 
-<h2 id="array-configuration">Array configuration</h2>
+<h2 id="arrayconf">ArrayConf</h2>
 <pre class="highlight c"><code><span class="n">ArrayConf</span> <span class="n">ac</span><span class="p">;</span>
 
 <span class="c1">// Initialize all fields to default values
@@ -240,7 +240,7 @@
 
 <aside class="warning"> Make sure that all fields are initialized before passing it to <b>array_new_conf()</b> either by manually setting each field or by initializing the struct with <b>array_conf_init()</b>. </aside>
 
-<h2 id="creating-an-array-with-parameters">Creating an array with parameters</h2>
+<h2 id="array_new_conf">array_new_conf</h2>
 <pre class="highlight c"><code><span class="n">ArrayConf</span> <span class="n">conf</span><span class="p">;</span>
 <span class="n">array_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">conf</span><span class="p">);</span>
 
@@ -313,7 +313,7 @@
 
 <aside class="notice"> The <b>ArrayConf</b> struct is not modified by <b>array_new_conf</b>. All of its values are copied into the Array structure and no reference to it is stored in the Array structure, which means that the conf struct can be reused for creating other arrays.</aside>
 
-<h2 id="destroying-arrays">Destroying arrays</h2>
+<h2 id="array_destroy">array_destroy</h2>
 <pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
 <span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
 
@@ -350,9 +350,9 @@
 
 <p><code class="prettyprint">void</code></p>
 
-<h2 id="destroying-arrays-and-elements">Destroying arrays and elements</h2>
+<h2 id="array_destroy_free">array_destroy_free</h2>
 <pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
-<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
 
 <span class="p">...</span>
 
@@ -391,7 +391,7 @@
 
 <aside class="warning">When using this function make sure that the array doesn&rsquo;t contain any elements allocated on the stack.</aside>
 
-<h2 id="adding-an-element">Adding an element</h2>
+<h2 id="array_add">array_add</h2>
 <pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
 <span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
 
@@ -399,7 +399,7 @@
 
 <span class="c1">// Add "foo" string to the array and check the return code
 </span><span class="k">if</span> <span class="p">(</span><span class="n">array_add</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
-    <span class="c1">// someting bad happened
+    <span class="c1">// something bad happened
 </span>    <span class="p">...</span>
 
 </code></pre>
@@ -444,7 +444,7 @@
 </thead><tbody>
 <tr>
 <td>CC_OK</td>
-<td>if the element was successfuly added to the array</td>
+<td>if the element was successfully added to the array</td>
 </tr>
 <tr>
 <td>CC_ERR_ALLOC</td>
@@ -452,7 +452,7 @@
 </tr>
 </tbody></table>
 
-<h2 id="adding-element-at-specific-position">Adding element at specific position</h2>
+<h2 id="array_add_at">array_add_at</h2>
 <pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
 <span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
 
@@ -467,7 +467,7 @@
 
 <p>Elements can be added to specific position within the array via <code class="prettyprint">array_add_at</code>. Which adds an element to a specific index while shifting all subsequent elements by one. </p>
 
-<p>The element must be inserted at an already existing or an index that is <code class="prettyprint">hightest-index + 1</code>. So that for example if the array&rsquo;s highest index is 5 you could insert at index 6 because that would append an element to the end of the array even though the index isn&rsquo;t occupied.</p>
+<p>The element must be inserted at an already existing or an index that is <code class="prettyprint">highest-index + 1</code>. So that for example if the array&rsquo;s highest index is 5 you could insert at index 6 because that would append an element to the end of the array even though the index isn&rsquo;t occupied.</p>
 
 <h3 id="function">Function</h3>
 
@@ -513,7 +513,7 @@
 </thead><tbody>
 <tr>
 <td>CC_OK</td>
-<td>if the element was successfuly added to the array</td>
+<td>if the element was successfully added to the array</td>
 </tr>
 <tr>
 <td>CC_ERR_ALLOC</td>
@@ -525,7 +525,7 @@
 </tr>
 </tbody></table>
 
-<h2 id="replacing-elements-at-specific-locations">Replacing elements at specific locations</h2>
+<h2 id="array_replace_at">array_replace_at</h2>
 <pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
 <span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
 
@@ -533,10 +533,10 @@
 
 <span class="c1">// Replace an element at index 3 with "foo" and store the old value at 'replaced'
 </span><span class="kt">void</span> <span class="o">*</span><span class="n">replaced</span><span class="p">;</span>
-<span class="n">array_replace_at</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">replaced</span><span class="p">);</span>
+<span class="n">array_replace_at</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">replaced</span><span class="p">);</span>
 
 <span class="c1">// Replace an element at index 10 but ignore the old value
-</span><span class="n">array_replace_at</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class="n">array_replace_at</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 
 </code></pre>
 
@@ -592,13 +592,1261 @@
 </thead><tbody>
 <tr>
 <td>CC_OK</td>
-<td>if the element was successfuly replaced</td>
+<td>if the element was successfully replaced</td>
 </tr>
 <tr>
 <td>CC_ERR_OUT_OF_RANGE</td>
 <td>If the index is out of range</td>
 </tr>
 </tbody></table>
+
+<h2 id="array_remove">array_remove</h2>
+<pre class="highlight c"><code><span class="c1">//remove an element foo and ignore the output parameter
+</span><span class="n">array_remove</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">foo</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// remove the element bar and save the removed value to 'rm'
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">rm</span><span class="p">;</span>
+<span class="n">array_remove</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rm</span><span class="p">);</span>
+</code></pre>
+
+<p>Removing an element by reference can be done via <code class="prettyprint">array_remove</code> which removes the element and optionally returns the removed element through an output parameter. </p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_remove(Array*, void *, void **)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Element that is being removed</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to an output variable where the removed element should be saved. This can be set to NULL if you wish to ignore the removed element.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfully removed</td>
+</tr>
+<tr>
+<td>CC_ERR_VALUE_NOT_FOUND</td>
+<td>If the element was not found</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_remove_at">array_remove_at</h2>
+<pre class="highlight c"><code><span class="c1">//remove an element at index 3 and ignore the output parameter
+</span><span class="n">array_remove_at</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// remove the element at index 10 and save the removed value to 'rm'
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">rm</span><span class="p">;</span>
+<span class="n">array_remove_at</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rm</span><span class="p">);</span>
+</code></pre>
+
+<p>Removing array elements at a specific index can be done via <code class="prettyprint">array_remove_at</code> which removes the element at the specified index and returns it through the output parameter.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_remove(Array*, size_t, void **)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>size_t</td>
+<td>in</td>
+<td>Element that is being removed</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to an output variable where the removed element should be saved. This can be set to NULL if you wish to ignore the removed element.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfully removed</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>If the index was out of range</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_remove_last">array_remove_last</h2>
+<pre class="highlight c"><code><span class="n">array_remove_last</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</code></pre>
+
+<p>Elements can be removed from the last position, or the one with the highest index, via <code class="prettyprint">array_remove_last</code>. This function has the same effect as calling <code class="prettyprint">array_remove_at</code> with the highest index.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_remove_last(Array*, void **)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void**</td>
+<td>out</td>
+<td>Element that is being removed</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfully removed</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>If the index was out of range</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_remove_all">array_remove_all</h2>
+<pre class="highlight c"><code><span class="n">array_remove_all</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
+</code></pre>
+
+<p>The array can be cleared with <code class="prettyprint">array_remove_all</code>. This function does not shrink the underlying buffer.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_remove_all(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="array_remove_all_free">array_remove_all_free</h2>
+<pre class="highlight c"><code><span class="n">array_remove_all_free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
+</code></pre>
+
+<p>Removes and frees all elements from the specified array. This function does not shrink the array capacity.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_remove_all_free()</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="array_get_at">array_get_at</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Retrieve the element from index 5 and store it in 'e'
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">e</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">array_get_at</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="c1">// something bad happened
+</span>    <span class="p">...</span>
+</code></pre>
+
+<p>Returns an array element from the specified index. The specified index must be within the bounds of the array.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_get_at(Array*, size_t, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>size_t</td>
+<td>in</td>
+<td>Index into the array</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to a void* to which the element is saved</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfully retrieved</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>If the index was out of range</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_get_last">array_get_last</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Retrieve the last element of the array
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">e</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">array_get_last</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="c1">// something bad happened
+</span>    <span class="p">...</span>
+</code></pre>
+
+<p>Returns the last element of the array, or the element with the highest index,
+if the array is not empty.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_get_last(Array*, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to a void* to which the element is saved</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the element was successfully retrieved</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>If the array is empty</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_index_of">array_index_of</h2>
+<pre class="highlight c"><code><span class="kt">size_t</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">array_index_of</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">foo</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="c1">// something bad happened
+</span>    <span class="p">...</span>
+</code></pre>
+
+<p>Returns the index of the first occurrence of the specified array element, or <code class="prettyprint">CC_ERR_OUT_OF_RANGE</code> if the element could not be found.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_index_of(Array*, void*, size_t*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Element whose index is being looked up</td>
+</tr>
+<tr>
+<td>3</td>
+<td>size_t*</td>
+<td>out</td>
+<td>Pointer to the index variable</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the index of the element was found</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>if the element was not found</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_subarray">array_subarray</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">array</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="p">...</span>
+
+<span class="p">...</span>
+
+<span class="n">Array</span> <span class="o">*</span><span class="n">sub</span><span class="p">;</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">array_subarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sub</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="p">...</span>
+
+</code></pre>
+
+<p>Creates a sub-array of the specified array, ranging from <code class="prettyprint">b</code> inclusive to <code class="prettyprint">e</code> inclusive. The range indices must be within the bounds of the array, while the e index must be greater or equal to the <code class="prettyprint">b</code> index, otherwise this operation will fail.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_subarray(Array*, size_t, size_t, Array**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>size_t</td>
+<td>in</td>
+<td>The beginning index (inclusive) of the sub-array. Must be within the bounds of the array and must not exceed the end index.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>size_t</td>
+<td>in</td>
+<td>The end index (inclusive) of the sub-array. Must be within the bounds of the array and must be greater or equal to the beginning index.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Array**</td>
+<td>out</td>
+<td>The pointer to where the sub array pointer is stored.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the sub-array was successfully created</td>
+</tr>
+<tr>
+<td>CC_ERR_INVALID_RANGE</td>
+<td>If the specified range is invalid</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if the allocation for the new sub array failed.</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">The new sub-array is allocated using the original array&rsquo;s allocators. It also inherits the configuration of the original array.</aside>
+
+<h2 id="array_copy_shallow">array_copy_shallow</h2>
+<pre class="highlight c"><code><span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Make a shallow
+</span><span class="n">Array</span> <span class="o">*</span><span class="n">copy</span><span class="p">;</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">array_copy_shallow</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">copy</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Creates a shallow copy of the specified array. A shallow copy is a copy of the array structure, but not the elements it holds.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_copy_shallow(Array*, Array**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Array**</td>
+<td>out</td>
+<td>The pointer to where the copy array pointer is stored.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the copy was successfully created</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if the allocation for the new copy array failed.</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">The new array is allocated using the original array&rsquo;s allocators. It also inherits the configuration of the original array.</aside>
+
+<h2 id="array_copy_deep">array_copy_deep</h2>
+<pre class="highlight c"><code>
+<span class="n">Array</span> <span class="o">*</span><span class="n">ar</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Copy function
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">cp</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">val</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Foo</span> <span class="n">v</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="n">Foo</span><span class="o">*</span><span class="p">)</span> <span class="n">val</span><span class="p">);</span>
+    <span class="n">Foo</span> <span class="o">*</span><span class="n">new</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Foo</span><span class="p">));</span>
+    <span class="o">*</span><span class="n">new</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="n">new</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Make a shallow
+</span><span class="n">Array</span> <span class="o">*</span><span class="n">copy</span><span class="p">;</span>
+<span class="n">status</span> <span class="o">=</span> <span class="n">array_copy_deep</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">cp</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">copy</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Creates a deep copy of the specified array. A deep copy is a copy of the array structure and the data it holds.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_copy_deep(Array*, void *(*) (void*), Array**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Pointer to the array</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code class="prettyprint">void *(*) (void*)</code></td>
+<td>in</td>
+<td>Pointer to the copy function</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Array**</td>
+<td>out</td>
+<td>The pointer to where the copy array pointer is stored.</td>
+</tr>
+</tbody></table>
+
+<h3 id="copy-function">Copy function</h3>
+
+<p>Takes a pointer to a value and returns a pointer to a copy of that value.</p>
+
+<p><code class="prettyprint">void *cp(void*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>void*</td>
+<td>in</td>
+<td>Pointer to the element that is to be copied</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the copy was successfully created</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if the allocation for the new copy array failed.</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">The new array is allocated using the original array&rsquo;s allocators. It also inherits the configuration of the original array.</aside>
+
+<h2 id="array_reverse">array_reverse</h2>
+<pre class="highlight c"><code><span class="n">array_reverse</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+</code></pre>
+
+<p>Reverses the order of elements in the specified array.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_reverse(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array to be reversed</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="array_trim_capacity">array_trim_capacity</h2>
+<pre class="highlight c"><code><span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">array_trim_capacity</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span>
+    <span class="p">...</span>
+</code></pre>
+
+<p>Trims the array&rsquo;s capacity to match the number of elements. The capacity can never shrink below 1.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_trim_capacity(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array whose capacity is being trimmed</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the capacity was trimmed successfully</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if the allocation for the new capacity failed.</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_contains">array_contains</h2>
+<pre class="highlight c"><code><span class="kt">size_t</span> <span class="n">e</span> <span class="o">=</span> <span class="n">array_contains</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">foo</span><span class="p">);</span>
+</code></pre>
+
+<p>Returns the number of occurrences of the element within the array.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">size_t array_contains(Array *ar, void *element)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array that is being searched</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">size_t</code></p>
+
+<p>The number of matches.</p>
+
+<h2 id="array_size">array_size</h2>
+<pre class="highlight c"><code><span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">array_size</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+</code></pre>
+
+<p>Returns the size of the array. The size is the number of elements that the array holds.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">size_t array_size(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array whose size is being returned</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">size_t</code></p>
+
+<p>The number of elements.</p>
+
+<h2 id="array_capacity">array_capacity</h2>
+<pre class="highlight c"><code><span class="kt">size_t</span> <span class="n">c</span> <span class="o">=</span> <span class="n">array_capacity</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+</code></pre>
+
+<p>Returns the capacity of the array. The capacity of the array is the current size of it&rsquo;s internal buffer.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">size_t array_capacity(Array*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array whose capacity is being returned</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">size_t</code></p>
+
+<p>The capacity of the array.</p>
+
+<h2 id="array_sort">array_sort</h2>
+<pre class="highlight c"><code><span class="c1">// compare function
+</span><span class="kt">int</span> <span class="nf">mycmp</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">e1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">e2</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">MyType</span> <span class="n">el1</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">MyType</span><span class="o">**</span><span class="p">)</span> <span class="n">e1</span><span class="p">));</span>
+    <span class="n">MyType</span> <span class="n">el2</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="p">((</span><span class="n">MyType</span><span class="o">**</span><span class="p">)</span> <span class="n">e2</span><span class="p">));</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">el1</span> <span class="o">&lt;</span> <span class="n">el2</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">el1</span> <span class="o">&gt;</span> <span class="n">el2</span><span class="p">)</span> <span class="k">return</span>  <span class="mi">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">...</span>
+
+<span class="c1">// sort the array with the compare function
+</span><span class="n">array_sort</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">mycmp</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Sorts the array.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_sort(Array*, int (*) (const void*, const void*))</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array that is being sorted</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code class="prettyprint">int (*) (const void*, const void*)</code></td>
+<td>in</td>
+<td>Compare function. Returns &lt; 0 if the first element goes before the second, 0 if the elements are equal and &gt; 0 if the second elements goes before the first.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<aside class="notice"> Pointers passed to the compare function will be pointers to pointers since array elements are already pointers. This means that an extra step of dereferencing will be required before the elements can be compared</aside>
+
+<h2 id="array_map">array_map</h2>
+<pre class="highlight c"><code>
+<span class="kt">void</span> <span class="nf">fn</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="o">*</span><span class="p">((</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span> <span class="n">e</span><span class="p">)</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Adds 10 to each element
+</span><span class="n">array_map</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">fn</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Maps a function over each element of the array.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void array_map(Array*, void (*) (void*))</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>Array*</td>
+<td>in</td>
+<td>Array over which the function is mapped</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code class="prettyprint">void (*)(void*)</code></td>
+<td>in</td>
+<td>Function that is to be called on each element</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="arrayiter">ArrayIter</h2>
+<pre class="highlight c"><code><span class="c1">// Array iterator
+</span><span class="n">ArrayIter</span> <span class="n">ai</span><span class="p">;</span>
+
+<span class="c1">// Initialize the iterator
+</span><span class="n">array_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">array</span><span class="p">);</span>
+</code></pre>
+
+<p>Array iterator struct. Used to iterate over elements of the array in an ascending order. The iterator is initialized with <code class="prettyprint">array_iter_init</code> which initializes the iterator with a specific array.</p>
+
+<h2 id="array_iter_next">array_iter_next</h2>
+<pre class="highlight c"><code><span class="n">ArrayIter</span> <span class="n">ai</span><span class="p">;</span>
+<span class="n">array_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">array</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">array_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">next</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+</code></pre>
+
+<p>Advances the iterator and returns the next element in the sequence if more elements exist.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_iter_next(ArrayIter*, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>ArrayIter*</td>
+<td>in</td>
+<td>The array iterator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void**</td>
+<td>out</td>
+<td>The next element in the sequence</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if an element was returned</td>
+</tr>
+<tr>
+<td>CC_ITER_END</td>
+<td>if there are no more elements in the sequence</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_iter_remove">array_iter_remove</h2>
+<pre class="highlight c"><code><span class="n">ArrayIter</span> <span class="n">ai</span><span class="p">;</span>
+<span class="n">array_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">array</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">array_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">next</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">next</span> <span class="o">==</span> <span class="n">foo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// safely remove an element from the array and ignore the removed value
+</span>        <span class="n">array_iter_remove</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Removes the last returned element by <code class="prettyprint">array_iter_next</code> without invalidating the iterator.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_iter_remove(ArrayIter*, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>ArrayIter*</td>
+<td>in</td>
+<td>The array iterator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to where the removed element should be saved. This can be set to NULL if you wish to ignore the removed element.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if an element was removed successfully</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>if the element was out of range. This should never be returned if the iterator is used properly.</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_iter_add">array_iter_add</h2>
+<pre class="highlight c"><code><span class="n">ArrayIter</span> <span class="n">ai</span><span class="p">;</span>
+<span class="n">array_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">array</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">array_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">next</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">next</span> <span class="o">==</span> <span class="n">foo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// safely add an element
+</span>        <span class="n">array_iter_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">bar</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Adds a new element to the array  after the last returned element by <code class="prettyprint">array_iter_next</code>, without invalidating the iterator.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_iter_add(ArrayIter*, void*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>ArrayIter*</td>
+<td>in</td>
+<td>The array iterator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>The element that is being added.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if an element was added successfully</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if the memory allocation for the new element failed.</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>if the element was out of range. This should never be returned if the iterator is used properly.</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_iter_replace">array_iter_replace</h2>
+<pre class="highlight c"><code><span class="n">ArrayIter</span> <span class="n">ai</span><span class="p">;</span>
+<span class="n">array_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">array</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">array_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">next</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">next</span> <span class="o">==</span> <span class="n">foo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">array_iter_replace</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Replaces the last returned element by <code class="prettyprint">array_iter_next</code> with the specified element.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat array_iter_replace(ArrayIter*, void*, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>ArrayIter*</td>
+<td>in</td>
+<td>The array iterator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>The replacement element.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to where the replaced element should be stored. This can be set to NULL if you wish to ignore the replaced element.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if an element was replaced successfully</td>
+</tr>
+<tr>
+<td>CC_ERR_OUT_OF_RANGE</td>
+<td>if the element was out of range. This should never be returned if the iterator is used properly.</td>
+</tr>
+</tbody></table>
+
+<h2 id="array_iter_index">array_iter_index</h2>
+<pre class="highlight c"><code><span class="n">ArrayIter</span> <span class="n">ai</span><span class="p">;</span>
+<span class="n">array_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="n">array</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">array_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">next</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">array_iter_index</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ai</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Returns the index of the last returned element by <code class="prettyprint">array_iter_next</code>.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">size_t array_iter_index(ArrayIter*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>ArrayIter*</td>
+<td>in</td>
+<td>The array iterator</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">size_t</code></p>
+
+<p>The iterator index.</p>
 
       </div>
       <div class="dark-box">
