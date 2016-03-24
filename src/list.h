@@ -96,7 +96,7 @@ typedef struct list_conf_s {
 
 void          list_conf_init       (ListConf *conf);
 enum cc_stat  list_new             (List **list);
-enum cc_stat  list_new_conf        (const ListConf const* conf, List **list);
+enum cc_stat  list_new_conf        (ListConf const * const conf, List **list);
 bool          list_destroy         (List *list);
 bool          list_destroy_free    (List *list);
 

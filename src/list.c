@@ -82,7 +82,7 @@ enum cc_stat list_new(List **out)
  *
  * @return a new list if the allocation was successful, or NULL if not.
  */
-enum cc_stat list_new_conf(const ListConf const* conf, List **out)
+enum cc_stat list_new_conf(ListConf const * const conf, List **out)
 {
     List *list = conf->mem_calloc(1, sizeof(List));
 

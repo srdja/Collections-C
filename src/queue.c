@@ -60,7 +60,7 @@ enum cc_stat queue_new(Queue **queue)
  *
  * @return a new queue if the allocation was successful, or NULL.
  */
-enum cc_stat queue_new_conf(const QueueConf const* conf, Queue **q)
+enum cc_stat queue_new_conf(QueueConf const * const conf, Queue **q)
 {
     Queue *queue = conf->mem_calloc(1, sizeof(Queue));
 

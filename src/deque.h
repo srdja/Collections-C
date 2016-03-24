@@ -73,7 +73,7 @@ typedef struct deque_iter_s {
 } DequeIter;
 
 enum cc_stat  deque_new             (Deque **deque);
-enum cc_stat  deque_new_conf        (const DequeConf const* conf, Deque **deque);
+enum cc_stat  deque_new_conf        (DequeConf const * const conf, Deque **deque);
 void          deque_conf_init       (DequeConf *conf);
 
 void          deque_destroy         (Deque *deque);

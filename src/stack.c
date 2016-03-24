@@ -61,7 +61,7 @@ enum cc_stat stack_new(Stack **out)
  *
  * @return a new empty stack, or NULL if the allocation fails
  */
-enum cc_stat stack_new_conf(const StackConf const* conf, Stack **out)
+enum cc_stat stack_new_conf(StackConf const * const conf, Stack **out)
 {
     Stack *stack = conf->mem_calloc(1, sizeof(Stack));
 

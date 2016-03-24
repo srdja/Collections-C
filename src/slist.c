@@ -73,7 +73,7 @@ enum cc_stat slist_new(SList **out)
  *
  * @return a new SList if the allocation was successful, or NULL if not.
  */
-enum cc_stat slist_new_conf(const SListConf const* conf, SList **out)
+enum cc_stat slist_new_conf(SListConf const * const conf, SList **out)
 {
     SList *list = conf->mem_calloc(1, sizeof(SList));
 

@@ -62,7 +62,7 @@ enum cc_stat hashset_new(HashSet **hs)
  *
  * @return a new empty HashSet
  */
-enum cc_stat hashset_new_conf(const HashSetConf const* conf, HashSet **hs)
+enum cc_stat hashset_new_conf(HashSetConf const * const conf, HashSet **hs)
 {
     HashSet *set = conf->mem_calloc(1, sizeof(HashSet));
 

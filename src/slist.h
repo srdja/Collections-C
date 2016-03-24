@@ -85,7 +85,7 @@ typedef struct slist_conf_s {
 
 void          slist_conf_init       (SListConf *conf);
 enum cc_stat  slist_new             (SList **list);
-enum cc_stat  slist_new_conf        (const SListConf const* conf, SList **list);
+enum cc_stat  slist_new_conf        (SListConf const * const conf, SList **list);
 bool          slist_destroy         (SList *list);
 bool          slist_destroy_free    (SList *list);
 

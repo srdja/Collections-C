@@ -62,7 +62,7 @@ enum cc_stat deque_new(Deque **deque)
  *
  * @return a new deque if the allocation was successful, or NULL if not.
  */
-enum cc_stat deque_new_conf(const DequeConf const* conf, Deque **d)
+enum cc_stat deque_new_conf(DequeConf const * const conf, Deque **d)
 {
     Deque *deque = conf->mem_calloc(1, sizeof(Deque));
 
