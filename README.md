@@ -123,6 +123,6 @@ gcc hello.c -I/path/to/library/include/ -static -L/path/to/library/lib/ -lcollec
 
 ## Contributors
 
-Contributions are very much welcome.
+All contributions are welcome.
 
-Main work is done on the [development](https://github.com/srdja/Collections-C/tree/development) branch
+See [CONTRIBUTING.md](https://github.com/srdja/Collections-C/blob/master/CONTRIBUTING.md) for details.
