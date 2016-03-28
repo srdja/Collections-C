@@ -116,7 +116,7 @@ void array_conf_init(ArrayConf *conf)
 }
 
 /**
- * Destroys the array structure, but leaves the data it used to hold, enum cc_statact.
+ * Destroys the array structure, but leaves the data it used to hold intact.
  *
  * @param[in] ar the Array that is to be destroyed.
  */
