@@ -788,8 +788,10 @@ enum cc_stat slist_sublist(SList *list, size_t from, size_t to, SList **out)
 
     status = get_node_at(list, from, &node, &base);
 
-    if (status != CC_OK)
+    if (status != CC_OK) {
+        slist_destroy(sub);
         return status;
+    }
 
     size_t i;
     for (i = from; i <= to; i++) {
