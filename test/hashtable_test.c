@@ -370,10 +370,8 @@ void test_hashtable_iter_next()
     HashTableIter iter;
     hashtable_iter_init(&iter, t);
 
-    while (hashtable_iter_has_next(&iter)) {
-        TableEntry *entry;
-        hashtable_iter_next(&iter, &entry);
-
+    TableEntry *entry;
+    while (hashtable_iter_next(&iter, &entry) != CC_ITER_END) {
         char const *key = entry->key;
 
         if (!strcmp(key, "one"))
@@ -420,11 +418,9 @@ void test_hashtable_iter_remove()
     HashTableIter iter;
     hashtable_iter_init(&iter, t);
 
-    while (hashtable_iter_has_next(&iter)) {
-        TableEntry *entry;
-        hashtable_iter_next(&iter, &entry);
-
-        char const *key   = entry->key;
+    TableEntry *entry;
+    while (hashtable_iter_next(&iter, &entry) != CC_ITER_END) {
+        char const *key = entry->key;
 
         if (!strcmp(key, "bar"))
             hashtable_iter_remove(&iter, NULL);
