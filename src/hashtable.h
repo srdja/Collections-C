@@ -178,8 +178,7 @@ void          hashtable_foreach_key     (HashTable *table, void (*op) (const voi
 void          hashtable_foreach_value   (HashTable *table, void (*op) (void *));
 
 void          hashtable_iter_init       (HashTableIter *iter, HashTable *table);
-bool          hashtable_iter_has_next   (HashTableIter *iter);
-void          hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
+enum cc_stat  hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
 enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 
 #define CMP_STRING   hashtable_string_key_cmp

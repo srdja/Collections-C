@@ -203,29 +203,24 @@ void hashset_iter_init(HashSetIter *iter, HashSet *set)
 }
 
 /**
- * Checks whether or not there are more set elements to iterate over.
- *
- * @param[in] iter iterator on which this operation is being performed
- *
- * @return true if the iterator has not reached the end of the set
- */
-bool hashset_iter_has_next(HashSetIter *iter)
-{
-    return hashtable_iter_has_next(&(iter->iter));
-}
-
-/**
  * Returns the next element in the sequence and advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  *
  * @return the next element in the sequence
  */
-const void *hashset_iter_next(HashSetIter *iter)
+enum cc_stat hashset_iter_next(HashSetIter *iter, void **out)
 {
     TableEntry *entry;
-    hashtable_iter_next(&(iter->iter), &entry);
-    return entry->key;
+    enum cc_stat status = hashtable_iter_next(&(iter->iter), &entry);
+
+    if (status != CC_OK)
+        return status;
+
+    if (out)
+        *out = entry->key;
+
+    return CC_OK;
 }
 
 /**

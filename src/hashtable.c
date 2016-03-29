@@ -810,30 +810,22 @@ void hashtable_iter_init(HashTableIter *iter, HashTable *table)
 }
 
 /**
- * Checks whether or not the iterator has a next entry iterate over.
- *
- * @return true if the next entry exists or false if the iterator has reached
- * the end of the table.
- */
-bool hashtable_iter_has_next(HashTableIter *iter)
-{
-    return iter->next_entry != NULL ? true : false;
-}
-
-/**
  * Advances the iterator and returns a table entry.
  *
  * @param[in] iter the iterator that is being advanced
  */
-void hashtable_iter_next(HashTableIter *iter, TableEntry **te)
+enum cc_stat hashtable_iter_next(HashTableIter *iter, TableEntry **te)
 {
+    if (!iter->next_entry)
+        return CC_ITER_END;
+
     iter->prev_entry = iter->next_entry;
     iter->next_entry = iter->next_entry->next;
 
     /* Iterate through the list */
     if (iter->next_entry) {
         *te = iter->prev_entry;
-        return;
+        return CC_OK;
     }
 
     /* Find the next list and return the first element*/
@@ -848,6 +840,8 @@ void hashtable_iter_next(HashTableIter *iter, TableEntry **te)
     }
     if (te)
         *te = iter->prev_entry;
+
+    return CC_OK;
 }
 
 /**
