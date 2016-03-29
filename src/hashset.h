@@ -70,8 +70,7 @@ size_t        hashset_capacity      (HashSet *set);
 void          hashset_foreach       (HashSet *set, void (*op) (const void*));
 
 void          hashset_iter_init     (HashSetIter *iter, HashSet *set);
-bool          hashset_iter_has_next (HashSetIter *iter);
-const void   *hashset_iter_next     (HashSetIter *iter);
+enum cc_stat  hashset_iter_next     (HashSetIter *iter, void **out);
 enum cc_stat  hashset_iter_remove   (HashSetIter *iter, void **out);
 
 #endif /* HASHSET_H_ */
