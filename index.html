@@ -341,7 +341,7 @@
 <tr>
 <td>1</td>
 <td>Array*</td>
-<td>int</td>
+<td>in</td>
 <td>Pointer to an array that is to be destroyed</td>
 </tr>
 </tbody></table>
@@ -404,7 +404,7 @@
 
 </code></pre>
 
-<p>Adding elements to an array can be done via <code class="prettyprint">array_add</code>. Which appends the new element to the end of the Array, making it the element with the highest index. This function returns a status code to indicate success or failure.</p>
+<p>Adding elements to an array can be done via <code class="prettyprint">array_add</code> which appends the new element to the end of the Array, making it the element with the highest index. This function returns a status code to indicate success or failure.</p>
 
 <h3 id="function">Function</h3>
 
@@ -422,7 +422,7 @@
 <td>1</td>
 <td>Array*</td>
 <td>in</td>
-<td>Pointer to an array that is to be destroyed</td>
+<td>Pointer to an array to which the element is being added</td>
 </tr>
 <tr>
 <td>2</td>
@@ -1847,6 +1847,838 @@ if the array is not empty.</p>
 <p><code class="prettyprint">size_t</code></p>
 
 <p>The iterator index.</p>
+
+          <h1 id="hashtable">HashTable</h1>
+
+<h2 id="hashtable_new">hashtable_new</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="c1">// Create a new string key table
+</span><span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">status</span> <span class="o">=</span> <span class="n">hashtable_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">table</span><span class="p">);</span>
+
+<span class="c1">// Check if the HashTable was initialized correctly
+</span><span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">CC_ERR_ALLOC</span><span class="p">)</span>
+    <span class="p">...</span>
+</code></pre>
+
+<p>New hash tables can be created with <code class="prettyprint">hashtable_new</code>. This will create a new empty hash table with default parameters. Hash tables created this way will work with <strong>string keys</strong>.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat hashtable_new(HashTable**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable**</td>
+<td>out</td>
+<td>Pointer to a HashTable that is being initialized</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the HashTable was successfully initialized</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation failed</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtableconf">HashTableConf</h2>
+
+<blockquote>
+<p>Configuring a new HashTable to use pointer values as keys</p>
+</blockquote>
+<pre class="highlight c"><code><span class="n">HashTableConf</span> <span class="n">htc</span><span class="p">;</span>
+
+<span class="c1">// Initialize all fields to default values
+</span><span class="n">hashtable_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">);</span>
+
+<span class="c1">// Configure the HashTable to work with pointer keys
+</span><span class="n">htc</span><span class="p">.</span><span class="n">hash</span>        <span class="o">=</span> <span class="n">POINTER_HASH</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_length</span>  <span class="o">=</span> <span class="n">KEY_LENGTH_POINTER</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_compare</span> <span class="o">=</span> <span class="n">CMP_POINTER</span><span class="p">;</span>
+
+<span class="c1">// Create a new HashTable with pointer keys
+</span><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">hashtable_new_conf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">table</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="c1">// use the pointer value itself as a key
+</span><span class="n">hashtable_add</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="mi">42</span><span class="p">,</span> <span class="s">"answertolifeuniverseandeverything"</span><span class="p">)</span>
+</code></pre>
+
+<blockquote>
+<p>Configuring a new HashTable to use values at pointers as keys</p>
+</blockquote>
+<pre class="highlight c"><code>
+<span class="k">struct</span> <span class="n">foo</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">bool</span> <span class="nf">foo_compare</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">f1</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">f2</span><span class="p">)</span> <span class="p">{...}</span>
+
+<span class="p">...</span>
+
+<span class="n">HashTableConf</span> <span class="n">htc</span><span class="p">;</span>
+
+<span class="c1">// Initialize all fields to default values
+</span><span class="n">hashtable_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">);</span>
+
+<span class="c1">// Configure the HashTable to work with values
+</span><span class="n">htc</span><span class="p">.</span><span class="n">hash</span>        <span class="o">=</span> <span class="n">GENERAL_HASH</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_length</span>  <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">foo</span><span class="p">);</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_compare</span> <span class="o">=</span> <span class="n">foo_compare</span><span class="p">;</span>
+
+<span class="c1">// Create a new HashTable with `struct foo` keys
+</span><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">hashtable_new_conf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">table</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">foo</span> <span class="n">f1</span> <span class="o">=</span> <span class="p">...;</span>
+<span class="k">struct</span> <span class="n">foo</span> <span class="n">f2</span> <span class="o">=</span> <span class="p">...;</span>
+
+<span class="c1">// use `struct foo` values as keys
+</span><span class="n">hashtable_add</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">f1</span><span class="p">,</span> <span class="s">"somevalue"</span><span class="p">);</span>
+<span class="n">hashtable_add</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">f2</span><span class="p">,</span> <span class="s">"someothervalue"</span><span class="p">);</span>
+
+</code></pre>
+
+<blockquote>
+<p>Configuring a new HashTable to use string keys (this has the same effect as creating the table with &lsquo;hasthable_new()&rsquo;)</p>
+</blockquote>
+<pre class="highlight c"><code><span class="n">HashTableConf</span> <span class="n">htc</span><span class="p">;</span>
+
+<span class="c1">// Initialize all fields to default values
+</span><span class="n">hashtable_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">);</span>
+
+<span class="c1">// Configure the HashTable to work with string keys
+</span><span class="n">htc</span><span class="p">.</span><span class="n">hash</span>        <span class="o">=</span> <span class="n">STRING_HASH</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_length</span>  <span class="o">=</span> <span class="n">KEY_LENGTH_VARIABLE</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_compare</span> <span class="o">=</span> <span class="n">CMP_STRING</span><span class="p">;</span>
+
+<span class="c1">// Create a new HashTable with string keys
+</span><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">hashtable_new_conf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">table</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="n">hashtale_add</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+
+</code></pre>
+
+<p>HashTableConf struct lets you pass additional parameters when creating a new HashTable.</p>
+
+<h3 id="struct">Struct</h3>
+
+<p><code class="prettyprint">HashTableConf</code></p>
+
+<table><thead>
+<tr>
+<th>field</th>
+<th>type</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>load_factor</td>
+<td>float</td>
+<td>Load factor determines when the underlying table buffer grows. For example if the load factor is 0.5 and the internal buffer capacity is 100, the resize will be triggered once the 50Th entry is added.</td>
+</tr>
+<tr>
+<td>initial_capacity</td>
+<td>size_t</td>
+<td>The initial capacity of the table (rounded to power of two)</td>
+</tr>
+<tr>
+<td>key_length</td>
+<td>int</td>
+<td>The length of the key. This should be set to -1 if the keys are of variable length.</td>
+</tr>
+<tr>
+<td>hash_seed</td>
+<td>uint32_t</td>
+<td>Hash function seed</td>
+</tr>
+<tr>
+<td>hash</td>
+<td><code class="prettyprint">size_t (*) (const void *, int, uint32_t)</code></td>
+<td>The hash function which takes an <code class="prettyprint">const void*</code> key,<code class="prettyprint">int</code> key length and a <code class="prettyprint">uint32_t</code> seed and returns a hash of <code class="prettyprint">size_t</code> size.</td>
+</tr>
+<tr>
+<td>key_compare</td>
+<td><code class="prettyprint">bool (*) (void*, void*)</code></td>
+<td>key comparator function which returns true if the keys are identical</td>
+</tr>
+<tr>
+<td>mem_alloc</td>
+<td>void <em>(</em>) (size_t)</td>
+<td>Pointer to a user specified &ldquo;malloc&rdquo;</td>
+</tr>
+<tr>
+<td>mem_calloc</td>
+<td>void*(*) (size_t, size_t)</td>
+<td>Pointer to a user specified &ldquo;calloc&rdquo;</td>
+</tr>
+<tr>
+<td>mem_free</td>
+<td>void (<em>) (void</em>)</td>
+<td>Pointer to a user specified &ldquo;free&rdquo;</td>
+</tr>
+</tbody></table>
+
+<h3 id="definitions-in-hashtable-h">Definitions in hashtable.h</h3>
+
+<p>Hash functions:</p>
+
+<table><thead>
+<tr>
+<th>definition</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>STRING_HASH</td>
+<td>String hash function</td>
+</tr>
+<tr>
+<td>GENERAL_HASH</td>
+<td>General hash function that hashes the data at the pointer.</td>
+</tr>
+<tr>
+<td>POINTER_HASH</td>
+<td>Hash function which hashes the pointer itself.</td>
+</tr>
+<tr>
+<td>KEY_LENGTH_VARIABLE</td>
+<td>Variable key length (used with string keys)</td>
+</tr>
+</tbody></table>
+
+<aside class="warning"> Make sure that all fields are initialized before passing it to <b>hashtable_new_conf()</b> either by manually setting each field or by initializing the struct with <b>hashtable_conf_init()</b>. </aside>
+
+<h2 id="hashtable_new_conf">hashtable_new_conf</h2>
+<pre class="highlight c"><code><span class="n">HashTableConf</span> <span class="n">htc</span><span class="p">;</span>
+
+<span class="c1">// Initialize all fields to default values
+</span><span class="n">hashtable_conf_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">);</span>
+
+<span class="c1">// Configure the HashTable to work with pointer keys
+</span><span class="n">htc</span><span class="p">.</span><span class="n">hash</span>        <span class="o">=</span> <span class="n">POINTER_HASH</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_length</span>  <span class="o">=</span> <span class="n">KEY_LENGTH_POINTER</span><span class="p">;</span>
+<span class="n">htc</span><span class="p">.</span><span class="n">key_compare</span> <span class="o">=</span> <span class="n">CMP_POINTER</span><span class="p">;</span>
+
+<span class="c1">// Create a new HashTable with pointer keys
+</span><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">hashtable_new_conf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">htc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">table</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>HashTables can be created with additional parameters by calling <code class="prettyprint">hashtable_new_conf</code> instead of <code class="prettyprint">hashtable_new</code>. The <code class="prettyprint">hashtable_new_conf</code> function takes a pointer to a <code class="prettyprint">HashTableConf</code> struct and a pointer to a pointer to a HashTable structure. <code class="prettyprint">hashtable_new_conf</code> returns a status code to indicate success or failure.</p>
+
+<p>The HashTable is allocated using the allocators passed in by <code class="prettyprint">HashTableConf</code>. These allocators are used for all future operations on this table structure.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat hashtable_new_conf(HashTableConf*, HashTable**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>const HashTableConf const*</td>
+<td>in</td>
+<td>Pointer to a config struct</td>
+</tr>
+<tr>
+<td>2</td>
+<td>HashTable**</td>
+<td>out</td>
+<td>Pointer to an table that is being initialized</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the table was successfully initialized</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation failed</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_destroy">hashtable_destroy</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">s</span> <span class="o">=</span> <span class="n">hashtable_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">table</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="n">hashtable_destroy</span><span class="p">(</span><span class="n">table</span><span class="p">);</span>
+</code></pre>
+
+<p>Destroys the HashTable structure.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void hashtable_destroy(HashTable*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to a table that is to be destroyed</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="hashtable_add">hashtable_add</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">hashtable_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">table</span><span class="p">);</span>
+
+<span class="p">...</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">hashtable_add</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// something bad happened
+</span>    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Adding new key-value mappings to a HashTable can be done via <code class="prettyprint">hashtable_add</code>. If the key is already mapped to a value in the table, that value is replaced with the new value.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat hashtable_add(HashTable*, void*, void*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to a table that is to be destroyed</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Pointer to a key, or a NULL key</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void*</td>
+<td>in</td>
+<td>Pointer to a value</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the mapping was successfully added to the table</td>
+</tr>
+<tr>
+<td>CC_ERR_ALLOC</td>
+<td>if memory allocation for the new mapping failed</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_get">hashtable_get</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="c1">// Retrieve the value mapped to key "foo"
+</span><span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">hashtable_get</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_OK</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// something went wrong
+</span>    <span class="p">...</span>
+<span class="p">}</span>
+
+</code></pre>
+
+<p>Gets a value associated with the specified key. If there is not value associated with the key, <code class="prettyprint">CC_ERR_KEY_NOT_FOUND</code> is returned and the output is not set.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat hashtable_get(HashTable*, void*, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to the table</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Table key</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to a <code class="prettyprint">void*</code> to which the value is saved</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if the value was successfully retrieved</td>
+</tr>
+<tr>
+<td>CC_ERR_KEY_NOT_FOUND</td>
+<td>If the key doesn&rsquo;t exist</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_remove">hashtable_remove</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="n">removed</span><span class="p">;</span>
+<span class="k">enum</span> <span class="n">cc_stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">hashtable_remove</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">removed</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Removes a key-value mapping from the specified table. In case the key doesn&rsquo;t exist, <code class="prettyprint">CC_ERR_KEY_NOT_FOUND</code> is returned.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_stat hashtable_remove(HashTable*, void*, void**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to the table</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>Key</td>
+</tr>
+<tr>
+<td>3</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to an output variable where the removed value should be saved. This can be set to NULL if you wish to ignore the removed value.</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_remove_all">hashtable_remove_all</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="c1">// clears the table
+</span><span class="n">hashtable_remove_all</span><span class="p">(</span><span class="n">table</span><span class="p">);</span>
+</code></pre>
+
+<p>Removes all key-value mappings from the table</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">void hashtable_remove_all(HashTable*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to the table</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">void</code></p>
+
+<h2 id="hashtable_contains_key">hashtable_contains_key</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="c1">// check if the table contains the key "foo"
+</span><span class="k">if</span> <span class="p">(</span><span class="n">hashtable_contains_key</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s">"foo"</span><span class="p">))</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Checks whether or not the table contains the specified key</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">bool hashtable_contains_key(HashTable*, void*)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to the table</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void*</td>
+<td>in</td>
+<td>key that is being looked up</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">bool</code></p>
+
+<table><thead>
+<tr>
+<th>value</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>true</td>
+<td>if the key exists</td>
+</tr>
+<tr>
+<td>false</td>
+<td>if the key doesn&rsquo;t exist</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_size">hashtable_size</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="c1">// get the number of key-value mappings in the table
+</span><span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">hashtable_size</span><span class="p">(</span><span class="n">table</span><span class="p">);</span>
+
+</code></pre>
+
+<p>Returns the number of key-value mapping in the table.</p>
+
+<h3 id="function">Function</h3>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to the table</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">size_t</code></p>
+
+<h2 id="hashtable_capacity">hashtable_capacity</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="kt">size_t</span> <span class="n">capacity</span> <span class="o">=</span> <span class="n">hashtable_capacity</span><span class="p">(</span><span class="n">table</span><span class="p">);</span>
+</code></pre>
+
+<p>Returns the current capacity of the table. The capacity represents the size of the internal table buffer.</p>
+
+<h3 id="function">Function</h3>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTable*</td>
+<td>in</td>
+<td>Pointer to the table</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">size_t</code></p>
+
+<h2 id="hashtableiter">HashTableIter</h2>
+<pre class="highlight c"><code><span class="n">HashTableIter</span> <span class="n">hti</span><span class="p">;</span>
+
+<span class="c1">// Initialize the iterator
+</span><span class="n">hashtable_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hti</span><span class="p">);</span>
+</code></pre>
+
+<p>HashTable iterator struct used to iterate over table entries. The iterator is initalized with <code class="prettyprint">array_iter_init</code>.</p>
+
+<h2 id="tableentry">TableEntry</h2>
+
+<h3 id="struct">Struct</h3>
+
+<table><thead>
+<tr>
+<th>field</th>
+<th>type</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>key</td>
+<td>void*</td>
+<td>Table key</td>
+</tr>
+<tr>
+<td>value</td>
+<td>void*</td>
+<td>Value mapped to the key</td>
+</tr>
+<tr>
+<td>hash</td>
+<td>size_t</td>
+<td>Hash of the key</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_iter_next">hashtable_iter_next</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="n">HashTableIter</span> <span class="n">hti</span><span class="p">;</span>
+<span class="n">hashtable_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hti</span><span class="p">,</span> <span class="n">table</span><span class="p">);</span>
+
+<span class="n">TableEntry</span> <span class="o">*</span><span class="n">entry</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">array_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hti</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">entry</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Advances the iterator and gets the next entry if it exists.</p>
+
+<h3 id="function">Function</h3>
+
+<p><code class="prettyprint">enum cc_enum hashtable_iter_next(HashTableIter*, TableEntry**)</code></p>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTableIter*</td>
+<td>in</td>
+<td>The table iterator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>TableEntry**</td>
+<td>out</td>
+<td>Pointer to where the next entry is set</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<p><code class="prettyprint">enum cc_stat</code></p>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if an entry was returned</td>
+</tr>
+<tr>
+<td>CC_ITER_END</td>
+<td>if there are no more entries</td>
+</tr>
+</tbody></table>
+
+<h2 id="hashtable_iter_remove">hashtable_iter_remove</h2>
+<pre class="highlight c"><code><span class="n">HashTable</span> <span class="o">*</span><span class="n">table</span>
+
+<span class="p">...</span>
+
+<span class="n">HashTableIter</span> <span class="n">hti</span><span class="p">;</span>
+<span class="n">hashtable_iter_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hti</span><span class="p">,</span> <span class="n">table</span><span class="p">);</span>
+
+<span class="n">TableEntry</span> <span class="o">*</span><span class="n">entry</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">hashtable_iter_next</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hti</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">entry</span><span class="p">)</span> <span class="o">!=</span> <span class="n">CC_ITER_END</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">==</span> <span class="n">foo</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// safely remove an entry from the table and ignore the removed value
+</span>        <span class="n">hashtable_iter_remove</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hti</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>Removes the last returned entry by <code class="prettyprint">hashtable_iter_next</code> without invalidating the iterator.</p>
+
+<h3 id="function">Function</h3>
+
+<table><thead>
+<tr>
+<th>param</th>
+<th>type</th>
+<th>in/out</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>1</td>
+<td>HashTableIter*</td>
+<td>in</td>
+<td>The table iterator</td>
+</tr>
+<tr>
+<td>2</td>
+<td>void**</td>
+<td>out</td>
+<td>Pointer to where the removed value should be saved. This can be set to NULL if you wish to ignore the removed value.</td>
+</tr>
+</tbody></table>
+
+<h3 id="return">Return</h3>
+
+<table><thead>
+<tr>
+<th>code</th>
+<th>description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>CC_OK</td>
+<td>if an value was removed successfully</td>
+</tr>
+<tr>
+<td>CC_ERR_KEY_NOT_FOUND</td>
+<td>if the key was not found. This should never be returned if the iterator is used properly.</td>
+</tr>
+</tbody></table>
 
       </div>
       <div class="dark-box">
