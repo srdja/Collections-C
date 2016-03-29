@@ -155,9 +155,8 @@ void test_hashset_iter_next()
     HashSetIter iter;
     hashset_iter_init(&iter, hs);
 
-    while (hashset_iter_has_next(&iter)) {
-        char const *e = hashset_iter_next(&iter);
-
+    char *e;
+    while (hashset_iter_next(&iter, (void*)&e) != CC_ITER_END) {
         if (!strcmp(e, "foo"))
             x++;
 
@@ -191,9 +190,8 @@ void test_hashset_iter_remove()
     HashSetIter iter;
     hashset_iter_init(&iter, hs);
 
-    while (hashset_iter_has_next(&iter)) {
-        char const *e = hashset_iter_next(&iter);
-
+    char *e;
+    while (hashset_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (!strcmp(e, "bar"))
             hashset_iter_remove(&iter, NULL);
     }
