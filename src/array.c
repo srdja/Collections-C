@@ -728,12 +728,15 @@ void array_map(Array *ar, void (*fn) (void *e))
  */
 void array_reduce(Array *ar, void (*fn) (void *, void *, void *), void *result)
 {
+	if(ar->size == 1)
+		result = ar->buffer[0];
+
 	if(ar->size >= 2)
 		fn(ar->buffer[0],ar->buffer[1],result);
 	
 	size_t i;
 	for (i = 2; i < ar->size; i++)
-		fn(reult,ar->buffer[i],result);
+		fn(result,ar->buffer[i],result);
 }
 
 /**
