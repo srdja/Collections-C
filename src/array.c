@@ -717,6 +717,26 @@ void array_map(Array *ar, void (*fn) (void *e))
 }
 
 /**
+ * A fold/reduce function that collects all of the elements in the array
+ * together. For example, if we have an array of [a,b,c...] the end result
+ * will be (...((a+b)+c)+...).
+ *
+ * @param[in] ar the array on which this operation is performed
+ * @param[in] fn the operation function that is to be invoked on each array
+ *               element
+ * @param[in] result the pointer which will collect the end result
+ */
+void array_reduce(Array *ar, void (*fn) (void *, void *, void *), void *result)
+{
+	if(ar->size >= 2)
+		fn(ar->buffer[0],ar->buffer[1],result);
+	
+	size_t i;
+	for (i = 2; i < ar->size; i++)
+		fn(reult,ar->buffer[i],result);
+}
+
+/**
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized
