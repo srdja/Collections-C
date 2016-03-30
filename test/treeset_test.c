@@ -159,9 +159,7 @@ void test_treeset_iter_next()
     treeset_iter_init(&iter, t);
 
     void *e;
-    while (treeset_iter_has_next(&iter)) {
-        treeset_iter_next(&iter, &e);
-
+    while (treeset_iter_next(&iter, &e) != CC_ITER_END) {
         if (*((int*)e) == a)
             one++;
 
@@ -202,9 +200,7 @@ void test_treeset_iter_remove()
     treeset_iter_init(&iter, t);
 
     void *e;
-    while (treeset_iter_has_next(&iter)) {
-        treeset_iter_next(&iter, &e);
-
+    while (treeset_iter_next(&iter, &e) != CC_ITER_END) {
         if (*((int*)e) == b)
             treeset_iter_remove(&iter);
     }

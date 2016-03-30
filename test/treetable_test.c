@@ -381,9 +381,7 @@ void test_treetable_iter_next()
     treetable_iter_init(&iter, t);
 
     TreeTableEntry entry;
-    while (treetable_iter_has_next(&iter)) {
-        treetable_iter_next(&iter, &entry);
-
+    while (treetable_iter_next(&iter, &entry) != CC_ITER_END) {
         int const *key = entry.key;
 
         if (*key == a)
@@ -426,8 +424,7 @@ void test_treetable_iter_remove()
     treetable_iter_init(&iter, t);
 
     TreeTableEntry entry;
-    while (treetable_iter_has_next(&iter)) {
-        treetable_iter_next(&iter, &entry);
+    while (treetable_iter_next(&iter, &entry) != CC_ITER_END) {
         int const *key = entry.key;
 
         if (*key == b)
