@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SLIST_H_
-#define SLIST_H_
+#ifndef __COLLECTIONS_C__SLIST_H__
+#define __COLLECTIONS_C__SLIST_H__
 
 #include "common.h"
 
@@ -134,4 +134,4 @@ enum cc_stat  slist_iter_replace    (SListIter *iter, void *element, void **out)
 enum cc_stat  slist_iter_next       (SListIter *iter, void **out);
 size_t        slist_iter_index      (SListIter *iter);
 
-#endif /* SLIST_H_ */
+#endif /* __COLLECTIONS_C__SLIST_H__ */

@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMON_H_
-#define COMMON_H_
+#ifndef __COLLECTIONS_C__COMMON_H_
+#define __COLLECTIONS_C__COMMON_H_
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -62,4 +62,4 @@ enum cc_stat {
 #endif /* _MSC_VER */
 
 
-#endif /* COMMON_H_ */
+#endif /* __COLLECTIONS_C__COMMON_H_ */
