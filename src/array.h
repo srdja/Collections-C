@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ARRAY_H_
-#define ARRAY_H_
+#ifndef COLLECTIONS_C__ARRAY_H
+#define COLLECTIONS_C__ARRAY_H
 
 #include "common.h"
 
@@ -129,4 +129,4 @@ size_t        array_iter_index      (ArrayIter *iter);
 
 const void* const* array_get_buffer(Array *ar);
 
-#endif /* ARRAY_H_ */
+#endif /* COLLECTIONS_C__ARRAY_H */

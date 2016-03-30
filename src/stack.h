@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STACK_H_
-#define STACK_H_
+#ifndef COLLECTIONS_C__STACK_H
+#define COLLECTIONS_C__STACK_H
 
 #include "common.h"
 #include "array.h"
@@ -48,4 +48,4 @@ enum cc_stat  stack_pop         (Stack *stack, void **out);
 size_t        stack_size        (Stack *stack);
 void          stack_map         (Stack *stack, void (*fn) (void *));
 
-#endif /* STACK_H_ */
+#endif /* COLLECTIONS_C__STACK_H */

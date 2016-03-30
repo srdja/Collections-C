@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TREESET_H
-#define TREESET_H
+#ifndef COLLECTIONS_C__TREESET_H
+#define COLLECTIONS_C__TREESET_H
 
 #include "common.h"
 #include "treetable.h"
@@ -81,4 +81,4 @@ void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
 void          treeset_iter_next        (TreeSetIter *iter, void **element);
 void          treeset_iter_remove      (TreeSetIter *iter);
 
-#endif
+#endif /* COLLECTIONS_C__TREESET_H */

@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HASHSET_H_
-#define HASHSET_H_
+#ifndef COLLECTIONS_C__HASHSET_H
+#define COLLECTIONS_C__HASHSET_H
 
 #include "common.h"
 #include "hashtable.h"
@@ -73,4 +73,4 @@ void          hashset_iter_init     (HashSetIter *iter, HashSet *set);
 enum cc_stat  hashset_iter_next     (HashSetIter *iter, void **out);
 enum cc_stat  hashset_iter_remove   (HashSetIter *iter, void **out);
 
-#endif /* HASHSET_H_ */
+#endif /* COLLECTIONS_C__HASHSET_H */

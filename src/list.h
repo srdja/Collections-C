@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIST_H_
-#define LIST_H_
+#ifndef COLLECTIONS_C__LIST_H
+#define COLLECTIONS_C__LIST_H
 
 #include "common.h"
 
@@ -153,4 +153,4 @@ enum cc_stat  list_diter_replace   (ListIter *iter, void *element, void **out);
 size_t        list_diter_index     (ListIter *iter);
 enum cc_stat  list_diter_next      (ListIter *iter, void **out);
 
-#endif /* LIST_H_ */
+#endif /* COLLECTIONS_C__LIST_H */
