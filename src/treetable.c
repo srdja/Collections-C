@@ -836,30 +836,24 @@ void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
 }
 
 /**
- * Checks whether or not the iterator has a next entry iterate over.
- *
- * @return true if the next entry exists or false if the iterator has reached
- * the end of the table.
- */
-bool treetable_iter_has_next(TreeTableIter *iter)
-{
-    return iter->next != iter->table->sentinel ? true : false;
-}
-
-/**
  * Advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  * @param[in, out] entry the next entry
  */
-void treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
+enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
 {
+    if (iter->next == iter->table->sentinel)
+        return CC_ITER_END;
+
     if (entry) {
         entry->value  = iter->next->value;
         entry->key    = iter->next->key;
     }
     iter->current = iter->next;
     iter->next    = get_successor_node(iter->table, iter->current);
+
+    return CC_OK;
 }
 
 /**

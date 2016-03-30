@@ -143,8 +143,7 @@ void          treetable_foreach_key      (TreeTable *table, void (*op) (const vo
 void          treetable_foreach_value    (TreeTable *table, void (*op) (void*));
 
 void          treetable_iter_init        (TreeTableIter *iter, TreeTable *table);
-bool          treetable_iter_has_next    (TreeTableIter *iter);
-void          treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
+enum cc_stat  treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
 void          treetable_iter_remove      (TreeTableIter *iter);
 
 #ifdef DEBUG

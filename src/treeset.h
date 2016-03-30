@@ -78,7 +78,7 @@ size_t        treeset_size             (TreeSet *set);
 void          treeset_foreach          (TreeSet *set, void (*op) (const void*));
 
 void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
-void          treeset_iter_next        (TreeSetIter *iter, void **element);
+enum cc_stat  treeset_iter_next        (TreeSetIter *iter, void **element);
 void          treeset_iter_remove      (TreeSetIter *iter);
 
 #endif /* COLLECTIONS_C__TREESET_H */

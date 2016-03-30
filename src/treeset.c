@@ -239,28 +239,20 @@ void treeset_iter_init(TreeSetIter *iter, TreeSet *set)
 }
 
 /**
- * Checks whether or not there are more set elements to iterate over.
- *
- * @param[in] iter iterator on which this operation is being performed
- *
- * @return true if the iterator has not reached the end of the set
- */
-bool treeset_iter_has_next(TreeSetIter *iter)
-{
-    return treetable_iter_has_next(&(iter->i));
-}
-
-/**
  * Returns the next element in the sequence and advances the iterator.
  *
  * @param[in] iter the iterator that is being advanced
  * @param[out] element the next element returned by this function
  */
-void treeset_iter_next(TreeSetIter *iter, void **element)
+enum cc_stat treeset_iter_next(TreeSetIter *iter, void **element)
 {
     TreeTableEntry entry;
-    treetable_iter_next(&(iter->i), &entry);
+
+    if (treetable_iter_next(&(iter->i), &entry) != CC_OK)
+        return CC_ITER_END;
+
     *element = entry.key;
+    return CC_OK;
 }
 
 /**
