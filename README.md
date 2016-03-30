@@ -45,7 +45,7 @@ if (array_new(&ar) != CC_OK) {
 }
 
 // Add an element
-enum cc_stat status = array_add(vec, "foo");
+enum cc_stat status = array_add(ar, "foo");
 if (status == CC_OK) {
     ...
 } else if (status == CC_ERR_ALLOC) {
@@ -56,13 +56,13 @@ if (status == CC_OK) {
 
 // Retrieve a value
 char *foo;
-array_get(vec, 0, (void*) &foo);
+array_get_at(ar, 0, (void*) &foo);
 
 // Remove a value
 char *removed;
-array_remove_at(vec, 0, (void*) &removed);
+array_remove_at(ar, 0, (void*) &removed);
 
-array_destroy(vec);
+array_destroy(ar);
 ```
 ## Installation
 
