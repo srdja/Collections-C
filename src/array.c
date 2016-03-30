@@ -27,6 +27,7 @@ struct array_s {
     size_t   size;
     size_t   capacity;
     float    exp_factor;
+    bool     is_sorted;
     void   **buffer;
 
     void *(*mem_alloc)  (size_t size);
@@ -96,6 +97,7 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
     ar->mem_alloc  = conf->mem_alloc;
     ar->mem_calloc = conf->mem_calloc;
     ar->mem_free   = conf->mem_free;
+    ar->is_sorted  = false;
 
     *out = ar;
     return CC_OK;
@@ -162,6 +164,7 @@ enum cc_stat array_add(Array *ar, void *element)
 
     ar->buffer[ar->size] = element;
     ar->size++;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -199,6 +202,7 @@ enum cc_stat array_add_at(Array *ar, void *element, size_t index)
 
     ar->buffer[index] = element;
     ar->size++;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -225,6 +229,7 @@ enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out
         *out = ar->buffer[index];
 
     ar->buffer[index] = element;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -260,6 +265,8 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
     if (out)
         *out = element;
 
+    ar->is_sorted = false;
+
     return CC_OK;
 }
 
@@ -290,6 +297,7 @@ enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
                 block_size);
     }
     ar->size--;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -318,6 +326,7 @@ enum cc_stat array_remove_last(Array *ar, void **out)
 void array_remove_all(Array *ar)
 {
     ar->size = 0;
+    ar->is_sorted = false;
 }
 
 /**
@@ -550,6 +559,7 @@ void array_reverse(Array *ar)
         ar->buffer[i] = ar->buffer[j];
         ar->buffer[j] = tmp;
     }
+    ar->is_sorted = false;
 }
 
 /**
@@ -578,6 +588,8 @@ enum cc_stat array_trim_capacity(Array *ar)
 
     ar->buffer   = new_buff;
     ar->capacity = ar->size;
+    
+    ar->is_sorted = false; //This might be unnecessary
 
     return CC_OK;
 }
@@ -661,7 +673,45 @@ size_t array_capacity(Array *ar)
 void array_sort(Array *ar, int (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
+    ar->is_sorted = true;
 }
+/**
+ * Conducts a Binary Search on the array, only if the array is sorted.
+ *
+ * @note
+ * Poenum cc_staters passed to the comparator function will be poenum cc_staters to the array
+ * elements that are of type (void*) ie. void**. So an extra step of
+ * dereferencing will be required before the data can be used for comparison:
+ * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
+ *
+ * @code
+ * enum cc_stat mycmp(const void *e1, const void *e2) {
+ *     MyType el1 = *(*((enum cc_stat**) e1));
+ *     MyType el2 = *(*((enum cc_stat**) e2));
+ *
+ *     if (el1 < el2) return -1;
+ *     if (el1 > el2) return 1;
+ *     return 0;
+ * }
+ *
+ * ...
+ *
+ * array_sort(array, mycmp);
+ * @endcode
+ *
+ * @param[in] ar array to be sorted
+ * @param[in] cmp the comparator function that must be of type <code>
+ *                enum cc_stat cmp(const void e1*, const void e2*)</code> that
+ *                returns < 0 if the first element goes before the second,
+ *                0 if the elements are equal and > 0 if the second goes
+ *                before the first.
+ */
+void array_sort(Array *ar, int (*cmp) (const void*, const void*))
+{
+    qsort(ar->buffer, ar->size, sizeof(void*), cmp);
+    ar->is_sorted = true;
+}
+
 
 /**
  * Expands the array capacity. This might fail if the the new buffer
