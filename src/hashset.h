@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C__HASHSET_H
-#define COLLECTIONS_C__HASHSET_H
+#ifndef COLLECTIONS_C_HASHSET_H
+#define COLLECTIONS_C_HASHSET_H
 
 #include "common.h"
 #include "hashtable.h"

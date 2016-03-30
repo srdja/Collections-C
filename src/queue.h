@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C__QUEUE_H
-#define COLLECTIONS_C__QUEUE_H
+#ifndef COLLECTIONS_C_QUEUE_H
+#define COLLECTIONS_C_QUEUE_H
 
 #include "common.h"
 #include "deque.h"

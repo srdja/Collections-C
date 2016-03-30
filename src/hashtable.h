@@ -18,8 +18,8 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C__HASHTABLE_H
-#define COLLECTIONS_C__HASHTABLE_H
+#ifndef COLLECTIONS_C_HASHTABLE_H
+#define COLLECTIONS_C_HASHTABLE_H
 
 #include "array.h"
 

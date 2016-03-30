@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C__COMMON_H
-#define COLLECTIONS_C__COMMON_H
+#ifndef COLLECTIONS_C_COMMON_H
+#define COLLECTIONS_C_COMMON_H
 
 #include <stdlib.h>
 #include <stdint.h>

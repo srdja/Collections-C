@@ -18,8 +18,8 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C__TREETABLE_H
-#define COLLECTIONS_C__TREETABLE_H
+#ifndef COLLECTIONS_C_TREETABLE_H
+#define COLLECTIONS_C_TREETABLE_H
 
 #include "common.h"
 

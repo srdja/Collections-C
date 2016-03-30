@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C__TREESET_H
-#define COLLECTIONS_C__TREESET_H
+#ifndef COLLECTIONS_C_TREESET_H
+#define COLLECTIONS_C_TREESET_H
 
 #include "common.h"
 #include "treetable.h"
