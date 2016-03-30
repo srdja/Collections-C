@@ -18,8 +18,8 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __COLLECTIONS_C__TREETABLE_H__
-#define __COLLECTIONS_C__TREETABLE_H__
+#ifndef COLLECTIONS_C__TREETABLE_H
+#define COLLECTIONS_C__TREETABLE_H
 
 #include "common.h"
 
@@ -156,4 +156,4 @@ void          treetable_iter_remove      (TreeTableIter *iter);
 int treetable_assert_rb_rules(TreeTable *table);
 #endif /* DEBUG */
 
-#endif /* __COLLECTIONS_C__TREETABLE_H__ */
+#endif /* COLLECTIONS_C__TREETABLE_H */

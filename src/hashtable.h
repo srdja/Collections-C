@@ -18,8 +18,8 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __COLLECTIONS_C__HASHTABLE_H__
-#define __COLLECTIONS_C__HASHTABLE_H__
+#ifndef COLLECTIONS_C__HASHTABLE_H
+#define COLLECTIONS_C__HASHTABLE_H
 
 #include "array.h"
 
@@ -195,4 +195,4 @@ enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 #define POINTER_HASH hashtable_hash_ptr
 
 
-#endif /* __COLLECTIONS_C__HASHTABLE_H__ */
+#endif /* COLLECTIONS_C__HASHTABLE_H */
