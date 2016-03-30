@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __COLLECTIONS_C__QUEUE_H__
-#define __COLLECTIONS_C__QUEUE_H__
+#ifndef COLLECTIONS_C__QUEUE_H
+#define COLLECTIONS_C__QUEUE_H
 
 #include "common.h"
 #include "deque.h"
@@ -69,4 +69,4 @@ void          queue_iter_init    (QueueIter *iter, Queue *queue);
 enum cc_stat  queue_iter_next    (QueueIter *iter, void **out);
 enum cc_stat  queue_iter_replace (QueueIter *iter, void *replacement, void **out);
 
-#endif /* __COLLECTIONS_C__QUEUE_H__ */
+#endif /* COLLECTIONS_C__QUEUE_H */

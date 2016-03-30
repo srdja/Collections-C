@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __COLLECTIONS_C__DEQUE_H__
-#define __COLLECTIONS_C__DEQUE_H__
+#ifndef COLLECTIONS_C__DEQUE_H
+#define COLLECTIONS_C__DEQUE_H
 
 #include "common.h"
 
@@ -119,4 +119,4 @@ size_t        deque_iter_index      (DequeIter *iter);
 
 const void* const* deque_get_buffer(Deque *deque);
 
-#endif /* __COLLECTIONS_C__DEQUE_H__ */
+#endif /* COLLECTIONS_C__DEQUE_H */
