@@ -33,7 +33,7 @@ struct array_s {
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
-    int   (*comp)       (const void *a, const void *b);
+    int   (*cmp)       (const void *a, const void *b);
 };
 
 static enum cc_stat expand_capacity(Array *vec);
@@ -98,8 +98,9 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
     ar->mem_alloc  = conf->mem_alloc;
     ar->mem_calloc = conf->mem_calloc;
     ar->mem_free   = conf->mem_free;
+	ar->size       = 0;
     ar->is_sorted  = false;
-    ar->comp       = NULL;
+    ar->cmp        = NULL;
 
     *out = ar;
     return CC_OK;
@@ -412,24 +413,32 @@ enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 {
     if(ar->is_sorted){
         size_t left=0, right = ar->size-1, middle;
-	int cmp;
-	bool done=false;
-	while(!done){
+        int cmp;
+        bool done=false;
+        while(!done){
             middle = (right-left)/2 + left;
-	    cmp = ar->comp(element,ar->buffer[middle]);
-	    if(cmp < 0){
+            cmp = ar->cmp(element,ar->buffer[middle]);
+            if(cmp < 0){
                 right = middle;
-	    }else if(cmp > 0){
+            }else if(cmp > 0){
                 left = middle;
-	    }else if(cmp == 0){
+            }else if(cmp == 0){
                 done = true;
-	    }
-	    if(left > right) return CC_ERR_OUT_OF_RANGE;
-	}
-	size_t i;
-	for(i = middle; ar->comp(element,ar->buffer[i]) == 0 && i>=0; i--);
-	*index = (i+1);
-	return CC_OK;
+            }
+            if(left > right) return CC_ERR_OUT_OF_RANGE;
+        }
+        while (middle > 0) {
+            // test the element behind
+            if (ar->cmp(element, ar->buffer[middle - 1]) == 0) {
+                // then decrement the index if it is matched
+                middle--;
+            } else {
+                // if the element behind is not matched then the current index is the first in the sequence
+                break;
+            }
+        }
+		*index = middle;
+        return CC_OK;
     }else{
     
         size_t i;
@@ -485,7 +494,7 @@ enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
     sub_ar->size       = e - b + 1;
     sub_ar->capacity   = sub_ar->size;
     sub_ar->is_sorted  = ar->is_sorted;
-    sub_ar->comp       = ar->comp;
+    sub_ar->cmp       = ar->cmp;
 
     memcpy(sub_ar->buffer,
            &(ar->buffer[b]),
@@ -524,7 +533,7 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
     copy->is_sorted  = ar->is_sorted;
-    copy->comp       = ar->comp;
+    copy->cmp       = ar->cmp;
 
     memcpy(copy->buffer,
            ar->buffer,
@@ -565,7 +574,7 @@ enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
     copy->is_sorted  = ar->is_sorted;
-    copy->comp       = ar->comp;
+    copy->cmp       = ar->cmp;
 
     size_t i;
     for (i = 0; i < copy->size; i++)
@@ -705,7 +714,7 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
     ar->is_sorted = true;
-    ar->comp = cmp;
+    ar->cmp = cmp;
 }
 
 /**
