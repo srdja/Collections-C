@@ -33,6 +33,7 @@ struct array_s {
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
+    int   (*comp)       (const void *a, const void *b);
 };
 
 static enum cc_stat expand_capacity(Array *vec);
@@ -98,6 +99,7 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
     ar->mem_calloc = conf->mem_calloc;
     ar->mem_free   = conf->mem_free;
     ar->is_sorted  = false;
+    ar->comp       = NULL;
 
     *out = ar;
     return CC_OK;
@@ -408,14 +410,37 @@ const void * const*array_get_buffer(Array *ar)
  */
 enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 {
-    size_t i;
-    for (i = 0; i < ar->size; i++) {
-        if (ar->buffer[i] == element) {
-            *index = i;
-            return CC_OK;
+    if(ar->is_sorted){
+        size_t left=0, right = ar->size-1, middle;
+	int cmp;
+	bool done=false;
+	while(!done){
+            middle = (right-left)/2 + left;
+	    cmp = ar->comp(element,ar->buffer[middle]);
+	    if(cmp < 0){
+                right = middle;
+	    }else if(cmp > 0){
+                left = middle;
+	    }else if(cmp == 0){
+                done = true;
+	    }
+	    if(left > right) return CC_ERR_OUT_OF_RANGE;
+	}
+	size_t i;
+	for(i = middle; ar->comp(element,ar->buffer[i]) == 0 && i>=0; i--);
+	*index = (i+1);
+	return CC_OK;
+    }else{
+    
+        size_t i;
+        for (i = 0; i < ar->size; i++) {
+            if (ar->buffer[i] == element) {
+                *index = i;
+                return CC_OK;
+            }
         }
+        return CC_ERR_OUT_OF_RANGE;
     }
-    return CC_ERR_OUT_OF_RANGE;
 }
 
 /**
@@ -459,6 +484,8 @@ enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
     sub_ar->mem_free   = ar->mem_free;
     sub_ar->size       = e - b + 1;
     sub_ar->capacity   = sub_ar->size;
+    sub_ar->is_sorted  = ar->is_sorted;
+    sub_ar->comp       = ar->comp;
 
     memcpy(sub_ar->buffer,
            &(ar->buffer[b]),
@@ -486,7 +513,7 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
     if (!copy)
         return CC_ERR_ALLOC;
 
-    if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
+    if (!(copy->buffer = ar->mem_calloc(ar->capacity, sizeof(void*)))) {
         ar->mem_free(copy);
         return CC_ERR_ALLOC;
     }
@@ -496,6 +523,8 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
     copy->mem_alloc  = ar->mem_alloc;
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
+    copy->is_sorted  = ar->is_sorted;
+    copy->comp       = ar->comp;
 
     memcpy(copy->buffer,
            ar->buffer,
@@ -535,6 +564,8 @@ enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
     copy->mem_alloc  = ar->mem_alloc;
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
+    copy->is_sorted  = ar->is_sorted;
+    copy->comp       = ar->comp;
 
     size_t i;
     for (i = 0; i < copy->size; i++)
@@ -674,44 +705,8 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
     ar->is_sorted = true;
+    ar->comp = cmp;
 }
-/**
- * Conducts a Binary Search on the array, only if the array is sorted.
- *
- * @note
- * Poenum cc_staters passed to the comparator function will be poenum cc_staters to the array
- * elements that are of type (void*) ie. void**. So an extra step of
- * dereferencing will be required before the data can be used for comparison:
- * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
- *
- * @code
- * enum cc_stat mycmp(const void *e1, const void *e2) {
- *     MyType el1 = *(*((enum cc_stat**) e1));
- *     MyType el2 = *(*((enum cc_stat**) e2));
- *
- *     if (el1 < el2) return -1;
- *     if (el1 > el2) return 1;
- *     return 0;
- * }
- *
- * ...
- *
- * array_sort(array, mycmp);
- * @endcode
- *
- * @param[in] ar array to be sorted
- * @param[in] cmp the comparator function that must be of type <code>
- *                enum cc_stat cmp(const void e1*, const void e2*)</code> that
- *                returns < 0 if the first element goes before the second,
- *                0 if the elements are equal and > 0 if the second goes
- *                before the first.
- */
-void array_sort(Array *ar, int (*cmp) (const void*, const void*))
-{
-    qsort(ar->buffer, ar->size, sizeof(void*), cmp);
-    ar->is_sorted = true;
-}
-
 
 /**
  * Expands the array capacity. This might fail if the the new buffer
