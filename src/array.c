@@ -413,10 +413,11 @@ enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 {
     if(ar->is_sorted){
         size_t left=0, right = ar->size-1, middle;
-        int cmp;
+        int cmp, lastcmp = -1;
         bool done=false;
         while(!done){
             middle = (right-left)/2 + left;
+	    middle = (right-left == 1) && lastcmp > 0 ? left + 1 : middle;
             cmp = ar->cmp(element,ar->buffer[middle]);
             if(cmp < 0){
                 right = middle;
@@ -426,6 +427,7 @@ enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
                 done = true;
             }
             if(left > right) return CC_ERR_OUT_OF_RANGE;
+	    lastcmp = cmp;
         }
         while (middle > 0) {
             // test the element behind
