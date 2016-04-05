@@ -23,6 +23,7 @@ void test_array_sort();
 void test_array_iter();
 void test_array_iter_remove();
 void test_array_iter_add();
+void test_array_iter_replace();
 
 void test_array_zip_iter();
 void test_array_zip_iter_remove();
@@ -629,6 +630,7 @@ void test_array_iter()
 {
      test_array_iter_remove();
      test_array_iter_add();
+     test_array_iter_replace();
 }
 
 void test_array_iter_remove()
@@ -698,6 +700,47 @@ void test_array_iter_add()
               cc_msg("array_iter_add: Element not present after being added"));
 
     array_destroy(v);
+}
+
+
+void test_array_iter_replace()
+{
+    Array *ar;
+    array_new(&ar);
+
+    int a = 5;
+    int b = 12;
+    int c = 848;
+    int d = 23;
+
+    int replacement = 42;
+
+    array_add(ar, (void*)&a);
+    array_add(ar, (void*)&b);
+    array_add(ar, (void*)&c);
+    array_add(ar, (void*)&d);
+
+    ArrayIter iter;
+    array_iter_init(&iter, ar);
+
+    int *e;
+    int *old;
+    while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+        if (*e == c)
+            array_iter_replace(&iter, (void*)&replacement, (void*)&old);
+    }
+
+    size_t index;
+    array_index_of(ar, (void*) &replacement, &index);
+
+    cc_assert(index == 2,
+              cc_msg("array_iter_replace: Expected element %d to be at index 2,"
+                     " but was found at index %d instead", replacement, index));
+
+    cc_assert(array_contains(ar, &c) == 0,
+              cc_msg("array_iter_replace: Element still present after being replaced"));
+
+    array_destroy(ar);
 }
 
 
