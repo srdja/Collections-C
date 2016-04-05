@@ -806,3 +806,139 @@ size_t array_iter_index(ArrayIter *iter)
 {
     return iter->index - 1;
 }
+
+/**
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] ar1  First array
+ * @param[in] ar2  Second array
+ */
+void array_zip_iter_init(ArrayZipIter *iter, Array *ar1, Array *ar2)
+{
+    iter->ar1 = ar1;
+    iter->ar2 = ar2;
+    iter->index = 0;
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first array element
+ * @param[out] out2 Output of the second array element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the arrays has been reached.
+ */
+enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
+{
+    if (iter->index >= iter->ar1->size ||
+        iter->index >= iter->ar2->size) {
+        return CC_ITER_END;
+    }
+    if (out1)
+        *out1 = iter->ar1->buffer[iter->index];
+
+    if (out2)
+        *out2 = iter->ar2->buffer[iter->index];
+
+    iter->index++;
+
+    return CC_OK;
+}
+
+/**
+ * Removes and outputs the last returned element pair by <code>array_zip_iter_next()
+ * </code> without invalidating the iterator.
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[out] out1 Output of the removed element from the first array
+ * @param[out] out2 Output of the removed element from the second array
+ */
+void array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
+{
+    array_remove_at(iter->ar1, iter->index - 1, out1);
+    array_remove_at(iter->ar2, iter->index - 1, out2);
+}
+
+/**
+ * Adds a new element pair to the arrays after the last returned element pair by
+ * <code>array_zip_iter_next()</code> and immediately before an element pair
+ * that would be returned by a subsequent call to <code>array_zip_iter_next()</code>
+ * without invalidating the iterator.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ * @param[in] e1   element added to the first array
+ * @param[in] e2   element added to the second array
+ *
+ * @return CC_OK if the element pair was successfully added to the arrays, or
+ * CC_ERR_ALLOC if the memory allocation for the new elements failed.
+ */
+enum cc_stat array_zip_iter_add(ArrayZipIter *iter, void *e1, void *e2)
+{
+    size_t index = iter->index++;
+    Array  *ar1  = iter->ar1;
+    Array  *ar2  = iter->ar2;
+
+    /* Make sure both array buffers have room */
+    if ((ar1->size == ar1->capacity && (expand_capacity(ar1) != CC_OK)) ||
+        (ar2->size == ar2->capacity && (expand_capacity(ar2) != CC_OK))) {
+        return CC_ERR_ALLOC;
+    }
+
+    /* Insert into first array */
+    if (index == ar1->size) {
+        ar1->buffer[ar1->size] = e1;
+    } else {
+        size_t shift = (ar1->size - index) * sizeof(void*);
+        memmove(&(ar1->buffer[index + 1]),
+                &(ar1->buffer[index]),
+                shift);
+
+        ar1->buffer[index] = e1;
+    }
+    ar1->size++;
+
+    /* Insert into second array */
+    if (index == ar2->size) {
+        ar2->buffer[ar2->size] = e2;
+    } else {
+        size_t shift = (ar2->size - index) * sizeof(void*);
+        memmove(&(ar2->buffer[index + 1]),
+                &(ar2->buffer[index]),
+                shift);
+
+        ar2->buffer[index] = e2;
+    }
+    ar2->size++;
+    return CC_OK;
+}
+
+/**
+ * Replaces the last returned element pair by <code>array_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @param[in] iter  Iterator on which this operation is being performed
+ * @param[in]  e1   First array's replacement element
+ * @param[in]  e2   Second array's replacement element
+ * @param[out] out1 Output of the replaced element from the first array
+ * @param[out] out2 Output of the replaced element from the second array
+ */
+void array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    array_replace_at(iter->ar1, e1, iter->index - 1, out1);
+    array_replace_at(iter->ar2, e2, iter->index - 1, out2);
+}
+
+/**
+ * Returns the index of the last returned element pair by <code>array_zip_iter_next()</code>.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ *
+ * @return current iterator index
+ */
+size_t array_zip_iter_index(ArrayZipIter *iter)
+{
+    return iter->index - 1;
+}

@@ -84,6 +84,18 @@ typedef struct array_iter_s {
     size_t  index;
 } ArrayIter;
 
+/**
+ * Array zip iterator object. Used to iterate over the elements of two
+ * arrays in lockstep in an ascending order. The iterator also supports
+ * operations for safely adding and removing elements during iteration.
+ */
+typedef struct array_zip_iter_s {
+    Array *ar1;
+    Array *ar2;
+    size_t index;
+} ArrayZipIter;
+
+
 enum cc_stat  array_new             (Array **out);
 enum cc_stat  array_new_conf        (ArrayConf const * const conf, Array **out);
 void          array_conf_init       (ArrayConf *conf);
@@ -126,6 +138,14 @@ enum cc_stat  array_iter_remove     (ArrayIter *iter, void **out);
 enum cc_stat  array_iter_add        (ArrayIter *iter, void *element);
 enum cc_stat  array_iter_replace    (ArrayIter *iter, void *element, void **out);
 size_t        array_iter_index      (ArrayIter *iter);
+
+
+void          array_zip_iter_init   (ArrayZipIter *iter, Array *a1, Array *a2);
+enum cc_stat  array_zip_iter_next   (ArrayZipIter *iter, void **out1, void **out2);
+enum cc_stat  array_zip_iter_add    (ArrayZipIter *iter, void *e1, void *e2);
+void          array_zip_iter_remove (ArrayZipIter *iter, void **out1, void **out2);
+void          array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+size_t        array_zip_iter_index  (ArrayZipIter *iter);
 
 const void* const* array_get_buffer(Array *ar);
 
