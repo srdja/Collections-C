@@ -1027,13 +1027,18 @@ void test_slist_reverse()
     SList *l;
     slist_1_to_10(&l);
 
-    slist_foreach(l, p);
-    printf("\n");
-
     slist_reverse(l);
 
-    slist_foreach(l, p);
-    printf("\n");
+    SListIter i;
+    slist_iter_init(&i, l);
+
+    void *e;
+    int next = 10;
+    while (slist_iter_next(&i, &e) != CC_ITER_END) {
+        cc_assert(next == *((int*) e),
+                  cc_msg("slist_reverse: Expected %d, but got %d instead", next, *((int*) e)));
+        next--;
+    }
 }
 
 void slist_1234(SList **out)

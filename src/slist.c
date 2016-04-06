@@ -734,20 +734,17 @@ void slist_reverse(SList *list)
         return;
 
     SNode *prev = NULL;
+    SNode *next = NULL;
     SNode *flip = list->head;
-    SNode *next = flip->next;
 
     list->tail = list->head;
 
-    size_t i;
-    for (i = 0; i < list->size; i++) {
+    while (flip) {
+        next = flip->next;
         flip->next = prev;
-
         prev = flip;
         flip = next;
-        next = next ? next->next : NULL;
     }
-
     list->head = prev;
 }
 
