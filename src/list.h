@@ -73,6 +73,20 @@ typedef struct list_iter_s {
     Node   *next;
 } ListIter;
 
+
+typedef struct list_zip_iter_s {
+    List *l1;
+    List *l2;
+
+    Node *l1_last;
+    Node *l2_last;
+    Node *l1_next;
+    Node *l2_next;
+
+    size_t index;
+} ListZipIter;
+
+
 /**
  * List configuration object. Used to initalize a new List with specific
  * values.
@@ -152,5 +166,12 @@ enum cc_stat  list_diter_add       (ListIter *iter, void *element);
 enum cc_stat  list_diter_replace   (ListIter *iter, void *element, void **out);
 size_t        list_diter_index     (ListIter *iter);
 enum cc_stat  list_diter_next      (ListIter *iter, void **out);
+
+void          list_zip_iter_init   (ListZipIter *iter, List *l1, List *l2);
+enum cc_stat  list_zip_iter_next   (ListZipIter *iter, void **out1, void **out2);
+enum cc_stat  list_zip_iter_add    (ListZipIter *iter, void *e1, void *e2);
+enum cc_stat  list_zip_iter_remove (ListZipIter *iter, void **out1, void **out2);
+enum cc_stat  list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+size_t        list_zip_iter_index  (ListZipIter *iter);
 
 #endif /* COLLECTIONS_C__LIST_H */

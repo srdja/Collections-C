@@ -1448,6 +1448,173 @@ enum cc_stat list_diter_next(ListIter *iter, void **out)
 }
 
 /**
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] l1   First List
+ * @param[in] l2  Second List
+ */
+void list_zip_iter_init(ListZipIter *iter, List *l1, List *l2)
+{
+    iter->index   = 0;
+    iter->l1      = l1;
+    iter->l2      = l2;
+    iter->l1_last = NULL;
+    iter->l2_last = NULL;
+    iter->l1_next = l1->head;
+    iter->l2_next = l2->head;
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first List element
+ * @param[out] out2 Output of the second List element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the lists has been reached.
+ */
+enum cc_stat list_zip_iter_next(ListZipIter *iter, void **out1, void **out2)
+{
+    if (!iter->l1_next || !iter->l2_next)
+        return CC_ITER_END;
+
+    void *data1 = iter->l1_next->data;
+    void *data2 = iter->l2_next->data;
+
+    iter->l1_last = iter->l1_next;
+    iter->l2_last = iter->l2_next;
+    iter->l1_next = iter->l1_next->next;
+    iter->l2_next = iter->l2_next->next;
+    iter->index++;
+
+    if (out1)
+        *out1 = data1;
+
+    if (out2)
+        *out2 = data2;
+
+    return CC_OK;
+}
+
+/**
+ * Adds a new element pair to the lists after the last returned element pair by
+ * <code>list_zip_iter_next()</code> and immediately before an element pair
+ * that would be returned by a subsequent call to <code>list_zip_iter_next()</code>
+ * without invalidating the iterator.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ * @param[in] e1   element added to the first list
+ * @param[in] e2   element added to the second list
+ *
+ * @return CC_OK if the element pair was successfully added to the lists, or
+ * CC_ERR_ALLOC if the memory allocation for the new elements failed.
+ */
+enum cc_stat list_zip_iter_add(ListZipIter *iter, void *e1, void *e2)
+{
+    Node *new_node1 = iter->l1->mem_calloc(1, sizeof(Node));
+
+    if (!new_node1)
+        return CC_ERR_ALLOC;
+
+    Node *new_node2 = iter->l2->mem_calloc(1, sizeof(Node));
+
+    if (!new_node2) {
+        iter->l1->mem_free(new_node1);
+        return CC_ERR_ALLOC;
+    }
+
+    new_node1->data = e1;
+    new_node2->data = e2;
+
+    link_after(iter->l1_last, new_node1);
+    link_after(iter->l2_last, new_node2);
+
+    if ((iter->index - 1) == 0) {
+        iter->l1->head = new_node1;
+        iter->l2->head = new_node2;
+    }
+
+    iter->l1->size++;
+    iter->l2->size++;
+    iter->index++;
+
+    return CC_OK;
+}
+
+/**
+ * Removes and outputs the last returned element pair by <code>list_zip_iter_next()
+ * </code> without invalidating the iterator.
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[out] out1 Output of the removed element from the first List
+ * @param[out] out2 Output of the removed element from the second List
+ */
+enum cc_stat list_zip_iter_remove(ListZipIter *iter, void **out1, void **out2)
+{
+    if (!iter->l1_last || !iter->l2_last)
+        return CC_ERR_VALUE_NOT_FOUND;
+
+    void *e1 = unlink(iter->l1, iter->l1_last);
+    void *e2 = unlink(iter->l2, iter->l2_last);
+
+    iter->l1_last = NULL;
+    iter->l2_last = NULL;
+
+    if (out1)
+        *out1 = e1;
+
+    if (out2)
+        *out2 = e2;
+
+    return CC_OK;
+}
+
+/**
+ * Replaces the last returned element pair by <code>list_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[in]  e1   First list's replacement element
+ * @param[in]  e2   Second list's replacement element
+ * @param[out] out1 Output of the replaced element from the first list
+ * @param[out] out2 Output of the replaced element from the second list
+ */
+enum cc_stat list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    if (!iter->l1_last || !iter->l2_last)
+        return CC_ERR_VALUE_NOT_FOUND;
+
+    void *old1 = iter->l1_last->data;
+    void *old2 = iter->l2_last->data;
+
+    iter->l1_last->data = e1;
+    iter->l2_last->data = e2;
+
+    if (out1)
+        *out1 = old1;
+
+    if (out2)
+        *out2 = old2;
+
+    return CC_OK;
+}
+
+/**
+ * Returns the index of the last returned element pair by <code>list_zip_iter_next()</code>.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ *
+ * @return current iterator index
+ */
+size_t list_zip_iter_index(ListZipIter *iter)
+{
+    return iter->index - 1;
+}
+
+
+/**
  * Links the <code>ins</code> node behind the <code>base</code> node.
  *
  * @param[in] base the node behind which the <code>ins</code> is going to be
