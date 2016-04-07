@@ -598,7 +598,7 @@ enum cc_stat hashtable_get_keys(HashTable *table, Array **out)
 
     Array *keys;
     enum cc_stat stat = array_new_conf(&vc, &keys);
-    if (!stat)
+    if (stat != CC_OK)
         return stat;
 
     size_t i;
