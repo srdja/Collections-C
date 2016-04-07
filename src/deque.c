@@ -933,7 +933,7 @@ enum cc_stat deque_iter_remove(DequeIter *iter, void **out)
 {
     void *rm;
     enum cc_stat status = deque_remove_at(iter->deque, iter->index, &rm);
-    if (status == 0)
+    if (status == CC_OK)
         iter->index--;
 
     if (out)
@@ -955,7 +955,7 @@ enum cc_stat deque_iter_remove(DequeIter *iter, void **out)
 enum cc_stat deque_iter_add(DequeIter *iter, void *element)
 {
     enum cc_stat status = deque_add_at(iter->deque, element, iter->index - 1);
-    if (status == 0)
+    if (status == CC_OK)
         iter->index++;
 
     return status;

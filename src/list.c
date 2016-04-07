@@ -665,8 +665,8 @@ enum cc_stat list_replace_at(List *list, void *element, size_t index, void **out
         node->data = element;
         if (out)
             *out = old;
-        return CC_OK;
     }
+
     return status;
 }
 
@@ -874,7 +874,7 @@ enum cc_stat list_copy_deep(List *list, void *(*cp) (void *e1), List **out)
     conf.mem_free   = list->mem_free;
 
     List *copy;
-    enum cc_stat status =list_new_conf(&conf, &copy);
+    enum cc_stat status = list_new_conf(&conf, &copy);
 
     if (status != CC_OK)
         return status;
