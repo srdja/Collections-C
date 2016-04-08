@@ -933,11 +933,11 @@ enum cc_stat deque_iter_remove(DequeIter *iter, void **out)
 {
     void *rm;
     enum cc_stat status = deque_remove_at(iter->deque, iter->index, &rm);
-    if (status == CC_OK)
+    if (status == CC_OK) {
         iter->index--;
-
-    if (out)
-        *out = rm;
+        if (out)
+            *out = rm;
+    }
 
     return status;
 }
