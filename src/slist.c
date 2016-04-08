@@ -1271,10 +1271,10 @@ enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
 
     iter->index--;
 
-    if (*out1)
+    if (out1)
         *out1 = e1;
 
-    if (*out2)
+    if (out2)
         *out2 = e2;
 
     return CC_OK;
@@ -1301,10 +1301,10 @@ enum cc_stat slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, void
     iter->l1_current->data = e1;
     iter->l2_current->data = e2;
 
-    if (*out1)
+    if (out1)
         *out1 = old1;
 
-    if (*out2)
+    if (out2)
         *out2 = old2;
 
     return CC_OK;
