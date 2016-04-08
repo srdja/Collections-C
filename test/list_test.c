@@ -408,8 +408,9 @@ void test_list_iter_add()
     ListIter iter;
     list_iter_init(&iter, list);
 
-    while (list_iter_next(&iter, NULL) != CC_ITER_END) {
-        if (list_iter_index(&iter) == 3)
+    int *el;
+    while (list_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == 3)
             list_iter_add(&iter, &ins);
     }
 
@@ -420,12 +421,12 @@ void test_list_iter_add()
     int *li3;
     list_get_at(list, 3, (void*) &li3);
 
-    int *li4;
-    list_get_at(list, 4, (void*) &li4);
-
     cc_assert(*li3 == ins,
               cc_msg("list_iter_add: Expected element at"
                      " index 3 was %d, but got %d", ins, *li3));
+
+    int *li4;
+    list_get_at(list, 4, (void*) &li4);
 
     cc_assert(*li4 == 4,
               cc_msg("list_iter_add: Expected element at"
@@ -434,16 +435,17 @@ void test_list_iter_add()
 
     list_iter_init(&iter, list);
 
-    while (list_iter_next(&iter, NULL) != CC_ITER_END) {
-        if (list_iter_index(&iter) == 0)
+    while (list_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == 4) {
             list_iter_add(&iter, &ins);
+        }
     }
 
     void *e;
-    list_get_first(list, &e);
+    list_get_last(list, &e);
 
     cc_assert(*((int*)e) == ins,
-              cc_msg("list_iter_add: Expected first element"
+              cc_msg("list_iter_add: Expected last element"
                      " to be %d, but got %d instead", ins, *((int*)e)));
 
     test_list_validate_structure(list, "list_iter_add");

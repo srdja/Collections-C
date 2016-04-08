@@ -1242,10 +1242,10 @@ enum cc_stat list_iter_add(ListIter *iter, void *element)
 
     new_node->data = element;
 
-    link_behind(iter->last, new_node);
+    link_after(iter->last, new_node);
 
-    if ((iter->index - 1) == 0)
-        iter->list->head = new_node;
+    if (iter->index == iter->list->size)
+        iter->list->tail = new_node;
 
     iter->list->size++;
     iter->index++;
