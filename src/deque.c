@@ -991,3 +991,142 @@ size_t deque_iter_index(DequeIter *iter)
 {
     return iter->index - 1;
 }
+
+/**
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] ar1  First deque
+ * @param[in] ar2  Second deque
+ */
+void deque_zip_iter_init(DequeZipIter *iter, Deque *d1, Deque *d2)
+{
+    iter->d1    = d1;
+    iter->d2    = d2;
+    iter->index = 0;
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first deque element
+ * @param[out] out2 Output of the second deque element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the deques has been reached.
+ */
+enum cc_stat deque_zip_iter_next(DequeZipIter *iter, void **out1, void **out2)
+{
+    const size_t d1_capacity = (iter->d1->capacity - 1);
+    const size_t d1_last     = (iter->d1->last) & d1_capacity;
+    const size_t d1_first    = (iter->d1->first) & d1_capacity;
+
+    if (d1_last == d1_first || iter->index >= iter->d1->size)
+        return CC_ITER_END;
+
+    const size_t d2_capacity = (iter->d2->capacity - 1);
+    const size_t d2_last     = (iter->d2->last) & d2_capacity;
+    const size_t d2_first    = (iter->d2->first) & d2_capacity;
+
+    if (d2_last == d2_first || iter->index >= iter->d2->size)
+         return CC_ITER_END;
+
+    const size_t d1_index = (iter->d1->first + iter->index) & d1_capacity;
+    const size_t d2_index = (iter->d2->first + iter->index) & d2_capacity;
+
+    *out1 = iter->d1->buffer[d1_index];
+    *out2 = iter->d2->buffer[d2_index];
+
+    iter->index++;
+
+    return CC_OK;
+}
+
+/**
+ * Adds a new element pair to the deques after the last returned element pair by
+ * <code>deque_zip_iter_next()</code> and immediately before an element pair
+ * that would be returned by a subsequent call to <code>deque_zip_iter_next()</code>
+ * without invalidating the iterator.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ * @param[in] e1   element added to the first deque
+ * @param[in] e2   element added to the second deque
+ *
+ * @return CC_OK if the element pair was successfully added to the deques, or
+ * CC_ERR_ALLOC if the memory allocation for the new elements failed.
+ */
+enum cc_stat deque_zip_iter_add(DequeZipIter *iter, void *e1, void *e2)
+{
+    if (iter->index >= iter->d1->size || iter->index >= iter->d2->size)
+        return CC_ERR_OUT_OF_RANGE;
+
+    /* While this check is performed by a call to deque_add_at, it is necessary to know
+       in advance whether both deque buffers have enough room before inserting new elements
+       because this operation must insert either both elements, or none.*/
+    if ((iter->d1->capacity == iter->d1->size && expand_capacity(iter->d1) != CC_OK) &&
+        (iter->d2->capacity == iter->d2->size && expand_capacity(iter->d2) != CC_OK)) {
+        return CC_ERR_ALLOC;
+    }
+
+    /* The retun status can be ignored since the checks have already been made. */
+    deque_add_at(iter->d1, e1, iter->index);
+    deque_add_at(iter->d2, e2, iter->index);
+
+    iter->index++;
+    return CC_OK;
+}
+
+/**
+ * Removes and outputs the last returned element pair by <code>deque_zip_iter_next()
+ * </code> without invalidating the iterator.
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[out] out1 Output of the removed element from the first deque
+ * @param[out] out2 Output of the removed element from the second deque
+ */
+enum cc_stat deque_zip_iter_remove(DequeZipIter *iter, void **out1, void **out2)
+{
+    if ((iter->index - 1) >= iter->d1->size || (iter->index - 1) >= iter->d2->size)
+        return CC_ERR_OUT_OF_RANGE;
+
+    deque_remove_at(iter->d1, iter->index - 1, out1);
+    deque_remove_at(iter->d2, iter->index - 1, out2);
+
+    iter->index--;
+
+    return CC_OK;
+}
+
+/**
+ * Replaces the last returned element pair by <code>deque_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @param[in] iter  Iterator on which this operation is being performed
+ * @param[in]  e1   First deque's replacement element
+ * @param[in]  e2   Second deque's replacement element
+ * @param[out] out1 Output of the replaced element from the first deque
+ * @param[out] out2 Output of the replaced element from the second deque
+ */
+enum cc_stat deque_zip_iter_replace(DequeZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    if ((iter->index - 1) >= iter->d1->size || (iter->index - 1) >= iter->d2->size)
+        return CC_ERR_OUT_OF_RANGE;
+
+    deque_replace_at(iter->d1, e1, iter->index - 1, out1);
+    deque_replace_at(iter->d2, e2, iter->index - 1, out2);
+
+    return CC_OK;
+}
+
+/**
+ * Returns the index of the last returned element pair by <code>deque_zip_iter_next()</code>.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ *
+ * @return current iterator index
+ */
+size_t deque_zip_iter_index(DequeZipIter *iter)
+{
+    return iter->index - 1;
+}

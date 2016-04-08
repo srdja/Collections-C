@@ -72,6 +72,14 @@ typedef struct deque_iter_s {
     size_t index;
 } DequeIter;
 
+
+typedef struct deque_zip_iter_s {
+    Deque *d1;
+    Deque *d2;
+    size_t index;
+} DequeZipIter;
+
+
 enum cc_stat  deque_new             (Deque **deque);
 enum cc_stat  deque_new_conf        (DequeConf const * const conf, Deque **deque);
 void          deque_conf_init       (DequeConf *conf);
@@ -116,6 +124,13 @@ enum cc_stat  deque_iter_remove     (DequeIter *iter, void **out);
 enum cc_stat  deque_iter_add        (DequeIter *iter, void *element);
 enum cc_stat  deque_iter_replace    (DequeIter *iter, void *replacement, void **out);
 size_t        deque_iter_index      (DequeIter *iter);
+
+void          deque_zip_iter_init   (DequeZipIter *iter, Deque *d1, Deque *d2);
+enum cc_stat  deque_zip_iter_next   (DequeZipIter *iter, void **out1, void **out2);
+enum cc_stat  deque_zip_iter_add    (DequeZipIter *iter, void *e1, void *e2);
+enum cc_stat  deque_zip_iter_remove (DequeZipIter *iter, void **out1, void **out2);
+enum cc_stat  deque_zip_iter_replace(DequeZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+size_t        deque_zip_iter_index  (DequeZipIter *iter);
 
 const void* const* deque_get_buffer(Deque *deque);
 
