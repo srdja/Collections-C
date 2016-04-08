@@ -856,10 +856,15 @@ enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
  * @param[out] out1 Output of the removed element from the first array
  * @param[out] out2 Output of the removed element from the second array
  */
-void array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
+enum cc_stat array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
 {
+    if ((iter->index - 1) >= iter->ar1->size || (iter->index - 1) >= iter->ar2->size)
+        return CC_ERR_OUT_OF_RANGE;
+
     array_remove_at(iter->ar1, iter->index - 1, out1);
     array_remove_at(iter->ar2, iter->index - 1, out2);
+
+    return CC_OK;
 }
 
 /**
@@ -925,10 +930,15 @@ enum cc_stat array_zip_iter_add(ArrayZipIter *iter, void *e1, void *e2)
  * @param[out] out1 Output of the replaced element from the first array
  * @param[out] out2 Output of the replaced element from the second array
  */
-void array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+enum cc_stat array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
+    if ((iter->index - 1) >= iter->ar1->size || (iter->index - 1) >= iter->ar2->size)
+        return CC_ERR_OUT_OF_RANGE;
+
     array_replace_at(iter->ar1, e1, iter->index - 1, out1);
     array_replace_at(iter->ar2, e2, iter->index - 1, out2);
+
+    return CC_OK;
 }
 
 /**

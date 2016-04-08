@@ -143,8 +143,8 @@ size_t        array_iter_index      (ArrayIter *iter);
 void          array_zip_iter_init   (ArrayZipIter *iter, Array *a1, Array *a2);
 enum cc_stat  array_zip_iter_next   (ArrayZipIter *iter, void **out1, void **out2);
 enum cc_stat  array_zip_iter_add    (ArrayZipIter *iter, void *e1, void *e2);
-void          array_zip_iter_remove (ArrayZipIter *iter, void **out1, void **out2);
-void          array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+enum cc_stat  array_zip_iter_remove (ArrayZipIter *iter, void **out1, void **out2);
+enum cc_stat  array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 size_t        array_zip_iter_index  (ArrayZipIter *iter);
 
 const void* const* array_get_buffer(Array *ar);
