@@ -1531,6 +1531,12 @@ enum cc_stat list_zip_iter_add(ListZipIter *iter, void *e1, void *e2)
     link_after(iter->l1_last, new_node1);
     link_after(iter->l2_last, new_node2);
 
+    if (iter->index == iter->l1->size)
+        iter->l1->tail = new_node1;
+
+    if (iter->index == iter->l2->size)
+        iter->l2->tail = new_node2;
+
     iter->l1->size++;
     iter->l2->size++;
     iter->index++;
