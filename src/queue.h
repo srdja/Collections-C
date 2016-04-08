@@ -52,21 +52,31 @@ typedef struct queue_iter_s {
     DequeIter i;
 } QueueIter;
 
-void          queue_conf_init    (QueueConf *conf);
-enum cc_stat  queue_new          (Queue **q);
-enum cc_stat  queue_new_conf     (QueueConf const * const conf, Queue **q);
-void          queue_destroy      (Queue *queue);
-void          queue_destroy_free (Queue *queue);
 
-enum cc_stat  queue_peek         (Queue *queue, void **out);
-enum cc_stat  queue_poll         (Queue *queue, void **out);
-enum cc_stat  queue_enqueue      (Queue *queue, void *element);
+typedef struct queue_zip_iter_s {
+    DequeZipIter i;
+} QueueZipIter;
 
-size_t        queue_size         (Queue *queue);
-void          queue_foreach      (Queue *queue, void (*op) (void*));
 
-void          queue_iter_init    (QueueIter *iter, Queue *queue);
-enum cc_stat  queue_iter_next    (QueueIter *iter, void **out);
-enum cc_stat  queue_iter_replace (QueueIter *iter, void *replacement, void **out);
+void         queue_conf_init       (QueueConf *conf);
+enum cc_stat queue_new             (Queue **q);
+enum cc_stat queue_new_conf        (QueueConf const * const conf, Queue **q);
+void         queue_destroy         (Queue *queue);
+void         queue_destroy_free    (Queue *queue);
+
+enum cc_stat queue_peek            (Queue *queue, void **out);
+enum cc_stat queue_poll            (Queue *queue, void **out);
+enum cc_stat queue_enqueue         (Queue *queue, void *element);
+
+size_t       queue_size            (Queue *queue);
+void         queue_foreach         (Queue *queue, void (*op) (void*));
+
+void         queue_iter_init       (QueueIter *iter, Queue *queue);
+enum cc_stat queue_iter_next       (QueueIter *iter, void **out);
+enum cc_stat queue_iter_replace    (QueueIter *iter, void *replacement, void **out);
+
+void         queue_zip_iter_init   (QueueZipIter *iter, Queue *q1, Queue *q2);
+enum cc_stat queue_zip_iter_next   (QueueZipIter *iter, void **out1, void **out2);
+enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 
 #endif /* COLLECTIONS_C__QUEUE_H */

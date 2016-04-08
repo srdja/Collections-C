@@ -209,3 +209,45 @@ enum cc_stat queue_iter_replace(QueueIter *iter, void *replacement, void **out)
 {
     return deque_iter_replace(&(iter->i), replacement, out);
 }
+
+/**
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] q1   First queue
+ * @param[in] q2   Second queue
+ */
+void queue_zip_iter_init(QueueZipIter *iter, Queue *q1, Queue *q2)
+{
+    deque_zip_iter_init(&(iter->i), q1->d, q2->d);
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first queue element
+ * @param[out] out2 Output of the second queue element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the queues has been reached.
+ */
+enum cc_stat queue_zip_iter_next(QueueZipIter *iter, void **out1, void **out2)
+{
+    return deque_zip_iter_next(&(iter->i), out1, out2);
+}
+
+/**
+ * Replaces the last returned element pair by <code>queue_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @param[in] iter  Iterator on which this operation is being performed
+ * @param[in]  e1   First queue's replacement element
+ * @param[in]  e2   Second queue's replacement element
+ * @param[out] out1 Output of the replaced element from the first queue
+ * @param[out] out2 Output of the replaced element from the second queue
+ */
+enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    return deque_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
+}
