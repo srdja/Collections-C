@@ -205,3 +205,45 @@ enum cc_stat stack_iter_replace(StackIter *iter, void *element, void **out)
 {
     return array_iter_replace(&(iter->i), element, out);
 }
+
+/**
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] q1   First stack
+ * @param[in] q2   Second stack
+ */
+void stack_zip_iter_init(StackZipIter *iter, Stack *s1, Stack *s2)
+{
+    array_zip_iter_init(&(iter->i), s1->v, s2->v);
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first stack element
+ * @param[out] out2 Output of the second stack element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the stacks has been reached.
+ */
+enum cc_stat stack_zip_iter_next(StackZipIter *iter, void **out1, void **out2)
+{
+    return array_zip_iter_next(&(iter->i), out1, out2);
+}
+
+/**
+ * Replaces the last returned element pair by <code>stack_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @param[in] iter  Iterator on which this operation is being performed
+ * @param[in]  e1   First stack's replacement element
+ * @param[in]  e2   Second stack's replacement element
+ * @param[out] out1 Output of the replaced element from the first stack
+ * @param[out] out2 Output of the replaced element from the second stack
+ */
+enum cc_stat stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    return array_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
+}

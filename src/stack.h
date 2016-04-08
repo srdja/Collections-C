@@ -41,22 +41,31 @@ typedef struct stack_iter_s {
 } StackIter;
 
 
-void          stack_conf_init   (StackConf *conf);
-enum cc_stat  stack_new         (Stack **out);
-enum cc_stat  stack_new_conf    (StackConf const * const conf, Stack **out);
-void          stack_destroy     (Stack *stack);
-void          stack_destroy_free(Stack *stack);
+typedef struct stack_zip_iter_s {
+    ArrayZipIter i;
+} StackZipIter;
 
-enum cc_stat  stack_push        (Stack *stack, void *element);
-enum cc_stat  stack_peek        (Stack *stack, void **out);
-enum cc_stat  stack_pop         (Stack *stack, void **out);
 
-size_t        stack_size        (Stack *stack);
-void          stack_map         (Stack *stack, void (*fn) (void *));
+void          stack_conf_init       (StackConf *conf);
+enum cc_stat  stack_new             (Stack **out);
+enum cc_stat  stack_new_conf        (StackConf const * const conf, Stack **out);
+void          stack_destroy         (Stack *stack);
+void          stack_destroy_free    (Stack *stack);
 
-void          stack_iter_init   (StackIter *iter, Stack *s);
-enum cc_stat  stack_iter_next   (StackIter *iter, void **out);
-enum cc_stat  stack_iter_replace(StackIter *iter, void *element, void **out);
+enum cc_stat  stack_push            (Stack *stack, void *element);
+enum cc_stat  stack_peek            (Stack *stack, void **out);
+enum cc_stat  stack_pop             (Stack *stack, void **out);
+
+size_t        stack_size            (Stack *stack);
+void          stack_map             (Stack *stack, void (*fn) (void *));
+
+void          stack_iter_init       (StackIter *iter, Stack *s);
+enum cc_stat  stack_iter_next       (StackIter *iter, void **out);
+enum cc_stat  stack_iter_replace    (StackIter *iter, void *element, void **out);
+
+void          stack_zip_iter_init   (StackZipIter *iter, Stack *a1, Stack *a2);
+enum cc_stat  stack_zip_iter_next   (StackZipIter *iter, void **out1, void **out2);
+enum cc_stat  stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 
 
 
