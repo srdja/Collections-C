@@ -1322,6 +1322,28 @@ void test_list_zip_iter_add()
 
     cc_assert(list_size(a2) == 4,
               cc_msg("list_zip_iter_add: Expected size 4, but got %d", list_size(a2)));
+
+    list_zip_iter_init(&zip, a1, a2);
+    while (list_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e2, "g") == 0)
+            list_zip_iter_add(&zip, "x", "y");
+    }
+
+    char *last;
+    list_get_last(a1, (void*) &last);
+    cc_assert(strcmp(last, "d") == 0,
+              cc_msg("list_zip_iter_add: Expected last element %s, but got %s instead", "d", last));
+
+    list_get_last(a2, (void*) &last);
+    cc_assert(strcmp(last, "y") == 0,
+              cc_msg("list_zip_iter_add: Expected last element %s, but got %s instead", "y", last));
+
+
+    test_list_validate_structure(a1, "list_zip_iter_add (l1)");
+    test_list_validate_structure(a2, "list_zip_iter_add (l2)");
+
+    list_destroy(a1);
+    list_destroy(a2);
 }
 
 
@@ -1365,6 +1387,9 @@ void test_list_zip_iter_remove()
 
     cc_assert(list_size(a2) == 2,
               cc_msg("list_zip_iter_remove: Expected size 2, but got %d", list_size(a2)));
+
+    test_list_validate_structure(a1, "list_zip_iter_remove (l1)");
+    test_list_validate_structure(a2, "list_zip_iter_remove (l2)");
 
     list_destroy(a1);
     list_destroy(a2);
