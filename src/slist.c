@@ -1144,6 +1144,185 @@ size_t slist_iter_index(SListIter *iter)
 }
 
 /**
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] l1   First SList
+ * @param[in] l2   Second SList
+ */
+void slist_zip_iter_init(SListZipIter *iter, SList *l1, SList *l2)
+{
+    iter->index      = 0;
+    iter->l1         = l1;
+    iter->l2         = l2;
+    iter->l1_current = NULL;
+    iter->l2_current = NULL;
+    iter->l1_prev    = NULL;
+    iter->l2_prev    = NULL;
+    iter->l1_next    = l1->head;
+    iter->l2_next    = l2->head;
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first SList element
+ * @param[out] out2 Output of the second SList element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the lists has been reached.
+ */
+enum cc_stat slist_zip_iter_next(SListZipIter *iter, void **out1, void **out2)
+{
+    if (!iter->l1_next || !iter->l2_next)
+        return CC_ITER_END;
+
+    void *data1 = iter->l1_next->data;
+    void *data2 = iter->l2_next->data;
+
+    if (iter->l1_current)
+        iter->l1_prev = iter->l1_current;
+
+    if (iter->l2_current)
+        iter->l2_prev = iter->l2_current;
+
+    iter->l1_current = iter->l1_next;
+    iter->l2_current = iter->l2_next;
+    iter->l1_next    = iter->l1_next->next;
+    iter->l2_next    = iter->l2_next->next;
+
+    iter->index++;
+
+    if (out1)
+        *out1 = data1;
+
+    if (out2)
+        *out2 = data2;
+
+    return CC_OK;
+}
+
+/**
+ * Adds a new element pair to the slists after the last returned element pair by
+ * <code>slist_zip_iter_next()</code> and immediately before an element pair
+ * that would be returned by a subsequent call to <code>slist_zip_iter_next()</code>
+ * without invalidating the iterator.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ * @param[in] e1   element added to the first slist
+ * @param[in] e2   element added to the second slist
+ *
+ * @return CC_OK if the element pair was successfully added to the slists, or
+ * CC_ERR_ALLOC if the memory allocation for the new elements failed.
+ */
+enum cc_stat slist_zip_iter_add(SListZipIter *iter, void *e1, void *e2)
+{
+    SNode *new_node1 = iter->l1->mem_calloc(1, sizeof(SNode));
+
+    if (!new_node1)
+        return CC_ERR_ALLOC;
+
+    SNode *new_node2 = iter->l2->mem_calloc(1, sizeof(SNode));
+
+    if (!new_node2) {
+        iter->l1->mem_free(new_node1);
+        return CC_ERR_ALLOC;
+    }
+
+    new_node1->data = e1;
+    new_node2->data = e2;
+
+    new_node1->next = iter->l1_next;
+    new_node2->next = iter->l2_next;
+
+    iter->l1_current->next = new_node1;
+    iter->l2_current->next = new_node2;
+
+    iter->l1_current = new_node1;
+    iter->l2_current = new_node2;
+
+    iter->index++;
+    iter->l1->size++;
+    iter->l2->size++;
+
+    return CC_OK;
+}
+
+
+/**
+ * Removes and outputs the last returned element pair by <code>slist_zip_iter_next()
+ * </code> without invalidating the iterator.
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[out] out1 Output of the removed element from the first Slist
+ * @param[out] out2 Output of the removed element from the second Slist
+ */
+enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
+{
+    if (!iter->l1_current || !iter->l2_current)
+        return CC_ERR_VALUE_NOT_FOUND;
+
+    void *e1 = unlink(iter->l1, iter->l1_current, iter->l1_prev);
+    void *e2 = unlink(iter->l2, iter->l2_current, iter->l2_prev);
+
+    iter->l1_current = NULL;
+    iter->l2_current = NULL;
+
+    iter->index--;
+
+    if (*out1)
+        *out1 = e1;
+
+    if (*out2)
+        *out2 = e2;
+
+    return CC_OK;
+}
+
+/**
+ * Replaces the last returned element pair by <code>slist_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[in]  e1   First slist's replacement element
+ * @param[in]  e2   Second slist's replacement element
+ * @param[out] out1 Output of the replaced element from the first slist
+ * @param[out] out2 Output of the replaced element from the second slist
+ */
+enum cc_stat slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    if (!iter->l1_current || !iter->l2_current)
+        return CC_ERR_VALUE_NOT_FOUND;
+
+    void *old1 = iter->l1_current->data;
+    void *old2 = iter->l2_current->data;
+
+    iter->l1_current->data = e1;
+    iter->l2_current->data = e2;
+
+    if (*out1)
+        *out1 = old1;
+
+    if (*out2)
+        *out2 = old2;
+
+    return CC_OK;
+}
+
+/**
+ * Returns the index of the last returned element pair by <code>slist_zip_iter_next()</code>.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ *
+ * @return current iterator index
+ */
+size_t slist_zip_iter_index(SListZipIter *iter)
+{
+    return iter->index - 1;
+}
+
+/**
  * Unlinks the node from the list and returns the data tat was associated with it.
  *
  * @param[in] list the list from which the node is being unlinked

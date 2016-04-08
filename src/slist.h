@@ -62,6 +62,20 @@ typedef struct slist_iter_s {
     SNode   *prev;
 } SListIter;
 
+
+typedef struct slist_zip_iter_s {
+    size_t index;
+    SList *l1;
+    SList *l2;
+    SNode *l1_next;
+    SNode *l2_next;
+    SNode *l1_current;
+    SNode *l2_current;
+    SNode *l1_prev;
+    SNode *l2_prev;
+} SListZipIter;
+
+
 /**
  * SList configuration object. Used to initalize a new SList with specific
  * values.
@@ -133,5 +147,13 @@ enum cc_stat  slist_iter_add        (SListIter *iter, void *element);
 enum cc_stat  slist_iter_replace    (SListIter *iter, void *element, void **out);
 enum cc_stat  slist_iter_next       (SListIter *iter, void **out);
 size_t        slist_iter_index      (SListIter *iter);
+
+void          slist_zip_iter_init   (SListZipIter *iter, SList *l1, SList *l2);
+enum cc_stat  slist_zip_iter_next   (SListZipIter *iter, void **out1, void **out2);
+enum cc_stat  slist_zip_iter_add    (SListZipIter *iter, void *e1, void *e2);
+enum cc_stat  slist_zip_iter_remove (SListZipIter *iter, void **out1, void **out2);
+enum cc_stat  slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+size_t        slist_zip_iter_index  (SListZipIter *iter);
+
 
 #endif /* COLLECTIONS_C__SLIST_H */
