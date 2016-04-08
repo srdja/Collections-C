@@ -344,7 +344,7 @@ enum cc_stat deque_remove(Deque *deque, void *element, void **out)
  */
 enum cc_stat deque_remove_at(Deque *deque, size_t index, void **out)
 {
-    if (index >= deque->size || index == CC_ERR_OUT_OF_RANGE)
+    if (index >= deque->size)
         return CC_ERR_OUT_OF_RANGE;
 
     const size_t c = deque->capacity - 1;
