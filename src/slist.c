@@ -34,8 +34,8 @@ struct slist_s {
 static void* unlink              (SList *list, SNode *node, SNode *prev);
 static bool  unlink_all          (SList *list, bool freed);
 static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
-static enum cc_stat  get_node_at         (SList *list, size_t index, SNode **node, SNode **prev);
-static enum cc_stat  get_node            (SList *list, void *element, SNode **node, SNode **prev);
+static enum cc_stat  get_node_at (SList *list, size_t index, SNode **node, SNode **prev);
+static enum cc_stat  get_node    (SList *list, void *element, SNode **node, SNode **prev);
 static bool  link_all_externally (SList *list, SNode **h, SNode **t);
 
 /**
@@ -1065,15 +1065,12 @@ enum cc_stat slist_iter_add(SListIter *iter, void *element)
         return CC_ERR_ALLOC;
 
     new_node->data = element;
-    new_node->next = iter->current;
+    new_node->next = iter->next;
 
-    if (iter->prev)
-        iter->prev->next = new_node;
+    iter->current->next = new_node;
 
-    iter->prev = new_node;
-
-    if ((iter->index - 1) == 0)
-        iter->list->head = new_node;
+    if (iter->index == iter->list->size)
+        iter->list->tail = new_node;
 
     iter->index++;
     iter->list->size++;
@@ -1239,8 +1236,11 @@ enum cc_stat slist_zip_iter_add(SListZipIter *iter, void *e1, void *e2)
     iter->l1_current->next = new_node1;
     iter->l2_current->next = new_node2;
 
-    iter->l1_current = new_node1;
-    iter->l2_current = new_node2;
+    if (iter->index == iter->l1->size)
+        iter->l1->tail = new_node1;
+
+    if (iter->index == iter->l2->size)
+        iter->l2->tail = new_node2;
 
     iter->index++;
     iter->l1->size++;
