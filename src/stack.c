@@ -169,3 +169,39 @@ void stack_map(Stack *stack, void (*fn) (void *))
 {
     array_map(stack->v, fn);
 }
+
+/**
+ * Initializs the iterator.
+ *
+ * @param[in] iter the iterator that is being initialized
+ * @param[in] stack the stack to iterate over
+ */
+void stack_iter_init(StackIter *iter, Stack *s)
+{
+    array_iter_init(&(iter->i), s->v);
+}
+
+/**
+ * Retruns the next element in the sequence and advances the iterator.
+ *
+ * @param[in] iter the iterator that is being advanced
+ *
+ * @return the next element in the sequence
+ */
+enum cc_stat stack_iter_next(StackIter *iter, void **out)
+{
+    return array_iter_next(&(iter->i), out);
+}
+
+/**
+ * Replaces the last returned element by the specified iterator.
+ *
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[in] replacement the replacement element
+ *
+ * @return the old element that was replaced
+ */
+enum cc_stat stack_iter_replace(StackIter *iter, void *element, void **out)
+{
+    return array_iter_replace(&(iter->i), element, out);
+}

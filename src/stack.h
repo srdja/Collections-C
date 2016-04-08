@@ -35,6 +35,12 @@ typedef struct stack_s Stack;
  */
 typedef ArrayConf StackConf;
 
+
+typedef struct stack_iter_s {
+    ArrayIter i;
+} StackIter;
+
+
 void          stack_conf_init   (StackConf *conf);
 enum cc_stat  stack_new         (Stack **out);
 enum cc_stat  stack_new_conf    (StackConf const * const conf, Stack **out);
@@ -47,5 +53,11 @@ enum cc_stat  stack_pop         (Stack *stack, void **out);
 
 size_t        stack_size        (Stack *stack);
 void          stack_map         (Stack *stack, void (*fn) (void *));
+
+void          stack_iter_init   (StackIter *iter, Stack *s);
+enum cc_stat  stack_iter_next   (StackIter *iter, void **out);
+enum cc_stat  stack_iter_replace(StackIter *iter, void *element, void **out);
+
+
 
 #endif /* COLLECTIONS_C__STACK_H */
