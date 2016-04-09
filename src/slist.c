@@ -493,8 +493,8 @@ enum cc_stat slist_remove(SList *list, void *element, void **out)
 
 /**
  * Removes the element at the specified index and optionally sets
- * the out to the value of the removed element. The index must be
- * within the bounds of the list.
+ * the out parameter to the value of the removed element. The index
+ * must be within the bounds of the list.
  *
  * @param[in] list  SList from which the element is being removed
  * @param[in] index Index of the element that is being removed. Must be be
@@ -864,6 +864,7 @@ enum cc_stat slist_copy_shallow(SList *list, SList **out)
  * @param[in] list SList to be copied
  * @param[in] cp   the copy function that should return a pointer to the copy of
  *                 the data.
+ * @param[out] out Pointer to where the newly created copy is stored
  *
  * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
@@ -1051,6 +1052,9 @@ void slist_iter_init(SListIter *iter, SList *list)
  * function without invalidating the iterator and optionally sets the out
  * parameter to the value of the removed element.
  *
+ * @note This function should only ever be called after a call to <code>
+ * slist_iter_next()</code>
+ *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
  *                 if it is to be ignored
@@ -1077,6 +1081,9 @@ enum cc_stat slist_iter_remove(SListIter *iter, void **out)
  * Adds a new element to the list after the last returned element by
  * <code>slist_iter_next()</code> function without invalidating the
  * iterator.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * slist_iter_next()</code>
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added
@@ -1109,9 +1116,12 @@ enum cc_stat slist_iter_add(SListIter *iter, void *element)
  * with the specified element and optionally sets the out parameter to
  * the value of the replaced element.
  *
+ * @note This function should only ever be called after a call to <code>
+ * slist_iter_next()</code>
+
  * @param[in] iter the iterator on which this operation is being preformed
  * @param[in] element the replacement element
- * @paramout] out Pointer to where the replaced element is stored, or NULL
+ * @param[out] out Pointer to where the replaced element is stored, or NULL
  *                if it is to be ignored
  *
  * @return CC_OK if the element was replaced successfully, or
@@ -1236,6 +1246,9 @@ enum cc_stat slist_zip_iter_next(SListZipIter *iter, void **out1, void **out2)
  * that would be returned by a subsequent call to <code>slist_zip_iter_next()</code>
  * without invalidating the iterator.
  *
+ * @note This function should only ever be called after a call to <code>
+ * slist_zip_iter_next()</code>
+ *
  * @param[in] iter Iterator on which this operation is being performed
  * @param[in] e1   element added to the first slist
  * @param[in] e2   element added to the second slist
@@ -1283,6 +1296,9 @@ enum cc_stat slist_zip_iter_add(SListZipIter *iter, void *e1, void *e2)
  * Removes and outputs the last returned element pair by <code>slist_zip_iter_next()
  * </code> without invalidating the iterator.
  *
+ * @note This function should only ever be called after a call to <code>
+ * slist_zip_iter_next()</code>
+ *
  * @param[in]  iter Iterator on which this operation is being performed
  * @param[out] out1 Output of the removed element from the first Slist
  * @param[out] out2 Output of the removed element from the second Slist
@@ -1312,6 +1328,9 @@ enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
 /**
  * Replaces the last returned element pair by <code>slist_zip_iter_next()</code>
  * with the specified replacement element pair.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * slist_zip_iter_next()</code>
  *
  * @param[in]  iter Iterator on which this operation is being performed
  * @param[in]  e1   First slist's replacement element

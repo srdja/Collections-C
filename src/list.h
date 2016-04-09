@@ -24,8 +24,9 @@
 #include "common.h"
 
 /**
- * A doubly linked list. List is a sequential structure that supports insertion, deletion
- * and lookup from both ends in constant time, while the worst case is O(n/2) at the middle
+ * A doubly linked list. List is a sequential structure that
+ * supports insertion, deletion and lookup from both ends in
+ * constant time, while the worst case is O(n/2) at the middle
  * of the list.
  */
 typedef struct list_s List;
@@ -42,18 +43,9 @@ typedef struct node_s {
 } Node;
 
 /**
- * List iterator object. Used to iterate over the elements of the list
- * in an ascending or descending order. The iterator also supports
+ * List iterator structure. Used to iterate over the elements of the
+ * list in an ascending or descending order. The iterator also supports
  * operations for safely adding and removing elements during iteration.
- *
- * @code
- * ListIter i;
- * list_iter_init(&i);
- *
- * while (list_iter_has_next(&i)) {
- *     MyType *e = list_iter_next(&i);
- * }
- * @endcode
  */
 typedef struct list_iter_s {
     /**
@@ -73,40 +65,33 @@ typedef struct list_iter_s {
     Node   *next;
 } ListIter;
 
-
+/**
+ * List zip iterator structure. Used to iterate over two Lists in
+ * lockstep in an ascending order until one of the lists is exhausted.
+ * The iterator also supports operations for safely adding and
+ * removing elements during iteration.
+ */
 typedef struct list_zip_iter_s {
     List *l1;
     List *l2;
-
     Node *l1_last;
     Node *l2_last;
     Node *l1_next;
     Node *l2_next;
-
     size_t index;
 } ListZipIter;
 
 
 /**
- * List configuration object. Used to initalize a new List with specific
+ * List configuration structure. Used to initialize a new List with specific
  * values.
- *
- * @code
- * ListConf c;
- * list_conf_init(&c);
- *
- * c.mem_alloc  = mymalloc;
- * c.mem_free   = myfree;
- * c.mem_calloc = mycalloc;
- *
- * List *l = list_new_conf(&c);
- * @endcode
  */
 typedef struct list_conf_s {
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
     void   (*mem_free)   (void *block);
 } ListConf;
+
 
 void          list_conf_init       (ListConf *conf);
 enum cc_stat  list_new             (List **list);
@@ -174,4 +159,4 @@ enum cc_stat  list_zip_iter_remove (ListZipIter *iter, void **out1, void **out2)
 enum cc_stat  list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 size_t        list_zip_iter_index  (ListZipIter *iter);
 
-#endif /* COLLECTIONS_C__LIST_H */
+#endif /* COLLECTIONS_C_LIST_H */

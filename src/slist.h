@@ -42,7 +42,7 @@ typedef struct snode_s {
 } SNode;
 
 /**
- * SList iterator object. Used to iterate over the elements
+ * SList iterator structure. Used to iterate over the elements
  * of the list in an ascending order. The iterator also supports
  * operations for safely adding and removing elements during iteration.
  */
@@ -55,10 +55,10 @@ typedef struct slist_iter_s {
 } SListIter;
 
 /**
- * SList zip iterator object. Used to iterate over two SLists in
+ * SList zip iterator structure. Used to iterate over two SLists in
  * lockstep in an ascending order until one of the lists is exhausted.
- * The iterator also supports operations for safely  adding and
- * removing element during iteration.
+ * The iterator also supports operations for safely adding and
+ * removing elements during iteration.
  */
 typedef struct slist_zip_iter_s {
     size_t index;
@@ -74,7 +74,7 @@ typedef struct slist_zip_iter_s {
 
 
 /**
- * SList configuration object. Used to initialize a new SList with
+ * SList configuration structure. Used to initialize a new SList with
  * specific values.
  */
 typedef struct slist_conf_s {
