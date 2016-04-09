@@ -103,11 +103,10 @@ enum cc_stat slist_new_conf(SListConf const * const conf, SList **out)
   *
  * @return true if the operation was successful
  */
-bool slist_destroy(SList *list)
+void slist_destroy(SList *list)
 {
-    bool success = slist_remove_all(list);
+    slist_remove_all(list);
     list->mem_free(list);
-    return success;
 }
 
 /**
@@ -122,11 +121,10 @@ bool slist_destroy(SList *list)
  * @param[in] list the list to be destroyed
  * @return true if the operation was successful
  */
-bool slist_destroy_free(SList *list)
+void slist_destroy_free(SList *list)
 {
-    bool success = slist_remove_all_free(list);
+    slist_remove_all_free(list);
     list->mem_free(list);
-    return success;
 }
 
 /**

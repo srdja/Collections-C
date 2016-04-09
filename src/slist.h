@@ -100,8 +100,8 @@ typedef struct slist_conf_s {
 void          slist_conf_init       (SListConf *conf);
 enum cc_stat  slist_new             (SList **list);
 enum cc_stat  slist_new_conf        (SListConf const * const conf, SList **list);
-bool          slist_destroy         (SList *list);
-bool          slist_destroy_free    (SList *list);
+void          slist_destroy         (SList *list);
+void          slist_destroy_free    (SList *list);
 
 enum cc_stat  slist_splice          (SList *list1, SList *list2);
 enum cc_stat  slist_splice_at       (SList *list1, SList *list2, size_t index);
