@@ -1249,7 +1249,6 @@ enum cc_stat slist_zip_iter_add(SListZipIter *iter, void *e1, void *e2)
     return CC_OK;
 }
 
-
 /**
  * Removes and outputs the last returned element pair by <code>slist_zip_iter_next()
  * </code> without invalidating the iterator.
@@ -1323,7 +1322,8 @@ size_t slist_zip_iter_index(SListZipIter *iter)
 }
 
 /**
- * Unlinks the node from the list and returns the data tat was associated with it.
+ * Unlinks the node from the list and returns the data that was associated with it and
+ * also adjusts the head / tail of the list if necessary.
  *
  * @param[in] list the list from which the node is being unlinked
  * @parma[in] node the node being unlinked
@@ -1337,8 +1337,7 @@ static void *unlink(SList *list, SNode *node, SNode *prev)
 
     if (prev)
         prev->next = node->next;
-
-    if (!prev)
+    else
         list->head = node->next;
 
     if (!node->next)
