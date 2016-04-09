@@ -294,14 +294,14 @@ void test_slist_add_at()
 
     int ins = 90;
 
-    slist_add_at(list, &ins, 3);
+    slist_add_at(list, &ins, 2);
 
     cc_assert(slist_size(list) == 5,
               cc_msg("slist_add_at: Expected size "
                      "was 5, but got %d!", slist_size(list)));
 
     int *new;
-    slist_get_at(list, 3, (void*)&new);
+    slist_get_at(list, 2, (void*)&new);
 
     cc_assert(*new == ins,
               cc_msg("slist_add_at: Expected element"
@@ -309,6 +309,30 @@ void test_slist_add_at()
 
     test_slist_validate_structure(list, "slist_add_at");
 
+    enum cc_stat status = slist_add_at(list, &ins, 4);
+    cc_assert(status == CC_OK,
+              cc_msg("slist_add_at: Expected error while adding to index 4"));
+
+    status = slist_add_at(list, &ins, 0);
+    cc_assert(status == CC_OK,
+              cc_msg("slist_add_at: Expected error while adding to index 0"));
+
+    void *first;
+    slist_get_first(list, &first);
+    cc_assert(*((int*) first) == ins,
+              cc_msg("slist_add_at: Expected first to be %d, but got %d instead",
+                     ins, *((int*) first)));
+
+    void *last;
+    slist_get_first(list, &last);
+    cc_assert(*((int*) last) == ins,
+              cc_msg("slist_add_at: Expected last to be %d, but got %d instead",
+                     ins, *((int*) last)));
+
+    test_slist_validate_structure(list, "slist_add_at");
+
+    slist_remove(list, &ins, NULL);
+    slist_remove(list, &ins, NULL);
     slist_remove(list, &ins, NULL);
     slist_destroy_free(list);
 }
@@ -891,9 +915,9 @@ void test_slist_iter_add()
     SListIter iter;
     slist_iter_init(&iter, list);
 
-    while (slist_iter_next(&iter, NULL) != CC_ITER_END) {
-        int i = slist_iter_index(&iter);
-        if (i == 3)
+    int *el;
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == 3)
             slist_iter_add(&iter, &ins);
     }
 
@@ -904,12 +928,12 @@ void test_slist_iter_add()
     int *li3;
     slist_get_at(list, 3, (void*) &li3);
 
-    int *li4;
-    slist_get_at(list, 4, (void*) &li4);
-
     cc_assert(*li3 == ins,
               cc_msg("slist_iter_add: Expected element at"
                      " index 3 was %d, but got %d", ins, *li3));
+
+    int *li4;
+    slist_get_at(list, 4, (void*) &li4);
 
     cc_assert(*li4 == 4,
               cc_msg("slist_iter_add: Expected element at"
@@ -917,16 +941,16 @@ void test_slist_iter_add()
 
 
     slist_iter_init(&iter, list);
-    while (slist_iter_next(&iter, NULL) != CC_ITER_END) {
-        if (slist_iter_index(&iter) == 0)
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == 4)
             slist_iter_add(&iter, &ins);
     }
 
     void *e;
-    slist_get_first(list, &e);
+    slist_get_last(list, &e);
 
     cc_assert(*((int*) e) == ins,
-              cc_msg("slist_iter_add: Expected first element to be %d"
+              cc_msg("slist_iter_add: Expected last element to be %d"
                      ", but got %d instead", ins, *((int*)e)));
 
     cc_assert(slist_size(list) == 6,
@@ -1092,6 +1116,24 @@ void test_slist_zip_iter_add()
 
     cc_assert(slist_size(a2) == 4,
               cc_msg("slist_zip_iter_add: Expected size 4, but got %d", slist_size(a2)));
+
+    slist_zip_iter_init(&zip, a1, a2);
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e2, "g") == 0)
+            slist_zip_iter_add(&zip, "x", "y");
+    }
+
+    char *last;
+    slist_get_last(a2, (void*) &last);
+    cc_assert(strcmp(last, "y") == 0,
+              cc_msg("slist_zip_iter_add: Expected last element to be %s, but got %s instead", "y", last));
+
+    slist_get_last(a1, (void*) &last);
+    cc_assert(strcmp(last, "d") == 0,
+              cc_msg("slist_zip_iter_add: Expected last element to be %s, but got %s instead", "d", last));
+
+    slist_destroy(a1);
+    slist_destroy(a2);
 }
 
 
@@ -1121,6 +1163,7 @@ void test_slist_zip_iter_remove()
         if (strcmp((char*) e1, "b") == 0)
             slist_zip_iter_remove(&zip, &r1, &r2);
     }
+
     cc_assert(r1 == "b" && r2 == "f",
               cc_msg("slist_zip_iter_remove: Removed elements don't match expected ones"));
 
@@ -1135,6 +1178,68 @@ void test_slist_zip_iter_remove()
 
     cc_assert(slist_size(a2) == 2,
               cc_msg("slist_zip_iter_remove: Expected size 2, but got %d", slist_size(a2)));
+
+    test_slist_validate_structure(a1, "slist_zip_iter_remove (l1)");
+    test_slist_validate_structure(a2, "slist_zip_iter_remove (l2)");
+
+    slist_zip_iter_init(&zip, a1, a2);
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e2, "e") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+
+        if (strcmp((char*) e2, "g") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+    }
+
+    char *first = "";
+    char *last  = "";
+
+    enum cc_stat status = slist_get_first(a2, (void*) &first);
+    cc_assert(status == CC_ERR_VALUE_NOT_FOUND,
+              cc_msg("slist_zip_iter_remove: Expected to not find the first"
+                     " element, but got %s instead", first));
+
+    status = slist_get_last(a2, (void*) &last);
+    cc_assert(status == CC_ERR_VALUE_NOT_FOUND,
+              cc_msg("slist_zip_iter_remove: Expected to not find the last"
+                     " element, but got %s instead", last));
+
+    slist_get_first(a1, (void*) &first);
+    cc_assert(strcmp(first, "d") == 0,
+              cc_msg("slist_zip_iter_remove: Expected first element was %s,"
+                     " but got %s instead", "d", first));
+
+    slist_get_last(a1, (void*) &last);
+    cc_assert(strcmp(last, "d") == 0,
+              cc_msg("slist_zip_iter_remove: Expected last element was %s,"
+                     " but got %s instead", "d", last));
+
+
+    test_slist_validate_structure(a1, "slist_zip_iter_remove (l1)");
+    test_slist_validate_structure(a2, "slist_zip_iter_remove (l2)");
+
+    // consecutive removes
+    slist_add(a1, "a");
+    slist_add(a1, "b");
+    slist_add(a1, "c");
+    slist_add(a1, "d");
+
+    slist_add(a2, "a");
+    slist_add(a2, "b");
+    slist_add(a2, "c");
+    slist_add(a2, "d");
+
+    slist_zip_iter_init(&zip, a1, a2);
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+
+        if (strcmp((char*) e1, "c") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+    }
+
+    test_slist_validate_structure(a1, "slist_zip_iter_remove (l1)");
+    test_slist_validate_structure(a2, "slist_zip_iter_remove (l2)");
 
     slist_destroy(a1);
     slist_destroy(a2);
@@ -1188,6 +1293,9 @@ void test_slist_zip_iter_replace()
 
     cc_assert(slist_contains(a2, "i") == 1,
               cc_msg("slist_zip_iter_replace: Element %s not presetn after addition", "i"));
+
+    slist_destroy(a1);
+    slist_destroy(a2);
 }
 
 
