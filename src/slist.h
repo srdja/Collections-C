@@ -24,9 +24,10 @@
 #include "common.h"
 
 /**
- * A singly linked list. List is a sequential structure that supports constant time
- * insertion, deletion  and lookup at the beginning of the list, while the worst
- * case for these operations is linear time.
+ * A singly linked list. List is a sequential structure that
+ * supports constant time insertion, deletion  and lookup at
+ * the beginning of the list, while the worst case for these
+ * operations is linear time.
  */
 typedef struct slist_s SList;
 
@@ -41,18 +42,9 @@ typedef struct snode_s {
 } SNode;
 
 /**
- * SList iterator object. Used to iterate over the elements of the list
- * in an ascending order. The iterator also supports operations for safely
- * adding and removing elements during iteration.
- *
- * @code
- * SListIter i;
- * slist_iter_init(&i);
- *
- * while (slist_iter_has_next(&i)) {
- *     MyType *e = slist_iter_next(&i);
- * }
- * @endcode
+ * SList iterator object. Used to iterate over the elements
+ * of the list in an ascending order. The iterator also supports
+ * operations for safely adding and removing elements during iteration.
  */
 typedef struct slist_iter_s {
     size_t  index;
@@ -62,7 +54,12 @@ typedef struct slist_iter_s {
     SNode   *prev;
 } SListIter;
 
-
+/**
+ * SList zip iterator object. Used to iterate over two SLists in
+ * lockstep in an ascending order until one of the lists is exhausted.
+ * The iterator also supports operations for safely  adding and
+ * removing element during iteration.
+ */
 typedef struct slist_zip_iter_s {
     size_t index;
     SList *l1;
@@ -77,25 +74,15 @@ typedef struct slist_zip_iter_s {
 
 
 /**
- * SList configuration object. Used to initalize a new SList with specific
- * values.
- *
- * @code
- * SListConf c;
- * slist_conf_init(&c);
- *
- * c.mem_alloc  = mymalloc;
- * c.mem_free   = myfree;
- * c.mem_calloc = mycalloc;
- *
- * SList *l = slist_new_conf(&c);
- * @endcode
+ * SList configuration object. Used to initialize a new SList with
+ * specific values.
  */
 typedef struct slist_conf_s {
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
     void   (*mem_free)   (void *block);
 } SListConf;
+
 
 void          slist_conf_init       (SListConf *conf);
 enum cc_stat  slist_new             (SList **list);
@@ -156,4 +143,4 @@ enum cc_stat  slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, voi
 size_t        slist_zip_iter_index  (SListZipIter *iter);
 
 
-#endif /* COLLECTIONS_C__SLIST_H */
+#endif /* COLLECTIONS_C_SLIST_H */
