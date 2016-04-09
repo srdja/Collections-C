@@ -34,9 +34,11 @@ struct slist_s {
 static void* unlink              (SList *list, SNode *node, SNode *prev);
 static bool  unlink_all          (SList *list, bool freed);
 static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
+static bool  link_all_externally (SList *list, SNode **h, SNode **t);
+
 static enum cc_stat  get_node_at (SList *list, size_t index, SNode **node, SNode **prev);
 static enum cc_stat  get_node    (SList *list, void *element, SNode **node, SNode **prev);
-static bool  link_all_externally (SList *list, SNode **h, SNode **t);
+
 
 /**
  * Initializes the fields SListConf struct to default values.
@@ -51,9 +53,12 @@ void slist_conf_init(SListConf *conf)
 }
 
 /**
- * Returns a new empty list, or NULL if the memory allocation fails.
+ * Creates a new empty list and returns a status code.
  *
- * @return a new list, or NULL if the memory allocation fails
+ * @param[out] out Pointer to a SList that is being created.
+ *
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
+ * memory allocation for the new SList structure failed.
  */
 enum cc_stat slist_new(SList **out)
 {
@@ -63,15 +68,18 @@ enum cc_stat slist_new(SList **out)
 }
 
 /**
- * Returns a new empty SList based on the specified SListConf struct.
+ * Creates a new empty SList based on the specified SListConf struct and
+ * returns a status code.
  *
  * The SList is allocated using the allocators specified in the SListConf
- * struct. THe allocation may fail if the underlying allocator fails.
+ * struct. The allocation may fail if the underlying allocator fails.
  *
- * @param[in] conf SList configuration. All fields must be initialized
- *                 to appropriate values.
+ * @param[in] conf SList configuration struct. All fields must be initialized
+ *            to appropriate values.
  *
- * @return a new SList if the allocation was successful, or NULL if not.
+ * @param[out] out Pointer to a SList that is being created
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
+ * memory allocation for the new SList structure failed.
  */
 enum cc_stat slist_new_conf(SListConf const * const conf, SList **out)
 {
@@ -89,7 +97,7 @@ enum cc_stat slist_new_conf(SListConf const * const conf, SList **out)
 }
 
 /**
- * Destroys the list structure, but leaves the data that is holds intact
+ * Destroys the list structure, but leaves the data that is holds intact.
  *
  * @param[in] list a list to destroy
   *
