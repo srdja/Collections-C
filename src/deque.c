@@ -915,8 +915,7 @@ enum cc_stat deque_iter_next(DequeIter *iter, void **out)
     const size_t i = (iter->deque->first + iter->index) & c;
 
     iter->index++;
-    if (out)
-        *out = iter->deque->buffer[i];
+    *out = iter->deque->buffer[i];
 
     return CC_OK;
 }

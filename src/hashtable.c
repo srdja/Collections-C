@@ -838,8 +838,7 @@ enum cc_stat hashtable_iter_next(HashTableIter *iter, TableEntry **te)
             break;
         }
     }
-    if (te)
-        *te = iter->prev_entry;
+    *te = iter->prev_entry;
 
     return CC_OK;
 }

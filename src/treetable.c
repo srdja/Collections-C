@@ -846,10 +846,9 @@ enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
     if (iter->next == iter->table->sentinel)
         return CC_ITER_END;
 
-    if (entry) {
-        entry->value  = iter->next->value;
-        entry->key    = iter->next->key;
-    }
+    entry->value  = iter->next->value;
+    entry->key    = iter->next->key;
+
     iter->current = iter->next;
     iter->next    = get_successor_node(iter->table, iter->current);
 

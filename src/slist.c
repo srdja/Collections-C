@@ -1121,8 +1121,7 @@ enum cc_stat slist_iter_next(SListIter *iter, void **out)
     iter->next = iter->next->next;
     iter->index++;
 
-    if (out)
-        *out = data;
+    *out = data;
 
     return CC_OK;
 }
@@ -1191,11 +1190,8 @@ enum cc_stat slist_zip_iter_next(SListZipIter *iter, void **out1, void **out2)
 
     iter->index++;
 
-    if (out1)
-        *out1 = data1;
-
-    if (out2)
-        *out2 = data2;
+    *out1 = data1;
+    *out2 = data2;
 
     return CC_OK;
 }

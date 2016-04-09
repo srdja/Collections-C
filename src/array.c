@@ -740,8 +740,7 @@ enum cc_stat array_iter_next(ArrayIter *iter, void **out)
     if (iter->index >= iter->ar->size)
         return CC_ITER_END;
 
-    if (out)
-        *out = iter->ar->buffer[iter->index];
+    *out = iter->ar->buffer[iter->index];
 
     iter->index++;
 
@@ -837,11 +836,8 @@ enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
         iter->index >= iter->ar2->size) {
         return CC_ITER_END;
     }
-    if (out1)
-        *out1 = iter->ar1->buffer[iter->index];
-
-    if (out2)
-        *out2 = iter->ar2->buffer[iter->index];
+    *out1 = iter->ar1->buffer[iter->index];
+    *out2 = iter->ar2->buffer[iter->index];
 
     iter->index++;
 
