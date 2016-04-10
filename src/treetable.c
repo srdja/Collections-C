@@ -326,7 +326,7 @@ size_t treetable_size(TreeTable *table)
  */
 bool treetable_contains_key(TreeTable *table, void *key)
 {
-    RBNode *node = get_tree_node_by_key(table, key); // keys can't be null
+    RBNode *node = get_tree_node_by_key(table, key);
 
     if (node)
         return true;
