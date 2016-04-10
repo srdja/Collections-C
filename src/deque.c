@@ -709,11 +709,10 @@ void deque_reverse(Deque *deque)
 size_t deque_contains(Deque *deque, void *element)
 {
     size_t i;
-    size_t p;
     size_t o = 0;
 
     for (i = 0; i < deque->size; i++) {
-        p = (deque->first + i) & (deque->capacity - 1);
+        size_t p = (deque->first + i) & (deque->capacity - 1);
         if (deque->buffer[p] == element)
             o++;
     }
@@ -734,10 +733,9 @@ size_t deque_contains(Deque *deque, void *element)
 enum cc_stat deque_index_of(Deque *deque, void *element, size_t *index)
 {
     size_t i;
-    size_t p;
 
     for (i = 0; i < deque->size; i++) {
-        p = (deque->first + i) & (deque->capacity - 1);
+        size_t p = (deque->first + i) & (deque->capacity - 1);
         if (deque->buffer[p] == element) {
             *index = i;
             return CC_OK;
@@ -797,10 +795,9 @@ const void* const *deque_get_buffer(Deque *deque)
 void deque_foreach(Deque *deque, void (*fn) (void *))
 {
     size_t i;
-    size_t p = 0;
 
     for (i = 0; i < deque->size; i++) {
-        p = (deque->first + i) & (deque->capacity - 1);
+        size_t p = (deque->first + i) & (deque->capacity - 1);
         fn(deque->buffer[p]);
     }
 }
