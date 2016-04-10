@@ -24,12 +24,6 @@
 #include "array.h"
 
 #define KEY_LENGTH_VARIABLE  -1
-#define KEY_LENGTH_DOUBLE    sizeof(double)
-#define KEY_LENGTH_FLOAT     sizeof(float)
-#define KEY_LENGTH_INT       sizeof(int)
-#define KEY_LENGTH_CHAR      sizeof(char)
-#define KEY_LENGTH_SHORT     sizeof(short)
-#define KEY_LENGHT_LONG      sizeof(long)
 #define KEY_LENGTH_POINTER   sizeof(void*)
 
 /**
@@ -162,12 +156,6 @@ enum cc_stat  hashtable_get_keys        (HashTable *table, Array **out);
 enum cc_stat  hashtable_get_values      (HashTable *table, Array **out);
 
 bool          hashtable_string_key_cmp  (void *key1, void *key2);
-bool          hashtable_float_key_cmp   (void *key1, void *key2);
-bool          hashtable_char_key_cmp    (void *key1, void *key2);
-bool          hashtable_short_key_cmp   (void *key1, void *key2);
-bool          hashtable_double_key_cmp  (void *key1, void *key2);
-bool          hashtable_int_key_cmp     (void *key1, void *key2);
-bool          hashtable_long_key_cmp    (void *key1, void *key2);
 bool          hashtable_pointer_key_cmp (void *key1, void *key2);
 
 size_t        hashtable_hash_string     (const void *key, int len, uint32_t seed);
@@ -181,13 +169,8 @@ void          hashtable_iter_init       (HashTableIter *iter, HashTable *table);
 enum cc_stat  hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
 enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 
+
 #define CMP_STRING   hashtable_string_key_cmp
-#define CMP_FLOAT    hashtable_float_key_cmp
-#define CMP_CHAR     hashtable_char_key_cmp
-#define CMP_SHORT    hasthable_short_key_cmp
-#define CMP_LONG     hashtable_long_key_cmp
-#define CMP_DOUBLE   hashtable_double_key_cmp
-#define CMP_INT      hashtable_int_key_cmp
 #define CMP_POINTER  hashtable_pointer_key_cmp
 
 #define GENERAL_HASH hashtable_hash
