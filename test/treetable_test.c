@@ -511,7 +511,7 @@ void test_rb_structure()
     /* validity on each remove. */
     for (i = 0; i < nkeys; i++) {
         int *key;
-        deque_get(keys, (rand() % (deque_size(keys)) -1), (void*)&key);
+        deque_get_at(keys, (rand() % (deque_size(keys)) -1), (void*)&key);
 
         if (key != NULL) {
             treetable_remove(tree, key, NULL);

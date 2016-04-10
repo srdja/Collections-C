@@ -512,7 +512,7 @@ void deque_remove_all_free(Deque *deque)
  * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the index
  * was out of range.
  */
-enum cc_stat deque_get(Deque *deque, size_t index, void **out)
+enum cc_stat deque_get_at(Deque *deque, size_t index, void **out)
 {
     if (index > deque->size)
         return CC_ERR_OUT_OF_RANGE;

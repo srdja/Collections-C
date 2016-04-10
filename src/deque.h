@@ -97,7 +97,7 @@ enum cc_stat  deque_remove_last     (Deque *deque, void **out);
 void          deque_remove_all      (Deque *deque);
 void          deque_remove_all_free (Deque *deque);
 
-enum cc_stat  deque_get             (Deque *deque, size_t index, void **out);
+enum cc_stat  deque_get_at          (Deque *deque, size_t index, void **out);
 enum cc_stat  deque_get_first       (Deque *deque, void **out);
 enum cc_stat  deque_get_last        (Deque *deque, void **out);
 

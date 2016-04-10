@@ -9,7 +9,7 @@ void test_deque_add_at();
 void test_deque_remove_first();
 void test_deque_remove_last();
 void test_deque_remove_all();
-void test_deque_get();
+void test_deque_get_at();
 void test_deque_get_first();
 void test_deque_get_last();
 void test_deque_copy_shallow();
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     test_deque_remove_first();
     test_deque_remove_last();
     test_deque_remove_all();
-    test_deque_get();
+    test_deque_get_at();
     test_deque_get_first();
     test_deque_get_last();
     test_deque_copy_shallow();
@@ -605,7 +605,7 @@ void test_deque_remove_all()
 }
 
 
-void test_deque_get()
+void test_deque_get_at()
 {
     int a = 1;
     int b = 2;
@@ -619,9 +619,9 @@ void test_deque_get()
     deque_add(deque, &c);
 
     void *e;
-    deque_get(deque, 1, &e);
+    deque_get_at(deque, 1, &e);
     void *n;
-    int status = deque_get(deque, 42, &n);
+    int status = deque_get_at(deque, 42, &n);
 
     cc_assert(*((int*) e) == b,
               cc_msg("deque_get: "
@@ -710,13 +710,13 @@ void test_deque_copy_shallow()
                      "but got %d", 3, size));
 
     int *ca;
-    deque_get(copy, 0, (void*)&ca);
+    deque_get_at(copy, 0, (void*)&ca);
 
     int *cb;
-    deque_get(copy, 1, (void*)&cb);
+    deque_get_at(copy, 1, (void*)&cb);
 
     int *cc;
-    deque_get(copy, 2, (void*)&cc);
+    deque_get_at(copy, 2, (void*)&cc);
 
     cc_assert(*ca == a && *cb == b && *cc == c,
               cc_msg("deque_copy_shallow: "
@@ -756,11 +756,11 @@ void test_deque_copy_deep()
                      "but got %d", 3, size));
 
     int *ca;
-    deque_get(copy, 0, (void*)&ca);
+    deque_get_at(copy, 0, (void*)&ca);
     int *cb;
-    deque_get(copy, 1, (void*)&cb);
+    deque_get_at(copy, 1, (void*)&cb);
     int *cc;
-    deque_get(copy, 2, (void*)&cc);
+    deque_get_at(copy, 2, (void*)&cc);
 
     cc_assert(*ca == 1 && *cb == 2 && *cc == 3,
               cc_msg("deque_copy_deep: "
@@ -909,11 +909,11 @@ void test_deque_reverse()
     deque_reverse(deque);
 
     int *ra;
-    deque_get(deque, 0, (void*)&ra);
+    deque_get_at(deque, 0, (void*)&ra);
     int *rb;
-    deque_get(deque, 1, (void*)&rb);
+    deque_get_at(deque, 1, (void*)&rb);
     int *rc;
-    deque_get(deque, 2, (void*)&rc);
+    deque_get_at(deque, 2, (void*)&rc);
 
     cc_assert(*ra == c,
               cc_msg("deque_reverse: Expected %d but got %d instead",
@@ -980,7 +980,7 @@ void test_deque_iterator_add()
 
 
     void *ret;
-    deque_get(deque, 3, &ret);
+    deque_get_at(deque, 3, &ret);
 
     cc_assert(*((int*)ret) == g,
               cc_msg("deque_iterator: Expected value at index 3 was %d,"
@@ -1065,7 +1065,7 @@ void test_deque_iterator_next()
     void *el;
     while (deque_iter_next(&iter, &el) != CC_ITER_END) {
         void *k;
-        deque_get(deque, i, &k);
+        deque_get_at(deque, i, &k);
         cc_assert(el == k,
                   cc_msg("deque_iterator: Element returned by "
                          "deque_iter_next not as expected"));
