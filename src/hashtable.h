@@ -23,6 +23,7 @@
 
 #include "array.h"
 
+
 #define KEY_LENGTH_VARIABLE  -1
 #define KEY_LENGTH_POINTER   sizeof(void*)
 
@@ -59,20 +60,9 @@ typedef struct table_entry_s {
 } TableEntry;
 
 /**
- * HashTable iterator object. Used to iterate over the entries of the table
- * in an undefined order. The iterator also supports operations for safely
- * removing elements during iteration.
- *
- * @code
- * HashTableIter i;
- * hashtable_iter_init(&i);
- *
- * while (hashtable_iter_has_next(&i)) {
- *     TableEntry *e = hashtable_iter_next(&i);
- *     e->key;
- *     e->value;
- * }
- * @endcode
+ * HashTable iterator object. Used to iterate over the entries of
+ * the table in an undefined order. The iterator also supports operations
+ * for safely removing elements during iteration.
  *
  * @note This structure should only be modified through the iterator functions.
  */
@@ -84,20 +74,8 @@ typedef struct hashtable_iter {
 } HashTableIter;
 
 /**
- * HashTable configuration object. Used to initialize a new HashTable with
- * specific values.
- *
- * @code
- * HashTableConf c;
- * hashtable_conf_init(&c);
- *
- * c.key_length  = sizeof(MyType);
- * c.key_compare = my_cmp_function;
- * c.hash        = GENERAL_HASH;
- * c.hash_seed   = 12345;
- *
- * HashTable *t = hashtable_new_conf(&c);
- * @endcode
+ * HashTable configuration object. Used to initialize a new HashTable
+ * with specific values.
  */
 typedef struct hashtable_conf_s {
     /**
@@ -178,4 +156,4 @@ enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 #define POINTER_HASH hashtable_hash_ptr
 
 
-#endif /* COLLECTIONS_C__HASHTABLE_H */
+#endif /* COLLECTIONS_C_HASHTABLE_H */
