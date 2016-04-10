@@ -25,22 +25,33 @@
 #include "array.h"
 
 /**
- * A LIFO (last in first out) structure. Supports constant time time insertion, removal
- * and lookup.
+ * A LIFO (last in first out) structure. Supports constant
+ * time time insertion, removal and lookup.
  */
 typedef struct stack_s Stack;
 
 /**
- * Stack configuration object.
+ * Stack configuration structrue. Used to initialize a new Stack
+ * with specific attributes.
  */
 typedef ArrayConf StackConf;
 
-
+/**
+ * Stack iterator structure. Used to iterate over the elements of
+ * the Stack  in an ascending order. The iterator also supports
+ * operations for safely  adding and removing elements during
+ * iteration.
+ */
 typedef struct stack_iter_s {
     ArrayIter i;
 } StackIter;
 
-
+/**
+ * Stack zip iterator structure. Used to iterate over the elements
+ * of two Stacks in lockstep in an ascending order until one of the
+ * Stacks is is exhausted. The iterator also supports operations for
+ * safely adding  and removing elements during iteration.
+ */
 typedef struct stack_zip_iter_s {
     ArrayZipIter i;
 } StackZipIter;
@@ -69,4 +80,4 @@ enum cc_stat  stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, voi
 
 
 
-#endif /* COLLECTIONS_C__STACK_H */
+#endif /* COLLECTIONS_C_STACK_H */
