@@ -25,8 +25,8 @@
 #include "deque.h"
 
 /**
- * A FIFO (first in first out) structure. Supports constant time insertion, removal
- * and lookup.
+ * A FIFO (first in first out) structure. Supports constant time
+ * insertion, removal and lookup.
  */
 typedef struct queue_s Queue;
 
@@ -36,23 +36,19 @@ typedef struct queue_s Queue;
 typedef DequeConf QueueConf;
 
 /**
- * Queue iterator object. Used to iterate over the elements of a queue
- * in an ascending order.
- *
- * @code
- * QueueIter i;
- * queue_iter_init(&i);
- *
- * while (queue_iter_has_next(&i)) {
- *     MyType *e = queue_iter_next(&i);
- * }
- * @endcode
+ * Queue iterator object. Used to iterate over the elements of a
+ * queue in an ascending order.
  */
 typedef struct queue_iter_s {
     DequeIter i;
 } QueueIter;
 
-
+/**
+ * Queue zip iterator structure. Used to iterate over the elements of two
+ * arrays in lockstep in an ascending order until one of the Queues is
+ * is exhausted. The iterator also supports operations for safely adding
+ * and removing elements during iteration.
+ */
 typedef struct queue_zip_iter_s {
     DequeZipIter i;
 } QueueZipIter;
@@ -79,4 +75,4 @@ void         queue_zip_iter_init   (QueueZipIter *iter, Queue *q1, Queue *q2);
 enum cc_stat queue_zip_iter_next   (QueueZipIter *iter, void **out1, void **out2);
 enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 
-#endif /* COLLECTIONS_C__QUEUE_H */
+#endif /* COLLECTIONS_C_QUEUE_H */

@@ -39,9 +39,12 @@ void queue_conf_init(QueueConf *conf)
 }
 
 /**
- * Returns a new empty queue, or NULL if the allocation fails.
+ * Creates a new empty queue and returns a status code.
  *
- * @return a new queue if the allocation was successful, or NULL.
+ * @param[out] out Pointer to where the newly created Queue is to be stored
+ *
+ * @return  CC_OK if the creation was successful, or CC_ERR_ALLOC if the
+ * memory allocation for the new Queue structure failed.
  */
 enum cc_stat queue_new(Queue **queue)
 {
@@ -51,14 +54,19 @@ enum cc_stat queue_new(Queue **queue)
 }
 
 /**
- * Returns a new empty queue based on the specified QueueConf object.
- * The queue is allocated using the allocatord specified by the Queue
- * conf object. The allocation may fail if the underlying allocator
- * fails.
+ * Creates a new empty Queue based on the specified QueueConf object and
+ * returns a status code.
  *
- * @param[in] conf Queue configuration object. All firlds must be initialized.
+ * The Queue is allocated using the allocators specified in the QueueConf struct.
+ * The allocation may fail if the underlying allocator fails.
  *
- * @return a new queue if the allocation was successful, or NULL.
+ * @param[in] conf Queue configuration structure. All fields must be initialized
+ *                 with appropriate values.
+ * @param[out] out Pointer to where the newly created Queue is to be stored
+ *
+ * @return CC_OK if the creation was successful, CC_ERR_INVALID_CAPACITY if
+ * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
+ * allocation for the new Queue structure failed.
  */
 enum cc_stat queue_new_conf(QueueConf const * const conf, Queue **q)
 {
@@ -112,11 +120,14 @@ void queue_destroy_free(Queue *queue)
 }
 
 /**
- * Returns the element at the front of the queue.
+ * Gets the element at the front of the queue and sets the out
+ * parameter to its value.
  *
- * @param[in] queue the queue whose element is being returned
+ * @param[in] queue the Queue whose element is being returned
+ * @param[out] out Pointer to where the element is stored
  *
- * @return the element at the front of the queue
+ * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the
+ * Queue is empty.
  */
 enum cc_stat queue_peek(Queue *queue, void **out)
 {
@@ -124,11 +135,13 @@ enum cc_stat queue_peek(Queue *queue, void **out)
 }
 
 /**
- * Returns and removes the element at the front of the queue.
+ * Gets and removes the element at the front of the queue and optionally
+ * sets the out parameter to the value of the removed element.
  *
  * @param[in] queue the queue on which this operation is performed
+ * @param[out] out Pointer to where the removed element is stored
  *
- * @return the element that was at the front of the queue
+ * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat queue_poll(Queue *queue, void **out)
 {
@@ -137,12 +150,13 @@ enum cc_stat queue_poll(Queue *queue, void **out)
 
 /**
  * Appends an element to the back of the queue. This operation may
- * fail if the memory allocation for the new elmenet fails.
+ * fail if the memory allocation for the new element fails.
  *
  * @param[in] queue the queue on which this operation is performed
  * @param[in] element the element being enqueued
  *
- * @return true if the operation was successful
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC
+ * if the memory allocation for the new element has failed.
  */
 enum cc_stat queue_enqueue(Queue *queue, void *element)
 {
@@ -163,19 +177,18 @@ size_t queue_size(Queue *queue)
 }
 
 /**
- * A 'foreach loop' function that invokes the specified function on each element
- * in the queue.
+ * Applies the function fn to each element of the Queue.
  *
  * @param[in] queue the queue on which this operation is performed
- * @param[in] op the operation function thatis to be invoked on each queue element
+ * @param[in] fn the operation function that is to be invoked on each queue element
  */
-void queue_foreach(Queue *queue, void (*op) (void*))
+void queue_foreach(Queue *queue, void (*fn) (void*))
 {
-    deque_foreach(queue->d, op);
+    deque_foreach(queue->d, fn);
 }
 
 /**
- * Initializs the iterator.
+ * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized
  * @param[in] queue the queue to iterate over
@@ -186,11 +199,14 @@ void queue_iter_init(QueueIter *iter, Queue *queue)
 }
 
 /**
- * Retruns the next element in the sequence and advances the iterator.
+ * Advances the iterator and sets the out parameter to the value of the
+ * next element in the sequence.
  *
  * @param[in] iter the iterator that is being advanced
+ * @param[out] out Pointer to where the next element is set
  *
- * @return the next element in the sequence
+ * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
+ * end of the Queue has been reached.
  */
 enum cc_stat queue_iter_next(QueueIter *iter, void **out)
 {
@@ -198,12 +214,20 @@ enum cc_stat queue_iter_next(QueueIter *iter, void **out)
 }
 
 /**
- * Replaces the last returned element by the specified iterator.
+ * Replaces the last returned element by <code>queue_iter_next()</code>
+ * with the specified element and optionally sets the out parameter to
+ * the value of the replaced element.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * queue_iter_next()</code>
  *
  * @param[in] iter the iterator on which this operation is being performed
- * @param[in] replacement the replacement element
+ * @param[in] element the replacement element
+ * @param[out] out Pointer to where the replaced element is stored, or NULL
+ *                if it is to be ignored
  *
- * @return the old element that was replaced
+ * @return  CC_OK if the element was replaced successfully, or
+ * CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat queue_iter_replace(QueueIter *iter, void *replacement, void **out)
 {
