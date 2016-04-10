@@ -35,14 +35,18 @@ struct deque_s {
     void  (*mem_free)   (void *block);
 };
 
-static size_t upper_pow_two   (size_t);
+static size_t upper_pow_two (size_t);
+static void   copy_buffer   (Deque *deque, void **buff, void *(*cp) (void*));
+
 static enum cc_stat expand_capacity (Deque *deque);
-static void   copy_buffer     (Deque *deque, void **buff, void *(*cp) (void*));
 
 /**
- * Returns a new empty deque, or NULL if the allocation fails.
+ * Creates a new empty deque and returns a status code.
  *
- * @return a new deque if the allocation was successful, or NULL if it was not
+ * @param[out] out Pointer to where the newly created Deque is to be stored
+ *
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
+ * memory allocation for the new Deque structure failed.
  */
 enum cc_stat deque_new(Deque **deque)
 {
@@ -52,15 +56,19 @@ enum cc_stat deque_new(Deque **deque)
 }
 
 /**
- * Returns a new empty deque based on the specified DequeConf object.
+ * Creates a new empty Deque based on the specified DequeConf object and
+ * returns a status code.
  *
- * The deque is allocated using the allocators specified in the DequeConf object.
+ * The Deque is allocated using the allocators specified in the DequeConf struct.
  * The allocation may fail if the underlying allocator fails.
  *
- * @param[in] conf Deque configuration object. All fields must be initialized
+ * @param[in] conf Deque configuration structure. All fields must be initialized
  *                 with appropriate values.
+ * @param[out] out Pointer to where the newly created Deque is to be stored
  *
- * @return a new deque if the allocation was successful, or NULL if not
+ * @return CC_OK if the creation was successful, CC_ERR_INVALID_CAPACITY if
+ * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
+ * allocation for the new Deque structure failed.
  */
 enum cc_stat deque_new_conf(DequeConf const * const conf, Deque **d)
 {
@@ -89,7 +97,7 @@ enum cc_stat deque_new_conf(DequeConf const * const conf, Deque **d)
 /**
  * Initializes the fields of the DequeConf struct to default values.
  *
- * @param[in, out] conf the configuration object that is being initialized
+ * @param[in, out] conf DequeConf structure that is being initialized
  */
 void deque_conf_init(DequeConf *conf)
 {
@@ -100,9 +108,9 @@ void deque_conf_init(DequeConf *conf)
 }
 
 /**
- * Destroys the deque structure, but leaves the data it used to hold, intact.
+ * Destroys the Deque structure, but leaves the data it used to hold, intact.
  *
- * @param[in] deque the deque that is to be destroyed
+ * @param[in] deque Deque that is to be destroyed
  */
 void deque_destroy(Deque *deque)
 {
@@ -111,13 +119,13 @@ void deque_destroy(Deque *deque)
 }
 
 /**
- * Destroys the deque structure along with all the data it holds.
+ * Destroys the Deque structure along with all the data it holds.
  *
  * @note
- * This function should not be called on a deque that has some of its elements
+ * This function should not be called on a Deque that has some of its elements
  * allocated on the stack.
  *
- * @param[in] deque the deque that is to be destroyed
+ * @param[in] deque Deque that is to be destroyed
  */
 void deque_destroy_free(Deque *deque)
 {
@@ -126,14 +134,14 @@ void deque_destroy_free(Deque *deque)
 }
 
 /**
- * Adds a new element to the deque. The element is appended to the tail of the
- * deque. This function returns a <code>bool</code> based on whether the space
- * allocation for the new element was successful or not.
+ * Adds a new element to the deque. The element is appended to the deque making
+ * it the last element (the one with the highest index) of the Deque.
  *
- * @param[in] deque the deque to which the element is being added
- * @param[in] element the element that is being added
+ * @param[in] deque Deque to which the element is being added
+ * @param[in] element element that is being added
  *
- * @return true if the operation was successful
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
+ * memory allocation for the new element has failed.
  */
 enum cc_stat deque_add(Deque *deque, void *element)
 {
@@ -141,14 +149,13 @@ enum cc_stat deque_add(Deque *deque, void *element)
 }
 
 /**
- * Adds a new element to the front of the deque. This function returns a
- * <code>bool</code> based on whether the memory allocation for the new element
- * was successful or not.
+ * Adds a new element to the front of the Deque.
  *
- * @param[in] deque the deque to which the element is being added
- * @param[in] element the element that is being added
+ * @param[in] deque Deque to which the element is being added
+ * @param[in] element element that is being added
  *
- * @return true if the operation was successful
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
+ * memory allocation for the new element has failed.
  */
 enum cc_stat deque_add_first(Deque *deque, void *element)
 {
@@ -163,14 +170,13 @@ enum cc_stat deque_add_first(Deque *deque, void *element)
 }
 
 /**
- * Adds a new element to the back of the deque. This function returns a
- * <code>bool</code> based on whether the memory allocation for the new element
- * was successful or not.
+ * Adds a new element to the back of the Deque.
  *
- * @param[in] deque the deque to which the element is being added
+ * @param[in] deque the Deque to which the element is being added
  * @param[in] element the element that is being added
  *
- * @return true if the operation was successful
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
+ * memory allocation for the new element has failed.
  */
 enum cc_stat deque_add_last(Deque *deque, void *element)
 {
@@ -186,15 +192,16 @@ enum cc_stat deque_add_last(Deque *deque, void *element)
 
 /**
  * Inserts a new element at the specified index within the deque. The index
- * must be within the range of the deque. This function may also fail if the
- * memory allocation for the new element was not successful.
+ * must be within the range of the Deque.
  *
- * @param[in] deque the deque to which this new element is being added
- * @param[in] element the element that is being added
- * @param[in] index the position within the dequeu at which this new element is
+ * @param[in] deque Deque to which this new element is being added
+ * @param[in] element element that is being added
+ * @param[in] index position within the Deque at which this new element is
  *                  is being added
  *
- * @return true if the the operation was successful
+ * @return CC_OK if the element was successfully added, CC_ERR_OUT_OF_RANGE if
+ * the specified index was not in range, or CC_ERR_ALLOC if the memory
+ * allocation for the new element failed.
  */
 enum cc_stat deque_add_at(Deque *deque, void *element, size_t index)
 {
@@ -282,17 +289,18 @@ enum cc_stat deque_add_at(Deque *deque, void *element, size_t index)
 }
 
 /**
- * Replaces a deque element at the specified index and returns the replaced
- * element. The specified index must be within the bounds of the deque,
- * otherwise NULL is returned. NULL may also be returned if the replaced element
- * is NULL. In this case calling <code>deque_contains()</code> before this
- * function can resolve this ambiguity.
+ * Replaces a deque element at the specified index and optionally sets the out
+ * parameter to the value of the replaced element. The specified index must be
+ * within the bounds of the Deque.
  *
  * @param[in] deque the deque whose element is being replaced
  * @param[in] element the replacement element
  * @param[in] index the index at which the replacement element should be inserted
+ * @param[out] out     Pointer to where the replaced element is stored, or NULL if
+ *                     it is to be ignored
  *
- * @return replaced element, or NULL if the index is out of bounds
+ * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE
+ *         if the index was out of range.
  */
 enum cc_stat deque_replace_at(Deque *deque, void *element, size_t index, void **out)
 {
@@ -310,15 +318,16 @@ enum cc_stat deque_replace_at(Deque *deque, void *element, size_t index, void **
 }
 
 /**
- * Removes and returns the specified element from the deque if such element
- * exists. In case the element doesn't exist NULL is returned. NULL may also
- * be returned if the specified element is NULL. In this case calling <code>
- * deque_contains()</code> before this function can resolve the ambiguity.
+ * Removes the specified element from the deque if such element exists and
+ * optionally sets the out parameter to the value of the removed element.
  *
  * @param[in] deque the deque from which the element is being removed
  * @param[in] element the element being removed
+ * @param[out] out Pointer to where the removed value is stored, or NULL
+ *                 if it is to be ignored
  *
- * @return removed element, or NULL if the operation fails
+ * @return CC_OK if the element was successfully removed, or
+ * CC_ERR_VALUE_NOT_FOUND if the element was not found.
  */
 enum cc_stat deque_remove(Deque *deque, void *element, void **out)
 {
@@ -332,15 +341,17 @@ enum cc_stat deque_remove(Deque *deque, void *element, void **out)
 }
 
 /**
- * Removes and returns a deque element from the specified index. The index must
- * be within the bounds of the deque, otherwise NULL is returned. NULL may also
- * be returned if the removed element is NULL. To resolve this ambiguity call
- * <code>deque_contains()</code> before this function.
+ * Removes a Deque element from the specified index and optionally sets the
+ * out parameter to the value of the removed element. The index must  be within
+ * the bounds of the deque.
  *
  * @param[in] deque the deque from which the element is being removed
  * @param[in] index the index of the element being removed
+ * @param[out] out  Pointer to where the removed value is stored,
+ *                  or NULL if it is to be ignored
  *
- * @return the removed element, or NULL if the operation fails
+ * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
+ * if the index was out of range.
  */
 enum cc_stat deque_remove_at(Deque *deque, size_t index, void **out)
 {
@@ -411,14 +422,15 @@ enum cc_stat deque_remove_at(Deque *deque, size_t index, void **out)
 }
 
 /**
- * Removes and returns the element from the front of the deque, or NULL if
- * the deque is empty. NULL may also be returned if the first element in the
- * deque is of NULL value. This ambiguity can be resolved by calling
- * <code>deque_size()</code> before this function.
+ * Removes the first element of the deque and optionally sets the out parameter
+ * to the value of the removed element.
  *
  * @param[in] deque the deque whose first element (or head) is being removed
+ * @param[out] out Pointer to where the removed value is stored, or NULL if it is
+ *                 to be ignored
  *
- * @return the removed element
+ * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
+ * if the Deque is already empty.
  */
 enum cc_stat deque_remove_first(Deque *deque, void **out)
 {
@@ -436,14 +448,13 @@ enum cc_stat deque_remove_first(Deque *deque, void **out)
 }
 
 /**
- * Removes and returns the element from the back of the deque, or NULL if
- * the deque is empty. NULL may also be returned if the last element in the
- * deque is of NULL value. This ambiguity can be resolved by calling <code>
- * deque_size()</code> before this function.
+ * Removes the last element of the deque and optionally sets the out parameter
+ * to the value of the removed element.
  *
  * @param[in] deque the deque whose last element (or tail) is being removed
  *
- * @return the removed element
+ * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
+ * if the Deque is already empty.
  */
 enum cc_stat deque_remove_last(Deque *deque, void **out)
 {
@@ -462,11 +473,11 @@ enum cc_stat deque_remove_last(Deque *deque, void **out)
 }
 
 /**
- * Removes all elements from the specified deque.
+ * Removes all elements from the Deque.
  *
- * @note This function does not shrink the deque capacity.
+ * @note This function does not shrink the Deque's capacity.
 
- * @param[in] deque the deque from which all element are being removed
+ * @param[in] deque Deque from which all element are being removed
  */
 void deque_remove_all(Deque *deque)
 {
@@ -476,13 +487,13 @@ void deque_remove_all(Deque *deque)
 }
 
 /**
- * Removes and frees all element from the specified deque.
+ * Removes and frees all element from the specified Deque.
  *
- * @note This function does not shrink the deque capacity.
- * @note This function should not be called on deques that have some
+ * @note This function does not shrink the Deque's capacity.
+ * @note This function should not be called on Deques that have some
  *       of their elements allocated on stack.
  *
- * @param[in] deque the deque from which all elements are being removed
+ * @param[in] deque Deque from which all elements are being removed
  */
 void deque_remove_all_free(Deque *deque)
 {
@@ -491,15 +502,15 @@ void deque_remove_all_free(Deque *deque)
 }
 
 /**
- * Returns a deque element from the specified index. The specified index must
- * be withing the bounds of the deque, otherwise NULL is returned. NULL can also
- * be returned if the element at the specified index is NULL. This ambiguity can
- * be resolved by calling <code>deque_contains()</code> before this function.
+ * Gets a Deque element from the specified index and sets the out parameter to
+ * its value. The specified index must be withing the bounds of the deque.
  *
- * @param[in] deque the deque from which the element is being returned
- * @param[in] index the index of the deque element
+ * @param[in] deque Deque from which the element is being returned
+ * @param[in] index index of the Deque element
+ * @param[out] out Pointer to where the element is stored
  *
- * @return element at the specified index, or NULL if the operation fails
+ * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the index
+ * was out of range.
  */
 enum cc_stat deque_get(Deque *deque, size_t index, void **out)
 {
@@ -512,14 +523,13 @@ enum cc_stat deque_get(Deque *deque, size_t index, void **out)
 }
 
 /**
- * Returns the first (head) element of the deque or NULL if the deque is empty.
- * NULL may also be returned if the first element of the deque is of NULL value.
- * This ambiguity can be resolved by calling <code>deque_size()</code> before this
- * function.
+ * Gets the first (head) element of the Deque.
  *
- * @param[in] deque the deque whose first element is being returned
+ * @param[in] deque Deque whose first element is being returned
+ * @param[out] out Pointer to where the element is stored
  *
- * @return the first element of the specified deque
+ * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the
+ * Deque is empty.
  */
 enum cc_stat deque_get_first(Deque *deque, void **out)
 {
@@ -531,14 +541,13 @@ enum cc_stat deque_get_first(Deque *deque, void **out)
 }
 
 /**
- * Returns the last (tail) element of the deque or NULL if the deque is empty.
- * NULL may also be returned if the last element of the deque is of NULL value.
- * This ambiguity can be resolved by calling <code>deque_size()</code> before this
- * function.
+ * Returns the last (tail) element of the Deque.
  *
  * @param[in] deque the deque whose last element is being returned
+ * @param[out] out Pointer to where the element is stored
  *
- * @return the last element of the specified deque
+ * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the
+ * Deque is empty.
  */
 enum cc_stat deque_get_last(Deque *deque, void **out)
 {
@@ -551,15 +560,17 @@ enum cc_stat deque_get_last(Deque *deque, void **out)
 }
 
 /**
- * Returns a shallow copy of the specified deque. A shallow copy is a copy of
+ * Creates a shallow copy of the specified Deque. A shallow copy is a copy of
  * the deque structure, but not the elements it holds.
  *
- * @note The new deque is allocated using the original deque's allocators
- *       and also inherits the configuration of the original deque.
+ * @note The new Deque is allocated using the original Deques's allocators
+ *       and it also inherits the configuration of the original Deque.
  *
- * @param[in] deque the deque to be copied
+ * @param[in] deque Deque to be copied
+ * @param[out] out Pointer to where the newly created copy is stored
  *
- * @return a shallow copy of the specified deque
+ * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
+ * memory allocation for the copy failed.
  */
 enum cc_stat deque_copy_shallow(Deque *deque, Deque **out)
 {
@@ -588,16 +599,19 @@ enum cc_stat deque_copy_shallow(Deque *deque, Deque **out)
 }
 
 /**
- * Returns a deep copy of the specified deque. A deep copy is a copy of
- * both the deque structure and the data it holds.
+ * Creates a deep copy of the specified Deque. A deep copy is a copy of
+ * both the Deque structure and the data it holds.
  *
- * @note The new deque is allocated using the original deque's allocators
- *       and also inherits the configuration of the original deque.
+ * @note The new Deque is allocated using the original Deque's allocators
+ *       and also inherits the configuration of the original Deque.
  *
  * @param[in] deque the deque to be copied
- * @param[in] cp the copy function that returns a copy of a deque element
+ * @param[in] cp   the copy function that should return a pointer to the copy of
+ *                 the data.
+ * @param[out] out Pointer to where the newly created copy is stored
  *
- * @return a deep copy of the specified deque
+ * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
+ * memory allocation for the copy failed.
  */
 enum cc_stat deque_copy_deep(Deque *deque, void *(*cp) (void*), Deque **out)
 {
@@ -628,10 +642,13 @@ enum cc_stat deque_copy_deep(Deque *deque, void *(*cp) (void*), Deque **out)
 }
 
 /**
- * Trims the capacity of the deque to a power of 2 that is the nearest to
- * the number of elements in the deque.
+ * Trims the capacity of the deque to a power of 2 that is the nearest
+ * upper power of 2 to the number of elements in the deque.
  *
- * @param[in] deque the deque on which this operation is being performed
+ * @param[in] deque Deque whose capacity is being trimmed
+ *
+ * @return CC_OK if the capacity was trimmed successfully, or CC_ERR_ALLOC if
+ * the reallocation failed.
  */
 enum cc_stat deque_trim_capacity(Deque *deque)
 {
@@ -704,14 +721,15 @@ size_t deque_contains(Deque *deque, void *element)
 }
 
 /**
- * Returns the index of the first occurrence of the specified deque element, or
- * CC_ERR_OUT_OF_RANGE if the element could not be found.
+ * Gets the index of the specified element. The returned index is the index
+ * of the first occurrence of the element starting from the beginning of the
+ * Deque.
  *
  * @param[in] deque deque being searched
  * @param[in] element the element whose index is being looked up
+ * @param[out] index  Pointer to where the index is stored
  *
- * @return the index of the specified element, or NO_SUCH_INDEX if the element is
- *         not found
+ * @return CC_OK if the index was found, or CC_OUT_OF_RANGE if not.
  */
 enum cc_stat deque_index_of(Deque *deque, void *element, size_t *index)
 {
@@ -729,12 +747,12 @@ enum cc_stat deque_index_of(Deque *deque, void *element, size_t *index)
 }
 
 /**
- * Returns the size of the specified deque. The size of the deque is the
- * number of elements contained within the deque.
+ * Returns the size of the specified Deque. The size of the Deque is the
+ * number of elements contained within the Deque.
  *
- * @param[in] deque the deque whose size is being returned
+ * @param[in] deque Deque whose size is being returned
  *
- * @return the number of elements within the specified deque
+ * @return the number of elements within the specified Deque
  */
 size_t deque_size(Deque *deque)
 {
@@ -743,12 +761,12 @@ size_t deque_size(Deque *deque)
 
 /**
  * Retruns the capacity of the specified deque. The capacity of the deque is
- * the maximum number of elements a deque can hold before its underlying buffer
+ * the maximum number of elements a Deque can hold before its underlying buffer
  * needs to be resized.
  *
- * @param[in] deque deque whose capacity is being returned
+ * @param[in] deque Deque whose capacity is being returned
  *
- * @return the capacity of the specified deque
+ * @return the capacity of the specified Deque
  */
 size_t deque_capacity(Deque *deque)
 {
@@ -758,9 +776,11 @@ size_t deque_capacity(Deque *deque)
 /**
  * Return the underlying deque buffer.
  *
+ * @note Any direct modification of the buffer may invalidate the Deque.
+ *
  * @param[in] deque the deque whose underlying buffer is being returned
  *
- * @return the buffer
+ * @return Deques internal buffer
  */
 const void* const *deque_get_buffer(Deque *deque)
 {
@@ -768,26 +788,27 @@ const void* const *deque_get_buffer(Deque *deque)
 }
 
 /**
- * A 'foreach loop' function that invokes the specified function on each element
- * of the deque.
+ * Applies the function fn to each element of the Deque.
  *
  * @param[in] deque the deque on which this operation is performed
- * @param[in] op    the operation function that is to be invoked on each deque
+ * @param[in] op    the operation function that is to be invoked on each Deque
  *                  element
  */
-void deque_foreach(Deque *deque, void (*op) (void *))
+void deque_foreach(Deque *deque, void (*fn) (void *))
 {
     size_t i;
     size_t p = 0;
 
     for (i = 0; i < deque->size; i++) {
         p = (deque->first + i) & (deque->capacity - 1);
-        op(deque->buffer[p]);
+        fn(deque->buffer[p]);
     }
 }
 
 /**
- * Only copy the elements instead of the whole buffer and realign the buffer.
+ * Copies the elements from the Deque's buffer to the buffer buff. This function
+ * only copies the elements instead of the whole buffer and also realigns the buffer
+ * in the process.
  *
  * @param[in] deque The deque whose buffer is being copied to the new buffer
  * @param[in] buff The destination buffer. This buffer is expected to be at least the
@@ -826,11 +847,13 @@ static void copy_buffer(Deque *deque, void **buff, void *(*cp) (void *))
 /**
  * Expands the deque capacity. This operation might fail if the new buffer
  * cannot be allocated. If the capacity is already the maximum capacity,
- * no new buffer is allocated and false is returned to indicate failure.
+ * no new buffer is allocated.
  *
  * @param[in] deque the deque whose capacity is being expanded
  *
- * @return true if the operation was successful
+ * @return CC_OK if the buffer was expanded successfully, CC_ERR_ALLOC if
+ * the memory allocation for the new buffer failed, or CC_ERR_MAX_CAPACITY
+ * if the Deque is already at maximum capacity.
  */
 static enum cc_stat expand_capacity(Deque *deque)
 {
@@ -897,11 +920,14 @@ void deque_iter_init(DequeIter *iter, Deque *deque)
 }
 
 /**
- * Returns the next element in the sequence and advances the iterator.
+ * Advances the iterator and sets the out parameter to the value of the
+ * next element in the sequence.
  *
  * @param[in] iter the iterator that is being advanced
+ * @param[out] out Pointer to where the next element is set
  *
- * @return the next element in the sequence
+ * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
+ * end of the Deque has been reached.
  */
 enum cc_stat deque_iter_next(DequeIter *iter, void **out)
 {
@@ -921,12 +947,19 @@ enum cc_stat deque_iter_next(DequeIter *iter, void **out)
 }
 
 /**
- * Removes and returns the last returned element by <code>deque_iter_next()
- * </code> without invalidating the iterator.
+ * Removes the last returned element by <code>deque_iter_next()</code>
+ * function without invalidating the iterator and optionally sets the out
+ * parameter to the value of the removed element.
  *
+ * @note This function should only ever be called after a call to <code>
+ * deque_iter_next()</code>
+
+ * @param[out] out Pointer to where the removed element is stored, or NULL
+ *                 if it is to be ignored
  * @param[in] iter the iterator on which this operation is being performed
  *
- * @return the removed element
+ * @return CC_OK if the element was successfully removed, or
+ * CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat deque_iter_remove(DequeIter *iter, void **out)
 {
@@ -937,19 +970,22 @@ enum cc_stat deque_iter_remove(DequeIter *iter, void **out)
         if (out)
             *out = rm;
     }
-
     return status;
 }
 
 /**
- * Adds a new element to the deque after the last returned element by
- * <code>deque_iter_next()</code> without invalidating the iterator.
+ * Adds a new element to the Deque after the last returned element by
+ * <code>deque_iter_next()</code> function without invalidating the
+ * iterator.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * deque_iter_next()</code>
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added
  *
- * @return true if the elmenet was successfully added or false if the allocation
- *         for the new element failed
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC
+ * if the memory allocation for the new element failed.
  */
 enum cc_stat deque_iter_add(DequeIter *iter, void *element)
 {
@@ -962,12 +998,19 @@ enum cc_stat deque_iter_add(DequeIter *iter, void *element)
 
 /**
  * Replaces the last returned element by <code>deque_iter_next()</code>
- * with the specified replacement element.
+ * with the specified element and optionally sets the out parameter to
+ * the value of the replaced element.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * deque_iter_next()</code>
  *
  * @param[in] iter the iterator on which this operation is being performed
- * @param[in] replacement the replacement element
+ * @param[in] element the replacement element
+ * @param[out] out Pointer to where the replaced element is stored, or NULL
+ *                if it is to be ignored
  *
- * @return the old element that was replaced
+ * @return  CC_OK if the element was replaced successfully, or
+ * CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat deque_iter_replace(DequeIter *iter, void *replacement, void **out)
 {
@@ -1083,6 +1126,8 @@ enum cc_stat deque_zip_iter_add(DequeZipIter *iter, void *e1, void *e2)
  * @param[in]  iter Iterator on which this operation is being performed
  * @param[out] out1 Output of the removed element from the first deque
  * @param[out] out2 Output of the removed element from the second deque
+ *
+ * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE.
  */
 enum cc_stat deque_zip_iter_remove(DequeZipIter *iter, void **out1, void **out2)
 {
@@ -1106,6 +1151,8 @@ enum cc_stat deque_zip_iter_remove(DequeZipIter *iter, void **out1, void **out2)
  * @param[in]  e2   Second deque's replacement element
  * @param[out] out1 Output of the replaced element from the first deque
  * @param[out] out2 Output of the replaced element from the second deque
+ *
+ * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE.
  */
 enum cc_stat deque_zip_iter_replace(DequeZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {

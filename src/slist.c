@@ -77,7 +77,8 @@ enum cc_stat slist_new(SList **out)
  * @param[in] conf SList configuration struct. All fields must be initialized
  *            to appropriate values.
  *
- * @param[out] out Pointer to a SList that is being created
+ * @param[out] out Pointer to a SList that is being createdo
+ *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
  * memory allocation for the new SList structure failed.
  */
@@ -503,7 +504,7 @@ enum cc_stat slist_remove(SList *list, void *element, void **out)
  *                  or NULL if it is to be ignored
  *
  * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
- * if the index was out of range
+ * if the index was out of range.
  */
 enum cc_stat slist_remove_at(SList *list, size_t index, void **out)
 {
@@ -1302,6 +1303,8 @@ enum cc_stat slist_zip_iter_add(SListZipIter *iter, void *e1, void *e2)
  * @param[in]  iter Iterator on which this operation is being performed
  * @param[out] out1 Output of the removed element from the first Slist
  * @param[out] out2 Output of the removed element from the second Slist
+ *
+ * @return CC_OK of the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
 {
@@ -1337,6 +1340,8 @@ enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
  * @param[in]  e2   Second slist's replacement element
  * @param[out] out1 Output of the replaced element from the first slist
  * @param[out] out2 Output of the replaced element from the second slist
+ *
+ * @return CC_OK of the element was successfully replaced, or CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {

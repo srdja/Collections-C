@@ -24,14 +24,14 @@
 #include "common.h"
 
 /**
- * A dynamic array that supports amortized constant time insertion and removal
- * at both ends and constant time access.
+ * A dynamic array that supports amortized constant time insertion
+ * and removal at both ends and constant time access.
  */
 typedef struct deque_s Deque;
 
 /**
- * Deque configuration object. Used to initialize a new Deque with specific
- * values.
+ * Deque configuration structure. Used to initialize a new Deque
+ * with specific values.
  */
 typedef struct deque_conf_s {
     /**
@@ -49,18 +49,10 @@ typedef struct deque_conf_s {
 } DequeConf;
 
 /**
- * Deque iterator object. Used to iterate over the elements of a deque
- * in an ascending order. The iterator also supports operations for safely
- * removing and adding elements during iteration.
- *
- * @code
- * DequeIter i;
- * deque_iter_init(&i);
- *
- * while (deque_iter_has_next(&i)) {
- *     MyType *e = deque_iter_next(&i);
- * }
- * @endcode
+ * Deque iterator object. Used to iterate over the elements of
+ * a deque in an ascending order. The iterator also supports
+ * operations for safely  removing and adding elements during
+ * iteration.
  */
 typedef struct deque_iter_s {
     /**
@@ -72,7 +64,12 @@ typedef struct deque_iter_s {
     size_t index;
 } DequeIter;
 
-
+/**
+ * Deque zip iterator structure. Used to iterate over two Deques in
+ * lockstep in an ascending order until one of the deques is exhausted.
+ * The iterator also supports operations for safely adding and removing
+ * elements during iteration.
+ */
 typedef struct deque_zip_iter_s {
     Deque *d1;
     Deque *d2;
@@ -134,4 +131,4 @@ size_t        deque_zip_iter_index  (DequeZipIter *iter);
 
 const void* const* deque_get_buffer(Deque *deque);
 
-#endif /* COLLECTIONS_C__DEQUE_H */
+#endif /* COLLECTIONS_C_DEQUE_H */

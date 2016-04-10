@@ -24,24 +24,16 @@
 #include "common.h"
 
 /**
- * A dynamic array that expands automatically as elements are added. The array supports
- * amortized constant time insertion and removal of elements at the end of the array, as
- * well as constant time access.
+ * A dynamic array that expands automatically as elements are
+ * added. The array supports amortized constant time insertion
+ * and removal of elements at the end of the array, as well as
+ * constant time access.
  */
 typedef struct array_s Array;
 
 /**
- * Array configuration object. Used to initalize a new Array with specific
- * values.
- *
- * @code
- * ArrayConf c;
- * array_conf_init(&c);
- *
- * c.capcity = 32;
- *
- * Array *a = array_new_conf(&c);
- * @endcode
+ * Array configuration structure. Used to initalize a new Array
+ * with specific values.
  */
 typedef struct array_conf_s {
     /**
@@ -61,18 +53,10 @@ typedef struct array_conf_s {
 } ArrayConf;
 
 /**
- * Array iterator object. Used to iterate over the elements of the array
- * in an ascending order. The iterator also supports operations for safely
- * adding and removing elements during iteration.
- *
- * @code
- * ArrayIter i;
- * array_iter_init(&i);
- *
- * while (array_iter_has_next(&i)) {
- *     MyType *e = array_iter_next(&i);
- * }
- * @endcode
+ * Array iterator structure. Used to iterate over the elements of
+ * the array  in an ascending order. The iterator also supports
+ * operations for safely  adding and removing elements during
+ * iteration.
  */
 typedef struct array_iter_s {
     /**
@@ -85,9 +69,10 @@ typedef struct array_iter_s {
 } ArrayIter;
 
 /**
- * Array zip iterator object. Used to iterate over the elements of two
- * arrays in lockstep in an ascending order. The iterator also supports
- * operations for safely adding and removing elements during iteration.
+ * Array zip iterator structure. Used to iterate over the elements of two
+ * arrays in lockstep in an ascending order until one of the Arrays is
+ * is exhausted. The iterator also supports operations for safely adding
+ * and removing elements during iteration.
  */
 typedef struct array_zip_iter_s {
     Array *ar1;
@@ -149,4 +134,4 @@ size_t        array_zip_iter_index  (ArrayZipIter *iter);
 
 const void* const* array_get_buffer(Array *ar);
 
-#endif /* COLLECTIONS_C__ARRAY_H */
+#endif /* COLLECTIONS_C_ARRAY_H */

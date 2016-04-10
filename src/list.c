@@ -1592,6 +1592,8 @@ enum cc_stat list_zip_iter_add(ListZipIter *iter, void *e1, void *e2)
  * @param[in]  iter Iterator on which this operation is being performed
  * @param[out] out1 Output of the removed element from the first List
  * @param[out] out2 Output of the removed element from the second List
+ *
+ * @return CC_OK if the element was removed successfully, or CC_ERR_VALU_NOT_FOUND.
  */
 enum cc_stat list_zip_iter_remove(ListZipIter *iter, void **out1, void **out2)
 {
@@ -1625,6 +1627,8 @@ enum cc_stat list_zip_iter_remove(ListZipIter *iter, void **out1, void **out2)
  * @param[in]  e2   Second list's replacement element
  * @param[out] out1 Output of the replaced element from the first list
  * @param[out] out2 Output of the replaced element from the second list
+ *
+ * @return CC_OK if the element was replaced successfully, or CC_ERR_VALU_NOT_FOUND.
  */
 enum cc_stat list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
