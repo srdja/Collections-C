@@ -25,8 +25,9 @@
 #include "hashtable.h"
 
 /**
- * An unordered set. The lookup, deletion, and insertion are performed in
- * amortized constant time and in the worst case in amortized linear time.
+ * An unordered set. The lookup, deletion, and insertion are
+ * performed in amortized constant time and in the worst case
+ * in amortized linear time.
  */
 typedef struct hashset_s HashSet;
 
@@ -36,18 +37,9 @@ typedef struct hashset_s HashSet;
 typedef HashTableConf HashSetConf;
 
 /**
- * HashSet iterator object. Used to iterate over the elements of the set.
- * The iterator also supports operations for safely removing elements
- * during iteration.
- *
- * @code
- * HashSetIter i;
- * hashset_iter_init(&i);
- *
- * while (hashset_iter_has_next(&i)) {
- *     MyType *e = hashset_iter_next(&i);
- * }
- * @endcode
+ * HashSet iterator structure. Used to iterate over the elements
+ * of the HashSet. The iterator also supports operations for safely
+ * removing elements during iteration.
  */
 typedef struct hashset_iter_s {
     HashTableIter iter;
@@ -73,4 +65,4 @@ void          hashset_iter_init     (HashSetIter *iter, HashSet *set);
 enum cc_stat  hashset_iter_next     (HashSetIter *iter, void **out);
 enum cc_stat  hashset_iter_remove   (HashSetIter *iter, void **out);
 
-#endif /* COLLECTIONS_C__HASHSET_H */
+#endif /* COLLECTIONS_C_HASHSET_H */
