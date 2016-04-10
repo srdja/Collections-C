@@ -76,8 +76,7 @@ enum cc_stat hashtable_new(HashTable **out)
  * @param[in] conf the HashTable conf structure
  * @param[out] out Pointer to where the newly created HashTable is stored
  *
- * @return CC_OK if the creation was successful, CC_ERR_INVALID_CAPACITY if
- * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
  * allocation for the new HashTable structure failed.
  */
 enum cc_stat hashtable_new_conf(HashTableConf const * const conf, HashTable **out)

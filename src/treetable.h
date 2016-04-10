@@ -24,8 +24,8 @@
 #include "common.h"
 
 /**
- * An ordered key-value map. TreeTable support logarithmic time insertion,
- * removal and lookup of values.
+ * An ordered key-value map. TreeTable supports logarithmic time
+ * insertion, removal and lookup of values.
  */
 typedef struct treetable_s TreeTable;
 
@@ -69,22 +69,12 @@ typedef struct tree_table_entry_s {
 } TreeTableEntry;
 
 /**
- * TreeTable iterator object. Used to iterate over the entries of the table.
- * The iterator also supports operations for safely removing elements during
- * iteration.
+ * TreeTable iterator structure. Used to iterate over the entries
+ * of the table. The iterator also supports operations for safely
+ * removing elements during iteration.
  *
- * @code
- * TreeTableIter i;
- * treetable_iter_init(&i);
- *
- * while (treetable_iter_has_next(&i)) {
- *     TreeTableEntry *e = treetable_iter_next(&i);
- *     e->key;
- *     e->value;
- * }
- * @endcode
- *
- * @note This structure should only be modified through the iterator functions.
+ * @note This structure should only be modified through the
+ * iterator functions.
  */
 typedef struct tree_table_iter_s {
     TreeTable *table;
@@ -93,19 +83,8 @@ typedef struct tree_table_iter_s {
 } TreeTableIter;
 
 /**
- * TreeTable configuration object. Used to initialize a new TreeTable with
- * specific values.
- *
- * @code
- * TreeTableConf c;
- * treetable_conf_init(&c);
- *
- * c.cmp = mycmpfunc;
- * c.mem_alloc = mymalloc;
- * ...
- *
- * TreeTable *t = treetable_new_conf(&c);
- * @endcode
+ * TreeTable configuration structure. Used to initialize a new
+ * TreeTable with specific attributes.
  */
 typedef struct treetable_conf_s {
     int    (*cmp)         (void *k1, void *k2);
@@ -155,4 +134,4 @@ void          treetable_iter_remove      (TreeTableIter *iter);
 int treetable_assert_rb_rules(TreeTable *table);
 #endif /* DEBUG */
 
-#endif /* COLLECTIONS_C__TREETABLE_H */
+#endif /* COLLECTIONS_C_TREETABLE_H */

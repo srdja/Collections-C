@@ -22,20 +22,22 @@
 
 #include "treetable.h"
 
+
 #define RB_BLACK 1
 #define RB_RED   0
+
 
 struct treetable_s {
     RBNode *root;
     RBNode *sentinel;
     size_t  size;
 
-    int    (*cmp)         (void *k1, void *k2);
-
-    void  *(*mem_alloc)   (size_t size);
-    void  *(*mem_calloc)  (size_t blocks, size_t size);
-    void   (*mem_free)    (void *block);
+    int    (*cmp)        (void *k1, void *k2);
+    void  *(*mem_alloc)  (size_t size);
+    void  *(*mem_calloc) (size_t blocks, size_t size);
+    void   (*mem_free)   (void *block);
 };
+
 
 static void rotate_left            (TreeTable *table, RBNode *n);
 static void rotate_right           (TreeTable *table, RBNode *n);
@@ -52,6 +54,7 @@ static RBNode *get_tree_node_by_key(TreeTable *table, void *key);
 static RBNode *get_successor_node  (TreeTable *table, RBNode *n);
 static RBNode *get_predecessor_node(TreeTable *table, RBNode *n);
 
+
 /**
  * Initializes the TreehTableConf structs fields to default values.
  *
@@ -65,12 +68,13 @@ void treetable_conf_init(TreeTableConf *conf)
 }
 
 /**
- * Allocates a new TreeTable object using the standard allocators.
- * NULL may be returned if the underlying memory allocators fail.
+ * Creates a new TreeTable and returns a status code.
  *
  * @param[in] cmp the comparator used to order keys within the table
+ * @param[out] out Pointer to where the newly created TreeTable is to be stored
  *
- * @return a new TreeTable or NULL if the memory allocation fails.
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
+ * allocation for the new TreeTable failed.
  */
 enum cc_stat treetable_new(int (*cmp) (void *, void *), TreeTable **tt)
 {
@@ -81,15 +85,17 @@ enum cc_stat treetable_new(int (*cmp) (void *, void *), TreeTable **tt)
 }
 
 /**
- * Allocates a new configured TreeTable based on the provided TreeTableConf object.
+ * Creates a new TreeTable based on the specified TreeTableConf struct and returns
+ * a status code.
+ *
  * The table is allocated using the memory allocators specified in the TreeTableConf
- * object. In case the allocation of the table structure fails, NULL is returned.
- * The TreeTableConf object is not modified by this function and can therefore
- * be used for other tables.
+ * struct.
  *
- * @param conf the TreeTableConf object used to configure this new TreeTable
+ * @param[in] conf the TreeTableConf struct used to configure this new TreeTable
+ * @param[out] out Pointer to where the newly created TreeTable is stored
  *
- * @return a new TreeTable or NULL if the memory allocation fails.
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
+ * allocation for the new TreeTable structure failed.
  */
 enum cc_stat treetable_new_conf(TreeTableConf const * const conf, TreeTable **tt)
 {
@@ -119,6 +125,12 @@ enum cc_stat treetable_new_conf(TreeTableConf const * const conf, TreeTable **tt
     return CC_OK;
 }
 
+/**
+ * Destroys the sub-tree specified by the root node n.
+ *
+ * @param[in] table TreeTable to be destroyed.
+ * @param[in] n root node of the sub tree that is being destroyed
+ */
 static void tree_destroy(TreeTable *table, RBNode *n)
 {
     if (n == table->sentinel)
@@ -132,8 +144,8 @@ static void tree_destroy(TreeTable *table, RBNode *n)
 
 /**
  * Destroys the specified TreeTable structure without destroying the the data
- * contained within it. In other words the keys and the values are not freed,
- * but only the table structure.
+ * it holds. In other words the keys and the values are not freed, only the
+ * table structure is.
  *
  * @param[in] table TreeTable to be destroyed.
  */
@@ -146,16 +158,14 @@ void treetable_destroy(TreeTable *table)
 }
 
 /**
- * Returns a value associated with the specified key. If there is no value
- * associated with this key, NULL is returned. In the case where the provided
- * key explicitly maps to a NULL value, calling <code>treetable_contains_key()
- * </code> before this function can resolve the ambiguity.
+ * Gets a value associated with the specified key and sets the out
+ * parameter to it.
  *
  * @param[in] table the table from which the mapping is being returned
  * @param[in] key   the key that is being looked up
+ * @param[out] out  Pointer to where the returned value is stored
  *
- * @return the value mapped to the specified key, or null if the mapping doesn't
- *         exit
+ * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
 enum cc_stat treetable_get(TreeTable *table, void *key, void **out)
 {
@@ -169,11 +179,13 @@ enum cc_stat treetable_get(TreeTable *table, void *key, void **out)
 }
 
 /**
- * Returns the value associated with the first (lowest) key in the table.
+ * Gets the value associated with the first (lowest) key in the table
+ * and sets the out parameter to it.
  *
  * @param[in] table the table in which the lookup is performed
+ * @param[out] out  Pointer to where the returned value is stored
  *
- * @return value associated with the first key, or NULL if the table is empty
+ * @return CC_OK if the key was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
 enum cc_stat treetable_get_first_value(TreeTable *table, void **out)
 {
@@ -187,11 +199,13 @@ enum cc_stat treetable_get_first_value(TreeTable *table, void **out)
 }
 
 /**
- * Returns the value associated with the highest (last) key in the table.
+ * Gets the value associated with the highest (last) key in the table
+ * and sets the out parameter to it.
  *
  * @param[in] table the table in which the lookup is performed
+ * @param[out] out  Pointer to where the returned value is stored
  *
- * @return value associated with the last key, or NULL if the table is empty
+ * @return CC_OK if the key was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
 enum cc_stat treetable_get_last_value(TreeTable *table, void **out)
 {
@@ -205,11 +219,13 @@ enum cc_stat treetable_get_last_value(TreeTable *table, void **out)
 }
 
 /**
- * Returns the first (lowest) key in the table.
+ * Returns the first (lowest) key in the table and sets the out parameter
+ * to it.
  *
  * @param[in] table the table in which the lookup is performed
+ * @param[out] out  Pointer to where the returned key is stored
  *
- * @return the first key
+ * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
 enum cc_stat treetable_get_first_key(TreeTable *table, void **out)
 {
@@ -223,11 +239,13 @@ enum cc_stat treetable_get_first_key(TreeTable *table, void **out)
 }
 
 /**
- * Returns the last (highest) key in the table.
+ * Returns the last (highest) key in the table and sets the out parameter
+ * to it.
  *
  * @param[in] table the table in which the lookup is performed
+ * @param[out] out  Pointer to where the returned key is stored
  *
- * @return the last key
+ * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
 enum cc_stat treetable_get_last_key(TreeTable *table, void **out)
 {
@@ -242,12 +260,14 @@ enum cc_stat treetable_get_last_key(TreeTable *table, void **out)
 
 
 /**
- * Returns the immediate successor of the specified key.
+ * Gets the immediate successor of the specified key and sets the out
+ * parameter to its value.
  *
  * @param[in] table the table into which the lookup is performed
  * @param[in] key   the key whose successor is being returned
+ * @param[out] out  Pointer to where the returned key is stored
  *
- * @return successor of the key, or NULL if there is no successor key
+ * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
 enum cc_stat treetable_get_greater_than(TreeTable *table, void *key, void **out)
 {
@@ -262,12 +282,14 @@ enum cc_stat treetable_get_greater_than(TreeTable *table, void *key, void **out)
 }
 
 /**
- * Returns the immediate predecessor of the specified key.
+ * Returns the immediate predecessor of the specified key and sets the
+ * out parameter to its value.
  *
  * @param[in] table the table into which the lookup is performed
  * @param[in] key   the key whose predecessor is being returned
+ * @param[out] out  Pointer to where the returned key is stored
  *
- * @return predecessor of the key, or NULL if there is no predecessor key
+ * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
 enum cc_stat treetable_get_lesser_than(TreeTable *table, void *key, void **out)
 {
@@ -343,7 +365,8 @@ size_t treetable_contains_value(TreeTable *table, void *value)
  * @param[in] key a tree table key used to access the specified value
  * @param[in] val a value that is being stored in the table
  *
- * @return true if the operation was successful
+ * @return CC_OK if the operation was successful, or CC_ERR_ALLOC if the memory
+ * allocation for the new element failed.
  */
 enum cc_stat treetable_add(TreeTable *table, void *key, void *val)
 {
@@ -392,6 +415,12 @@ enum cc_stat treetable_add(TreeTable *table, void *key, void *val)
     return CC_OK;
 }
 
+/**
+ * Rebalances the tale after an insert.
+ *
+ * @param[in] table TreeTable that is being rebalanced
+ * @param[in] z Node that was inserted
+ */
 static void rebalance_after_insert(TreeTable *table, RBNode *z)
 {
     RBNode *y;
@@ -434,6 +463,13 @@ static void rebalance_after_insert(TreeTable *table, RBNode *z)
     table->root->color = RB_BLACK;
 }
 
+
+/**
+ * Rebalances the tale after a delete.
+ *
+ * @param[in] table TreeTable that is being rebalanced
+ * @param[in] z Node that comes after the deleted node
+ */
 static void rebalance_after_delete(TreeTable *table, RBNode *x)
 {
     RBNode *w;
@@ -565,17 +601,16 @@ static void remove_node(TreeTable *table, RBNode *z)
 }
 
 /**
- * Removes a key-value mapping from the specified TreeTable and returns the
- * value that was mapped to the specified key. In case the key doesn't exist
- * NULL is returned. NULL might also be returned if the key maps to a null value.
- * Calling <code>treetable_contains_key()</code> before this functin can resolve
- * the ambiguity.
+ * Removes a key-value mapping from the specified TreeTable and sets the out
+ * parameter to value.
  *
  * @param[in] table the table from which the key-value pair is being removed
  * @param[in] key the key of the value being returned
+ * @param[out] out Pointer to where the removed value is stored, or NULL
+ *                 if it is to be ignored
  *
- * @return the value associated with the removed key, or NULL if the key doesn't
- *         exist
+ * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
+ * if the key was not found.
  */
 enum cc_stat treetable_remove(TreeTable *table, void *key, void **out)
 {
@@ -592,12 +627,15 @@ enum cc_stat treetable_remove(TreeTable *table, void *key, void **out)
 }
 
 /**
- * Removes the frist (lowest) key from the specified table and returns the
- * value taht was associated to the removed key, or NULL if the table is empty.
+ * Removes the first (lowest) key from the specified table and sets the out
+ * parameter to value.
  *
  * @param[in] table the table from which the first entry is being removed
+ * @param[out] out Pointer to where the removed value is stored, or NULL
+ *                 if it is to be ignored
  *
- * @return the value associated with the removed key.
+ * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
+ * if the key was not found.
  */
 enum cc_stat treetable_remove_first(TreeTable *table, void **out)
 {
@@ -614,12 +652,15 @@ enum cc_stat treetable_remove_first(TreeTable *table, void **out)
 }
 
 /**
- * Removes the last (highest) key from the specified table and returns the
- * value taht was associated to the removed key, or NULL if the table is empty.
+ * Removes the last (highest) key from the specified table and sets the out
+ * parameter to value.
  *
  * @param[in] table the table from which the last entry is being removed
+ * @param[out] out Pointer to where the removed value is stored, or NULL
+ *                 if it is to be ignored
  *
- * @return the value associated with the removed key.
+ * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
+ * if the key was not found.
  */
 enum cc_stat treetable_remove_last(TreeTable *table, void **out)
 {
@@ -708,7 +749,7 @@ static void rotate_left(TreeTable *table, RBNode *x)
 /**
  * Returns a tree node associated with the specified key.
  *
- * @param[in] table the table on which this opertaion is performed
+ * @param[in] table the table on which this operation is performed
  * @param[in] key the key being looked up
  *
  * @return tree node associated with the key
@@ -787,37 +828,37 @@ static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
 }
 
 /**
- * A 'foreach loop' function that invokes the specified function on every key in
- * the table. The operation function should not modify the key. Any modification
+ * Applies the function fn to each key of the TreeTable.
+ *
+ * @note The operation function should not modify the key. Any modification
  * of the key will invalidate the TreeTable.
  *
- * @param[in] table the table on which this operation is being perfomed
- * @param[in] op the operation function that is invoked on each key of the table
+ * @param[in] table the table on which this operation is being performed
+ * @param[in] fn the operation function that is invoked on each key of the table
  */
-void treetable_foreach_key(TreeTable *table, void (*op) (const void *k))
+void treetable_foreach_key(TreeTable *table, void (*fn) (const void *k))
 {
     RBNode *n = tree_min(table, table->root);
 
     while (n != table->sentinel) {
-        op(n->key);
+        fn(n->key);
         n = get_successor_node(table, n);
     }
 }
 
 /**
- * A 'foreach loop' function that invokes the specified function on every value
- * in the table.
+ * Applies the function fn to each value of the TreeTable.
  *
  * @param[in] table the table on which this operation is being performed
- * @param[in] op the operation function that is invoked on each value of the
+ * @param[in] fn the operation function that is invoked on each value of the
  *               table
  */
-void treetable_foreach_value(TreeTable *table, void (*op) (void *k))
+void treetable_foreach_value(TreeTable *table, void (*fn) (void *k))
 {
     RBNode *n = tree_min(table, table->root);
 
     while (n != table->sentinel) {
-        op(n->value);
+        fn(n->value);
         n = get_successor_node(table, n);
     }
 }
@@ -836,10 +877,14 @@ void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
 }
 
 /**
- * Advances the iterator.
+ * Advances the iterator and sets the out parameter to the value of the
+ * next TreeTableEntry.
  *
  * @param[in] iter the iterator that is being advanced
- * @param[in, out] entry the next entry
+ * @param[out] out Pointer to where the next entry is set
+ *
+ * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
+ * end of the TreeTable has been reached.
  */
 enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
 {
@@ -856,14 +901,25 @@ enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
 }
 
 /**
- * Removes the last returned table entry
+ * Removes the last returned entry by <code>treetable_iter_next()</code>
+ * function without invalidating the iterator and optionally sets the
+ * out parameter to the value of the removed entry.
+ *
+ * @note This Function should only ever be called after a call to <code>
+ * treetable_iter_next()</code>
  *
  * @param[in] iter The iterator on which this operation is performed
+ * @param[out] out Pointer to where the removed element is stored, or NULL
+ *                 if it is to be ignored
+ *
+ * @return CC_OK if the entry was successfully removed, or
+ * CC_ERR_KEY_NOT_FOUND.
  */
 void treetable_iter_remove(TreeTableIter *iter)
 {
     remove_node(iter->table, iter->current);
 }
+
 
 #ifdef DEBUG
 static int treetable_test(TreeTable *table, RBNode *node, int *nb)
@@ -872,7 +928,7 @@ static int treetable_test(TreeTable *table, RBNode *node, int *nb)
         *nb = 1;
         return RB_ERROR_OK;
     }
-    /* check tree oreder */
+    /* check tree order */
     if (node->left != table->sentinel) {
         int cmp = table->cmp(node->left->key, node->key);
         if (cmp >= 0)
