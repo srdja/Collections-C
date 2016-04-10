@@ -96,8 +96,8 @@ typedef struct list_conf_s {
 void          list_conf_init       (ListConf *conf);
 enum cc_stat  list_new             (List **list);
 enum cc_stat  list_new_conf        (ListConf const * const conf, List **list);
-bool          list_destroy         (List *list);
-bool          list_destroy_free    (List *list);
+void          list_destroy         (List *list);
+void          list_destroy_free    (List *list);
 
 enum cc_stat  list_splice          (List *list1, List *list2);
 enum cc_stat  list_splice_at       (List *list, List *list2, size_t index);

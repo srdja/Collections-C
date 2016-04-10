@@ -106,15 +106,12 @@ enum cc_stat list_new_conf(ListConf const * const conf, List **out)
  *
  * @param[in] list List that is to be destroyed
  */
-bool list_destroy(List *list)
+void list_destroy(List *list)
 {
-    bool success = true;
-
     if (list->size > 0)
-        success = list_remove_all(list);
+        list_remove_all(list);
 
     list->mem_free(list);
-    return success;
 }
 
 /**
@@ -126,12 +123,10 @@ bool list_destroy(List *list)
  *
  * @param[in] list List that is to be destroyed
  */
-bool list_destroy_free(List *list)
+void list_destroy_free(List *list)
 {
-    bool success = list_remove_all_free(list);
-
+    list_remove_all_free(list);
     list->mem_free(list);
-    return success;
 }
 
 /**
