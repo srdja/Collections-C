@@ -10,7 +10,8 @@ libcollectc_la_SOURCES = array.c     stack.c      slist.c \
                          array.h     list.h       slist.h \
                          hashtable.h hashset.h    deque.h \
                          stack.h     queue.h      treetable.c \
-                         treetable.h treeset.c    treeset.h
+                         treetable.h treeset.c    treeset.h \
+                         common.c
 
 library_includedir = $(includedir)/collectc
 

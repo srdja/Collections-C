@@ -62,4 +62,12 @@ enum cc_stat {
 #endif /* _MSC_VER */
 
 
-#endif /* COLLECTIONS_C__COMMON_H */
+int cc_common_cmp_str(const void *key1, const void *key2);
+int cc_common_cmp_ptr(const void *key1, const void *key2);
+
+
+#define CC_CMP_STRING  cc_common_cmp_str
+#define CC_CMP_POINTER cc_common_cmp_ptr
+
+
+#endif /* COLLECTIONS_C_COMMON_H */

@@ -62,6 +62,8 @@ test.h
 
 hashtable_test_SOURCES =\
 hashtable_test.c \
+../src/common.h \
+../src/common.c \
 ../src/hashtable.c \
 ../src/hashtable.h \
 ../src/array.c \
@@ -93,6 +95,8 @@ hashset_test_SOURCES =\
 hashset_test.c\
 test.h\
 test.c\
+../src/common.c \
+../src/common.h \
 ../src/hashset.c\
 ../src/hashset.h\
 ../src/hashtable.h\

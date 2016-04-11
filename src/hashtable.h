@@ -22,7 +22,7 @@
 #define COLLECTIONS_C_HASHTABLE_H
 
 #include "array.h"
-
+#include "common.h"
 
 #define KEY_LENGTH_VARIABLE  -1
 #define KEY_LENGTH_POINTER   sizeof(void*)
@@ -105,7 +105,7 @@ typedef struct hashtable_conf_s {
 
     /**
      * The key comparator function */
-    bool   (*key_compare) (void *key1, void *key2);
+    int    (*key_compare) (const void *key1, const void *key2);
 
     /**
      * Memory allocators used to allocate the HashTable structure
@@ -133,9 +133,6 @@ size_t        hashtable_capacity        (HashTable *table);
 enum cc_stat  hashtable_get_keys        (HashTable *table, Array **out);
 enum cc_stat  hashtable_get_values      (HashTable *table, Array **out);
 
-bool          hashtable_string_key_cmp  (void *key1, void *key2);
-bool          hashtable_pointer_key_cmp (void *key1, void *key2);
-
 size_t        hashtable_hash_string     (const void *key, int len, uint32_t seed);
 size_t        hashtable_hash            (const void *key, int len, uint32_t seed);
 size_t        hashtable_hash_ptr        (const void *key, int len, uint32_t seed);
@@ -147,9 +144,6 @@ void          hashtable_iter_init       (HashTableIter *iter, HashTable *table);
 enum cc_stat  hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
 enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 
-
-#define CMP_STRING   hashtable_string_key_cmp
-#define CMP_POINTER  hashtable_pointer_key_cmp
 
 #define GENERAL_HASH hashtable_hash
 #define STRING_HASH  hashtable_hash_string

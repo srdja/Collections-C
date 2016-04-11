@@ -33,7 +33,7 @@ struct hashtable_s {
     TableEntry **buckets;
 
     size_t  (*hash)       (const void *key, int l, uint32_t seed);
-    bool    (*key_cmp)    (void *k1, void *k2);
+    int     (*key_cmp)    (const void *k1, const void *k2);
     void   *(*mem_alloc)  (size_t size);
     void   *(*mem_calloc) (size_t blocks, size_t size);
     void    (*mem_free)   (void *block);
@@ -117,7 +117,7 @@ enum cc_stat hashtable_new_conf(HashTableConf const * const conf, HashTable **ou
 void hashtable_conf_init(HashTableConf *conf)
 {
     conf->hash             = STRING_HASH;
-    conf->key_compare      = CMP_STRING;
+    conf->key_compare      = cc_common_cmp_str;
     conf->initial_capacity = DEFAULT_CAPACITY;
     conf->load_factor      = DEFAULT_LOAD_FACTOR;
     conf->key_length       = KEY_LENGTH_VARIABLE;
@@ -180,7 +180,7 @@ enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
     TableEntry *replace = table->buckets[i];
 
     while (replace) {
-        if (table->key_cmp(replace->key, key)) {
+        if (table->key_cmp(replace->key, key) == 0) {
             replace->value = val;
             return true;
         }
@@ -260,7 +260,7 @@ enum cc_stat hashtable_get(HashTable *table, void *key, void **out)
     TableEntry *bucket = table->buckets[index];
 
     while (bucket) {
-        if (table->key_cmp(bucket->key, key)) {
+        if (table->key_cmp(bucket->key, key) == 0) {
             *out = bucket->value;
             return CC_OK;
         }
@@ -319,7 +319,7 @@ enum cc_stat hashtable_remove(HashTable *table, void *key, void **out)
     while (e) {
         next = e->next;
 
-        if (table->key_cmp(key, e->key)) {
+        if (table->key_cmp(key, e->key) == 0) {
             void *value = e->value;
 
             if (!prev)
@@ -529,7 +529,7 @@ bool hashtable_contains_key(HashTable *table, void *key)
     TableEntry *entry = table->buckets[get_table_index(table, key)];
 
     while (entry) {
-        if (table->key_cmp(key, entry->key))
+        if (table->key_cmp(key, entry->key) == 0)
             return true;
 
         entry = entry->next;
@@ -634,32 +634,6 @@ static INLINE size_t get_table_index(HashTable *table, void *key)
 {
     size_t hash = table->hash(key, table->key_len, table->hash_seed);
     return hash & (table->capacity - 1);
-}
-
-/**
- * String key comparator function.
- *
- * @param[in] key1 first key
- * @param[in] key2 second key
- *
- * @return true if the keys are identical and false if otherwise
- */
-bool hashtable_string_key_cmp(void *key1, void *key2)
-{
-    return strcmp((char*)key1, (char*)key2) == 0;
-}
-
-/**
- * Pointer key comparator function.
- *
- * @param[in] key1 first key
- * @param[in] key2 second key
- *
- * @return true if the keys are identical
- */
-bool hashtable_pointer_key_cmp(void *key1, void *key2)
-{
-    return key1 == key2;
 }
 
 /**

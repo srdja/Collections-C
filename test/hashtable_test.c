@@ -298,18 +298,18 @@ void test_hashtable_contains_key()
     hashtable_destroy(table);
 }
 
-bool cmp_k(void *k1, void *k2)
+int cmp_k(const void *k1, const void *k2)
 {
     char *key1 = (char*) k1;
     char *key2 = (char*) k2;
     int i;
     for (i = 0; i < (sizeof(int) * 7); i++) {
         if (*key1 != *key2)
-            return false;
+            return 1;
         key1++;
         key2++;
     }
-    return true;
+    return 0;
 }
 
 void test_hashtable_memory_chunks_as_keys()
