@@ -128,6 +128,7 @@ enum cc_stat  list_copy_deep       (List *list, void *(*cp) (void*), List **out)
 enum cc_stat  list_replace_at      (List *list, void *element, size_t index, void **out);
 
 size_t        list_contains        (List *list, void *element);
+size_t        list_contains_value  (List *list, void *element, int (*cmp) (const void*, const void*));
 enum cc_stat  list_index_of        (List *list, void *element, size_t *index);
 enum cc_stat  list_to_array        (List *list, void ***out);
 

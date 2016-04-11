@@ -109,6 +109,7 @@ void          array_reverse         (Array *ar);
 enum cc_stat  array_trim_capacity   (Array *ar);
 
 size_t        array_contains        (Array *ar, void *element);
+size_t        array_contains_value  (Array *ar, void *element, int (*cmp) (const void*, const void*));
 size_t        array_size            (Array *ar);
 size_t        array_capacity        (Array *ar);
 

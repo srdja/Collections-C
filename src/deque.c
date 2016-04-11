@@ -699,21 +699,36 @@ void deque_reverse(Deque *deque)
 }
 
 /**
- * Returns the number of occurrences of the element within the specified deque.
+ * Returns the number of occurrences of the element within the specified Deque.
  *
- * @param[in] deque the deque that is being searched
+ * @param[in] deque Deque that is being searched
  * @param[in] element the element that is being searched for
  *
  * @return the number of occurrences of the element
  */
 size_t deque_contains(Deque *deque, void *element)
 {
+    return deque_contains_value(deque, element, cc_common_cmp_ptr);
+}
+
+/**
+ * Returns the number of occurrences of the value poined to by <code>element</code>
+ * within the deque.
+ *
+ * @param[in] deque Deque that is being searched
+ * @param[in] element the element that is being searched for
+ * @param[in] cmp Comparator function which returns 0 if the values passed to it are equal
+ *
+ * @return the number of occurrences of the element
+ */
+size_t deque_contains_value(Deque *deque, void *element, int (*cmp) (const void*, const void*))
+{
     size_t i;
     size_t o = 0;
 
     for (i = 0; i < deque->size; i++) {
         size_t p = (deque->first + i) & (deque->capacity - 1);
-        if (deque->buffer[p] == element)
+        if (cmp(deque->buffer[p], element) == 0)
             o++;
     }
     return o;

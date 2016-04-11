@@ -949,17 +949,32 @@ enum cc_stat list_to_array(List *list, void ***out)
  * element within the list.
  *
  * @param[in] list List on which the search is performed
- * @param[in] element element being looked for
+ * @param[in] element element being seached for
  *
  * @return number of found matches
  */
 size_t list_contains(List *list, void *element)
 {
-    Node   *node    = list->head;
-    size_t  e_count = 0;
+    return list_contains_value(list, element, cc_common_cmp_ptr);
+}
+
+/**
+ * Returns the number occurrences of the value pointed to by <code>element</code>
+ * within the List.
+ *
+ * @param[in] list List on which the search is performed
+ * @param[in] element element being searched for
+ * @param[in] cmp Comparator function which returns 0 if the values passed to it are equal
+ *
+ * @return number of found matches
+ */
+size_t list_contains_value(List *list, void *element, int (*cmp) (const void*, const void*))
+{
+    Node *node = list->head;
+    size_t e_count = 0;
 
     while (node) {
-        if (node->data == element)
+        if (cmp(node->data, element) == 0)
             e_count++;
         node = node->next;
     }

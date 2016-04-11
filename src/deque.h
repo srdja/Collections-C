@@ -108,6 +108,7 @@ void          deque_reverse         (Deque *deque);
 enum cc_stat  deque_trim_capacity   (Deque *deque);
 
 size_t        deque_contains        (Deque *deque, void *element);
+size_t        deque_contains_value  (Deque *deque, void *element, int (*cmp)(const void*, const void*));
 size_t        deque_size            (Deque *deque);
 size_t        deque_capacity        (Deque *deque);
 

@@ -903,12 +903,26 @@ enum cc_stat slist_copy_deep(SList *list, void *(*cp) (void*), SList **out)
  */
 size_t slist_contains(SList *list, void *element)
 {
-    SNode *node = list->head;
+    return slist_contains_value(list, element, cc_common_cmp_ptr);
+}
 
+/**
+ * Returns the number of occurrences of the value pointed to by <code>element</code>
+ * within the specified SList.
+ *
+ * @param[in] list SList on which the search is performed
+ * @param[in] element element being searched for
+ * @param[in] cmp Comparator function which returns 0 if the values passed to it are equal
+ *
+ * @return number of occurrences of the value
+ */
+size_t slist_contains_value(SList *list, void *element, int (*cmp) (const void*, const void*))
+{
+    SNode *node = list->head;
     size_t e_count = 0;
 
     while (node) {
-        if (node->data == element)
+        if (cmp(node->data, element) == 0)
             e_count++;
         node = node->next;
     }

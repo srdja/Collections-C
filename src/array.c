@@ -613,10 +613,25 @@ enum cc_stat array_trim_capacity(Array *ar)
  */
 size_t array_contains(Array *ar, void *element)
 {
+    return array_contains_value(ar, element, cc_common_cmp_ptr);
+}
+
+/**
+ * Returns the number of occurrences of the value pointed to by <code>e</code>
+ * within the specified Array.
+ *
+ * @param[in] ar Array that is being searched
+ * @param[in] element the element that is being searched for
+ * @param[in] cmp Comparator function which returns 0 if the values passed to it are equal
+ *
+ * @return the number of occurrences of the value
+ */
+size_t array_contains_value(Array *ar, void *e, int (*cmp) (const void*, const void*))
+{
     size_t o = 0;
     size_t i;
     for (i = 0; i < ar->size; i++) {
-        if (element == ar->buffer[i])
+        if (cmp(e, ar->buffer[i]) == 0)
             o++;
     }
     return o;

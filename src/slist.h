@@ -119,6 +119,7 @@ enum cc_stat  slist_copy_deep       (SList *list, void *(*cp) (void*), SList **o
 enum cc_stat  slist_replace_at      (SList *list, void *element, size_t index, void **out);
 
 size_t        slist_contains        (SList *list, void *element);
+size_t        slist_contains_value  (SList *list, void *element, int (*cmp) (const void*, const void*));
 enum cc_stat  slist_index_of        (SList *list, void *element, size_t *index);
 enum cc_stat  slist_to_array        (SList *list, void ***out);
 
