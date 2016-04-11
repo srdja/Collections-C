@@ -65,6 +65,7 @@ void treetable_conf_init(TreeTableConf *conf)
     conf->mem_alloc  = malloc;
     conf->mem_calloc = calloc;
     conf->mem_free   = free;
+    conf->cmp        = cc_common_cmp_ptr;
 }
 
 /**
