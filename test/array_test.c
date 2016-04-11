@@ -665,41 +665,47 @@ void test_array_iter_remove()
 
 void test_array_iter_add()
 {
-    Array *v;
-    array_new(&v);
+    Array *ar;
+    array_new(&ar);
 
-    int a = 5;
-    int b = 12;
-    int c = 848;
-    int d = 23;
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
 
     int new = 80;
 
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&d);
+    array_add(ar, (void*)&a);
+    array_add(ar, (void*)&b);
+    array_add(ar, (void*)&c);
+    array_add(ar, (void*)&d);
 
     ArrayIter iter;
-    array_iter_init(&iter, v);
+    array_iter_init(&iter, ar);
 
     int *e;
     while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
-        if (array_iter_index(&iter) == 2)
+        if (*e == 3)
             array_iter_add(&iter, (void*) &new);
     }
-
+    cc_assert(array_size(ar) == 5,
+              cc_msg("array_iter_add: Expected size"
+                     " was 5, but got %d", array_size(ar)));
     void *n;
-    array_get_at(v, 2, &n);
+    array_get_at(ar, 3, &n);
 
     cc_assert(*((int*)n) == new,
               cc_msg("array_iter_add: Expected element at index 2 was %d"
                      ", but got %d instead", new, *((int*)n)));
 
-    cc_assert(array_contains(v, &new) == 1,
+    cc_assert(array_contains(ar, &new) == 1,
               cc_msg("array_iter_add: Element not present after being added"));
 
-    array_destroy(v);
+    array_get_at(ar, 4, (void*) &n);
+    cc_assert(*((int*)n) == 4,
+              cc_msg("array_iter_add: Expected element at index 4 was 4, but got %d", *((int*)n)));
+
+    array_destroy(ar);
 }
 
 

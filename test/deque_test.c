@@ -956,9 +956,9 @@ void test_deque_iterator_add()
 
     size_t i = 0;
 
-    void *el;
-    while (deque_iter_next(&iter, &el) != CC_ITER_END) {
-        if (deque_iter_index(&iter) == 3)
+    int *el;
+    while (deque_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == d)
             deque_iter_add(&iter, &g);
 
         if (deque_iter_index(&iter) < 3) {
@@ -977,10 +977,12 @@ void test_deque_iterator_add()
         }
         i++;
     }
-
+    cc_assert(deque_size(deque) == 7,
+              cc_msg("deque_iter_add: Expected size"
+                     " was 7, but got %d", deque_size(deque)));
 
     void *ret;
-    deque_get_at(deque, 3, &ret);
+    deque_get_at(deque, 4, &ret);
 
     cc_assert(*((int*)ret) == g,
               cc_msg("deque_iterator: Expected value at index 3 was %d,"
