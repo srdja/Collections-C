@@ -46,6 +46,8 @@ treeset_test_CFLAGS   = -DDEBUG -g -O0 -Werror
 
 treeset_test_SOURCES =\
 treeset_test.c\
+../src/common.h \
+../src/common.c \
 ../src/treeset.c\
 ../src/treeset.h\
 ../src/treetable.c\
@@ -55,6 +57,8 @@ test.h
 
 list_test_SOURCES =\
 list_test.c \
+../src/common.h \
+../src/common.c \
 ../src/list.c \
 ../src/list.h \
 test.c \
@@ -73,12 +77,16 @@ test.h
 
 array_test_SOURCES =\
 array_test.c\
+../src/common.h \
+../src/common.c \
 ../src/array.c\
 ../src/array.h\
 test.c\
 test.h
 
 slist_test_SOURCES =\
+../src/common.h \
+../src/common.c \
 slist_test.c\
 test.h\
 test.c\
@@ -86,6 +94,8 @@ test.c\
 ../src/slist.c
 
 deque_test_SOURCES =\
+../src/common.h \
+../src/common.c \
 deque_test.c\
 test.h test.c\
 ../src/deque.c\
@@ -108,6 +118,8 @@ stack_test_SOURCES =\
 stack_test.c\
 test.h\
 test.c\
+../src/common.h \
+../src/common.c \
 ../src/stack.c\
 ../src/stack.h\
 ../src/array.c\
@@ -117,6 +129,8 @@ queue_test_SOURCES =\
 queue_test.c\
 test.h\
 test.c\
+../src/common.h \
+../src/common.c \
 ../src/queue.c\
 ../src/queue.h\
 ../src/deque.c\
@@ -126,6 +140,8 @@ treetable_test_SOURCES =\
 treetable_test.c\
 test.c\
 test.h\
+../src/common.h \
+../src/common.c \
 ../src/treetable.c\
 ../src/treetable.h\
 ../src/deque.h\
