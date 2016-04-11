@@ -32,7 +32,7 @@ struct treetable_s {
     RBNode *sentinel;
     size_t  size;
 
-    int    (*cmp)        (void *k1, void *k2);
+    int    (*cmp)        (const void *k1, const void *k2);
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
     void   (*mem_free)   (void *block);
@@ -77,7 +77,7 @@ void treetable_conf_init(TreeTableConf *conf)
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
  * allocation for the new TreeTable failed.
  */
-enum cc_stat treetable_new(int (*cmp) (void *, void *), TreeTable **tt)
+enum cc_stat treetable_new(int (*cmp) (const void*, const void*), TreeTable **tt)
 {
     TreeTableConf conf;
     treetable_conf_init(&conf);

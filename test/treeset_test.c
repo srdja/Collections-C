@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     return cc_get_status();
 }
 
-int cmp(void *k1, void *k2)
+int cmp(const void *k1, const void *k2)
 {
     int a = *((int*) k1);
     int b = *((int*) k2);

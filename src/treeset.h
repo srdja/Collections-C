@@ -46,7 +46,7 @@ typedef struct treeset_iter_s {
 
 
 void          treeset_conf_init        (TreeSetConf *conf);
-enum cc_stat  treeset_new              (int (*cmp) (void*, void*), TreeSet **set);
+enum cc_stat  treeset_new              (int (*cmp) (const void*, const void*), TreeSet **set);
 enum cc_stat  treeset_new_conf         (TreeSetConf const * const conf, TreeSet **set);
 
 void          treeset_destroy          (TreeSet *set);

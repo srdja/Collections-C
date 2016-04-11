@@ -48,7 +48,7 @@ void treeset_conf_init(TreeSetConf *conf)
  * @return  CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
  * allocation for the new TreeSet failed.
  */
-enum cc_stat treeset_new(int (*cmp) (void*, void*), TreeSet **set)
+enum cc_stat treeset_new(int (*cmp) (const void*, const void*), TreeSet **set)
 {
     TreeSetConf conf;
     treeset_conf_init(&conf);

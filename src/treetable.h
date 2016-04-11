@@ -87,7 +87,7 @@ typedef struct tree_table_iter_s {
  * TreeTable with specific attributes.
  */
 typedef struct treetable_conf_s {
-    int    (*cmp)         (void *k1, void *k2);
+    int    (*cmp)         (const void *k1, const void *k2);
     void  *(*mem_alloc)   (size_t size);
     void  *(*mem_calloc)  (size_t blocks, size_t size);
     void   (*mem_free)    (void *block);
@@ -95,7 +95,7 @@ typedef struct treetable_conf_s {
 
 
 void          treetable_conf_init        (TreeTableConf *conf);
-enum cc_stat  treetable_new              (int (*cmp) (void *, void *), TreeTable **tt);
+enum cc_stat  treetable_new              (int (*cmp) (const void*, const void*), TreeTable **tt);
 enum cc_stat  treetable_new_conf         (TreeTableConf const * const conf, TreeTable **tt);
 
 void          treetable_destroy          (TreeTable *table);
