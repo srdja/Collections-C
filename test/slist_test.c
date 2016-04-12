@@ -529,7 +529,7 @@ void test_slist_remove_all()
 {
     SList *list;
     slist_1234(&list);
-    slist_remove_all(list);
+    slist_remove_all_free(list);
 
     cc_assert(slist_size(list) == 0,
               cc_msg("slist_remove_all: Expected size"
