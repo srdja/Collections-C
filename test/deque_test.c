@@ -768,6 +768,9 @@ void test_deque_copy_deep()
 
     deque_destroy(deque);
     deque_destroy_free(copy);
+    free(a);
+    free(b);
+    free(c);
 }
 
 
