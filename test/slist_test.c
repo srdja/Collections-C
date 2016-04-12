@@ -1164,7 +1164,7 @@ void test_slist_zip_iter_remove()
             slist_zip_iter_remove(&zip, &r1, &r2);
     }
 
-    cc_assert(r1 == "b" && r2 == "f",
+    cc_assert(strcmp((char*) r1, "b") == 0 && strcmp((char*) r2, "f") == 0,
               cc_msg("slist_zip_iter_remove: Removed elements don't match expected ones"));
 
     cc_assert(slist_contains(a1, "b") == 0,
