@@ -1,4 +1,5 @@
 #include <time.h>
+#include <stdint.h>
 
 #include "../src/array.h"
 #include "test.h"
@@ -19,6 +20,8 @@ void test_array_trim_capacity();
 void test_array_contains();
 void test_array_capacity();
 void test_array_sort();
+void test_array_filter_mut();
+void test_array_filter();
 
 void test_array_iter();
 void test_array_iter_remove();
@@ -54,6 +57,8 @@ int main(int argc, char **argv)
     test_array_sort();
     test_array_iter();
     test_array_zip_iter();
+    test_array_filter_mut();
+    test_array_filter();
 
     return cc_get_status();
 }
@@ -963,4 +968,141 @@ void test_array_zip_iter()
     test_array_zip_iter_add();
     test_array_zip_iter_next();
     test_array_zip_iter_replace();
+}
+
+
+Array *new_filter_array()
+{
+    Array *ar;
+    array_new(&ar);
+
+    array_add(ar, (void*) 0);
+    array_add(ar, (void*) 1);
+    array_add(ar, (void*) 2);
+    array_add(ar, (void*) 0);
+    array_add(ar, (void*) 0);
+    array_add(ar, (void*) 3);
+    array_add(ar, (void*) 4);
+    array_add(ar, (void*) 0);
+    array_add(ar, (void*) 0);
+    array_add(ar, (void*) 5);
+    array_add(ar, (void*) 6);
+    return ar;
+}
+
+
+bool pred1(const void *e)
+{
+    return e == 0;
+}
+
+
+bool pred2(const void *e)
+{
+    return e != 0;
+}
+
+
+void test_array_filter_mut() {
+    Array *ar = new_filter_array();
+
+    array_filter_mut(ar, pred1);
+
+    cc_assert(array_size(ar) == 5,
+              cc_msg("array_filter_mut: Expected size after filtering was 5,"
+                     " but got %d instead", array_size(ar)));
+
+    ArrayIter i;
+    array_iter_init(&i, ar);
+    void *e;
+    while (array_iter_next(&i, &e) != CC_ITER_END) {
+        cc_assert(e == 0,
+                  cc_msg("array_filter_mut: Expected 0 at index %lu, but got "
+                         "%lu instead", array_iter_index(&i), e));
+    }
+    array_destroy(ar);
+
+    ar = new_filter_array();
+
+    array_filter_mut(ar, pred2);
+
+    cc_assert(array_size(ar) == 6,
+              cc_msg("array_filter_mut: Expected size after filtering was 6,"
+                     " but got %d instead", array_size(ar)));
+
+    void *e1;
+    array_get_at(ar, 0, &e1);
+
+    void *e2;
+    array_get_at(ar, 1, &e2);
+
+    void *e3;
+    array_get_at(ar, 2, &e3);
+
+    void *e4;
+    array_get_at(ar, 3, &e4);
+
+    void *e5;
+    array_get_at(ar, 4, &e5);
+
+    void *e6;
+    array_get_at(ar, 5, &e6);
+
+    cc_assert((uintptr_t)e1 == 1 && (uintptr_t)e2 == 2 && (uintptr_t)e3 == 3 &&
+              (uintptr_t)e4 == 4 && (uintptr_t)e5 == 5 && (uintptr_t)e6 == 6,
+              cc_msg("array_filter_mut: Unexpected order after filtering"));
+
+    array_destroy(ar);
+}
+
+
+void test_array_filter() {
+    Array *ar = new_filter_array();
+    Array *far;
+    array_filter(ar, pred1, &far);
+
+    cc_assert(array_size(far) == 5,
+              cc_msg("array_filter_mut: Expected size after filtering was 5,"
+                     " but got %d instead", array_size(far)));
+
+    ArrayIter i;
+    array_iter_init(&i, far);
+    void *e;
+    while (array_iter_next(&i, &e) != CC_ITER_END) {
+        cc_assert(e == 0,
+                  cc_msg("array_filter_mut: Expected 0 at index %lu, but got "
+                         "%lu instead", array_iter_index(&i), e));
+    }
+    array_destroy(far);
+
+    array_filter(ar, pred2, &far);
+
+    cc_assert(array_size(far) == 6,
+              cc_msg("array_filter_mut: Expected size after filtering was 6,"
+                     " but got %d instead", array_size(far)));
+
+    void *e1;
+    array_get_at(far, 0, &e1);
+
+    void *e2;
+    array_get_at(far, 1, &e2);
+
+    void *e3;
+    array_get_at(far, 2, &e3);
+
+    void *e4;
+    array_get_at(far, 3, &e4);
+
+    void *e5;
+    array_get_at(far, 4, &e5);
+
+    void *e6;
+    array_get_at(far, 5, &e6);
+
+    cc_assert((uintptr_t)e1 == 1 && (uintptr_t)e2 == 2 && (uintptr_t)e3 == 3 &&
+              (uintptr_t)e4 == 4 && (uintptr_t)e5 == 5 && (uintptr_t)e6 == 6,
+              cc_msg("array_filter_mut: Unexpected order after filtering"));
+
+    array_destroy(far);
+    array_destroy(ar);
 }
