@@ -221,6 +221,8 @@ void test_hashtable_get()
     cc_assert(ret == val,
               cc_msg("hashtable_get: Incorrect value returned."
                      " Expected %s, but got %s", val, ret));
+
+    hashtable_destroy(table);
 }
 
 
