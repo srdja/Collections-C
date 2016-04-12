@@ -666,6 +666,7 @@ enum cc_stat deque_trim_capacity(Deque *deque)
         return CC_ERR_ALLOC;
 
     copy_buffer(deque, new_buff, NULL);
+    deque->mem_free(deque->buffer);
 
     deque->buffer   = new_buff;
     deque->first    = 0;
@@ -879,6 +880,7 @@ static enum cc_stat expand_capacity(Deque *deque)
         return CC_ERR_ALLOC;
 
     copy_buffer(deque, new_buffer, NULL);
+    deque->mem_free(deque->buffer);
 
     deque->first    = 0;
     deque->last     = deque->size;
