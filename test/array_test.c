@@ -908,6 +908,9 @@ void test_array_zip_iter_add()
 
     cc_assert(array_size(a2) == 4,
               cc_msg("array_zip_iter_add: Expected size 4, but got %d", array_size(a2)));
+
+    array_destroy(a1);
+    array_destroy(a2);
 }
 
 
@@ -959,6 +962,8 @@ void test_array_zip_iter_replace()
     cc_assert(array_contains(a2, "i") == 1,
               cc_msg("array_zip_iter_replace: Element %s not presetn after addition", "i"));
 
+    array_destroy(a1);
+    array_destroy(a2);
 }
 
 
