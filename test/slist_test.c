@@ -418,9 +418,10 @@ void test_slist_remove()
     slist_1234(&list);
 
     int *e;
-    slist_get_at(list, 1, (void*)&e);
+    slist_get_at(list, 1, (void*) &e);
 
     slist_remove(list, e, NULL);
+    free(e);
 
     cc_assert(slist_size(list) == 3,
               cc_msg("slist_remove: Expected size"
@@ -441,14 +442,15 @@ void test_slist_remove_first()
     SList *list;
     slist_1234(&list);
 
-    slist_remove_first(list, NULL);
+    int *first;
+    slist_remove_first(list, (void*) &first);
+    free(first);
 
     cc_assert(slist_size(list) == 3,
               cc_msg("slist_remove_first: Expected "
                      "size was 3, but got %d!",
                      slist_size(list)));
 
-    int *first;
     slist_get_first(list, (void*) &first);
 
     cc_assert(*first == 2,
@@ -467,14 +469,15 @@ void test_slist_remove_last()
     SList *list;
     slist_1234(&list);
 
-    slist_remove_last(list, NULL);
+    int *last;
+    slist_remove_last(list, (void*) &last);
+    free(last);
 
     cc_assert(slist_size(list) == 3,
               cc_msg("slist_remove_last: Expected"
                      " size was 3, but got %d!",
                      slist_size(list)));
 
-    int *last;
     slist_get_last(list, (void*) &last);
 
     cc_assert(*last == 3,
@@ -493,9 +496,10 @@ void test_slist_remove_at()
     SList *list;
     slist_1234(&list);
 
-    slist_remove_at(list, 2, NULL);
-
     int *e;
+    slist_remove_at(list, 2, (void*) &e);
+    free(e);
+
     slist_get_at(list, 2, (void*) &e);
 
     cc_assert(*e == 4,
@@ -506,7 +510,8 @@ void test_slist_remove_at()
               cc_msg("slist_remove_at: Expected size"
                      " was 3, but got %d!", slist_size(list)));
 
-    slist_remove_at(list, 0, NULL);
+    slist_remove_at(list, 0, (void*) &e);
+    free(e);
 
     slist_get_at(list, 0, (void*) &e);
 
@@ -628,11 +633,12 @@ void test_slist_replace_at()
     int *replacement = (int*) malloc(sizeof(int));
     *replacement = 32;
 
-    slist_replace_at(list, replacement, 2, NULL);
+    int *e;
+    slist_replace_at(list, replacement, 2, (void*) &e);
+    free(e);
 
-    void *e;
-    slist_get_at(list, 2, &e);
-    cc_assert((int*) e == replacement,
+    slist_get_at(list, 2, (void*) &e);
+    cc_assert(e == replacement,
               cc_msg("slist_replace_at: Unexpected"
                      " element at index 2"));
 
@@ -910,7 +916,8 @@ void test_slist_iter_add()
 {
     SList *list;
     slist_1234(&list);
-    int ins = 32;
+    int *ins = (int*) malloc(sizeof(int));
+    *ins = 32;
 
     SListIter iter;
     slist_iter_init(&iter, list);
@@ -918,7 +925,7 @@ void test_slist_iter_add()
     int *el;
     while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         if (*el == 3)
-            slist_iter_add(&iter, &ins);
+            slist_iter_add(&iter, ins);
     }
 
     cc_assert(slist_size(list) == 5,
@@ -928,7 +935,7 @@ void test_slist_iter_add()
     int *li3;
     slist_get_at(list, 3, (void*) &li3);
 
-    cc_assert(*li3 == ins,
+    cc_assert(*li3 == *ins,
               cc_msg("slist_iter_add: Expected element at"
                      " index 3 was %d, but got %d", ins, *li3));
 
@@ -939,17 +946,19 @@ void test_slist_iter_add()
               cc_msg("slist_iter_add: Expected element at"
                      " index 4 was 4, but got %d,", *li4));
 
+    ins = (int*) malloc(sizeof(int));
+    *ins = 32;
 
     slist_iter_init(&iter, list);
     while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         if (*el == 4)
-            slist_iter_add(&iter, &ins);
+            slist_iter_add(&iter, ins);
     }
 
     void *e;
     slist_get_last(list, &e);
 
-    cc_assert(*((int*) e) == ins,
+    cc_assert(*((int*) e) == *ins,
               cc_msg("slist_iter_add: Expected last element to be %d"
                      ", but got %d instead", ins, *((int*)e)));
 
@@ -959,7 +968,7 @@ void test_slist_iter_add()
 
     test_slist_validate_structure(list, "list_iter_add");
 
-    slist_destroy(list);
+    slist_destroy_free(list);
 }
 
 
@@ -977,6 +986,7 @@ void test_slist_iter_remove()
     while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (*e == 3) {
             slist_iter_remove(&iter, NULL);
+            free(e);
         }
     }
     cc_assert(slist_size(list) == 3,
@@ -989,7 +999,7 @@ void test_slist_iter_remove()
 
     test_slist_validate_structure(list, "slist_iter_remove");
 
-    slist_destroy(list);
+    slist_destroy_free(list);
 }
 
 
@@ -1369,6 +1379,8 @@ void test_slist_reverse()
                   cc_msg("slist_reverse: Expected %d, but got %d instead", next, *((int*) e)));
         next--;
     }
+
+    slist_destroy_free(l);
 }
 
 void slist_1234(SList **out)
