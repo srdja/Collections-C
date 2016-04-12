@@ -118,6 +118,9 @@ void          array_sort            (Array *ar, int (*cmp) (const void*, const v
 
 void          array_map             (Array *ar, void (*fn) (void *));
 
+enum cc_stat  array_filter_mut      (Array *ar, bool (*predicate) (const void*));
+enum cc_stat  array_filter          (Array *ar, bool (*predicate) (const void*), Array **out);
+
 void          array_iter_init       (ArrayIter *iter, Array *ar);
 enum cc_stat  array_iter_next       (ArrayIter *iter, void **out);
 enum cc_stat  array_iter_remove     (ArrayIter *iter, void **out);

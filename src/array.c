@@ -556,6 +556,106 @@ enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
     return CC_OK;
 }
 
+
+/**
+ * Filters the Array by modifying it. It removes all elements that don't
+ * return true on pred(element).
+ *
+ * @param[in] ar   Array that is to be filtered
+ * @param[in] pred Predicate function which returns true if the element should
+ *                 be kept in the Array.
+ *
+ * @return CC_OK if the Array was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ * if the Array is empty.
+ */
+enum cc_stat array_filter_mut(Array *ar, bool (*pred) (const void*))
+{
+    if (ar->size == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    size_t rm   = 0;
+    size_t keep = 0;
+
+    /* Look for clusters of non matching elements before moving
+     * in order to minimize the number of memmoves */
+    for (size_t i = ar->size - 1; i != ((size_t) - 1); i--) {
+        if (!pred(ar->buffer[i])) {
+            rm++;
+            continue;
+        }
+        if (rm > 0) {
+            if (keep > 0) {
+                size_t block_size = keep * sizeof(void*);
+                memmove(&(ar->buffer[i + 1]),
+                        &(ar->buffer[i + 1 + rm]),
+                        block_size);
+            }
+            ar->size -= rm;
+            rm = 0;
+        }
+        keep++;
+    }
+    /* Remove any remaining elements*/
+    if (rm > 0) {
+        size_t block_size = keep * sizeof(void*);
+        memmove(&(ar->buffer[0]),
+                &(ar->buffer[rm]),
+                block_size);
+
+        ar->size -= rm;
+    }
+    return CC_OK;
+}
+
+/**
+ * Filters the Array by creating a new Array that contains all elements from the
+ * original Array that return true on pred(element) without modifying the original
+ * Array.
+ *
+ * @param[in] ar   Array that is to be filtered
+ * @param[in] pred Predicate function which returns true if the element should
+ *                 be kept in the filtered array.
+ * @param[out] out Pointer to where the new filtered Array is to be stored
+ *
+ * @return CC_OK if the Array was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the Array is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new Array failed.
+ */
+enum cc_stat array_filter(Array *ar, bool (*pred) (const void*), Array **out)
+{
+    if (ar->size == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    Array *filtered = ar->mem_alloc(sizeof(Array));
+
+    if (!filtered)
+        return CC_ERR_ALLOC;
+
+    if (!(filtered->buffer = ar->mem_calloc(ar->capacity, sizeof(void*)))) {
+        ar->mem_free(filtered);
+        return CC_ERR_ALLOC;
+    }
+
+    filtered->exp_factor = ar->exp_factor;
+    filtered->size       = 0;
+    filtered->capacity   = ar->capacity;
+    filtered->mem_alloc  = ar->mem_alloc;
+    filtered->mem_calloc = ar->mem_calloc;
+    filtered->mem_free   = ar->mem_free;
+
+    size_t f = 0;
+    for (size_t i = 0; i < ar->size; i++) {
+        if (pred(ar->buffer[i])) {
+            filtered->buffer[f++] = ar->buffer[i];
+            filtered->size++;
+        }
+    }
+    *out = filtered;
+
+    return CC_OK;
+}
+
+
 /**
  * Reverses the order of elements in the specified array.
  *
