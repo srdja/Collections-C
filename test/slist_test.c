@@ -421,7 +421,6 @@ void test_slist_remove()
     slist_get_at(list, 1, (void*) &e);
 
     slist_remove(list, e, NULL);
-    free(e);
 
     cc_assert(slist_size(list) == 3,
               cc_msg("slist_remove: Expected size"
@@ -430,6 +429,8 @@ void test_slist_remove()
     cc_assert(slist_contains(list, e) == 0,
               cc_msg("slist_remove: The list still"
                      " contains the removed element!"));
+
+    free(e);
 
     test_slist_validate_structure(list, "slist_remove");
 
