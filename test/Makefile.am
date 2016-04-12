@@ -33,16 +33,16 @@ queue_test_LDFLAGS     = -static
 treetable_test_LDFLAGS = -static
 treeset_test_LDFLAGS   = -static
 
-treetable_test_CFLAGS = -DDEBUG -g -O0 -Werror
-list_test_CFLAGS      = -DDEBUG -g -O0 -Werror
-hashtable_test_CFLAGS = -DDEBUG -g -O0 -Werror
-array_test_CFLAGS    = -DDEBUG -g -O0 -Werror
-slist_test_CFLAGS     = -DDEBUG -g -O0 -Werror
-deque_test_CFLAGS     = -DDEBUG -g -O0 -Werror
-hashset_test_CFLAGS   = -DDEBUG -g -O0 -Werror
-stack_test_CFLAGS     = -DDEBUG -g -O0 -Werror
-queue_test_CFLAGS     = -DDEBUG -g -O0 -Werror
-treeset_test_CFLAGS   = -DDEBUG -g -O0 -Werror
+treetable_test_CFLAGS = -DDEBUG -g -O0 -Werror -std=c99
+list_test_CFLAGS      = -DDEBUG -g -O0 -Werror -std=c99
+hashtable_test_CFLAGS = -DDEBUG -g -O0 -Werror -std=c99
+array_test_CFLAGS    = -DDEBUG -g -O0 -Werror -std=c99
+slist_test_CFLAGS     = -DDEBUG -g -O0 -Werror -std=c99
+deque_test_CFLAGS     = -DDEBUG -g -O0 -Werror -std=c99
+hashset_test_CFLAGS   = -DDEBUG -g -O0 -Werror -std=c99
+stack_test_CFLAGS     = -DDEBUG -g -O0 -Werror -std=c99
+queue_test_CFLAGS     = -DDEBUG -g -O0 -Werror -std=c99
+treeset_test_CFLAGS   = -DDEBUG -g -O0 -Werror -std=c99
 
 treeset_test_SOURCES =\
 treeset_test.c\
