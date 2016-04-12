@@ -455,7 +455,7 @@ enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
         return CC_ERR_ALLOC;
 
     /* Try to allocate the buffer */
-    if (!(sub_ar->buffer = ar->mem_alloc(sub_ar->capacity * sizeof(void*)))) {
+    if (!(sub_ar->buffer = ar->mem_alloc(ar->capacity * sizeof(void*)))) {
         ar->mem_free(sub_ar);
         return CC_ERR_ALLOC;
     }
@@ -494,7 +494,7 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
     if (!copy)
         return CC_ERR_ALLOC;
 
-    if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
+    if (!(copy->buffer = ar->mem_calloc(ar->capacity, sizeof(void*)))) {
         ar->mem_free(copy);
         return CC_ERR_ALLOC;
     }
@@ -535,7 +535,7 @@ enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
     if (!copy)
         return CC_ERR_ALLOC;
 
-    if (!(copy->buffer = ar->mem_calloc(copy->capacity, sizeof(void*)))) {
+    if (!(copy->buffer = ar->mem_calloc(ar->capacity, sizeof(void*)))) {
         ar->mem_free(copy);
         return CC_ERR_ALLOC;
     }
