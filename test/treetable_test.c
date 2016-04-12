@@ -502,9 +502,10 @@ void test_rb_structure()
         treetable_add(tree, &(rkeys[i]), dummy);
 
         int status = treetable_assert_rb_rules(tree);
+        char *msg = error_code_to_string(status);
         cc_assert(status == RB_ERROR_OK,
-                  cc_msg("Red Black tree validation (insertion) (i=%d): %s", i,
-                         error_code_to_string(status)));
+                  cc_msg("Red Black tree validation (insertion) (i=%d): %s", i, msg));
+        free(msg);
     }
 
     /* Remove keys at random until all keys are removed and assert Red Black */
@@ -518,9 +519,10 @@ void test_rb_structure()
             deque_remove(keys, key, NULL);
         }
         int status = treetable_assert_rb_rules(tree);
+        char *msg = error_code_to_string(status);
         cc_assert(status  == RB_ERROR_OK,
-                  cc_msg("Red Black tree validation (removal) (i=%d): %s", i,
-                         error_code_to_string(status)));
+                  cc_msg("Red Black tree validation (removal) (i=%d): %s", i, msg));
+        free(msg);
     }
 
     deque_destroy(keys);
