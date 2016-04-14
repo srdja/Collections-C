@@ -632,7 +632,7 @@ enum cc_stat list_remove_all(List *list)
  */
 enum cc_stat list_remove_all_free(List *list)
 {
-    bool unlinked = unlink_all(list, false);
+    bool unlinked = unlink_all(list, true);
 
     if (unlinked) {
         list->head = NULL;
