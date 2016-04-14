@@ -938,7 +938,7 @@ void test_slist_iter_add()
 
     cc_assert(*li3 == *ins,
               cc_msg("slist_iter_add: Expected element at"
-                     " index 3 was %d, but got %d", ins, *li3));
+                     " index 3 was %d, but got %d", *ins, *li3));
 
     int *li4;
     slist_get_at(list, 4, (void*) &li4);
@@ -961,7 +961,7 @@ void test_slist_iter_add()
 
     cc_assert(*((int*) e) == *ins,
               cc_msg("slist_iter_add: Expected last element to be %d"
-                     ", but got %d instead", ins, *((int*)e)));
+                     ", but got %d instead", *ins, *((int*)e)));
 
     cc_assert(slist_size(list) == 6,
               cc_msg("slist_iter_add: Expected size "
