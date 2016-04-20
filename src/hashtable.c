@@ -128,11 +128,11 @@ void hashtable_conf_init(HashTableConf *conf)
 }
 
 /**
- * Destroys the specified HashTable structure without destroying the the data
- * contained within it. In other words the keys and the values are not freed,
+ * Destroys the specified HashTable structure without destroying the data
+ * contained within it. In other words, the keys and the values are not freed,
  * but only the table structure.
  *
- * @param[in] table HashTable to be destroyed.
+ * @param[in] table HashTable to be destroyed
  */
 void hashtable_destroy(HashTable *table)
 {
@@ -207,7 +207,7 @@ enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
  * Creates a new key-value mapping for the NULL key. This operation may fail if
  * the space allocation for the new entry fails.
  *
- * @param[in] table the table into which this key value-mapping is being add in
+ * @param[in] table the table into which this key value-mapping is being added
  * @param[in] val the value that is being mapped to the NULL key
  *
  * @return CC_OK if the mapping was successfully added, or CC_ERR_ALLOC if the
@@ -247,7 +247,7 @@ static enum cc_stat add_null_key(HashTable *table, void *val)
  *
  * @param[in] table the table from which the mapping is being returned
  * @param[in] key   the key that is being looked up
- * @param[out] out  Pointer to where the value is stored
+ * @param[out] out  pointer to where the value is stored
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
@@ -275,7 +275,7 @@ enum cc_stat hashtable_get(HashTable *table, void *key, void **out)
  *
  * @param[in] table the table from which the value mapped to this key is being
  *                  returned
- * @param[out] Pointer to where the value is stored
+ * @param[out] pointer to where the value is stored
  *
  * @return CC_OK if a NULL key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
@@ -299,7 +299,7 @@ static enum cc_stat get_null_key(HashTable *table, void **out)
  *
  * @param[in] table the table from which the key-value pair is being removed
  * @param[in] key the key of the value being returned
- * @param[out] out Pointer to where the removed value is stored, or NULL
+ * @param[out] out pointer to where the removed value is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
@@ -344,7 +344,7 @@ enum cc_stat hashtable_remove(HashTable *table, void *key, void **out)
  * parameter to value.
  *
  * @param[in] table the table from which the NULL key mapping is being removed
- * @param[out] out Pointer to where the removed value is stored, or NULL
+ * @param[out] out pointer to where the removed value is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
@@ -404,11 +404,12 @@ void hashtable_remove_all(HashTable *table)
  * Resizes the table to match the provided capacity. The new capacity must be a
  * power of two.
  *
- * @param[in] table the table that is being resized.
+ * @param[in] table the table that is being resized
  * @param[in] new_capacity the new capacity to which the table should be resized
  *
- * @return CC_OK if the resize was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new buffer failed.
+ * @return CC_OK if the resize was successful, or CC_ERR_MAX_CAPACITY if maximum
+ * capacity has been reached, or CC_ERR_ALLOC if the memory allocation for the
+ * new buffer failed.
  */
 static enum cc_stat resize(HashTable *t, size_t new_capacity)
 {
@@ -438,7 +439,7 @@ static enum cc_stat resize(HashTable *t, size_t new_capacity)
  *
  * @param[in] the unsigned integer that is being rounded
  *
- * @return the nearest upper power of two
+ * @return the nearest upper power of two.
  */
 static INLINE size_t round_pow_two(size_t n)
 {
@@ -497,7 +498,8 @@ move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
  * the number of key-value mappings within the table.
  *
  * @param[in] table the table whose size is being returned
- * @return the size of the table
+ *
+ * @return the size of the table.
  */
 size_t hashtable_size(HashTable *table)
 {
@@ -505,12 +507,12 @@ size_t hashtable_size(HashTable *table)
 }
 
 /**
- * Returns the current capacity of the table. The capacity is is the number of
+ * Returns the current capacity of the table. The capacity is the number of
  * buckets or the number of random access for table entries.
  *
  * @param[in] table the table whose current capacity is being returned
  *
- * @return the current capacity of the specified table
+ * @return the current capacity of the specified table.
  */
 size_t hashtable_capacity(HashTable *table)
 {
@@ -522,6 +524,7 @@ size_t hashtable_capacity(HashTable *table)
  *
  * @param[in] table the table on which the search is being performed
  * @param[in] key the key that is being searched for
+ *
  * @return true if the table contains the key.
  */
 bool hashtable_contains_key(HashTable *table, void *key)
@@ -538,11 +541,11 @@ bool hashtable_contains_key(HashTable *table, void *key)
 }
 
 /**
- * Returns a Array of hashtable values. The returned Array is allocated
+ * Returns an Array of hashtable values. The returned Array is allocated
  * using the same memory allocators used by the HashTable.
  *
  * @param[in] table the table whose values are being returned
- * @param[out] out Pointer to where the array is stored
+ * @param[out] out pointer to where the array is stored
  *
  * @return CC_OK if the Array was successfully created, or CC_ERR_ALLOC
  * if the memory allocation for the Array failed.
@@ -558,19 +561,16 @@ enum cc_stat hashtable_get_values(HashTable *table, Array **out)
     ac.mem_free   = table->mem_free;
 
     Array *values;
-    enum cc_stat stat;
-    if (!(stat = array_new_conf(&ac, &values)))
+    enum cc_stat stat = array_new_conf(&ac, &values);
+    if (stat != CC_OK)
         return stat;
 
     size_t i;
     for (i = 0; i <table->capacity; i++) {
-        if (!table->buckets[i])
-            continue;
-
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            if (!(stat = array_add(values, entry->value))) {
+            if ((stat = array_add(values, entry->value)) == CC_OK) {
                 entry = entry->next;
             } else {
                 array_destroy(values);
@@ -583,11 +583,11 @@ enum cc_stat hashtable_get_values(HashTable *table, Array **out)
 }
 
 /**
- * Returns a Array of hashtable keys. The returned Array is allocated
+ * Returns an Array of hashtable keys. The returned Array is allocated
  * using the same memory allocators used by the HashTable.
  *
  * @param[in] table the table whose keys are being returned
- * @param[out] out Pointer to where the array is stored
+ * @param[out] out pointer to where the array is stored
  *
  * @return CC_OK if the Array was successfully created, or CC_ERR_ALLOC
  * if the memory allocation for the Array failed.
@@ -609,13 +609,10 @@ enum cc_stat hashtable_get_keys(HashTable *table, Array **out)
 
     size_t i;
     for (i = 0; i < table->capacity; i++) {
-        if (!table->buckets[i])
-            continue;
-
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            if (!(stat = array_add(keys, entry->key))) {
+            if ((stat = array_add(keys, entry->key)) == CC_OK) {
                 entry = entry->next;
             } else {
                 array_destroy(keys);
@@ -649,9 +646,6 @@ void hashtable_foreach_key(HashTable *table, void (*fn) (const void *key))
 {
     size_t i;
     for (i = 0; i <table->capacity; i++) {
-        if (!table->buckets[i])
-            continue;
-
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
@@ -672,9 +666,6 @@ void hashtable_foreach_value(HashTable *table, void (*fn) (void *val))
 {
     size_t i;
     for (i = 0; i <table->capacity; i++) {
-        if (!table->buckets[i])
-            continue;
-
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
@@ -713,7 +704,7 @@ void hashtable_iter_init(HashTableIter *iter, HashTable *table)
  * next TableEntry.
  *
  * @param[in] iter the iterator that is being advanced
- * @param[out] out Pointer to where the next entry is set
+ * @param[out] out pointer to where the next entry is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
  * end of the HashTable has been reached.
@@ -753,7 +744,7 @@ enum cc_stat hashtable_iter_next(HashTableIter *iter, TableEntry **te)
  * out parameter to the value of the removed entry.
  *
  * @note This Function should only ever be called after a call to <code>
- * hashtable_iter_next()</code>
+ * hashtable_iter_next()</code>.
  *
  * @param[in] iter The iterator on which this operation is performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
