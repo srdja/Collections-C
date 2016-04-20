@@ -42,7 +42,7 @@ void hashset_conf_init(HashSetConf *conf)
 /**
  * Creates a new HashSet and returns a status code.
  *
- * @note The newly created HashSet will be a set of strings
+ * @note The newly created HashSet will be a set of strings.
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
  * allocation for the new HashSet failed.
@@ -75,9 +75,9 @@ enum cc_stat hashset_new_conf(HashSetConf const * const conf, HashSet **hs)
         return CC_ERR_ALLOC;
 
     HashTable *table;
-    int stat = hashtable_new_conf(conf, &table);
+    enum cc_stat stat = hashtable_new_conf(conf, &table);
 
-    if (stat != 0) {
+    if (stat != CC_OK) {
         conf->mem_free(set);
         return stat;
     }
@@ -95,7 +95,7 @@ enum cc_stat hashset_new_conf(HashSetConf const * const conf, HashSet **hs)
 }
 
 /**
- * Destroys the specified HashSet structure without destroying the the data
+ * Destroys the specified HashSet structure without destroying the data
  * it holds.
  *
  * @param[in] table HashSet to be destroyed.
@@ -134,10 +134,7 @@ enum cc_stat hashset_add(HashSet *set, void *element)
  */
 enum cc_stat hashset_remove(HashSet *set, void *element, void **out)
 {
-    if (hashtable_remove(set->table, element, out) == CC_ERR_KEY_NOT_FOUND)
-        return CC_ERR_VALUE_NOT_FOUND;
-
-    return CC_OK;
+    return hashtable_remove(set->table, element, out);
 }
 
 /**
@@ -200,7 +197,7 @@ void hashset_foreach(HashSet *set, void (*fn) (const void *e))
 }
 
 /**
- * Initializes the set iterator
+ * Initializes the set iterator.
  *
  * @param[in] iter the iterator that is being initialized
  * @param[in] set the set on which this iterator will operate
@@ -240,7 +237,7 @@ enum cc_stat hashset_iter_next(HashSetIter *iter, void **out)
  * out parameter to the value of the removed element.
  *
  * @note This Function should only ever be called after a call to <code>
- * hashset_iter_next()</code>
+ * hashset_iter_next()</code>.
  *
  * @param[in] iter The iterator on which this operation is performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
@@ -251,8 +248,5 @@ enum cc_stat hashset_iter_next(HashSetIter *iter, void **out)
  */
 enum cc_stat hashset_iter_remove(HashSetIter *iter, void **out)
 {
-    if (hashtable_iter_remove(&(iter->iter), out) == CC_ERR_KEY_NOT_FOUND)
-        return CC_ERR_VALUE_NOT_FOUND;
-
-    return CC_OK;
+    return hashtable_iter_remove(&(iter->iter), out);
 }
