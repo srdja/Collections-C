@@ -182,7 +182,7 @@ enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
     while (replace) {
         if (table->key_cmp(replace->key, key) == 0) {
             replace->value = val;
-            return true;
+            return CC_OK;
         }
         replace = replace->next;
     }
