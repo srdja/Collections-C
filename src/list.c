@@ -60,7 +60,7 @@ void list_conf_init(ListConf *conf)
 /**
  * Creates a new empty list and returns a status code.
  *
- * @param[out] out Pointer to where the newly created List is stored
+ * @param[out] out pointer to where the newly created List is stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if
  * the memory allocation for the new List failed.
@@ -102,9 +102,9 @@ enum cc_stat list_new_conf(ListConf const * const conf, List **out)
 }
 
 /**
- * Destroys the list structure, but leaves the data that is holds intact.
+ * Destroys the list structure, but leaves the data that it holds intact.
  *
- * @param[in] list List that is to be destroyed
+ * @param[in] list list that is to be destroyed
  */
 void list_destroy(List *list)
 {
@@ -118,10 +118,10 @@ void list_destroy(List *list)
  * Destroys the list structure along with all the data it holds.
  *
  * @note
- * This function should not be called on a list that has some of it's elements
+ * This function should not be called on a list that has some of its elements
  * allocated on the stack.
  *
- * @param[in] list List that is to be destroyed
+ * @param[in] list list that is to be destroyed
  */
 void list_destroy_free(List *list)
 {
@@ -133,7 +133,7 @@ void list_destroy_free(List *list)
  * Adds a new element to the list. The element is appended to the list making it
  * the last element in the list.
  *
- * @param[in] list List to which the element is being added
+ * @param[in] list list to which the element is being added
  * @param[in] element element being added
  *
  * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
@@ -148,11 +148,11 @@ enum cc_stat list_add(List *list, void *element)
  * Prepends a new element to the list (adds a new "head") making it the first
  * element of the list.
  *
- * @param[in] list List to which the element is being added
+ * @param[in] list list to which the element is being added
  * @param[in] element element being prepended
  *
  * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
- * memory allocation for the new element has failed.
+ * memory allocation for the new element failed.
  */
 enum cc_stat list_add_first(List *list, void *element)
 {
@@ -179,7 +179,7 @@ enum cc_stat list_add_first(List *list, void *element)
  * Appends a new element to the list (adds an new "tail") making it the last
  * element of the list.
  *
- * @param[in] list List to which the element is being added
+ * @param[in] list list to which the element is being added
  * @param[in] element element being appended
  *
  * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
@@ -212,7 +212,7 @@ enum cc_stat list_add_last(List *list, void *element)
  * List. The index at which the new element is being added must be within the
  * bounds of the List.
  *
- * @param[in] list List to which this element is being added
+ * @param[in] list list to which this element is being added
  * @param[in] element element that is being added
  * @param[in] index the position in the list at which the new element is being
  *                  added
@@ -249,8 +249,8 @@ enum cc_stat list_add_at(List *list, void *element, size_t index)
  * Adds all elements from the second list to the first. The elements from the
  * second list are added after the last element of the first list.
  *
- * @param[in] list1 List to which the elements are being added.
- * @param[in] list2 List from which the elements are being taken.
+ * @param[in] list1 list to which the elements are being added
+ * @param[in] list2 list from which the elements are being taken
  *
  * @return CC_OK if the elements where successfully added, or CC_ERR_ALLOC if
  * the memory allocation for the new elements failed.
@@ -264,11 +264,10 @@ enum cc_stat list_add_all(List *list1, List *list2)
 }
 
 /**
- * Adds all elements from the second list to the first by appending them to the
- * end of the first list.
+ * Adds all elements from the second list to the first list which is empty.
  *
- * @param[in] list1 List to which the elements are being added.
- * @param[in] list2 List from which the elements are being taken.
+ * @param[in] list1 list to which the elements are being added
+ * @param[in] list2 list from which the elements are being taken
  *
  * @return CC_OK if the element were successfully added, or CC_ERR_ALLOC if
  * the memory allocation for the new elements failed.
@@ -295,10 +294,10 @@ static enum cc_stat add_all_to_empty(List *list1, List *list2)
  * by shifting all subsequent elements by the size of the second list. The index
  * range at which the elements can be added ranges from 0 to max_index + 1.
  *
- * @param[in] list1 List to which the elements are being added.
- * @param[in] list2 List from which the elements are being taken.
+ * @param[in] list1 list to which the elements are being added
+ * @param[in] list2 list from which the elements are being taken
  * @param[in] index position in the first list at which the element should be
- *                  added.
+ *                  added
  *
  * @return CC_OK if the elements were successfully added,
  * CC_ERR_INDEX_OUT_OF_BOUNDS if the index was out of range, or
@@ -360,7 +359,7 @@ enum cc_stat list_add_all_at(List *list1, List *list2, size_t index)
  * @param[in, out] h the pointer to which the new head will be attached
  * @param[in, out] t the pointer to which the new tail will be attached
  *
- * @return true if the operation was successful
+ * @return true if the operation was successful, false otherwise.
  */
 static bool link_all_externally(List *list, Node **h, Node **t)
 {
@@ -397,13 +396,14 @@ static bool link_all_externally(List *list, Node **h, Node **t)
 
 /**
  * Splices the two doubly linked lists together by appending the second list to
- * the first. This function moves all the elements from the second list into
- * the first list, leaving the second list empty.
+ * the first. This function moves all elements from the second list into the
+ * first list, leaving the second list empty.
  *
- * @param[in] list1 The consumer list to which the elements are moved.
- * @param[in] list2 The producer list from which the elements are moved.
+ * @param[in] list1 the consumer list to which the elements are moved
+ * @param[in] list2 the producer list from which the elements are moved
  *
- * @return CC_OK if the elements were successfully moved
+ * @return CC_OK if the elements were successfully moved, or CC_ERR_OUT_OF_RANGE
+ * if the index was not in range.
  */
 enum cc_stat list_splice(List *list1, List *list2)
 {
@@ -412,7 +412,7 @@ enum cc_stat list_splice(List *list1, List *list2)
 
 /**
  * Splices the two lists together at the specified index of the first list. This
- * function moves all the element from the second list into the first list at the
+ * function moves all elements from the second list into the first list at the
  * position specified by the <code>index</code> parameter. After this operation
  * the second list will be left empty.
  *
@@ -421,8 +421,8 @@ enum cc_stat list_splice(List *list1, List *list2)
  * @param[in] index the index in the first list after which the elements from the
  *                  second list should be inserted
  *
- * @return CC_OK if the element were successfully moved, or CC_ERR_OUT_OF_RANGE if
- * the index was not in range.
+ * @return CC_OK if the elements were successfully moved, or CC_ERR_OUT_OF_RANGE
+ * if the index was not in range.
  */
 enum cc_stat list_splice_at(List *list1, List *list2, size_t index)
 {
@@ -460,8 +460,8 @@ enum cc_stat list_splice_at(List *list1, List *list2, size_t index)
 
 /**
  * Inserts the second list between the two nodes of the first list. If the left
- * node is NULL the head of the second list will become the head of the first
- * list. Similarly if the right node is null the tail of the first list will
+ * node is NULL, the head of the second list will become the head of the first
+ * list. Similarly, if the right node is null, the tail of the first list will
  * become the tail of the second list.
  *
  * @param[in, out] l1 the list to which the elements are being transferred
@@ -495,11 +495,11 @@ static void splice_between(List *l1, List *l2, Node *left, Node *right)
 /**
  * Removes the first occurrence of the element from the specified List
  * and optionally sets the out parameter to the value of the removed
- * element If the element.
+ * element.
  *
- * @param[in] list List from which the element is being removed
+ * @param[in] list list from which the element is being removed
  * @param[in] element element that is being removed
- * @param[out] out Pointer to where the removed value is stored, or NULL
+ * @param[out] out pointer to where the removed value is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the element was successfully removed, or
@@ -528,7 +528,7 @@ enum cc_stat list_remove(List *list, void *element, void **out)
  * @param[in] index Index of the element is being removed. Must be be within the
  *            index range of the list.
  * @param[out] out Pointer to where the removed value is stored, or NULL
- *                 if it is to be ignored
+ *                 if it is to be ignored.
  *
  * @return CC_OK if the element was successfully removed, or
  * CC_ERR_OUT_OF_RANGE if the index was out of range.
@@ -552,8 +552,8 @@ enum cc_stat list_remove_at(List *list, size_t index, void **out)
  * Removes and returns the first (head) element of the list and optionally sets the
  * out parameter to the value of the removed element.
  *
- * @param[in] list List from which the first element is being removed
- * @param[out] out Pointer to where the removed value is stored, or NULL if it is
+ * @param[in] list list from which the first element is being removed
+ * @param[out] out pointer to where the removed value is stored, or NULL if it is
  *                 to be ignored
  *
  * @return CC_OK if the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND
@@ -573,11 +573,11 @@ enum cc_stat list_remove_first(List *list, void **out)
 }
 
 /**
- * Removes and returns the first (tail) element of the list and optionally sets the
+ * Removes and returns the last (tail) element of the list and optionally sets the
  * out parameter to the value of the removed element.
  *
- * @param[in] list List from which the last element is being removed
- * @param[out] out Pointer to where the removed value is stored, or NULL if it is
+ * @param[in] list list from which the last element is being removed
+ * @param[out] out pointer to where the removed value is stored, or NULL if it is
  *                 to be ignored
  *
  * @return CC_OK if the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND
@@ -599,7 +599,7 @@ enum cc_stat list_remove_last(List *list, void **out)
 /**
  * Removes all elements from the specified list.
  *
- * @param[in] list List from which all elements are being removed
+ * @param[in] list list from which all elements are being removed
  *
  * @return CC_OK if the elements were successfully removed, or CC_ERR_VALUE_NOT_FOUND
  *  if the list was already empty.
@@ -616,18 +616,17 @@ enum cc_stat list_remove_all(List *list)
     return CC_ERR_VALUE_NOT_FOUND;
 }
 
-
 /**
- * Removes and frees all the elements from the specified list.
+ * Removes and frees all elements from the specified list.
  *
  * @note
- * This function should not be called on a list that has some of it's elements
+ * This function should not be called on a list that has some of its elements
  * allocated on the stack.
  *
- * @param[in] list List from which all the elements are being removed and
+ * @param[in] list list from which all the elements are being removed and
  *            freed
  *
- * @return CC_OK if the element were successfully removed and freed, or
+ * @return CC_OK if the elements were successfully removed and freed, or
  * CC_ERR_VALUE_NOT_FOUND if the list was already empty.
  */
 enum cc_stat list_remove_all_free(List *list)
@@ -643,11 +642,11 @@ enum cc_stat list_remove_all_free(List *list)
 }
 
 /**
- * Replaces an element at the specified location and and optionally sets the
+ * Replaces an element at the specified location and optionally sets the
  * out parameter to the value of the replaced element. The specified index
  * must be within the bounds of the list.
  *
- * @param[in] list List on which this operation is performed
+ * @param[in] list list on which this operation is performed
  * @param[in] element the replacement element
  * @param[in] index index of the element that is being replaced
  *
@@ -673,8 +672,8 @@ enum cc_stat list_replace_at(List *list, void *element, size_t index, void **out
  * Gets the first element from the specified list and sets the out parameter to
  * its value.
  *
- * @param[in] list List whose first element is being returned
- * @param[in] out  Pointer to where the element is stored
+ * @param[in] list list whose first element is being returned
+ * @param[in] out  pointer to where the element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
@@ -691,8 +690,8 @@ enum cc_stat list_get_first(List *list, void **out)
  * Gets the last element from the specified list and sets the parameter to
  * its value.
  *
- * @param[in] list List whose last element is being returned
- * @param[in] out  Pointer to where the element is stored
+ * @param[in] list list whose last element is being returned
+ * @param[in] out  pointer to where the element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
@@ -729,9 +728,9 @@ enum cc_stat list_get_at(List *list, size_t index, void **out)
 }
 
 /**
- * Reverses the order of element in the specified list.
+ * Reverses the order of elements in the specified list.
  *
- * @param[in] list List that is being reversed.
+ * @param[in] list list that is being reversed
  */
 void list_reverse(List *list)
 {
@@ -762,17 +761,17 @@ void list_reverse(List *list)
 /**
  * Creates a sublist of the specified List. The created sublist contains all
  * the elements from the List that are contained between the two indices
- * including the elements at the indices. For example if a list contains 5
+ * including the elements at the indices. For example, if a list contains 5
  * elements [5, 6, 7, 8, 9], a sublist from index 1 to 3 will will be a new
  * List of length 3, containing [6, 7, 8]. The returned sublist is only a copy of
  * the original lists structure, meaning the data it points to is not copied.
  *
- * @param[in] list List from which the sublist is taken
- * @param[in] b    The beginning index, ie., the first element to be included.
+ * @param[in] list List from which the sublist is taken.
+ * @param[in] b    The beginning index, i.e., the first element to be included.
  *                 Must be a positive integer and may not exceed the list size
  *                 or the end index.
- * @param[in] e    The ending index, ie., the last element to be included. Must
- *                 be a positive integer no greater that the list size and no
+ * @param[in] e    The ending index, i.e., the last element to be included. Must
+ *                 be a positive integer no greater than the list size and no
  *                 smaller that the beginning index.
  * @param[out] out Pointer to where the new sublist is stored.
  *
@@ -826,8 +825,8 @@ enum cc_stat list_sublist(List *list, size_t b, size_t e, List **out)
  * @note The new list is allocated using the original lists allocators and also
  *       inherits the configuration of the original list.
  *
- * @param[in] list List to be copied
- * @param[out] out Pointer to where the newly created copy is stored.
+ * @param[in] list list to be copied
+ * @param[out] out pointer to where the newly created copy is stored
  *
  * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
@@ -870,10 +869,10 @@ enum cc_stat list_copy_shallow(List *list, List **out)
  * through the specified copy function that should return a pointer to the copy
  * of the element passed to it.
  *
- * @param[in] list List to be copied
+ * @param[in] list list to be copied
  * @param[in] cp   the copy function that should return a pointer to the copy of
- *                 the data.
- * @param[out] out Pointer to where the newly created copy is stored
+ *                 the data
+ * @param[out] out pointer to where the newly created copy is stored
  *
  * @return  CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
@@ -917,11 +916,11 @@ enum cc_stat list_copy_deep(List *list, void *(*cp) (void *e1), List **out)
  * the array will affect the list elements as well. The size of the created
  * array is the same as the size of the list from which this array was constructed.
  *
- * @param[in] list List on which this operation is being performed.
- * @param[out] out Pointer to where the newly created array is stored
+ * @param[in] list list on which this operation is being performed
+ * @param[out] out pointer to where the newly created array is stored
  *
- * @return CC_OK if the array was successfully created, or CC_ERR_ALLOC if the
- * memory allocation for the new array failed.
+ * @return CC_OK if the array was successfully created, CC_ERR_INVALID_RANGE if the
+ * list is emtpy, or CC_ERR_ALLOC if the memory allocation for the new array failed.
  */
 enum cc_stat list_to_array(List *list, void ***out)
 {
@@ -948,10 +947,10 @@ enum cc_stat list_to_array(List *list, void ***out)
  * Returns an integer representing the number of occurrences of the specified
  * element within the list.
  *
- * @param[in] list List on which the search is performed
+ * @param[in] list list on which the search is performed
  * @param[in] element element being seached for
  *
- * @return number of found matches
+ * @return number of matches found.
  */
 size_t list_contains(List *list, void *element)
 {
@@ -962,11 +961,12 @@ size_t list_contains(List *list, void *element)
  * Returns the number occurrences of the value pointed to by <code>element</code>
  * within the List.
  *
- * @param[in] list List on which the search is performed
+ * @param[in] list list on which the search is performed
  * @param[in] element element being searched for
- * @param[in] cmp Comparator function which returns 0 if the values passed to it are equal
+ * @param[in] cmp comparator function which returns 0 if the values passed to it
+ *                are equal
  *
- * @return number of found matches
+ * @return number of matches found.
  */
 size_t list_contains_value(List *list, void *element, int (*cmp) (const void*, const void*))
 {
@@ -983,12 +983,12 @@ size_t list_contains_value(List *list, void *element, int (*cmp) (const void*, c
 
 /**
  * Gets the index of the specified element. The returned index is the index
- * of the first  occurrence of the element starting from the beginning of
+ * of the first occurrence of the element starting from the beginning of
  * the list.
  *
- * @param[in] list    List on which this operation is performed
+ * @param[in] list    list on which this operation is performed
  * @param[in] element the element whose index is being looked up
- * @param[out] index  Pointer to where the index is stored
+ * @param[out] index  pointer to where the index is stored
  *
  * @return CC_OK if the index was found, or CC_OUT_OF_RANGE if not.
  */
@@ -1011,9 +1011,9 @@ enum cc_stat list_index_of(List *list, void *element, size_t *index)
 /**
  * Returns the number of elements in the specified list.
  *
- * @param[in] list List whose size is being returned
+ * @param[in] list list whose size is being returned
  *
- * @return the number of the elements contained in the specified list
+ * @return the number of the elements contained in the specified list.
  */
 size_t list_size(List *list)
 {
@@ -1024,21 +1024,21 @@ size_t list_size(List *list)
  * Sorts the specified list. This function makes no guaranties that the
  * sort will be performed in place or in a stable way.
  *
- * @note
- * Pointers passed to the comparator function will be pointers to the list
- * elements that are of type (void*) ie. void**. So an extra step of
- * dereferencing will be required before the data can be used for comparison:
- * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
+ * @note Pointers passed to the comparator function will be pointers to
+ *       the list elements that are of type (void*), i.e. void**. So an
+ *       extra step of dereferencing will be required before the data can
+ *       be used for comparison:
+ *       e.g. <code>my_type e = *(*((my_type**) ptr));</code>.
  *
- * @param[in] list List to be sorted
+ * @param[in] list list to be sorted
  * @param[in] cmp the comparator function that must be of type <code>
  *                int cmp(const void e1*, const void e2*)</code> that
  *                returns < 0 if the first element goes before the second,
  *                0 if the elements are equal and > 0 if the second goes
- *                before the first.
+ *                before the first
  *
  * @return CC_OK if the sort was performed successfully, or CC_ERR_ALLOC
- * if the sort could not allocate enough memory to performed the sort.
+ * if it could not allocate enough memory to perform the sort.
  */
 enum cc_stat list_sort(List *list, int (*cmp) (void const *e1, void const *e2))
 {
@@ -1067,18 +1067,17 @@ static void  merge(Node**, Node**, size_t, size_t, int (*cmp) (void const *e1, v
 /**
  * Sorts the specified list in place in a stable way.
  *
- * @note
- * Pointers passed to the comparator function will be pointers to the list
- * elements that are of type (void*) ie. void**. So an extra step of
- * dereferencing will be required before the data can be used for comparison:
- * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
+ * @note Pointers passed to the comparator function will be pointers to the list
+ *       elements that are of type (void*), i.e. void**. So an extra step of
+ *       dereferencing will be required before the data can be used for comparison:
+ *       e.g. <code>my_type e = *(*((my_type**) ptr));</code>.
  *
  * @param[in] list list to be sorted
  * @param[in] cmp the comparator function that must be of type <code>
  *                int cmp(const void e1*, const void e2*)</code> that
  *                returns < 0 if the first element goes before the second,
  *                0 if the elements are equal and > 0 if the second goes
- *                before the first.
+ *                before the first
  */
 void list_sort_in_place(List *list, int (*cmp) (void const *e1, void const *e2))
 {
@@ -1091,7 +1090,7 @@ void list_sort_in_place(List *list, int (*cmp) (void const *e1, void const *e2))
  * @param[in] list the sublist
  * @param[in] b    the head node of the sublist
  * @param[in] size number of nodes in the sublist
- * @param[in] cmp  Comparator function.
+ * @param[in] cmp  comparator function
  *
  * @return
  */
@@ -1121,7 +1120,7 @@ static Node *split(List *list, Node *b, size_t size, int (*cmp) (void const*, vo
 }
 
 /**
- * Merges the two partitions together in place in an stable way. The left
+ * Merges the two partitions together in place in a stable way. The left
  * partition starts at the "left" node and ends "l_size" nodes to the right of it.
  * Similarly the right partition starts at the "right" and ends "r_size" nodes
  * to the right. Both "left" and "right" parameters are used for input and
@@ -1131,9 +1130,9 @@ static Node *split(List *list, Node *b, size_t size, int (*cmp) (void const*, vo
  * section of the list in an ascending order.
  *
  *@param[in, out] left   the beginning of the left partition as input and the
- *                       the head node of the merged section as the output.
+ *                       the head node of the merged section as the output
  *@param[in, out] right  the beginning of the right partition as input and the
- *                       the tail node of the merged section as the output.
+ *                       the tail node of the merged section as the output
  *@param[in]      l_size size of the the left partition
  *@param[in]      r_size size of the right partition
  *@param[in]      cmp    the comparator function
@@ -1202,7 +1201,7 @@ static INLINE void merge(Node **left, Node **right, size_t l_size,
  * A 'foreach loop' function that invokes the specified function on each element
  * in the list.
  *
- * @param[in] list List on which this operation is being performed
+ * @param[in] list list on which this operation is being performed
  * @param[in] op the operation function that is to be invoked on each list
  *               element
  */
@@ -1220,7 +1219,7 @@ void list_foreach(List *list, void (*op) (void *e))
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized
- * @param[in] list List to iterate over
+ * @param[in] list list to iterate over
  */
 void list_iter_init(ListIter *iter, List *list)
 {
@@ -1236,14 +1235,14 @@ void list_iter_init(ListIter *iter, List *list)
  * parameter to the value of the removed element.
  *
  * @note This function should only ever be called after a call to <code>
- * list_iter_next()</code>
+ * list_iter_next()</code>.
  *
- * @param[in] iter the iterator on which this operation is being performed.
- * @param[out] out Pointer to where the removed element is stored, or NULL
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[out] out pointer to where the removed element is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the element was successfully removed, or
- * CC_ERR_VALUE_NOT_FOUND
+ * CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat list_iter_remove(ListIter *iter, void **out)
 {
@@ -1264,7 +1263,7 @@ enum cc_stat list_iter_remove(ListIter *iter, void **out)
  * iterator.
  *
  * @note This function should only ever be called after a call to <code>
- * list_iter_next()</code>
+ * list_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added to the list
@@ -1298,15 +1297,15 @@ enum cc_stat list_iter_add(ListIter *iter, void *element)
  * the value of the replaced element.
  *
  * @note This function should only ever be called after a call to <code>
- * list_iter_next()</code>
+ * list_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
- * @param[out] out Pointer to where the replaced element is stored, or NULL
+ * @param[out] out pointer to where the replaced element is stored, or NULL
  *                if it is to be ignored
  *
  * @return CC_OK if the element was replaced successfully, or
- * CC_ERR_VALUE_NOT_FOUND
+ * CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat list_iter_replace(ListIter *iter, void *element, void **out)
 {
@@ -1325,9 +1324,9 @@ enum cc_stat list_iter_replace(ListIter *iter, void *element, void **out)
  * Returns the index of the last returned element by <code>list_iter_next()
  * </code>.
  *
- * @param[in] iter the iterator on which this operation is performed.
+ * @param[in] iter the iterator on which this operation is performed
  *
- * @return the index
+ * @return the index.
  */
 size_t list_iter_index(ListIter *iter)
 {
@@ -1338,8 +1337,8 @@ size_t list_iter_index(ListIter *iter)
  * Advances the iterator and sets the out parameter to the value of the
  * next element in the sequence.
  *
- * @param[in] iter the iterator on which this operation is being performed.
- * @param[out] out Pointer to where the next element is set
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[out] out pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
  * end of the list has been reached.
@@ -1364,7 +1363,7 @@ enum cc_stat list_iter_next(ListIter *iter, void **out)
  * iterator, is an iterator that traverses the list from tail to head.
  *
  * @param[in] iter the iterator
- * @param[in] list List on which this iterator will operate.
+ * @param[in] list list on which this iterator will operate
  */
 void list_diter_init(ListIter *iter, List *list)
 {
@@ -1380,7 +1379,7 @@ void list_diter_init(ListIter *iter, List *list)
  * the list) without invalidating the  iterator.
  *
  * @note This function should only ever be called after a call to <code>
- * list_diter_next()</code>
+ * list_diter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added to the list
@@ -1413,10 +1412,10 @@ enum cc_stat list_diter_add(ListIter *iter, void *element)
  * parameter to the value of the removed element.
  *
  * @note This function should only ever be called after a call to
- *       <code>list_diter_next()</code>
+ *       <code>list_diter_next()</code>.
  *
- * @param[in] iter the iterator on which this operation is being performed.
- * @param[out] out Pointer to where the removed element is stored, or NULL
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[out] out pointer to where the removed element is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the element was successfully removed, or
@@ -1442,11 +1441,11 @@ enum cc_stat list_diter_remove(ListIter *iter, void **out)
  * the value of the replaced element.
  *
  * @note This function should only ever be called after a call to
- *       <code>list_diter_next()</code>
+ *       <code>list_diter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
- * @param[out] out Pointer to where the replaced element is stored, or NULL
+ * @param[out] out pointer to where the replaced element is stored, or NULL
  *                if it is to be ignored
  *
  * @return CC_OK if the element was replaced successfully, or
@@ -1454,6 +1453,9 @@ enum cc_stat list_diter_remove(ListIter *iter, void **out)
  */
 enum cc_stat list_diter_replace(ListIter *iter, void *element, void **out)
 {
+    if (!iter->last)
+        return CC_ERR_VALUE_NOT_FOUND;
+
     void *old = iter->last->data;
     iter->last->data = element;
 
@@ -1468,7 +1470,7 @@ enum cc_stat list_diter_replace(ListIter *iter, void *element, void **out)
  *
  * @param[in] iter the iterator on which this operation is being performed
  *
- * @return the index
+ * @return the index.
  */
 size_t list_diter_index(ListIter *iter)
 {
@@ -1479,8 +1481,8 @@ size_t list_diter_index(ListIter *iter)
  * Advances the iterator and sets the out parameter to the value of the
  * next element in the sequence.
  *
- * @param[in] iter the iterator on which this operation is being performed.
- * @param[out] out Pointer to where the next element is set
+ * @param[in] iter the iterator on which this operation is being performed
+ * @param[out] out pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
  * end of the list has been reached.
@@ -1503,9 +1505,9 @@ enum cc_stat list_diter_next(ListIter *iter, void **out)
 /**
  * Initializes the zip iterator.
  *
- * @param[in] iter Iterator that is being initialized
- * @param[in] l1   First List
- * @param[in] l2  Second List
+ * @param[in] iter iterator that is being initialized
+ * @param[in] l1   first list
+ * @param[in] l2   second list
  */
 void list_zip_iter_init(ListZipIter *iter, List *l1, List *l2)
 {
@@ -1521,9 +1523,9 @@ void list_zip_iter_init(ListZipIter *iter, List *l1, List *l2)
 /**
  * Outputs the next element pair in the sequence and advances the iterator.
  *
- * @param[in]  iter Iterator that is being advanced
- * @param[out] out1 Output of the first List element
- * @param[out] out2 Output of the second List element
+ * @param[in]  iter iterator that is being advanced
+ * @param[out] out1 output of the first list element
+ * @param[out] out2 output of the second list element
  *
  * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
  * of the lists has been reached.
@@ -1602,13 +1604,13 @@ enum cc_stat list_zip_iter_add(ListZipIter *iter, void *e1, void *e2)
  * </code> without invalidating the iterator.
  *
  * @note This function should only ever be called after a call to
- *       <code>list_zip_iter_next()</code>
+ *       <code>list_zip_iter_next()</code>.
  *
- * @param[in]  iter Iterator on which this operation is being performed
- * @param[out] out1 Output of the removed element from the first List
- * @param[out] out2 Output of the removed element from the second List
+ * @param[in]  iter iterator on which this operation is being performed
+ * @param[out] out1 output of the removed element from the first List
+ * @param[out] out2 output of the removed element from the second List
  *
- * @return CC_OK if the element was removed successfully, or CC_ERR_VALU_NOT_FOUND.
+ * @return CC_OK if the element was removed successfully, or CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat list_zip_iter_remove(ListZipIter *iter, void **out1, void **out2)
 {
@@ -1635,15 +1637,15 @@ enum cc_stat list_zip_iter_remove(ListZipIter *iter, void **out1, void **out2)
  * with the specified replacement element pair.
  *
  * @note This function should only ever be called after a call to
- *       <code>list_zip_iter_next()</code>
+ *       <code>list_zip_iter_next()</code>.
  *
- * @param[in]  iter Iterator on which this operation is being performed
- * @param[in]  e1   First list's replacement element
- * @param[in]  e2   Second list's replacement element
- * @param[out] out1 Output of the replaced element from the first list
- * @param[out] out2 Output of the replaced element from the second list
+ * @param[in]  iter iterator on which this operation is being performed
+ * @param[in]  e1   first list's replacement element
+ * @param[in]  e2   second list's replacement element
+ * @param[out] out1 output of the replaced element from the first list
+ * @param[out] out2 output of the replaced element from the second list
  *
- * @return CC_OK if the element was replaced successfully, or CC_ERR_VALU_NOT_FOUND.
+ * @return CC_OK if the element was replaced successfully, or CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
@@ -1668,9 +1670,9 @@ enum cc_stat list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void *
 /**
  * Returns the index of the last returned element pair by <code>list_zip_iter_next()</code>.
  *
- * @param[in] iter Iterator on which this operation is being performed
+ * @param[in] iter iterator on which this operation is being performed
  *
- * @return current iterator index
+ * @return current iterator index.
  */
 size_t list_zip_iter_index(ListZipIter *iter)
 {
@@ -1824,7 +1826,7 @@ static void swap_adjacent(Node *n1, Node *n2)
  * @param[in] list the list from which the node is being unlinked
  * @param[in] node the node being unlinked
  *
- * @return the data that was at this node
+ * @return the data that was at this node.
  */
 static void *unlink(List *list, Node *node)
 {
@@ -1853,9 +1855,9 @@ static void *unlink(List *list, Node *node)
  *
  * @param[in] list the list from which all the nodes are being unlinked
  * @param[in] freed a bool that determines whether or not the data at the nodes
- *                  should also be freed.
+ *                  should also be freed
  *
- * @return false if the list is already empty, otherwise returns true
+ * @return false if the list is already empty, otherwise returns true.
  */
 static bool unlink_all(List *list, bool freed)
 {
@@ -1877,8 +1879,7 @@ static bool unlink_all(List *list, bool freed)
 }
 
 /**
- * Returns the node at the specified index. If the index is not in the bounds of
- * the list, NULL is returned.
+ * Returns the node at the specified index.
  *
  * @param[in] list the list from which the node is being returned
  * @param[in] index the index of the node being returned
@@ -1907,14 +1908,14 @@ static enum cc_stat get_node_at(List *list, size_t index, Node **out)
 }
 
 /**
- * Returns the node first node from the beginning of the list that is associated
+ * Returns the first node from the beginning of the list that is associated
  * with the specified element. If no node is associated with the element, NULL is
  * returned instead.
  *
  * @param[in] list the list from which the node is being returned
  * @param[in] element the element whose list node is being returned
  *
- * @return the node associated with the specified element
+ * @return the node associated with the specified element.
  */
 static Node *get_node(List *list, void *element)
 {
