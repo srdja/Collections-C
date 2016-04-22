@@ -45,8 +45,8 @@ typedef struct queue_iter_s {
 
 /**
  * Queue zip iterator structure. Used to iterate over the elements of two
- * arrays in lockstep in an ascending order until one of the Queues is
- * is exhausted. The iterator also supports operations for safely adding
+ * queues in lockstep in an ascending order until one of the queues is
+ * exhausted. The iterator also supports operations for safely adding
  * and removing elements during iteration.
  */
 typedef struct queue_zip_iter_s {
