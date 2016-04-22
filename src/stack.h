@@ -25,8 +25,8 @@
 #include "array.h"
 
 /**
- * A LIFO (last in first out) structure. Supports constant
- * time time insertion, removal and lookup.
+ * A LIFO (last in first out) structure. Supports constant time
+ * insertion, removal and lookup.
  */
 typedef struct stack_s Stack;
 
@@ -38,8 +38,8 @@ typedef ArrayConf StackConf;
 
 /**
  * Stack iterator structure. Used to iterate over the elements of
- * the Stack  in an ascending order. The iterator also supports
- * operations for safely  adding and removing elements during
+ * the Stack in an ascending order. The iterator also supports
+ * operations for safely adding and removing elements during
  * iteration.
  */
 typedef struct stack_iter_s {
@@ -49,8 +49,8 @@ typedef struct stack_iter_s {
 /**
  * Stack zip iterator structure. Used to iterate over the elements
  * of two Stacks in lockstep in an ascending order until one of the
- * Stacks is is exhausted. The iterator also supports operations for
- * safely adding  and removing elements during iteration.
+ * Stacks is exhausted. The iterator also supports operations for
+ * safely adding and removing elements during iteration.
  */
 typedef struct stack_zip_iter_s {
     ArrayZipIter i;

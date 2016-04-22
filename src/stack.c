@@ -44,7 +44,7 @@ void stack_conf_init(StackConf *conf)
 /**
  * Creates a new empty stack and returns a status code.
  *
- * @param[out] out Pointer to where the newly created Stack is to be stored
+ * @param[out] out pointer to where the newly created Stack is to be stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
  * memory allocation for the new Stack structure failed.
@@ -65,8 +65,8 @@ enum cc_stat stack_new(Stack **out)
  * fail if the values of exp_factor and capacity in the StackConf do not meet
  * the following condition: <code>exp_factor < (CC_MAX_ELEMENTS / capacity)</code>.
  *
- * @param[in] conf Stack configuration structure
- * @param[out] out Pointer to where the newly created Stack is to be stored
+ * @param[in] conf stack configuration structure
+ * @param[out] out pointer to where the newly created Stack is to be stored
  *
  * @return CC_OK if the creation was successful, CC_ERR_INVALID_CAPACITY if
  * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
@@ -85,7 +85,7 @@ enum cc_stat stack_new_conf(StackConf const * const conf, Stack **out)
 
     Array *array;
     enum cc_stat status;
-    if (!(status = array_new_conf(conf, &array))) {
+    if ((status = array_new_conf(conf, &array)) == CC_OK) {
         stack->v = array;
     } else {
         conf->mem_free(stack);
@@ -110,9 +110,8 @@ void stack_destroy(Stack *stack)
 /**
  * Destroys the specified stack structure along with all the data it holds.
  *
- * @note
- * This function should not be called on a Stack that has some of its elements
- * allocated on the stack (stack memory).
+ * @note This function should not be called on a Stack that has some of its
+ * elements allocated on the stack (stack memory).
  *
  * @param[in] stack the stack to be destroyed
  */
@@ -141,7 +140,7 @@ enum cc_stat stack_push(Stack *stack, void *element)
  * parameter to its value.
  *
  * @param[in] stack the stack whose top element is being returned
- * @param[out] out Pointer to where the returned value is stored
+ * @param[out] out pointer to where the returned value is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if the
  * Stack is empty.
@@ -155,8 +154,8 @@ enum cc_stat stack_peek(Stack *stack, void **out)
  * Pops (removes) the top element of the stack and optionally sets the out
  * parameter to the value of the popped element.
  *
- * @param[in] ar Stack whose top element is being popped
- * @param[out] out Pointer to where the popped value is stored, or NULL if it is
+ * @param[in] stack the stack whose top element is being popped
+ * @param[out] out pointer to where the popped value is stored, or NULL if it is
  *                 to be ignored
  *
  * @return CC_OK if the element was successfully popped, or CC_ERR_OUT_OF_RANGE
@@ -168,11 +167,11 @@ enum cc_stat stack_pop(Stack *stack, void **out)
 }
 
 /**
- * Returns the number Stack elements.
+ * Returns the number of Stack elements.
  *
- * @param[in] stack Stack whose number of elements is being returned.
+ * @param[in] stack the Stack whose number of elements is being returned
  *
- * @return the number of Stack elements
+ * @return the number of Stack elements.
  */
 size_t stack_size(Stack *stack)
 {
@@ -182,7 +181,7 @@ size_t stack_size(Stack *stack)
 /**
  * Applies the function fn to each element of the Stack.
  *
- * @param[in] stack Stack on which this operation being performed
+ * @param[in] stack the Stack on which this operation being performed
  * @param[in] fn the operation function that is to be invoked on each
  *               element of the Stack
  */
@@ -195,7 +194,7 @@ void stack_map(Stack *stack, void (*fn) (void *))
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized
- * @param[in] stack the stack to iterate over
+ * @param[in] s the stack to iterate over
  */
 void stack_iter_init(StackIter *iter, Stack *s)
 {
@@ -207,7 +206,7 @@ void stack_iter_init(StackIter *iter, Stack *s)
  * next element in the sequence.
  *
  * @param[in] iter the iterator that is being advanced
- * @param[out] out Pointer to where the next element is set
+ * @param[out] out pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
  * end of the Stack has been reached.
@@ -223,15 +222,15 @@ enum cc_stat stack_iter_next(StackIter *iter, void **out)
  * the value of the replaced element.
  *
  * @note This function should only ever be called after a call to <code>
- * stack_iter_next()</code>
+ * stack_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
- * @param[out] out Pointer to where the replaced element is stored, or NULL
+ * @param[out] out pointer to where the replaced element is stored, or NULL
  *                if it is to be ignored
  *
  * @return  CC_OK if the element was replaced successfully, or
- * CC_ERR_VALUE_NOT_FOUND.
+ * CC_ERR_OUT_OF_RANGE.
  */
 enum cc_stat stack_iter_replace(StackIter *iter, void *element, void **out)
 {
@@ -241,9 +240,9 @@ enum cc_stat stack_iter_replace(StackIter *iter, void *element, void **out)
 /**
  * Initializes the zip iterator.
  *
- * @param[in] iter Iterator that is being initialized
- * @param[in] q1   First Stack
- * @param[in] q2   Second Stack
+ * @param[in] iter iterator that is being initialized
+ * @param[in] s1   first Stack
+ * @param[in] s2   second Stack
  */
 void stack_zip_iter_init(StackZipIter *iter, Stack *s1, Stack *s2)
 {
@@ -253,12 +252,12 @@ void stack_zip_iter_init(StackZipIter *iter, Stack *s1, Stack *s2)
 /**
  * Outputs the next element pair in the sequence and advances the iterator.
  *
- * @param[in]  iter Iterator that is being advanced
- * @param[out] out1 Output of the first stack element
- * @param[out] out2 Output of the second stack element
+ * @param[in]  iter iterator that is being advanced
+ * @param[out] out1 output of the first stack element
+ * @param[out] out2 output of the second stack element
  *
- * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
- * of the stacks has been reached.
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end
+ * of one of the stacks has been reached.
  */
 enum cc_stat stack_zip_iter_next(StackZipIter *iter, void **out1, void **out2)
 {
@@ -269,11 +268,13 @@ enum cc_stat stack_zip_iter_next(StackZipIter *iter, void **out1, void **out2)
  * Replaces the last returned element pair by <code>stack_zip_iter_next()</code>
  * with the specified replacement element pair.
  *
- * @param[in] iter  Iterator on which this operation is being performed
- * @param[in]  e1   First stack's replacement element
- * @param[in]  e2   Second stack's replacement element
- * @param[out] out1 Output of the replaced element from the first stack
- * @param[out] out2 Output of the replaced element from the second stack
+ * @param[in] iter  iterator on which this operation is being performed
+ * @param[in]  e1   first stack's replacement element
+ * @param[in]  e2   second stack's replacement element
+ * @param[out] out1 output of the replaced element from the first stack
+ * @param[out] out2 output of the replaced element from the second stack
+ *
+ * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE.
  */
 enum cc_stat stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
