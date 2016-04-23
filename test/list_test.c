@@ -686,10 +686,10 @@ void test_list_index_of()
     list_add(list, &d);
 
     size_t i0;
-    list_index_of(list, &a, &i0);
+    list_index_of(list, &a, cc_common_cmp_ptr, &i0);
 
     size_t i1;
-    list_index_of(list, &c, &i1);
+    list_index_of(list, &c, cc_common_cmp_ptr, &i1);
 
     cc_assert(i0 == 0,
               cc_msg("list_index_of: Expected "
@@ -1310,18 +1310,18 @@ void test_list_zip_iter_add()
     }
 
     size_t index;
-    list_index_of(a1, "h", &index);
+    list_index_of(a1, "h", cc_common_cmp_ptr, &index);
 
     cc_assert(index == 2,
               cc_msg("list_zip_iter_add: Expected element %s to be at index 2"
                      " but was found at %d", "h", index));
 
-    list_index_of(a1, "i", &index);
+    list_index_of(a1, "i", cc_common_cmp_ptr, &index);
     cc_assert(index == 2,
               cc_msg("list_zip_iter_add: Expected element %s to be at index 2"
                      " but was found at %d", "i", index));
 
-    list_index_of(a1, "c", &index);
+    list_index_of(a1, "c", cc_common_cmp_ptr, &index);
     cc_assert(index == 3,
               cc_msg("list_zip_iter_add: Expected element %s to be at index 3"
                      " but was found at %d", "c", index));
@@ -1442,13 +1442,13 @@ void test_list_zip_iter_replace()
     }
 
     size_t index;
-    list_index_of(a1, "h", &index);
+    list_index_of(a1, "h", cc_common_cmp_ptr, &index);
 
     cc_assert(index == 1,
               cc_msg("list_zip_iter_replace: Expected element %s to be at index 1"
                      " but was found at %d", "h", index));
 
-    list_index_of(a1, "i", &index);
+    list_index_of(a1, "i", cc_common_cmp_ptr, &index);
     cc_assert(index == 1,
               cc_msg("list_zip_iter_replace: Expected element %s to be at index 1"
                      " but was found at %d", "i", index));

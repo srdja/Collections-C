@@ -986,19 +986,21 @@ size_t list_contains_value(List *list, void *element, int (*cmp) (const void*, c
  * of the first occurrence of the element starting from the beginning of
  * the list.
  *
- * @param[in] list    list on which this operation is performed
+ * @param[in] list list on which this operation is performed
  * @param[in] element the element whose index is being looked up
- * @param[out] index  pointer to where the index is stored
+ * @param[in] cmp comparator function which returns 0 if the values passed to it
+ *                are equal
+ * @param[out] index pointer to where the index is stored
  *
  * @return CC_OK if the index was found, or CC_OUT_OF_RANGE if not.
  */
-enum cc_stat list_index_of(List *list, void *element, size_t *index)
+enum cc_stat list_index_of(List *list, void *element, int (*cmp) (const void*, const void*), size_t *index)
 {
     Node   *node = list->head;
     size_t  i    = 0;
 
     while (node) {
-        if (node->data == element) {
+        if (cmp(node->data, element) == 0) {
             *index = i;
             return CC_OK;
         }
@@ -1921,7 +1923,7 @@ static Node *get_node(List *list, void *element)
 {
     Node *node = list->head;
     while (node) {
-        if (node->data == element)
+        if (cc_common_cmp_ptr(node->data, element) == 0)
             return node;
         node = node->next;
     }

@@ -129,7 +129,7 @@ enum cc_stat  list_replace_at      (List *list, void *element, size_t index, voi
 
 size_t        list_contains        (List *list, void *element);
 size_t        list_contains_value  (List *list, void *element, int (*cmp) (const void*, const void*));
-enum cc_stat  list_index_of        (List *list, void *element, size_t *index);
+enum cc_stat  list_index_of        (List *list, void *element, int (*cmp) (const void*, const void*), size_t *index);
 enum cc_stat  list_to_array        (List *list, void ***out);
 
 void          list_reverse         (List *list);
