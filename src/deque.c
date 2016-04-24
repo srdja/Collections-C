@@ -549,7 +549,7 @@ enum cc_stat deque_get_first(Deque *deque, void **out)
  * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the
  * Deque is empty.
  */
-enum cc_stat deque_get_last(Deque *deque, void **out)
+enum cc_stat deque_get_last(Deque const * const deque, void **out)
 {
     if (deque->size == 0)
         return CC_ERR_OUT_OF_RANGE;
@@ -768,7 +768,7 @@ enum cc_stat deque_index_of(Deque *deque, void *element, size_t *index)
  *
  * @return the number of elements within the specified Deque
  */
-size_t deque_size(Deque *deque)
+size_t deque_size(Deque const * const deque)
 {
     return deque->size;
 }

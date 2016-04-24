@@ -127,7 +127,7 @@ void queue_destroy_free(Queue *queue)
  * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the
  * Queue is empty.
  */
-enum cc_stat queue_peek(Queue *queue, void **out)
+enum cc_stat queue_peek(Queue const * const queue, void **out)
 {
     return deque_get_last(queue->d, out);
 }
@@ -170,7 +170,7 @@ enum cc_stat queue_enqueue(Queue *queue, void *element)
  *
  * @return the number of elements within the queue.
  */
-size_t queue_size(Queue *queue)
+size_t queue_size(Queue const * const queue)
 {
     return deque_size(queue->d);
 }
