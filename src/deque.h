@@ -99,7 +99,7 @@ void          deque_remove_all_free (Deque *deque);
 
 enum cc_stat  deque_get_at          (Deque *deque, size_t index, void **out);
 enum cc_stat  deque_get_first       (Deque *deque, void **out);
-enum cc_stat  deque_get_last        (Deque *deque, void **out);
+enum cc_stat  deque_get_last        (Deque const * const deque, void **out);
 
 enum cc_stat  deque_copy_shallow    (Deque *deque, Deque **out);
 enum cc_stat  deque_copy_deep       (Deque *deque, void *(*cp) (void*), Deque **out);
@@ -109,7 +109,7 @@ enum cc_stat  deque_trim_capacity   (Deque *deque);
 
 size_t        deque_contains        (Deque *deque, void *element);
 size_t        deque_contains_value  (Deque *deque, void *element, int (*cmp)(const void*, const void*));
-size_t        deque_size            (Deque *deque);
+size_t        deque_size            (Deque const * const deque);
 size_t        deque_capacity        (Deque *deque);
 
 enum cc_stat  deque_index_of        (Deque *deque, void *element, size_t *i);

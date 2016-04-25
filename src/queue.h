@@ -60,11 +60,11 @@ enum cc_stat queue_new_conf        (QueueConf const * const conf, Queue **q);
 void         queue_destroy         (Queue *queue);
 void         queue_destroy_free    (Queue *queue);
 
-enum cc_stat queue_peek            (Queue *queue, void **out);
+enum cc_stat queue_peek            (Queue const * const queue, void **out);
 enum cc_stat queue_poll            (Queue *queue, void **out);
 enum cc_stat queue_enqueue         (Queue *queue, void *element);
 
-size_t       queue_size            (Queue *queue);
+size_t       queue_size            (Queue const * const queue);
 void         queue_foreach         (Queue *queue, void (*op) (void*));
 
 void         queue_iter_init       (QueueIter *iter, Queue *queue);
