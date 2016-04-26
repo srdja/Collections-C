@@ -123,7 +123,7 @@ void          treetable_foreach_value    (TreeTable *table, void (*op) (void*));
 
 void          treetable_iter_init        (TreeTableIter *iter, TreeTable *table);
 enum cc_stat  treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
-void          treetable_iter_remove      (TreeTableIter *iter);
+enum cc_stat  treetable_iter_remove      (TreeTableIter *iter, void **out);
 
 #ifdef DEBUG
 #define RB_ERROR_CONSECUTIVE_RED 0

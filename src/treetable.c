@@ -916,9 +916,14 @@ enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
  * @return CC_OK if the entry was successfully removed, or
  * CC_ERR_KEY_NOT_FOUND.
  */
-void treetable_iter_remove(TreeTableIter *iter)
+enum cc_stat treetable_iter_remove(TreeTableIter *iter, void **out)
 {
+    if (out)
+        *out = iter->current->value;
+
     remove_node(iter->table, iter->current);
+
+    return CC_OK;
 }
 
 

@@ -67,6 +67,6 @@ void          treeset_foreach          (TreeSet *set, void (*op) (const void*));
 
 void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
 enum cc_stat  treeset_iter_next        (TreeSetIter *iter, void **element);
-void          treeset_iter_remove      (TreeSetIter *iter);
+enum cc_stat  treeset_iter_remove      (TreeSetIter *iter, void **out);
 
 #endif /* COLLECTIONS_C_TREESET_H */
