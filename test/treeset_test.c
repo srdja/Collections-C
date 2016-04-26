@@ -202,7 +202,7 @@ void test_treeset_iter_remove()
     void *e;
     while (treeset_iter_next(&iter, &e) != CC_ITER_END) {
         if (*((int*)e) == b)
-            treeset_iter_remove(&iter);
+            treeset_iter_remove(&iter, NULL);
     }
 
     cc_assert(treeset_size(t) == 2,

@@ -428,7 +428,7 @@ void test_treetable_iter_remove()
         int const *key = entry.key;
 
         if (*key == b)
-            treetable_iter_remove(&iter);
+            treetable_iter_remove(&iter, NULL);
     }
 
     cc_assert(treetable_size(t) == 2,

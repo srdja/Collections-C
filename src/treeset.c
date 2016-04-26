@@ -40,10 +40,10 @@ void treeset_conf_init(TreeSetConf *conf)
 }
 
 /**
- * Returns a new TreeSet and returns a status code.
+ * Creates a new TreeSet and returns a status code.
  *
  * @param[in] cmp the comparator function used to order elements
- * @param[out] out Pointer to where the newly created TreeSet is to be stored
+ * @param[out] out pointer to where the newly created TreeSet is to be stored
  *
  * @return  CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
  * allocation for the new TreeSet failed.
@@ -124,7 +124,7 @@ enum cc_stat treeset_add(TreeSet *set, void *element)
  *
  * @param[in] set the set from which the element is being removed
  * @param[in] element the element being removed
- * @param[out] out Pointer to where the removed value is stored, or NULL
+ * @param[out] out pointer to where the removed value is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_VALUE_NOT_FOUND
@@ -152,7 +152,7 @@ void treeset_remove_all(TreeSet *set)
  * Returns the first element of the set.
  *
  * @param[in] set the set from which the first element is being returned
- * @param[out] out  Pointer to where the returned element is stored
+ * @param[out] out pointer to where the returned element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
@@ -168,7 +168,7 @@ enum cc_stat treeset_get_first(TreeSet *set, void **out)
  * Returns the last (highest) element of the set.
  *
  * @param[in] set the set from which the last element is being returned
- * @param[out] out  Pointer to where the returned element is stored
+ * @param[out] out pointer to where the returned element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
@@ -185,7 +185,7 @@ enum cc_stat treeset_get_last(TreeSet *set, void **out)
  *
  * @param[in] set the set on which this operation is performed
  * @param[in] element the element whose successor is being returned
- * @param[out] out  Pointer to where the returned element is stored
+ * @param[out] out pointer to where the returned element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
@@ -202,7 +202,7 @@ enum cc_stat treeset_get_greater_than(TreeSet *set, void *element, void **out)
  *
  * @param[in] set the set on which this operation is performed
  * @param[in] element the element whose predecessor is being returned
- * @param[out] out  Pointer to where the returned element is stored
+ * @param[out] out pointer to where the returned element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
@@ -220,7 +220,7 @@ enum cc_stat treeset_get_lesser_than(TreeSet *set, void *element, void **out)
  * @param[in] set the set being searched for the specified element
  * @param[in] element the element being searched for
  *
- * @return true if the specified element is an element of the set
+ * @return true if the specified element is an element of the set.
  */
 bool treeset_contains(TreeSet *set, void *element)
 {
@@ -232,7 +232,7 @@ bool treeset_contains(TreeSet *set, void *element)
  *
  * @param[in] set the set whose size is being returned
  *
- * @return the size of the set
+ * @return the size of the set.
  */
 size_t treeset_size(TreeSet *set)
 {
@@ -267,7 +267,7 @@ void treeset_iter_init(TreeSetIter *iter, TreeSet *set)
  * next element.
  *
  * @param[in] iter the iterator that is being advanced
- * @param[out] out Pointer to where the next element is set
+ * @param[out] element pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
  * end of the TreeSet has been reached.
@@ -289,16 +289,16 @@ enum cc_stat treeset_iter_next(TreeSetIter *iter, void **element)
  * out parameter to the value of the removed element.
  *
  * @note This Function should only ever be called after a call to <code>
- * treeset_iter_next()</code>
+ * treeset_iter_next()</code>.
  *
- * @param[in] iter The iterator on which this operation is performed
- * @param[out] out Pointer to where the removed element is stored, or NULL
+ * @param[in] iter the iterator on which this operation is performed
+ * @param[out] out pointer to where the removed element is stored, or NULL
  *                 if it is to be ignored
  *
  * @return CC_OK if the element was successfully removed, or
  * CC_ERR_KEY_NOT_FOUND.
  */
-void treeset_iter_remove(TreeSetIter *iter)
+enum cc_stat treeset_iter_remove(TreeSetIter *iter, void **out)
 {
-    treetable_iter_remove(&(iter->i));
+    return treetable_iter_remove(&(iter->i), out);
 }
