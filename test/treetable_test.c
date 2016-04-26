@@ -427,8 +427,20 @@ void test_treetable_iter_remove()
     while (treetable_iter_next(&iter, &entry) != CC_ITER_END) {
         int const *key = entry.key;
 
-        if (*key == b)
-            treetable_iter_remove(&iter, NULL);
+        if (*key == b) {
+            enum cc_stat s;
+            s = treetable_iter_remove(&iter, NULL);
+
+            cc_assert(s == CC_OK,
+                      cc_msg("treetable_iter_remove: Expected remove success, but"
+                             " got failure instead"));
+
+            s = treetable_iter_remove(&iter, NULL);
+
+            cc_assert(s == CC_ERR_KEY_NOT_FOUND,
+                      cc_msg("treetable_iter_remove: Expected remove failure, but"
+                             " got something else instead"));
+        }
     }
 
     cc_assert(treetable_size(t) == 2,
