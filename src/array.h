@@ -54,8 +54,8 @@ typedef struct array_conf_s {
 
 /**
  * Array iterator structure. Used to iterate over the elements of
- * the array  in an ascending order. The iterator also supports
- * operations for safely  adding and removing elements during
+ * the array in an ascending order. The iterator also supports
+ * operations for safely adding and removing elements during
  * iteration.
  */
 typedef struct array_iter_s {
@@ -71,7 +71,7 @@ typedef struct array_iter_s {
 /**
  * Array zip iterator structure. Used to iterate over the elements of two
  * arrays in lockstep in an ascending order until one of the Arrays is
- * is exhausted. The iterator also supports operations for safely adding
+ * exhausted. The iterator also supports operations for safely adding
  * and removing elements during iteration.
  */
 typedef struct array_zip_iter_s {
