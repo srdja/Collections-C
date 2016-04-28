@@ -36,7 +36,7 @@ struct deque_s {
 };
 
 static size_t upper_pow_two (size_t);
-static void   copy_buffer   (Deque *deque, void **buff, void *(*cp) (void*));
+static void   copy_buffer   (Deque const * const deque, void **buff, void *(*cp) (void*));
 
 static enum cc_stat expand_capacity (Deque *deque);
 
@@ -512,7 +512,7 @@ void deque_remove_all_free(Deque *deque)
  * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the index
  * was out of range.
  */
-enum cc_stat deque_get_at(Deque *deque, size_t index, void **out)
+enum cc_stat deque_get_at(Deque const * const deque, size_t index, void **out)
 {
     if (index > deque->size)
         return CC_ERR_OUT_OF_RANGE;
@@ -531,7 +531,7 @@ enum cc_stat deque_get_at(Deque *deque, size_t index, void **out)
  * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the
  * Deque is empty.
  */
-enum cc_stat deque_get_first(Deque *deque, void **out)
+enum cc_stat deque_get_first(Deque const * const deque, void **out)
 {
     if (deque->size == 0)
         return CC_ERR_OUT_OF_RANGE;
@@ -572,7 +572,7 @@ enum cc_stat deque_get_last(Deque const * const deque, void **out)
  * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
  */
-enum cc_stat deque_copy_shallow(Deque *deque, Deque **out)
+enum cc_stat deque_copy_shallow(Deque const * const deque, Deque **out)
 {
     Deque *copy = deque->mem_alloc(sizeof(Deque));
 
@@ -613,7 +613,7 @@ enum cc_stat deque_copy_shallow(Deque *deque, Deque **out)
  * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
  */
-enum cc_stat deque_copy_deep(Deque *deque, void *(*cp) (void*), Deque **out)
+enum cc_stat deque_copy_deep(Deque const * const deque, void *(*cp) (void*), Deque **out)
 {
     Deque *copy = deque->mem_alloc(sizeof(Deque));
 
@@ -707,7 +707,7 @@ void deque_reverse(Deque *deque)
  *
  * @return the number of occurrences of the element
  */
-size_t deque_contains(Deque *deque, void *element)
+size_t deque_contains(Deque const * const deque, const void *element)
 {
     return deque_contains_value(deque, element, cc_common_cmp_ptr);
 }
@@ -722,7 +722,7 @@ size_t deque_contains(Deque *deque, void *element)
  *
  * @return the number of occurrences of the element
  */
-size_t deque_contains_value(Deque *deque, void *element, int (*cmp) (const void*, const void*))
+size_t deque_contains_value(Deque const * const deque, const void *element, int (*cmp) (const void*, const void*))
 {
     size_t i;
     size_t o = 0;
@@ -746,7 +746,7 @@ size_t deque_contains_value(Deque *deque, void *element, int (*cmp) (const void*
  *
  * @return CC_OK if the index was found, or CC_OUT_OF_RANGE if not.
  */
-enum cc_stat deque_index_of(Deque *deque, void *element, size_t *index)
+enum cc_stat deque_index_of(Deque const * const deque, const void *element, size_t *index)
 {
     size_t i;
 
@@ -782,7 +782,7 @@ size_t deque_size(Deque const * const deque)
  *
  * @return the capacity of the specified Deque
  */
-size_t deque_capacity(Deque *deque)
+size_t deque_capacity(Deque const * const deque)
 {
     return deque->capacity;
 }
@@ -796,7 +796,7 @@ size_t deque_capacity(Deque *deque)
  *
  * @return Deques internal buffer
  */
-const void* const *deque_get_buffer(Deque *deque)
+const void* const *deque_get_buffer(Deque const * const deque)
 {
     return (const void* const*) deque->buffer;
 }
@@ -805,7 +805,7 @@ const void* const *deque_get_buffer(Deque *deque)
  * Applies the function fn to each element of the Deque.
  *
  * @param[in] deque the deque on which this operation is performed
- * @param[in] op    the operation function that is to be invoked on each Deque
+ * @param[in] fn    the operation function that is to be invoked on each Deque
  *                  element
  */
 void deque_foreach(Deque *deque, void (*fn) (void *))
@@ -829,7 +829,7 @@ void deque_foreach(Deque *deque, void (*fn) (void *))
  * @param[in] cp An optional copy function that returns a copy of the element passed to it.
  *            If NULL is passed, then only a shallow copy will be performed.
  */
-static void copy_buffer(Deque *deque, void **buff, void *(*cp) (void *))
+static void copy_buffer(Deque const * const deque, void **buff, void *(*cp) (void *))
 {
     if (cp == NULL) {
         if (deque->last > deque->first) {
