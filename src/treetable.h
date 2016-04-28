@@ -106,17 +106,17 @@ void          treetable_remove_all       (TreeTable *table);
 enum cc_stat  treetable_remove_first     (TreeTable *table, void **out);
 enum cc_stat  treetable_remove_last      (TreeTable *table, void **out);
 
-enum cc_stat  treetable_get              (TreeTable *table, void *key, void **out);
-enum cc_stat  treetable_get_first_value  (TreeTable *table, void **out);
-enum cc_stat  treetable_get_first_key    (TreeTable *table, void **out);
-enum cc_stat  treetable_get_last_value   (TreeTable *table, void **out);
-enum cc_stat  treetable_get_last_key     (TreeTable *table, void **out);
-enum cc_stat  treetable_get_greater_than (TreeTable *table, void *key, void **out);
-enum cc_stat  treetable_get_lesser_than  (TreeTable *table, void *key, void **out);
+enum cc_stat  treetable_get              (TreeTable const * const table, const void *key, void **out);
+enum cc_stat  treetable_get_first_value  (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_first_key    (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_last_value   (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_last_key     (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_greater_than (TreeTable const * const table, const void *key, void **out);
+enum cc_stat  treetable_get_lesser_than  (TreeTable const * const table, const void *key, void **out);
 
-size_t        treetable_size             (TreeTable *table);
-bool          treetable_contains_key     (TreeTable *table, void *key);
-size_t        treetable_contains_value   (TreeTable *table, void *key);
+size_t        treetable_size             (TreeTable const * const table);
+bool          treetable_contains_key     (TreeTable const * const table, const void *key);
+size_t        treetable_contains_value   (TreeTable const * const table, const void *value);
 
 void          treetable_foreach_key      (TreeTable *table, void (*op) (const void*));
 void          treetable_foreach_value    (TreeTable *table, void (*op) (void*));

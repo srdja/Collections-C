@@ -47,12 +47,12 @@ static void remove_node            (TreeTable *table, RBNode *z);
 static void tree_destroy           (TreeTable *table, RBNode *s);
 
 static INLINE void  transplant     (TreeTable *table, RBNode *u, RBNode *v);
-static INLINE RBNode *tree_min     (TreeTable *table, RBNode *n);
-static INLINE RBNode *tree_max     (TreeTable *table, RBNode *n);
+static INLINE RBNode *tree_min     (TreeTable const * const table, RBNode *n);
+static INLINE RBNode *tree_max     (TreeTable const * const table, RBNode *n);
 
-static RBNode *get_tree_node_by_key(TreeTable *table, void *key);
-static RBNode *get_successor_node  (TreeTable *table, RBNode *n);
-static RBNode *get_predecessor_node(TreeTable *table, RBNode *n);
+static RBNode *get_tree_node_by_key(TreeTable const * const table, const void *key);
+static RBNode *get_successor_node  (TreeTable const * const table, RBNode *x);
+static RBNode *get_predecessor_node(TreeTable const * const table, RBNode *x);
 
 
 /**
@@ -168,7 +168,7 @@ void treetable_destroy(TreeTable *table)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get(TreeTable *table, void *key, void **out)
+enum cc_stat treetable_get(TreeTable const * const table, const void *key, void **out)
 {
     RBNode *node = get_tree_node_by_key(table, key);
 
@@ -188,7 +188,7 @@ enum cc_stat treetable_get(TreeTable *table, void *key, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_first_value(TreeTable *table, void **out)
+enum cc_stat treetable_get_first_value(TreeTable const * const table, void **out)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -208,7 +208,7 @@ enum cc_stat treetable_get_first_value(TreeTable *table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_last_value(TreeTable *table, void **out)
+enum cc_stat treetable_get_last_value(TreeTable const * const table, void **out)
 {
     RBNode *node = tree_max(table, table->root);
 
@@ -228,7 +228,7 @@ enum cc_stat treetable_get_last_value(TreeTable *table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_first_key(TreeTable *table, void **out)
+enum cc_stat treetable_get_first_key(TreeTable const * const table, void **out)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -248,7 +248,7 @@ enum cc_stat treetable_get_first_key(TreeTable *table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_last_key(TreeTable *table, void **out)
+enum cc_stat treetable_get_last_key(TreeTable const * const table, void **out)
 {
     RBNode *node = tree_max(table, table->root);
 
@@ -270,7 +270,7 @@ enum cc_stat treetable_get_last_key(TreeTable *table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_greater_than(TreeTable *table, void *key, void **out)
+enum cc_stat treetable_get_greater_than(TreeTable const * const table, const void *key, void **out)
 {
     RBNode *n = get_tree_node_by_key(table, key);
     RBNode *s = get_successor_node(table, n);
@@ -292,7 +292,7 @@ enum cc_stat treetable_get_greater_than(TreeTable *table, void *key, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_lesser_than(TreeTable *table, void *key, void **out)
+enum cc_stat treetable_get_lesser_than(TreeTable const * const table, const void *key, void **out)
 {
     RBNode *n = get_tree_node_by_key(table, key);
     RBNode *s = get_predecessor_node(table, n);
@@ -312,7 +312,7 @@ enum cc_stat treetable_get_lesser_than(TreeTable *table, void *key, void **out)
  *
  * @return the size of the table
  */
-size_t treetable_size(TreeTable *table)
+size_t treetable_size(TreeTable const * const table)
 {
     return table->size;
 }
@@ -325,7 +325,7 @@ size_t treetable_size(TreeTable *table)
  *
  * @return true if the table contains the key.
  */
-bool treetable_contains_key(TreeTable *table, void *key)
+bool treetable_contains_key(TreeTable const * const table, const void *key)
 {
     RBNode *node = get_tree_node_by_key(table, key);
 
@@ -343,7 +343,7 @@ bool treetable_contains_key(TreeTable *table, void *key)
  *
  * @return number of occurrences of the specified value.
  */
-size_t treetable_contains_value(TreeTable *table, void *value)
+size_t treetable_contains_value(TreeTable const * const table, const void *value)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -541,7 +541,7 @@ static INLINE void transplant(TreeTable *table, RBNode *u, RBNode *v)
     v->parent = u->parent;
 }
 
-static INLINE RBNode *tree_min(TreeTable *table, RBNode *n)
+static INLINE RBNode *tree_min(TreeTable const * const table, RBNode *n)
 {
     RBNode *s = table->sentinel;
 
@@ -550,7 +550,7 @@ static INLINE RBNode *tree_min(TreeTable *table, RBNode *n)
     return n;
 }
 
-static INLINE RBNode *tree_max(TreeTable *table, RBNode *n)
+static INLINE RBNode *tree_max(TreeTable const * const table, RBNode *n)
 {
     RBNode *s = table->sentinel;
 
@@ -755,7 +755,7 @@ static void rotate_left(TreeTable *table, RBNode *x)
  *
  * @return tree node associated with the key
  */
-static RBNode *get_tree_node_by_key(TreeTable *table, void *key)
+static RBNode *get_tree_node_by_key(TreeTable const * const table, const void *key)
 {
     if (table->size == 0)
         return NULL;
@@ -786,7 +786,7 @@ static RBNode *get_tree_node_by_key(TreeTable *table, void *key)
  *
  * @return successor node of x
  */
-static RBNode *get_successor_node(TreeTable *table, RBNode *x)
+static RBNode *get_successor_node(TreeTable const * const table, RBNode *x)
 {
     if (x == NULL)
         return NULL;
@@ -811,7 +811,7 @@ static RBNode *get_successor_node(TreeTable *table, RBNode *x)
  *
  * @return predecessor node of x
  */
-static RBNode *get_predecessor_node(TreeTable *table, RBNode *x)
+static RBNode *get_predecessor_node(TreeTable const * const table, RBNode *x)
 {
     if (x == NULL)
         return NULL;
