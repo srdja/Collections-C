@@ -97,24 +97,24 @@ enum cc_stat  deque_remove_last     (Deque *deque, void **out);
 void          deque_remove_all      (Deque *deque);
 void          deque_remove_all_free (Deque *deque);
 
-enum cc_stat  deque_get_at          (Deque *deque, size_t index, void **out);
-enum cc_stat  deque_get_first       (Deque *deque, void **out);
+enum cc_stat  deque_get_at          (Deque const * const deque, size_t index, void **out);
+enum cc_stat  deque_get_first       (Deque const * const deque, void **out);
 enum cc_stat  deque_get_last        (Deque const * const deque, void **out);
 
-enum cc_stat  deque_copy_shallow    (Deque *deque, Deque **out);
-enum cc_stat  deque_copy_deep       (Deque *deque, void *(*cp) (void*), Deque **out);
+enum cc_stat  deque_copy_shallow    (Deque const * const deque, Deque **out);
+enum cc_stat  deque_copy_deep       (Deque const * const deque, void *(*cp) (void*), Deque **out);
 
 void          deque_reverse         (Deque *deque);
 enum cc_stat  deque_trim_capacity   (Deque *deque);
 
-size_t        deque_contains        (Deque *deque, void *element);
-size_t        deque_contains_value  (Deque *deque, void *element, int (*cmp)(const void*, const void*));
+size_t        deque_contains        (Deque const * const deque, const void *element);
+size_t        deque_contains_value  (Deque const * const deque, const void *element, int (*cmp)(const void*, const void*));
 size_t        deque_size            (Deque const * const deque);
-size_t        deque_capacity        (Deque *deque);
+size_t        deque_capacity        (Deque const * const deque);
 
-enum cc_stat  deque_index_of        (Deque *deque, void *element, size_t *i);
+enum cc_stat  deque_index_of        (Deque const * const deque, const void *element, size_t *i);
 
-void          deque_foreach         (Deque *deque, void (*op) (void *));
+void          deque_foreach         (Deque *deque, void (*fn) (void *));
 
 void          deque_iter_init       (DequeIter *iter, Deque *deque);
 enum cc_stat  deque_iter_next       (DequeIter *iter, void **out);
@@ -130,6 +130,6 @@ enum cc_stat  deque_zip_iter_remove (DequeZipIter *iter, void **out1, void **out
 enum cc_stat  deque_zip_iter_replace(DequeZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 size_t        deque_zip_iter_index  (DequeZipIter *iter);
 
-const void* const* deque_get_buffer(Deque *deque);
+const void* const* deque_get_buffer (Deque const * const deque);
 
 #endif /* COLLECTIONS_C_DEQUE_H */
