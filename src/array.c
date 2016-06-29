@@ -869,9 +869,10 @@ void array_map(Array *ar, void (*fn) (void *e))
  */
 void array_reduce(Array *ar, void (*fn) (void*, void*, void*), void *result)
 {
-    if (ar->size == 1)
-        result = ar->buffer[0];
-
+    if (ar->size == 1) {
+        fn(ar->buffer[0], NULL, result);
+        return;
+    }
     if (ar->size > 1)
         fn(ar->buffer[0], ar->buffer[1], result);
 
