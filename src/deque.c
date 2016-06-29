@@ -931,6 +931,7 @@ void deque_iter_init(DequeIter *iter, Deque *deque)
 {
     iter->deque = deque;
     iter->index = 0;
+    iter->last_removed = false;
 }
 
 /**
@@ -955,6 +956,7 @@ enum cc_stat deque_iter_next(DequeIter *iter, void **out)
     const size_t i = (iter->deque->first + iter->index) & c;
 
     iter->index++;
+    iter->last_removed = false;
     *out = iter->deque->buffer[i];
 
     return CC_OK;
@@ -972,15 +974,20 @@ enum cc_stat deque_iter_next(DequeIter *iter, void **out)
  *                 if it is to be ignored
  * @param[in] iter the iterator on which this operation is being performed
  *
- * @return CC_OK if the element was successfully removed, or
- * CC_ERR_VALUE_NOT_FOUND.
+ * @return CC_OK if the element was successfully removed, CC_ERR_OUT_OF_RANGE
+ * if the iterator state is invalid, or CC_ERR_VALUE_NOT_FOUND if the value
+ * was already removed.
  */
 enum cc_stat deque_iter_remove(DequeIter *iter, void **out)
 {
+    if (iter->last_removed)
+        return CC_ERR_VALUE_NOT_FOUND;
+
     void *rm;
     enum cc_stat status = deque_remove_at(iter->deque, iter->index, &rm);
     if (status == CC_OK) {
         iter->index--;
+        iter->last_removed = true;
         if (out)
             *out = rm;
     }
@@ -1060,6 +1067,7 @@ void deque_zip_iter_init(DequeZipIter *iter, Deque *d1, Deque *d2)
     iter->d1    = d1;
     iter->d2    = d2;
     iter->index = 0;
+    iter->last_removed = false;
 }
 
 /**
@@ -1095,6 +1103,7 @@ enum cc_stat deque_zip_iter_next(DequeZipIter *iter, void **out1, void **out2)
     *out2 = iter->d2->buffer[d2_index];
 
     iter->index++;
+    iter->last_removed = false;
 
     return CC_OK;
 }
@@ -1141,10 +1150,15 @@ enum cc_stat deque_zip_iter_add(DequeZipIter *iter, void *e1, void *e2)
  * @param[out] out1 Output of the removed element from the first deque
  * @param[out] out2 Output of the removed element from the second deque
  *
- * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE.
+ * @return CC_OK if the element was successfully removed, CC_ERR_OUT_OF_RANGE if the
+ * iterator is in an invalid state, or CC_ERR_VALUE_NOT_FOUND if the value was already
+ * removed.
  */
 enum cc_stat deque_zip_iter_remove(DequeZipIter *iter, void **out1, void **out2)
 {
+    if (iter->last_removed)
+        return CC_ERR_VALUE_NOT_FOUND;
+
     if ((iter->index - 1) >= iter->d1->size || (iter->index - 1) >= iter->d2->size)
         return CC_ERR_OUT_OF_RANGE;
 
@@ -1152,6 +1166,7 @@ enum cc_stat deque_zip_iter_remove(DequeZipIter *iter, void **out1, void **out2)
     deque_remove_at(iter->d2, iter->index - 1, out2);
 
     iter->index--;
+    iter->last_removed = true;
 
     return CC_OK;
 }

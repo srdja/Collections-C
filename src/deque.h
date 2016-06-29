@@ -62,6 +62,8 @@ typedef struct deque_iter_s {
     /**
      * The current logical position of the iterator. */
     size_t index;
+
+    bool last_removed;
 } DequeIter;
 
 /**
@@ -74,6 +76,7 @@ typedef struct deque_zip_iter_s {
     Deque *d1;
     Deque *d2;
     size_t index;
+    bool last_removed;
 } DequeZipIter;
 
 
