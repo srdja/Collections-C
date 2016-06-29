@@ -867,17 +867,16 @@ void array_map(Array *ar, void (*fn) (void *e))
  *               element
  * @param[in] result the pointer which will collect the end result
  */
-void array_reduce(Array *ar, void (*fn) (void *, void *, void *), void *result)
+void array_reduce(Array *ar, void (*fn) (void*, void*, void*), void *result)
 {
-	if(ar->size == 1)
-		result = ar->buffer[0];
+    if (ar->size == 1)
+        result = ar->buffer[0];
 
-	if(ar->size > 1)
-		fn(ar->buffer[0],ar->buffer[1],result);
-	
-	size_t i;
-	for (i = 2; i < ar->size; i++)
-		fn(result,ar->buffer[i],result);
+    if (ar->size > 1)
+        fn(ar->buffer[0], ar->buffer[1], result);
+
+    for (size_t i = 2; i < ar->size; i++)
+        fn(result, ar->buffer[i], result);
 }
 
 /**

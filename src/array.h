@@ -116,8 +116,8 @@ size_t        array_capacity        (Array *ar);
 enum cc_stat  array_index_of        (Array *ar, void *element, size_t *index);
 void          array_sort            (Array *ar, int (*cmp) (const void*, const void*));
 
-void          array_map             (Array *ar, void (*fn) (void *));
-void          array_reduce          (Array *ar, void (*fn) (void *, void *, void *), void *result);
+void          array_map             (Array *ar, void (*fn) (void*));
+void          array_reduce          (Array *ar, void (*fn) (void*, void*, void*), void *result);
 
 enum cc_stat  array_filter_mut      (Array *ar, bool (*predicate) (const void*));
 enum cc_stat  array_filter          (Array *ar, bool (*predicate) (const void*), Array **out);
