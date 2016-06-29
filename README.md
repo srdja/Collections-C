@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     array_add(ar, "Hello World!\n");
     
     char *str;
-    array_get(ar, 0, (void*) &str);
+    array_get_at(ar, 0, (void*) &str);
     printf("%s", str);
     
     return 0;
