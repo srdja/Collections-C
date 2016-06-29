@@ -22,6 +22,7 @@ void test_array_capacity();
 void test_array_sort();
 void test_array_filter_mut();
 void test_array_filter();
+void test_array_reduce();
 
 void test_array_iter();
 void test_array_iter_remove();
@@ -59,6 +60,7 @@ int main(int argc, char **argv)
     test_array_zip_iter();
     test_array_filter_mut();
     test_array_filter();
+    test_array_reduce();
 
     return cc_get_status();
 }
@@ -1110,4 +1112,47 @@ void test_array_filter() {
 
     array_destroy(far);
     array_destroy(ar);
+}
+
+
+void reduce_add(void *e1, void *e2, void *result)
+{
+    int el1 = e1 ? *((int*)e1) : 0;
+    int el2 = e2 ? *((int*)e2) : 0;
+    *((int*)result) = el1 + el2;
+}
+
+
+void test_array_reduce()
+{
+    int a = 1;
+    int b = 78;
+    int c = 12;
+    int d = 2;
+    int e = 8;
+
+    Array *ar;
+    array_new(&ar);
+
+    array_add(ar, &a);
+
+    int result;
+    array_reduce(ar, reduce_add, (void*)&result);
+
+    cc_assert(result == 1,
+              cc_msg("array_reduce: Expected result to be 1, but got %d instead", result));
+
+    array_add(ar, &b);
+    array_reduce(ar, reduce_add, (void*)&result);
+
+    cc_assert(result == 79,
+              cc_msg("array_reduce: Expected result to be 79, but got %d instead", result));
+
+    array_add(ar, &c);
+    array_add(ar, &d);
+    array_add(ar, &e);
+    array_reduce(ar, reduce_add, (void*)&result);
+
+    cc_assert(result == 101,
+              cc_msg("array_reduce: Expected result to be 101, but got %d instead", result));
 }
