@@ -66,6 +66,10 @@ typedef struct array_iter_s {
     /**
      * The current position of the iterator.*/
     size_t  index;
+
+    /**
+     * Set to true if the last returned element was removed. */
+    bool last_removed;
 } ArrayIter;
 
 /**
@@ -78,6 +82,7 @@ typedef struct array_zip_iter_s {
     Array *ar1;
     Array *ar2;
     size_t index;
+    bool last_removed;
 } ArrayZipIter;
 
 

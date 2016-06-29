@@ -890,6 +890,7 @@ void array_iter_init(ArrayIter *iter, Array *ar)
 {
     iter->ar    = ar;
     iter->index = 0;
+    iter->last_removed = false;
 }
 
 /**
@@ -910,6 +911,7 @@ enum cc_stat array_iter_next(ArrayIter *iter, void **out)
     *out = iter->ar->buffer[iter->index];
 
     iter->index++;
+    iter->last_removed = false;
 
     return CC_OK;
 }
@@ -927,11 +929,18 @@ enum cc_stat array_iter_next(ArrayIter *iter, void **out)
  *                 if it is to be ignored
  *
  * @return CC_OK if the element was successfully removed, or
- * CC_ERR_OUT_OF_RANGE.
+ * CC_ERR_VALUE_NOT_FOUND.
  */
 enum cc_stat array_iter_remove(ArrayIter *iter, void **out)
 {
-    return array_remove_at(iter->ar, iter->index - 1, out);
+    enum cc_stat status = CC_ERR_VALUE_NOT_FOUND;
+
+    if (!iter->last_removed) {
+        status = array_remove_at(iter->ar, iter->index - 1, out);
+        if (status == CC_OK)
+            iter->last_removed = true;
+    }
+    return status;
 }
 
 /**
@@ -1004,6 +1013,7 @@ void array_zip_iter_init(ArrayZipIter *iter, Array *ar1, Array *ar2)
     iter->ar1 = ar1;
     iter->ar2 = ar2;
     iter->index = 0;
+    iter->last_removed = false;
 }
 
 /**
@@ -1025,6 +1035,7 @@ enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
     *out2 = iter->ar2->buffer[iter->index];
 
     iter->index++;
+    iter->last_removed = false;
 
     return CC_OK;
 }
@@ -1037,17 +1048,22 @@ enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
  * @param[out] out1 output of the removed element from the first array
  * @param[out] out2 output of the removed element from the second array
  *
- * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE.
+ * @return CC_OK if the element was successfully removed, CC_ERR_OUT_OF_RANGE if the
+ * state of the iterator is invalid, or CC_ERR_VALUE_NOT_FOUND if the element was
+ * already removed.
  */
 enum cc_stat array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
 {
     if ((iter->index - 1) >= iter->ar1->size || (iter->index - 1) >= iter->ar2->size)
         return CC_ERR_OUT_OF_RANGE;
 
-    array_remove_at(iter->ar1, iter->index - 1, out1);
-    array_remove_at(iter->ar2, iter->index - 1, out2);
-
-    return CC_OK;
+    if (!iter->last_removed) {
+        array_remove_at(iter->ar1, iter->index - 1, out1);
+        array_remove_at(iter->ar2, iter->index - 1, out2);
+        iter->last_removed = true;
+        return CC_OK;
+    }
+    return CC_ERR_VALUE_NOT_FOUND;
 }
 
 /**
