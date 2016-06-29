@@ -27,11 +27,13 @@ struct array_s {
     size_t   size;
     size_t   capacity;
     float    exp_factor;
+    bool     is_sorted;
     void   **buffer;
 
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
+    int   (*cmp)       (const void *a, const void *b);
 };
 
 static enum cc_stat expand_capacity(Array *ar);
@@ -102,6 +104,9 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
     ar->mem_alloc  = conf->mem_alloc;
     ar->mem_calloc = conf->mem_calloc;
     ar->mem_free   = conf->mem_free;
+	ar->size       = 0;
+    ar->is_sorted  = false;
+    ar->cmp        = NULL;
 
     *out = ar;
     return CC_OK;
@@ -171,6 +176,7 @@ enum cc_stat array_add(Array *ar, void *element)
 
     ar->buffer[ar->size] = element;
     ar->size++;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -213,6 +219,7 @@ enum cc_stat array_add_at(Array *ar, void *element, size_t index)
 
     ar->buffer[index] = element;
     ar->size++;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -240,6 +247,7 @@ enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out
         *out = ar->buffer[index];
 
     ar->buffer[index] = element;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -276,6 +284,8 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
     if (out)
         *out = element;
 
+    ar->is_sorted = false;
+
     return CC_OK;
 }
 
@@ -308,6 +318,7 @@ enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
                 block_size);
     }
     ar->size--;
+    ar->is_sorted = false;
 
     return CC_OK;
 }
@@ -337,6 +348,7 @@ enum cc_stat array_remove_last(Array *ar, void **out)
 void array_remove_all(Array *ar)
 {
     ar->size = 0;
+    ar->is_sorted = false;
 }
 
 /**
@@ -419,14 +431,47 @@ const void * const* array_get_buffer(Array *ar)
  */
 enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 {
-    size_t i;
-    for (i = 0; i < ar->size; i++) {
-        if (ar->buffer[i] == element) {
-            *index = i;
-            return CC_OK;
+    if(ar->is_sorted){
+        size_t left=0, right = ar->size-1, middle;
+        int cmp, lastcmp = -1;
+        bool done=false;
+        while(!done){
+            middle = (right-left)/2 + left;
+	    middle = (right-left == 1) && lastcmp > 0 ? left + 1 : middle;
+            cmp = ar->cmp(element,ar->buffer[middle]);
+            if(cmp < 0){
+                right = middle;
+            }else if(cmp > 0){
+                left = middle;
+            }else if(cmp == 0){
+                done = true;
+            }
+            if(left > right) return CC_ERR_OUT_OF_RANGE;
+	    lastcmp = cmp;
         }
+        while (middle > 0) {
+            // test the element behind
+            if (ar->cmp(element, ar->buffer[middle - 1]) == 0) {
+                // then decrement the index if it is matched
+                middle--;
+            } else {
+                // if the element behind is not matched then the current index is the first in the sequence
+                break;
+            }
+        }
+		*index = middle;
+        return CC_OK;
+    }else{
+    
+        size_t i;
+        for (i = 0; i < ar->size; i++) {
+            if (ar->buffer[i] == element) {
+                *index = i;
+                return CC_OK;
+            }
+        }
+        return CC_ERR_OUT_OF_RANGE;
     }
-    return CC_ERR_OUT_OF_RANGE;
 }
 
 /**
@@ -472,6 +517,8 @@ enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
     sub_ar->mem_free   = ar->mem_free;
     sub_ar->size       = e - b + 1;
     sub_ar->capacity   = sub_ar->size;
+    sub_ar->is_sorted  = ar->is_sorted;
+    sub_ar->cmp       = ar->cmp;
 
     memcpy(sub_ar->buffer,
            &(ar->buffer[b]),
@@ -511,6 +558,8 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
     copy->mem_alloc  = ar->mem_alloc;
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
+    copy->is_sorted  = ar->is_sorted;
+    copy->cmp       = ar->cmp;
 
     memcpy(copy->buffer,
            ar->buffer,
@@ -553,6 +602,8 @@ enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
     copy->mem_alloc  = ar->mem_alloc;
     copy->mem_calloc = ar->mem_calloc;
     copy->mem_free   = ar->mem_free;
+    copy->is_sorted  = ar->is_sorted;
+    copy->cmp       = ar->cmp;
 
     size_t i;
     for (i = 0; i < copy->size; i++)
@@ -675,6 +726,7 @@ void array_reverse(Array *ar)
         ar->buffer[i] = ar->buffer[j];
         ar->buffer[j] = tmp;
     }
+    ar->is_sorted = false;
 }
 
 /**
@@ -704,6 +756,8 @@ enum cc_stat array_trim_capacity(Array *ar)
 
     ar->buffer   = new_buff;
     ar->capacity = ar->size;
+    
+    ar->is_sorted = false; //This might be unnecessary
 
     return CC_OK;
 }
@@ -802,6 +856,8 @@ size_t array_capacity(Array *ar)
 void array_sort(Array *ar, int (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
+    ar->is_sorted = true;
+    ar->cmp = cmp;
 }
 
 /**
@@ -855,6 +911,29 @@ void array_map(Array *ar, void (*fn) (void *e))
     size_t i;
     for (i = 0; i < ar->size; i++)
         fn(ar->buffer[i]);
+}
+
+/**
+ * A fold/reduce function that collects all of the elements in the array
+ * together. For example, if we have an array of [a,b,c...] the end result
+ * will be (...((a+b)+c)+...).
+ *
+ * @param[in] ar the array on which this operation is performed
+ * @param[in] fn the operation function that is to be invoked on each array
+ *               element
+ * @param[in] result the pointer which will collect the end result
+ */
+void array_reduce(Array *ar, void (*fn) (void *, void *, void *), void *result)
+{
+	if(ar->size == 1)
+		result = ar->buffer[0];
+
+	if(ar->size > 1)
+		fn(ar->buffer[0],ar->buffer[1],result);
+	
+	size_t i;
+	for (i = 2; i < ar->size; i++)
+		fn(result,ar->buffer[i],result);
 }
 
 /**
