@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/srdja/Collections-C.svg?branch=master)](https://travis-ci.org/srdja/Collections-C)
-
 Collections-C
 =============
 
-A library of generic data structures including a list, array, hashtable, deque etc..
+> A library of generic data structures including a list, array, hashtable, deque etc..
+
+[![Build Status](https://travis-ci.org/srdja/Collections-C.svg?branch=master)](https://travis-ci.org/srdja/Collections-C)
 
 ## Examples
 Check the [documentation page](https://srdja.github.io/Collections-C/) for mode detailed examples. (This is still in progress).  
