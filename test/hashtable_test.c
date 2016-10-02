@@ -17,11 +17,20 @@ void test_hashtable_contains_key();
 void test_hashtable_memory_chunks_as_keys();
 void test_hashtable_iter_next();
 void test_hashtable_iter_remove();
+void test_hashtable_add_string_with_null_key();
+void test_hashtable_remove_string_with_null_key();
+void test_hashtable_get_string_with_null_key();
+
 
 /* a dummy hash function used to force collisions */
 static size_t collision_hash(const void *k, int l, uint32_t s)
 {
     return 1;
+}
+
+static size_t zero_hash(const void *k, int l, uint32_t s)
+{
+    return 0;
 }
 
 
@@ -42,6 +51,9 @@ int main(int argc, char **argv)
     test_hashtable_memory_chunks_as_keys();
     test_hashtable_iter_next();
     test_hashtable_iter_remove();
+    test_hashtable_add_string_with_null_key();
+    test_hashtable_remove_string_with_null_key();
+    test_hashtable_get_string_with_null_key();
 
     return cc_get_status();
 }
@@ -114,6 +126,78 @@ void test_hashtable_add()
 
     cc_assert(r == c,
               cc_msg("hashtable_add: Expected 'm31' to be retrieved, but got %s", c));
+
+    hashtable_destroy(table);
+}
+
+
+
+void test_hashtable_add_string_with_null_key()
+{
+    HashTableConf htc;
+    hashtable_conf_init(&htc);
+    htc.hash = zero_hash;
+
+    HashTable *table;
+    hashtable_new_conf(&htc, &table);
+
+    char *a = "value";
+    char *b = "cookies";
+    char *c = "m31";
+
+    hashtable_add(table, "key", a);
+    hashtable_add(table, NULL, c);
+    hashtable_add(table, "randomstring", b);
+    hashtable_add(table, "5", c);
+
+    hashtable_destroy(table);
+}
+
+
+void test_hashtable_remove_string_with_null_key()
+{
+    HashTableConf htc;
+    hashtable_conf_init(&htc);
+    htc.hash = zero_hash;
+
+    HashTable *table;
+    hashtable_new_conf(&htc, &table);
+
+    char *a = "value";
+    char *b = "cookies";
+    char *c = "m31";
+
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", b);
+    hashtable_add(table, NULL, c);
+    hashtable_add(table, "5", c);
+
+    hashtable_remove(table, "randomstring", NULL);
+
+    hashtable_destroy(table);
+}
+
+
+void test_hashtable_get_string_with_null_key()
+{
+    HashTableConf htc;
+    hashtable_conf_init(&htc);
+    htc.hash = zero_hash;
+
+    HashTable *table;
+    hashtable_new_conf(&htc, &table);
+
+    char *a = "value";
+    char *b = "cookies";
+    char *c = "m31";
+
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", b);
+    hashtable_add(table, NULL, c);
+    hashtable_add(table, "5", c);
+
+    void *out;
+    hashtable_get(table, "randomstring", &out);
 
     hashtable_destroy(table);
 }

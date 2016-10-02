@@ -180,7 +180,8 @@ enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
     TableEntry *replace = table->buckets[i];
 
     while (replace) {
-        if (table->key_cmp(replace->key, key) == 0) {
+        void *rk = replace->key;
+        if (rk && table->key_cmp(rk, key) == 0) {
             replace->value = val;
             return CC_OK;
         }
@@ -260,7 +261,7 @@ enum cc_stat hashtable_get(HashTable *table, void *key, void **out)
     TableEntry *bucket = table->buckets[index];
 
     while (bucket) {
-        if (table->key_cmp(bucket->key, key) == 0) {
+        if (bucket->key && table->key_cmp(bucket->key, key) == 0) {
             *out = bucket->value;
             return CC_OK;
         }
@@ -319,7 +320,7 @@ enum cc_stat hashtable_remove(HashTable *table, void *key, void **out)
     while (e) {
         next = e->next;
 
-        if (table->key_cmp(key, e->key) == 0) {
+        if (e->key && table->key_cmp(key, e->key) == 0) {
             void *value = e->value;
 
             if (!prev)
