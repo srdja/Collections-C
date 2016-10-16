@@ -99,6 +99,10 @@ enum cc_stat  list_new_conf        (ListConf const * const conf, List **list);
 void          list_destroy         (List *list);
 void          list_destroy_free    (List *list);
 
+void          list_set_add_callback   (List *list, void (*on_add) (List *list, void *data));
+void          list_set_remove_callback(List *list, void (*on_remove) (List *list));
+
+
 enum cc_stat  list_splice          (List *list1, List *list2);
 enum cc_stat  list_splice_at       (List *list, List *list2, size_t index);
 

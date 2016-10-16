@@ -29,6 +29,8 @@ struct list_s {
     void  *(*mem_alloc)  (size_t size);
     void  *(*mem_calloc) (size_t blocks, size_t size);
     void   (*mem_free)   (void *block);
+    void   (*on_add)     (List *list, void *data);
+    void   (*on_remove)  (List *list);
 };
 
 
@@ -130,6 +132,35 @@ void list_destroy_free(List *list)
 }
 
 /**
+ * Sets the on_add callback for list. The function passed to this function
+ * will be called when there are single elements added to the list.
+ *
+ * @param[in] list the list which should recive the callback
+ * @param[in] on_add the callback
+ */
+
+void list_set_add_callback (List *list, void (*on_add) (List *list, void *data))
+{
+  if(list)
+    list->on_add = on_add;
+}
+
+/**
+ * Sets the on_remove callback for list. The function passed to this function
+ * will be called when there are single elements removed from the list.
+ *
+ * @param[in] list the list which should recive the callback
+ * @param[in] on_remove the callback
+ */
+
+void list_set_remove_callback(List *list, void (*on_remove) (List *list))
+{
+  if(list)
+    list->on_remove = on_remove;
+}
+
+
+/**
  * Adds a new element to the list. The element is appended to the list making it
  * the last element in the list.
  *
@@ -172,6 +203,10 @@ enum cc_stat list_add_first(List *list, void *element)
         list->head = node;
     }
     list->size++;
+
+    if(list->on_add)
+      list->on_add(list, element);
+
     return CC_OK;
 }
 
@@ -203,6 +238,10 @@ enum cc_stat list_add_last(List *list, void *element)
         list->tail = node;
     }
     list->size++;
+
+    if(list->on_add)
+      list->on_add(list, element);
+
     return CC_OK;
 }
 
@@ -241,6 +280,9 @@ enum cc_stat list_add_at(List *list, void *element, size_t index)
         list->head = new;
 
     list->size++;
+
+    if(list->on_add)
+      list->on_add(list, element);
 
     return CC_OK;
 }
@@ -286,6 +328,7 @@ static enum cc_stat add_all_to_empty(List *list1, List *list2)
     list1->head = head;
     list1->tail = tail;
     list1->size = list2->size;
+
     return CC_OK;
 }
 
@@ -516,6 +559,10 @@ enum cc_stat list_remove(List *list, void *element, void **out)
         *out = node->data;
 
     unlink(list, node);
+
+    if(list->on_remove)
+      list->on_remove(list);
+
     return CC_OK;
 }
 
@@ -545,6 +592,10 @@ enum cc_stat list_remove_at(List *list, size_t index, void **out)
         *out = node->data;
 
     unlink(list, node);
+
+    if(list->on_remove)
+      list->on_remove(list);
+
     return CC_OK;
 }
 
@@ -568,6 +619,9 @@ enum cc_stat list_remove_first(List *list, void **out)
 
     if (out)
         *out = e;
+
+    if(list->on_remove)
+      list->on_remove(list);
 
     return CC_OK;
 }
@@ -593,6 +647,9 @@ enum cc_stat list_remove_last(List *list, void **out)
     if (out)
         *out = e;
 
+    if(list->on_remove)
+      list->on_remove(list);
+
     return CC_OK;
 }
 
@@ -611,6 +668,10 @@ enum cc_stat list_remove_all(List *list)
     if (unlinked) {
         list->head = NULL;
         list->tail = NULL;
+
+        if(list->on_remove)
+          list->on_remove(list);
+
         return CC_OK;
     }
     return CC_ERR_VALUE_NOT_FOUND;
@@ -636,6 +697,10 @@ enum cc_stat list_remove_all_free(List *list)
     if (unlinked) {
         list->head = NULL;
         list->tail = NULL;
+
+        if(list->on_remove)
+          list->on_remove(list);
+
         return CC_OK;
     }
     return CC_ERR_VALUE_NOT_FOUND;
@@ -1256,6 +1321,10 @@ enum cc_stat list_iter_remove(ListIter *iter, void **out)
 
     if (out)
         *out = e;
+
+    if(iter->list->on_remove)
+      iter->list->on_remove(iter->list);
+
     return CC_OK;
 }
 
@@ -1289,6 +1358,9 @@ enum cc_stat list_iter_add(ListIter *iter, void *element)
 
     iter->list->size++;
     iter->index++;
+
+    if(iter->list->on_add)
+      iter->list->on_add(iter->list, element);
 
     return CC_OK;
 }
