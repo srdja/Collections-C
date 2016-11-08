@@ -1,3 +1,10 @@
 language: c
-compiler: gcc
-script: ./autogen.sh && ./configure && make check
+compiler: 
+  - gcc
+  - clang
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - make test
