@@ -1,8 +1,9 @@
 #include <time.h>
-
-#include "../src/hashtable.h"
-#include "test.h"
 #include <string.h>
+
+#include "hashtable.h"
+#include "test.h"
+
 
 static HashTableConf conf;
 

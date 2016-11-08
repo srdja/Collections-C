@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "../src/list.h"
+#include "list.h"
 #include "test.h"
 
 void list_1234(List **l);

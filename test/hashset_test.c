@@ -1,6 +1,7 @@
-#include "../src/hashset.h"
-#include "test.h"
 #include <string.h>
+#include "hashset.h"
+#include "test.h"
+
 
 void test_hashset_new();
 void test_hashset_add();

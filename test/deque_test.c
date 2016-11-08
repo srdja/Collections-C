@@ -1,4 +1,4 @@
-#include "../src/deque.h"
+#include "deque.h"
 #include "test.h"
 
 void test_deque_add();

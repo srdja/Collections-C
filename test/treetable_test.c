@@ -1,8 +1,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../src/treetable.h"
-#include "../src/deque.h"
+#include "treetable.h"
+#include "deque.h"
 #include "test.h"
 
 void test_treetable_add();

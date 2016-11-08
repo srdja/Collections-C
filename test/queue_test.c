@@ -1,4 +1,4 @@
-#include "../src/queue.h"
+#include "queue.h"
 #include "test.h"
 
 void test_queue_poll();
