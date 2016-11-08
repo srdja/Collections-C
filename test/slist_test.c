@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "../src/slist.h"
+#include "slist.h"
 #include "test.h"
 
 void slist_1_to_10(SList **list);

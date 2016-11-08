@@ -1,7 +1,7 @@
 #include <time.h>
 #include <stdint.h>
 
-#include "../src/array.h"
+#include "array.h"
 #include "test.h"
 
 void test_array_add();

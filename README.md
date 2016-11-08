@@ -6,7 +6,7 @@ Collections-C
 [![Build Status](https://travis-ci.org/srdja/Collections-C.svg?branch=master)](https://travis-ci.org/srdja/Collections-C)
 
 ## Examples
-Check the [documentation page](https://srdja.github.io/Collections-C/) for mode detailed examples. (This is still in progress).  
+Check the [documentation page](https://srdja.github.io/Collections-C/) for mode detailed examples. (This is still in progress).
 The source of the documentation can be found [here](https://github.com/srdja/cc-doc-slate).
 
 HashTable:
@@ -68,26 +68,18 @@ array_destroy(ar);
 
 ####Dependencies
 - gcc
-- autoconf
-- automake
-- libtool
-- m4
+- cmake ( >= 3.6 )
 
 These packages can usually be installed through your distributions package manager.
 
 Building on windows requires [MinGW](http://mingw.org) which provides all the tools needed to build the project.
 
 #### Building the project
-In the project directory, run the following commands: `./autogen.sh` then run `./configure`. If autogen complains that it couldn't find a directory named "m4", run: `mkdir m4` and then `./autogen.sh`.
 
-- note: Running configure with a prefix like: `./configure --prefix=/some/custom/path` will cause `make install` to install the library to that directory instead of the default one.
-
-At this point we should be able to build the project by running:
+Building the library:
 ```
-make
+make build
 ```
-By default `make` builds a shared library. To build a static library, run make with "static" flag on: `make CFLAGS=-static`.  
-- note: When building for the 64 bit architecture, "ARCH_64" can be explicitly set like so: `make CFLAGS=-DARCH_64`. This will increase the maximum container capacity to ~2^64. Otherwise the maximum capacity defaults to ~2^32 elements regardless of the target architecture.
 
 Installing the library:
 ```
@@ -96,23 +88,23 @@ make install
 
 The tests can be run by:
 ```
-make check
+make test
 ```
 #### Compiling and linking a simple program
 - hello.c
 ```c
 #include <stdio.h>
-#include <array.h>
+#include <collectc/array.h>
 
 int main(int argc, char **argv) {
     Array *ar;
     array_new(&ar);
     array_add(ar, "Hello World!\n");
-    
+
     char *str;
     array_get_at(ar, 0, (void*) &str);
     printf("%s", str);
-    
+
     return 0;
 }
 ```

@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/treeset.h"
+#include "treeset.h"
 
 void test_treeset_add();
 void test_treeset_remove();
