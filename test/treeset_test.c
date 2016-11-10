@@ -1,22 +1,7 @@
-#include "test.h"
 #include "treeset.h"
+#include "CppUTest/TestHarness_c.h"
 
-void test_treeset_add();
-void test_treeset_remove();
-void test_treeset_remove_all();
-void test_treeset_size();
-
-int main(int argc, char **argv)
-{
-    cc_set_exit_on_failure(false);
-
-    test_treeset_add();
-    test_treeset_remove();
-    test_treeset_remove_all();
-    test_treeset_size();
-
-    return cc_get_status();
-}
+static TreeSet *set;
 
 int cmp(const void *k1, const void *k2)
 {
@@ -31,11 +16,18 @@ int cmp(const void *k1, const void *k2)
         return 0;
 }
 
-void test_treeset_add()
+TEST_GROUP_C_SETUP(TreeSetTestsWithDefaults)
 {
-    TreeSet *set;
     treeset_new(cmp, &set);
+};
 
+TEST_GROUP_C_TEARDOWN(TreeSetTestsWithDefaults)
+{
+
+};
+
+TEST_C(TreeSetTestsWithDefaults, TreeSetAdd)
+{
     int a = 1;
     int b = 2;
     int c = 3;
@@ -45,25 +37,13 @@ void test_treeset_add()
     treeset_add(set, &c);
     treeset_add(set, &c);
 
-    size_t size = treeset_size(set);
+    CHECK_EQUAL_C_INT(3, treeset_size(set));
+    CHECK_EQUAL_C_INT(1, treeset_contains(set, &a));
+    CHECK_EQUAL_C_INT(1, treeset_contains(set, &b));
+};
 
-    cc_assert(size == 3,
-              cc_msg("treeset_add: Expected size was 3, but got %d",
-                     size));
-
-    cc_assert(treeset_contains(set, &a) &&
-              treeset_contains(set, &b),
-              cc_msg("treeset_add: TreeSet expected to contain elemnts"
-                     " %d and %d", a, b));
-
-    treeset_destroy(set);
-}
-
-void test_treeset_remove()
+TEST_C(TreeSetTestsWithDefaults, TreeSetRemove)
 {
-    TreeSet *set;
-    treeset_new(cmp, &set);
-
     int a = 1;
     int b = 2;
     int c = 3;
@@ -74,24 +54,12 @@ void test_treeset_remove()
 
     treeset_remove(set, &a, NULL);
 
-    size_t size = treeset_size(set);
+    CHECK_EQUAL_C_INT(2, treeset_size(set));
+    CHECK_EQUAL_C_INT(0, treeset_contains(set, &a));
+};
 
-    cc_assert(size == 2,
-              cc_msg("treeset_add: Expected size was 2, but got %d",
-                     size));
-
-    cc_assert(!treeset_contains(set, &a),
-              cc_msg("treeset_add: TreeSet not expected to contain "
-                     "element %d", a));
-
-    treeset_destroy(set);
-}
-
-void test_treeset_remove_all()
+TEST_C(TreeSetTestsWithDefaults, TreeSetRemoveAll)
 {
-    TreeSet *set;
-    treeset_new(cmp, &set);
-
     int a = 1;
     int b = 2;
     int c = 3;
@@ -102,25 +70,13 @@ void test_treeset_remove_all()
 
     treeset_remove_all(set);
 
-    size_t size = treeset_size(set);
+    CHECK_EQUAL_C_INT(0, treeset_size(set));
+    CHECK_EQUAL_C_INT(0, treeset_contains(set, &a));
+    CHECK_EQUAL_C_INT(0, treeset_contains(set, &c));
+};
 
-    cc_assert(size == 0,
-              cc_msg("treeset_add: Expected size was 0, but got %d",
-                     size));
-
-    cc_assert(!treeset_contains(set, &a) &&
-              !treeset_contains(set, &c),
-              cc_msg("treeset_add: TreeSet not empty after removing"
-                     " all elements"));
-
-    treeset_destroy(set);
-}
-
-void test_treeset_size()
+TEST_C(TreeSetTestsWithDefaults, TreeSetSetSize)
 {
-    TreeSet *set;
-    treeset_new(cmp, &set);
-
     int a = 1;
     int b = 2;
     int c = 3;
@@ -129,26 +85,20 @@ void test_treeset_size()
     treeset_add(set, &b);
     treeset_add(set, &c);
 
-    cc_assert(treeset_size(set) == 3,
-              cc_msg("treeset_size: Unexpected set size"));
+    CHECK_EQUAL_C_INT(3, treeset_size(set));
+};
 
-    treeset_destroy(set);
-}
-
-void test_treeset_iter_next()
+TEST_C(TreeSetTestsWithDefaults, TreeSetIterNext)
 {
-    TreeSet *t;
-    treeset_new(cmp, &t);
-
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treeset_add(t, &a);
-    treeset_add(t, &b);
-    treeset_add(t, &c);
-    treeset_add(t, &d);
+    treeset_add(set, &a);
+    treeset_add(set, &b);
+    treeset_add(set, &c);
+    treeset_add(set, &d);
 
     int one   = 0;
     int two   = 0;
@@ -156,7 +106,7 @@ void test_treeset_iter_next()
     int four  = 0;
 
     TreeSetIter iter;
-    treeset_iter_init(&iter, t);
+    treeset_iter_init(&iter, set);
 
     void *e;
     while (treeset_iter_next(&iter, &e) != CC_ITER_END) {
@@ -173,45 +123,30 @@ void test_treeset_iter_next()
             four++;
     }
 
-    bool asrt = (one   == 1) && (two  == 1)  &&
-                (three == 1) && (four == 1);
+    CHECK_EQUAL_C_INT(1, one);
+    CHECK_EQUAL_C_INT(1, two);
+    CHECK_EQUAL_C_INT(1, three);
+    CHECK_EQUAL_C_INT(1, four);
+};
 
-    cc_assert(asrt,
-              cc_msg("treeset_iter_next: Unexpected number"
-                     " of entries returned"));
-
-    treeset_destroy(t);
-}
-
-void test_treeset_iter_remove()
+TEST_C(TreeSetTestsWithDefaults, TreeSetIterRemove)
 {
-    TreeSet *t;
-    treeset_new(cmp, &t);
-
     int a = 1;
     int b = 2;
     int c = 3;
 
-    treeset_add(t, &a);
-    treeset_add(t, &b);
-    treeset_add(t, &c);
+    treeset_add(set, &a);
+    treeset_add(set, &b);
+    treeset_add(set, &c);
 
     TreeSetIter iter;
-    treeset_iter_init(&iter, t);
+    treeset_iter_init(&iter, set);
 
     void *e;
     while (treeset_iter_next(&iter, &e) != CC_ITER_END) {
         if (*((int*)e) == b)
             treeset_iter_remove(&iter, NULL);
     }
-
-    cc_assert(treeset_size(t) == 2,
-              cc_msg("treeset_iter_remove: Expected size 2 but got %d ",
-                     treeset_size(t)));
-
-    cc_assert(!treeset_contains(t, &b),
-              cc_msg("treeset_iter_remove: Element b  still pressent "
-                     "after removal"));
-
-    treeset_destroy(t);
-}
+    CHECK_EQUAL_C_INT(2, treeset_size(set));
+    CHECK_EQUAL_C_INT(0, treeset_contains(set, &b));
+};
