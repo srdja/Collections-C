@@ -7,4 +7,4 @@ before_script:
   - docker pull srdja/collections-c-test
 
 script:
-  - docker run -p 8080:80 srdja/collections-c-test
+  - docker run -p 8080:80 -e BRANCH=$TRAVIS_BRANCH -e PULL_REQUEST=$TRAVIS_PULL_REQUEST -e PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH srdja/collections-c-test
