@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: @CMAKE_PROJECT_NAME@
+Description: C data structures collection
+Version: @CMAKE_VERSION@
+Libs: -L${libdir} -lcollectc
+Cflags: -I${includedir}
