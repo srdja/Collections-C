@@ -71,6 +71,7 @@ array_destroy(ar);
 - C compiler (gcc, clang, etc...)
 - cmake (>= 3.5)
 - [testing only] cpputest (>=3.8)
+- pkg-config
 
 These packages can usually be installed through your distributions package manager.
 
@@ -246,7 +247,7 @@ Sometimes the compiler may have trouble finding the library or the headers. This
 If this is the case, we can explicitly tell the compiler where to look for them by passing the `-I[path to headers]` and `-L[path to libraries]` options:
 
 ```
-gcc hello.c -I/path/to/library/include/ -L/path/to/library/lib/ -lcollectc -o hello
+gcc hello.c `pkg-config --cflags --libs collectionc` -o hello
 ```
 
 ### Running the program
