@@ -70,6 +70,7 @@ array_destroy(ar);
 
 - C compiler (gcc, clang, etc...)
 - cmake (>= 3.5)
+- [testing only] cpputest (>=3.8)
 
 These packages can usually be installed through your distributions package manager.
 
@@ -103,6 +104,73 @@ This will build both the static and the dynamic library.
 make test
 ```
 
+Example:
+```
+make test
+...
+Running tests...
+Test project /Users/radu/Dropbox/projects/Collections-C/build
+      Start  1: ArrayTest
+ 1/10 Test  #1: ArrayTest ........................   Passed    0.00 sec
+      Start  2: DequeTest
+ 2/10 Test  #2: DequeTest ........................   Passed    0.00 sec
+      Start  3: ListTest
+ 3/10 Test  #3: ListTest .........................   Passed    0.01 sec
+      Start  4: HashSetTest
+ 4/10 Test  #4: HashSetTest ......................   Passed    0.00 sec
+      Start  5: HashTableTest
+ 5/10 Test  #5: HashTableTest ....................   Passed    0.00 sec
+      Start  6: QueueTest
+ 6/10 Test  #6: QueueTest ........................   Passed    0.00 sec
+      Start  7: SlistTest
+ 7/10 Test  #7: SlistTest ........................   Passed    0.00 sec
+      Start  8: StackTest
+ 8/10 Test  #8: StackTest ........................   Passed    0.00 sec
+      Start  9: TreeSetTest
+ 9/10 Test  #9: TreeSetTest ......................   Passed    0.00 sec
+      Start 10: TreeTableTest
+10/10 Test #10: TreeTableTest ....................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 10
+
+Total Test time (real) =   0.04 sec
+```
+
+Running individual tests
+```
+make build
+...
+> build/test/array_test -c -v
+TEST(ArrayTestsFilter, ArrayFilter2) - 0 ms
+TEST(ArrayTestsFilter, ArrayFilter1) - 0 ms
+TEST(ArrayTestsFilter, ArrayFilterMut2) - 0 ms
+TEST(ArrayTestsFilter, ArrayFilterMut1) - 0 ms
+TEST(ArrayTestsArrayConf, ArrayCapacity) - 0 ms
+TEST(ArrayTestsArrayConf, ArrayAddAt) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayReduce) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayZipIterReplace) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayZipIterAdd) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayZipIterRemove) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayZipIterNext) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayIterReplace) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayIterRemove) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayContains) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayReverse) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayDeepCopy) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayShallowCopy) - 0 ms
+TEST(ArrayTestsWithDefaults, ArraySubarray) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayIndexOf) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayGetAt) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayRemoveAll) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayRemoveAt) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayRemove) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayReplaceAt) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayAddAt2) - 0 ms
+TEST(ArrayTestsWithDefaults, ArrayAdd) - 0 ms
+
+OK (26 tests, 26 ran, 115 checks, 0 ignored, 0 filtered out, 1 ms)
+
+```
 ### Installing
 
 To install the library run:
@@ -173,7 +241,7 @@ Linking dynamically produces a smaller executable, but requires `libcollectc.so`
 
 ### Linking problems
 
-Sometimes the compiler may have trouble finding the library or the headers. This is usually because the it's looking for them in the wrong directory, which may happen if the library or the headers or both are installed in a non-standard directory or not installed at all. 
+Sometimes the compiler may have trouble finding the library or the headers. This is usually because the it's looking for them in the wrong directory, which may happen if the library or the headers or both are installed in a non-standard directory or not installed at all.
 
 If this is the case, we can explicitly tell the compiler where to look for them by passing the `-I[path to headers]` and `-L[path to libraries]` options:
 

@@ -2,26 +2,11 @@
 #include <string.h>
 
 #include "hashtable.h"
-#include "test.h"
-
+#include "CppUTest/TestHarness_c.h"
 
 static HashTableConf conf;
-
-void test_hashtable_new();
-void test_hashtable_add();
-void test_hashtable_remove();
-void test_hashtable_get();
-void test_hashtable_size();
-void test_hashtable_remove_all();
-void test_hashtable_capacity();
-void test_hashtable_contains_key();
-void test_hashtable_memory_chunks_as_keys();
-void test_hashtable_iter_next();
-void test_hashtable_iter_remove();
-void test_hashtable_add_string_with_null_key();
-void test_hashtable_remove_string_with_null_key();
-void test_hashtable_get_string_with_null_key();
-
+static HashTable *table;
+int stat;
 
 /* a dummy hash function used to force collisions */
 static size_t collision_hash(const void *k, int l, uint32_t s)
@@ -34,58 +19,38 @@ static size_t zero_hash(const void *k, int l, uint32_t s)
     return 0;
 }
 
-
-int main(int argc, char **argv)
-{
-    cc_set_exit_on_failure(false);
-
-    hashtable_conf_init(&conf);
-
-    test_hashtable_new();
-    test_hashtable_size();
-    test_hashtable_remove_all();
-    test_hashtable_add();
-    test_hashtable_remove();
-    test_hashtable_get();
-    test_hashtable_capacity();
-    test_hashtable_contains_key();
-    test_hashtable_memory_chunks_as_keys();
-    test_hashtable_iter_next();
-    test_hashtable_iter_remove();
-    test_hashtable_add_string_with_null_key();
-    test_hashtable_remove_string_with_null_key();
-    test_hashtable_get_string_with_null_key();
-
-    return cc_get_status();
-}
-
-
-void test_hashtable_new()
+TEST_GROUP_C_SETUP(HashTableTestsConf)
 {
     hashtable_conf_init(&conf);
     conf.initial_capacity = 7;
+    stat = hashtable_new_conf(&conf, &table);
+};
 
-    HashTable *table;
-    hashtable_new_conf(&conf, &table);
-
-    cc_assert(hashtable_size(table) == 0,
-              cc_msg("hashtable_new: Initial size not 0"));
-
-    size_t capacity = hashtable_capacity(table);
-
-    /* power of 2 rounding */
-    cc_assert(capacity == 8,
-              cc_msg("hashtable_new: Expected capactity was 8, but got %d",
-                     capacity));
-
-    hashtable_destroy(table);
-}
-
-void test_hashtable_add()
+TEST_GROUP_C_TEARDOWN(HashTableTestsConf)
 {
-    HashTable *table;
-    hashtable_new(&table);
+    hashtable_destroy(table);
+};
 
+TEST_C(HashTableTestsConf, HashTableNew)
+{
+    CHECK_EQUAL_C_INT(CC_OK, stat);
+    CHECK_EQUAL_C_INT(0, hashtable_size(table));
+    /* power of 2 rounding */
+    CHECK_EQUAL_C_INT(8, hashtable_capacity(table));
+};
+
+TEST_GROUP_C_SETUP(HashTableTests)
+{
+    hashtable_new(&table);
+};
+
+TEST_GROUP_C_TEARDOWN(HashTableTests)
+{
+    hashtable_destroy(table);
+};
+
+TEST_C(HashTableTests, HashTableAdd)
+{
     char *a = "value";
     char *b = "cookies";
     char *c = "m31";
@@ -94,54 +59,70 @@ void test_hashtable_add()
     hashtable_add(table, "randomstring", b);
     hashtable_add(table, "5", c);
 
-    size_t size = hashtable_size(table);
-
-    cc_assert(size == 3,
-              cc_msg("hashtable_add: Expected size was 3, but got %d", size));
+    CHECK_EQUAL_C_INT(3, hashtable_size(table));
 
     char *r;
     hashtable_get(table, "key", (void*) &r);
+    CHECK_EQUAL_C_POINTER(r, a);
+};
 
-    cc_assert(r == a,
-              cc_msg("hashtable_add: Wrong value retrieved"));
-
-    hashtable_destroy(table);
-
-    /*
-     * test collision handling
-     */
+TEST_GROUP_C_SETUP(HashTableTestsCollision)
+{
     hashtable_conf_init(&conf);
     conf.hash = collision_hash;
-
     hashtable_new_conf(&conf, &table);
+};
+
+TEST_GROUP_C_TEARDOWN(HashTableTestsCollision)
+{
+    hashtable_destroy(table);
+};
+
+TEST_C(HashTableTestsCollision, HashTableCollisionGet)
+{
+    char *a = "value";
+    char *c = "m31";
 
     hashtable_add(table, "key", a);
     hashtable_add(table, "randomstring", c);
 
-    size = hashtable_size(table);
+    CHECK_EQUAL_C_INT(2, hashtable_size(table));
 
-    cc_assert(size == 2,
-              cc_msg("hashtable_add: Expected size was 2, but got %d", size));
-
+    char *r;
     hashtable_get(table, "randomstring", (void*) &r);
+    CHECK_EQUAL_C_POINTER(r, c);
+};
 
-    cc_assert(r == c,
-              cc_msg("hashtable_add: Expected 'm31' to be retrieved, but got %s", c));
-
-    hashtable_destroy(table);
-}
-
-
-
-void test_hashtable_add_string_with_null_key()
+TEST_C(HashTableTestsCollision, HashTableCollisionRemove)
 {
-    HashTableConf htc;
-    hashtable_conf_init(&htc);
-    htc.hash = zero_hash;
+    char *a = "value";
+    char *c = "m31";
 
-    HashTable *table;
-    hashtable_new_conf(&htc, &table);
+    hashtable_add(table, "key", a);
+    hashtable_add(table, "randomstring", c);
+    hashtable_add(table, "5", c);
 
+    char *rm;
+    hashtable_remove(table, "randomstring", (void*) &rm);
+    CHECK_EQUAL_C_INT(2, hashtable_size(table));
+    void *g;
+    CHECK_EQUAL_C_INT(CC_ERR_KEY_NOT_FOUND, hashtable_get(table, "randomstring", (void*) &g));
+};
+
+TEST_GROUP_C_SETUP(HashTableTestsZeroHash)
+{
+    hashtable_conf_init(&conf);
+    conf.hash = zero_hash;
+    hashtable_new_conf(&conf, &table);
+};
+
+TEST_GROUP_C_TEARDOWN(HashTableTestsZeroHash)
+{
+    hashtable_destroy(table);
+};
+
+TEST_C(HashTableTestsZeroHash, HashTableAddStringWithNullKey)
+{
     char *a = "value";
     char *b = "cookies";
     char *c = "m31";
@@ -150,20 +131,11 @@ void test_hashtable_add_string_with_null_key()
     hashtable_add(table, NULL, c);
     hashtable_add(table, "randomstring", b);
     hashtable_add(table, "5", c);
-
-    hashtable_destroy(table);
-}
+};
 
 
-void test_hashtable_remove_string_with_null_key()
+TEST_C(HashTableTestsZeroHash, HashTableRemoveStringWithNullKey)
 {
-    HashTableConf htc;
-    hashtable_conf_init(&htc);
-    htc.hash = zero_hash;
-
-    HashTable *table;
-    hashtable_new_conf(&htc, &table);
-
     char *a = "value";
     char *b = "cookies";
     char *c = "m31";
@@ -174,20 +146,11 @@ void test_hashtable_remove_string_with_null_key()
     hashtable_add(table, "5", c);
 
     hashtable_remove(table, "randomstring", NULL);
-
-    hashtable_destroy(table);
-}
+};
 
 
-void test_hashtable_get_string_with_null_key()
+TEST_C(HashTableTestsZeroHash, HashTableGetStringWithNullKey)
 {
-    HashTableConf htc;
-    hashtable_conf_init(&htc);
-    htc.hash = zero_hash;
-
-    HashTable *table;
-    hashtable_new_conf(&htc, &table);
-
     char *a = "value";
     char *b = "cookies";
     char *c = "m31";
@@ -199,16 +162,11 @@ void test_hashtable_get_string_with_null_key()
 
     void *out;
     hashtable_get(table, "randomstring", &out);
-
-    hashtable_destroy(table);
-}
+};
 
 
-void test_hashtable_remove()
+TEST_C(HashTableTests, HashTableRemove)
 {
-    HashTable *table;
-    hashtable_new(&table);
-
     char *a = "value";
     char *b = "cookies";
     char *c = "m31";
@@ -219,82 +177,30 @@ void test_hashtable_remove()
 
     char *rm;
     hashtable_remove(table, "randomstring", (void*) &rm);
-    size_t size = hashtable_size(table);
-
-    cc_assert(size == 2,
-              cc_msg("hashtable_remove: Expected size was 2, but got %d",
-                     size));
+    CHECK_EQUAL_C_INT(2, hashtable_size(table));
 
     char *g;
-    int stat = hashtable_get(table, "randomstring", (void*) &g);
-
-    cc_assert(stat == CC_ERR_KEY_NOT_FOUND,
-              cc_msg("hashtable_remove: 'randomstring' key"
-                     " still mapped after removal"));
-
-    hashtable_destroy(table);
-
-    /*
-     * test collision handling
-     */
-    hashtable_conf_init(&conf);
-    conf.hash = collision_hash;
-
-    hashtable_new_conf(&conf, &table);
-
-    hashtable_add(table, "key", a);
-    hashtable_add(table, "randomstring", c);
-    hashtable_add(table, "5", c);
-
-    hashtable_remove(table, "randomstring", (void*) &rm);
-    size = hashtable_size(table);
-
-    cc_assert(size == 2,
-              cc_msg("hashtable_remove: Expected size was 2, but got %d",
-                     size));
-
-    stat = hashtable_get(table, "randomstring", (void*) &g);
-
-    cc_assert(stat == CC_ERR_KEY_NOT_FOUND,
-              cc_msg("hashtable_remove: Expected 'm31' to"
-                     " be retrieved, but got %s", c));
-
-    hashtable_destroy(table);
-}
+    CHECK_EQUAL_C_INT(CC_ERR_KEY_NOT_FOUND, hashtable_get(table, "randomstring", (void*) &g));
+};
 
 
-void test_hashtable_remove_all()
+TEST_C(HashTableTests, HashTableRemoveAll)
 {
-    HashTable *table;
-    hashtable_new(&table);
-
     hashtable_add(table, "key", "value");
     hashtable_add(table, "randomkey", "randomvalue");
 
-    hashtable_remove_all(table);
-    size_t size = hashtable_size(table);
+    CHECK_EQUAL_C_INT(2, hashtable_size(table));
 
-    cc_assert(size == 0,
-              cc_msg("hashtable_remove_all: Table size %d,"
-                     " when it should be 0",
-                     size));
+    hashtable_remove_all(table);
+    CHECK_EQUAL_C_INT(0, hashtable_size(table));
 
     char *g;
-    int stat = hashtable_get(table, "key", (void*) &g);
-
-    cc_assert(stat == CC_ERR_KEY_NOT_FOUND,
-              cc_msg("hashtable_refmove_all: Value still"
-                     " accecible after removal"));
-
-    hashtable_destroy(table);
-}
+    CHECK_EQUAL_C_INT(CC_ERR_KEY_NOT_FOUND, hashtable_get(table, "key", (void*) &g));
+};
 
 
-void test_hashtable_get()
+TEST_C(HashTableTests, HashTableGet)
 {
-    HashTable *table;
-    hashtable_new(&table);
-
     char *val = "567";
 
     hashtable_add(table, "key", "value");
@@ -303,87 +209,59 @@ void test_hashtable_get()
     char *ret;
     hashtable_get(table, "123", (void*) &ret);
 
-    cc_assert(ret == val,
-              cc_msg("hashtable_get: Incorrect value returned."
-                     " Expected %s, but got %s", val, ret));
-
-    hashtable_destroy(table);
-}
+    CHECK_EQUAL_C_STRING(val, ret);
+};
 
 
-void test_hashtable_size()
+TEST_C(HashTableTests, HashTableSize)
 {
-    HashTable *table;
-    hashtable_new(&table);
-
     hashtable_add(table, "key", "value");
     hashtable_add(table, "randomstring", "cookies");
     hashtable_add(table, "5", "asdf");
 
-    size_t size = hashtable_size(table);
-
-    cc_assert(size == 3,
-              cc_msg("hashtable_size: Expected size was 3, but got %d",
-                     size));
-
-    hashtable_destroy(table);
-}
+    CHECK_EQUAL_C_INT(3, hashtable_size(table));
+};
 
 
-void test_hashtable_capacity()
+TEST_GROUP_C_SETUP(HashTableTestsCapacity)
 {
     hashtable_conf_init(&conf);
 
     conf.load_factor      = 0.5f;
     conf.initial_capacity = 2;
+    hashtable_new_conf(&conf, &table);
+};
 
-    HashTable *t;
-    hashtable_new_conf(&conf, &t);
-
-    hashtable_add(t, "a", NULL);
-
-    cc_assert(hashtable_capacity(t) == 2,
-              cc_msg("hashtable_capacity: Expected capacity was 4, but got %d",
-                     hashtable_capacity(t)));
-
-    hashtable_add(t, "b", NULL);
-
-    cc_assert(hashtable_capacity(t) == 4,
-              cc_msg("hashtable_capacity: Expected capacity was 8, but got %d",
-                     hashtable_capacity(t)));
-
-    hashtable_add(t, "c", NULL);
-    hashtable_add(t, "d", NULL);
-
-    cc_assert(hashtable_capacity(t) == 8,
-              cc_msg("hashtable_capacity: Expected capacity was 16, but got %d",
-                     hashtable_capacity(t)));
-
-    hashtable_destroy(t);
-}
-
-
-void test_hashtable_contains_key()
+TEST_GROUP_C_TEARDOWN(HashTableTestsCapacity)
 {
-    HashTable *table;
-    hashtable_new(&table);
+    hashtable_destroy(table);
+};
 
+TEST_C(HashTableTestsCapacity, HashTableCapacity)
+{
+    hashtable_add(table, "a", NULL);
+    CHECK_EQUAL_C_INT(2, hashtable_capacity(table));
+
+    hashtable_add(table, "b", NULL);
+    CHECK_EQUAL_C_INT(4, hashtable_capacity(table));
+
+    hashtable_add(table, "c", NULL);
+    hashtable_add(table, "d", NULL);
+    CHECK_EQUAL_C_INT(8, hashtable_capacity(table));
+};
+
+
+TEST_C(HashTableTests, HashTableContainsKey)
+{
     hashtable_add(table, "key", "value");
     hashtable_add(table, "randomstring", "cookies");
     hashtable_add(table, "5", "m31");
 
-    cc_assert(hashtable_contains_key(table, "key"),
-              cc_msg("hashtable_contains_key: "
-                     "Key expected to be present, but isn't"));
+    CHECK_EQUAL_C_INT(1, hashtable_contains_key(table, "key"));
 
     hashtable_remove(table, "key", NULL);
-
-    cc_assert(!hashtable_contains_key(table, "key"),
-              cc_msg("hashtable_contains_key:"
-                     " Key not expected to exist"));
-
-    hashtable_destroy(table);
-}
+    CHECK_EQUAL_C_INT(0, hashtable_contains_key(table, "key"));
+};
 
 int cmp_k(const void *k1, const void *k2)
 {
@@ -399,54 +277,49 @@ int cmp_k(const void *k1, const void *k2)
     return 0;
 }
 
-void test_hashtable_memory_chunks_as_keys()
+TEST_GROUP_C_SETUP(HashTableTestsCompare)
 {
-    int array1[] = {1,2,3,4,5,6,7};
-    int array2[] = {34,1,4,1111,456,234,0};
-    int array3[] = {0,9,8,7,6,5,4};
-
     hashtable_conf_init(&conf);
 
     conf.hash        = GENERAL_HASH;
     conf.key_length  = sizeof(int) * 7;
     conf.key_compare = cmp_k;
 
-    HashTable *t;
-    hashtable_new_conf(&conf, &t);
+    hashtable_new_conf(&conf, &table);
+};
 
-    hashtable_add(t, array1, "one");
-    hashtable_add(t, array2, "two");
-    hashtable_add(t, array3, "three");
+TEST_GROUP_C_TEARDOWN(HashTableTestsCompare)
+{
+    hashtable_destroy(table);
+};
+
+TEST_C(HashTableTestsCompare, HashTableTestsMemoryChunksAsKeys)
+{
+    int array1[] = {1,2,3,4,5,6,7};
+    int array2[] = {34,1,4,1111,456,234,0};
+    int array3[] = {0,9,8,7,6,5,4};
+
+    hashtable_add(table, array1, "one");
+    hashtable_add(table, array2, "two");
+    hashtable_add(table, array3, "three");
 
     char *a;
     char *b;
 
-    hashtable_get(t, array1, (void*) &a);
-    hashtable_get(t, array3, (void*) &b);
+    hashtable_get(table, array1, (void*) &a);
+    hashtable_get(table, array3, (void*) &b);
 
-    cc_assert(strcmp(a, "one") == 0,
-              cc_msg("hashtable_memory_chunks_as_keys: "
-                     "Expected value 'one', but got %s",
-                     a));
+    CHECK_EQUAL_C_STRING("one", a);
+    CHECK_EQUAL_C_STRING("three", b);
+};
 
-    cc_assert(strcmp(b, "three") == 0,
-              cc_msg("hashtable_key_test:"
-                     " Expected value 'three', but got %s",
-                     b));
-
-    hashtable_destroy(t);
-}
-
-void test_hashtable_iter_next()
+TEST_C(HashTableTests, HashTableIterNext)
 {
-    HashTable *t;
-    hashtable_new(&t);
-
-    hashtable_add(t, "one", "1");
-    hashtable_add(t, "two", "2");
-    hashtable_add(t, "three", "3");
-    hashtable_add(t, "four", "4");
-    hashtable_add(t, "five", "5");
+    hashtable_add(table, "one", "1");
+    hashtable_add(table, "two", "2");
+    hashtable_add(table, "three", "3");
+    hashtable_add(table, "four", "4");
+    hashtable_add(table, "five", "5");
 
     int one   = 0;
     int two   = 0;
@@ -455,7 +328,7 @@ void test_hashtable_iter_next()
     int five  = 0;
 
     HashTableIter iter;
-    hashtable_iter_init(&iter, t);
+    hashtable_iter_init(&iter, table);
 
     TableEntry *entry;
     while (hashtable_iter_next(&iter, &entry) != CC_ITER_END) {
@@ -477,33 +350,25 @@ void test_hashtable_iter_next()
             five++;
     }
 
-    bool asrt = (one   == 1) && (two  == 1)  &&
-                (three == 1) && (four == 1) &&
-                (five  == 1);
+    CHECK_EQUAL_C_INT(1, one);
+    CHECK_EQUAL_C_INT(1, two);
+    CHECK_EQUAL_C_INT(1, three);
+    CHECK_EQUAL_C_INT(1, four);
+    CHECK_EQUAL_C_INT(1, five);
+};
 
-    cc_assert(asrt,
-              cc_msg("hashtable_iter_next: Unexpected number"
-                     " of entries returned"));
-
-    hashtable_destroy(t);
-}
-
-
-void test_hashtable_iter_remove()
+TEST_C(HashTableTests, HashTableIterRemove)
 {
-    HashTable *t;
-    hashtable_new(&t);
-
     char *a = "foo";
     char *b = "bar";
     char *c = "baz";
 
-    hashtable_add(t, a, "a");
-    hashtable_add(t, b, "a");
-    hashtable_add(t, c, "a");
+    hashtable_add(table, a, "a");
+    hashtable_add(table, b, "a");
+    hashtable_add(table, c, "a");
 
     HashTableIter iter;
-    hashtable_iter_init(&iter, t);
+    hashtable_iter_init(&iter, table);
 
     TableEntry *entry;
     while (hashtable_iter_next(&iter, &entry) != CC_ITER_END) {
@@ -513,13 +378,6 @@ void test_hashtable_iter_remove()
             hashtable_iter_remove(&iter, NULL);
     }
 
-    cc_assert(hashtable_size(t) == 2,
-              cc_msg("hashtable_iter_remove: Expected size 2 but got %d ",
-                     hashtable_size(t)));
-
-    cc_assert(!hashtable_contains_key(t, "bar"),
-              cc_msg("hastable_iter_remove: Element (%s) still pressent "
-                     "after removal", "bar"));
-
-    hashtable_destroy(t);
-}
+    CHECK_EQUAL_C_INT(2, hashtable_size(table));
+    CHECK_C(!hashtable_contains_key(table, "bar"));
+};
