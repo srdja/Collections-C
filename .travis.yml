@@ -1,10 +1,19 @@
 language: c
+dist: trusty
+sudo: required
 
-services:
-  - docker
+compiler:
+  - gcc
+  - clang
 
-before_script:
-  - docker pull srdja/collections-c-test
+before_install:
+  - sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu yakkety main"
+  - sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu yakkety universe"
+  - sudo apt-get -qq update
+  - sudo apt-get install -y cmake && sudo apt-get install -y cpputest
 
 script:
-  - docker run -p 8080:80 -e BRANCH=$TRAVIS_BRANCH -e PULL_REQUEST=$TRAVIS_PULL_REQUEST -e PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH srdja/collections-c-test
+  - mkdir build && cd build
+  - cmake ..
+  - make
+  - make test
