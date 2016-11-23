@@ -13,7 +13,6 @@ config.bak
 *.o
 src/.libs
 src/.deps
-*.in
 configure
 depcomp
 *.lo
