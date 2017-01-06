@@ -948,7 +948,7 @@ enum cc_stat list_to_array(List *list, void ***out)
  * element within the list.
  *
  * @param[in] list list on which the search is performed
- * @param[in] element element being seached for
+ * @param[in] element element being searched for
  *
  * @return number of matches found.
  */
