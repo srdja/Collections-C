@@ -31,7 +31,7 @@
 typedef struct stack_s Stack;
 
 /**
- * Stack configuration structrue. Used to initialize a new Stack
+ * Stack configuration structure. Used to initialize a new Stack
  * with specific attributes.
  */
 typedef ArrayConf StackConf;
