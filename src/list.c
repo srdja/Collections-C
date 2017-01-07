@@ -77,7 +77,7 @@ enum cc_stat list_new(List **out)
  * returns a status code.
  *
  * The List is allocated using the allocators specified in the ListConf
- * struct. The allocation may fail if the undelying allocator fails.
+ * struct. The allocation may fail if the underlying allocator fails.
  *
  * @param[in] conf List configuration struct. All fields must be
  *                 initialized to appropriate values.
@@ -948,7 +948,7 @@ enum cc_stat list_to_array(List *list, void ***out)
  * element within the list.
  *
  * @param[in] list list on which the search is performed
- * @param[in] element element being seached for
+ * @param[in] element element being searched for
  *
  * @return number of matches found.
  */
