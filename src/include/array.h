@@ -32,7 +32,7 @@
 typedef struct array_s Array;
 
 /**
- * Array configuration structure. Used to initalize a new Array
+ * Array configuration structure. Used to initialize a new Array
  * with specific values.
  */
 typedef struct array_conf_s {
