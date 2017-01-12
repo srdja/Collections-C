@@ -18,7 +18,7 @@ The source of the documentation can be found [here](https://github.com/srdja/cc-
 ```c
 
 // Crate a new table
-HashTable *table
+HashTable *table;
 if (hashtable_new(&table) != CC_OK) {
     // something went wrong
     ...
