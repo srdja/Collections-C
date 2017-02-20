@@ -1088,6 +1088,40 @@ enum cc_stat slist_filter(SList *list, bool (*pred) (const void*), SList **out)
 
 
 /**
+ * Filters the SList by modifying it. It removes all elements that don't
+ * return true on pred(element).
+ *
+ * @param[in] list Slist that is to be filtered
+ * @param[in] pred predicate function which returns true if the element should
+ *                 be kept in the Slist
+ *
+ * @return CC_OK if the Slist was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ * if the Slist is empty.
+ */
+enum cc_stat slist_filter_mut(SList *list, bool (*pred) (const void*))
+{
+    if (slist_size(list) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    SNode *curr = list->head;
+    SNode *next = NULL, *prev =NULL;
+
+    while (curr) {
+        next = curr->next;
+
+        if (!pred(curr->data)) {
+            unlink(list, curr, prev);
+        } else {
+            prev = curr;
+	}
+        curr = next;
+    }
+
+    return CC_OK;
+}
+
+
+/**
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized

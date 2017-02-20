@@ -787,6 +787,10 @@ TEST_C(SlistTestsSlistPrepopulated, SListFilter1)
     slist_filter(list, pred1, &filter);
 
     CHECK_EQUAL_C_INT(0, slist_size(filter));
+
+    void *e = NULL;
+    slist_get_first(filter, &e);
+    CHECK_C(e == NULL);
 };
 
 TEST_C(SlistTestsSlistPrepopulated, SListFilter2)
@@ -803,4 +807,30 @@ TEST_C(SlistTestsSlistPrepopulated, SListFilter3)
     CHECK_EQUAL_C_INT(4, slist_size(list));
     slist_filter(list, pred3, &filter);
     CHECK_EQUAL_C_INT(4, slist_size(filter));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut1)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred1);
+
+    CHECK_EQUAL_C_INT(0, slist_size(list));
+    void *e = NULL;
+    slist_get_first(list, &e);
+    CHECK_C(e == NULL);
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut2)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred2);
+    CHECK_EQUAL_C_INT(2, slist_size(list));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut3)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred3);
+    CHECK_EQUAL_C_INT(4, slist_size(list));
 };

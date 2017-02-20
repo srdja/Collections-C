@@ -49,6 +49,10 @@ TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListIterRemove);
 TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilter1);
 TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilter2);
 TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilter3);
+TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilterMut1);
+TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilterMut2);
+TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilterMut3);
+
 
 int main(int argc, char **argv){
     return RUN_ALL_TESTS(argc, argv);
