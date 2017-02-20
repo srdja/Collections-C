@@ -1047,6 +1047,46 @@ void slist_foreach(SList *list, void (*op) (void *))
     }
 }
 
+
+/**
+ * Filters the SList by creating a new SList that contains all elements from the
+ * original SList that return true on pred(element) without modifying the original
+ * SList.
+ *
+ * @param[in] list Slist that is to be filtered
+ * @param[in] pred predicate function which returns true if the element should
+ *                 be kept in the filtered SList
+ * @param[out] out pointer to where the new filtered SList is to be stored
+ *
+ * @return CC_OK if the SList was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the SList is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new SList failed.
+ */
+enum cc_stat slist_filter(SList *list, bool (*pred) (const void*), SList **out)
+{
+  if (slist_size(list) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    SList *filtered = NULL;
+    slist_new(&filtered);
+
+    if (!filtered)
+        return CC_ERR_ALLOC;
+
+    SNode *curr = list->head;
+    while (curr) {
+        if (pred(curr->data)) {
+	  slist_add(filtered, curr->data);
+        }
+
+        curr = curr->next;
+    }
+
+    *out = filtered;
+    return CC_OK;
+}
+
+
 /**
  * Initializes the iterator.
  *

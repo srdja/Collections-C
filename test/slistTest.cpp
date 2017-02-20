@@ -46,6 +46,10 @@ TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListToArray);
 TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListIterAdd);
 TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListIterRemove);
 
+TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilter1);
+TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilter2);
+TEST_C_WRAPPER(SlistTestsSlistPrepopulated, SListFilter3);
+
 int main(int argc, char **argv){
     return RUN_ALL_TESTS(argc, argv);
 }

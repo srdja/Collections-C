@@ -23,6 +23,21 @@ void p(void *e)
     printf("%d ", *i);
 }
 
+bool pred1(const void *e)
+{
+    return *(int*)e == 0;
+}
+
+bool pred2(const void *e)
+{
+    return *(int*)e >= 3;
+}
+
+bool pred3(const void *e)
+{
+    return *(int*)e > 0;
+}
+
 int cmp(void const *e1, void const *e2)
 {
     int i = *(*((int**) e1));
@@ -763,4 +778,29 @@ TEST_C(SlistTestsWithDefaults, SListReverse)
         CHECK_EQUAL_C_INT(next, *(int*)el);
         next--;
     }
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter1)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred1, &filter);
+
+    CHECK_EQUAL_C_INT(0, slist_size(filter));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter2)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred2, &filter);
+    CHECK_EQUAL_C_INT(2, slist_size(filter));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter3)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred3, &filter);
+    CHECK_EQUAL_C_INT(4, slist_size(filter));
 };
