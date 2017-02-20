@@ -129,6 +129,9 @@ size_t        slist_size            (SList *list);
 
 void          slist_foreach         (SList *list, void (*op) (void *));
 
+enum cc_stat  slist_filter          (SList *list, bool (*predicate) (const void*), SList **out);
+enum cc_stat  slist_filter_mut      (SList *list, bool (*predicate) (const void*));
+
 void          slist_iter_init       (SListIter *iter, SList *list);
 enum cc_stat  slist_iter_remove     (SListIter *iter, void **out);
 enum cc_stat  slist_iter_add        (SListIter *iter, void *element);

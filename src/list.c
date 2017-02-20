@@ -1217,6 +1217,78 @@ void list_foreach(List *list, void (*op) (void *e))
     }
 }
 
+
+/**
+ * Filters the List by modifying it. It removes all elements that don't
+ * return true on pred(element).
+ *
+ * @param[in] list list that is to be filtered
+ * @param[in] pred predicate function which returns true if the element should
+ *                 be kept in the List
+ *
+ * @return CC_OK if the list was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ * if the List is empty.
+ */
+enum cc_stat list_filter_mut(List *list, bool (*pred) (const void*))
+{
+    if (list_size(list) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    Node *curr = list->head;
+    Node *next = NULL;
+
+    while (curr) {
+        next = curr->next;
+
+        if (!pred(curr->data)) {
+            unlink(list, curr);
+        }
+        curr = next;
+    }
+
+    return CC_OK;
+}
+
+/**
+ * Filters the List by creating a new List that contains all elements from the
+ * original List that return true on pred(element) without modifying the original
+ * list.
+ *
+ * @param[in] list list that is to be filtered
+ * @param[in] pred predicate function which returns true if the element should
+ *                 be kept in the filtered list
+ * @param[out] out pointer to where the new filtered list is to be stored
+ *
+ * @return CC_OK if the list was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the list is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new list failed.
+ */
+enum cc_stat list_filter(List *list, bool (*pred) (const void*), List **out)
+{
+    if (list_size(list) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    List *filtered = NULL;
+    list_new(&filtered);
+
+    if (!filtered)
+        return CC_ERR_ALLOC;
+
+    Node *curr = list->head;
+
+    while (curr) {
+        if (pred(curr->data)) {
+            list_add(filtered, curr->data);
+        }
+        curr = curr->next;
+    }
+
+    *out = filtered;
+
+    return CC_OK;
+}
+
+
 /**
  * Initializes the iterator.
  *

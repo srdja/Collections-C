@@ -23,6 +23,21 @@ void p(void *e)
     printf("%d ", *i);
 }
 
+bool pred1(const void *e)
+{
+    return *(int*)e == 0;
+}
+
+bool pred2(const void *e)
+{
+    return *(int*)e >= 3;
+}
+
+bool pred3(const void *e)
+{
+    return *(int*)e > 0;
+}
+
 int cmp(void const *e1, void const *e2)
 {
     int i = *(*((int**) e1));
@@ -763,4 +778,94 @@ TEST_C(SlistTestsWithDefaults, SListReverse)
         CHECK_EQUAL_C_INT(next, *(int*)el);
         next--;
     }
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter1)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred1, &filter);
+
+    CHECK_EQUAL_C_INT(0, slist_size(filter));
+
+    void *e = NULL;
+    slist_get_first(filter, &e);
+    CHECK_C(e == NULL);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter2)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred2, &filter);
+    CHECK_EQUAL_C_INT(2, slist_size(filter));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 3;
+    slist_iter_init(&iter, filter);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter3)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred3, &filter);
+    CHECK_EQUAL_C_INT(4, slist_size(filter));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 1;
+    slist_iter_init(&iter, filter);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut1)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred1);
+
+    CHECK_EQUAL_C_INT(0, slist_size(list));
+    void *e = NULL;
+    slist_get_first(list, &e);
+    CHECK_C(e == NULL);
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut2)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred2);
+    CHECK_EQUAL_C_INT(2, slist_size(list));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 3;
+    slist_iter_init(&iter, list);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut3)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred3);
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 1;
+    slist_iter_init(&iter, list);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
 };
