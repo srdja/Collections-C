@@ -49,6 +49,11 @@ TEST_C_WRAPPER(ListTestsListPrefilled, ListCopyShallow);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListCopyDeep);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListSublist);
 
+TEST_C_WRAPPER(ListTestsListPrefilled, ListFilter1);
+TEST_C_WRAPPER(ListTestsListPrefilled, ListFilter2);
+TEST_C_WRAPPER(ListTestsListPrefilled, ListMutFilter1);
+TEST_C_WRAPPER(ListTestsListPrefilled, ListMutFilter2);
+
 int main(int argc, char **argv) {
     return RUN_ALL_TESTS(argc, argv);
 }

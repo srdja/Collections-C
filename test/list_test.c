@@ -35,6 +35,16 @@ void *copy(void *e1)
     return cp;
 }
 
+bool pred1(const void *e)
+{
+    return *(int*)e == 0;
+}
+
+bool pred2(const void *e)
+{
+    return *(int*)e > 3;
+}
+
 TEST_GROUP_C_SETUP(ListTestsWithDefaults)
 {
     list_new(&list1);
@@ -779,3 +789,69 @@ void test_list_destroy()
 {
      // Nothing to test
 }
+
+TEST_C(ListTestsListPrefilled, ListMutFilter1)
+{
+    CHECK_EQUAL_C_INT(4, list_size(list1));
+    list_filter_mut(list1, pred1);
+    CHECK_EQUAL_C_INT(0, list_size(list1));
+
+    void *e = NULL;
+    list_get_first(list1, &e);
+    CHECK_C(e == NULL);
+
+    list_get_last(list1, &e);
+    CHECK_C(e == NULL);
+};
+
+TEST_C(ListTestsListPrefilled, ListMutFilter2)
+{
+    CHECK_EQUAL_C_INT(4, list_size(list1));
+    list_filter_mut(list1, pred2);
+    CHECK_EQUAL_C_INT(1, list_size(list1));
+
+    ListIter iter;
+    int *el = NULL;
+    int i = 4;
+    list_iter_init(&iter, list1);
+    while (list_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+};
+
+
+TEST_C(ListTestsListPrefilled, ListFilter1)
+{
+    List *filter = NULL;
+    list_filter(list1, pred1, &filter);
+
+    CHECK_EQUAL_C_INT(4, list_size(list1));
+    CHECK_EQUAL_C_INT(0, list_size(filter));
+
+    void *e = NULL;
+    list_get_first(filter, &e);
+    CHECK_C(e == NULL);
+
+    list_get_last(filter, &e);
+    CHECK_C(e == NULL);
+    free(filter);
+};
+
+TEST_C(ListTestsListPrefilled, ListFilter2)
+{
+    List *filter = NULL;
+    list_filter(list1, pred2, &filter);
+
+    CHECK_EQUAL_C_INT(4, list_size(list1));
+    CHECK_EQUAL_C_INT(1, list_size(filter));
+
+    ListIter iter;
+    int *el = NULL;
+    int i = 4;
+    list_iter_init(&iter, filter);
+    while (list_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
+    free(filter);
+};

@@ -139,6 +139,9 @@ size_t        list_size            (List *list);
 
 void          list_foreach         (List *list, void (*op) (void *));
 
+enum cc_stat  list_filter_mut      (List *list, bool (*predicate) (const void*));
+enum cc_stat  list_filter          (List *list, bool (*predicate) (const void*), List **out);
+
 void          list_iter_init       (ListIter *iter, List *list);
 enum cc_stat  list_iter_remove     (ListIter *iter, void **out);
 enum cc_stat  list_iter_add        (ListIter *iter,  void *element);
