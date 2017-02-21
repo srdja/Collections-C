@@ -119,6 +119,9 @@ enum cc_stat  deque_index_of        (Deque const * const deque, const void *elem
 
 void          deque_foreach         (Deque *deque, void (*fn) (void *));
 
+enum cc_stat  deque_filter_mut      (Deque *deque, bool (*predicate) (const void*));
+enum cc_stat  deque_filter          (Deque *deque, bool (*predicate) (const void*), Deque **out);
+
 void          deque_iter_init       (DequeIter *iter, Deque *deque);
 enum cc_stat  deque_iter_next       (DequeIter *iter, void **out);
 enum cc_stat  deque_iter_remove     (DequeIter *iter, void **out);

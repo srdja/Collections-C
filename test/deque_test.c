@@ -13,6 +13,21 @@ void *cpy(void *e)
     return (void*) c;
 }
 
+bool pred1(const void *e)
+{
+    return *(int*)e <= 3;
+}
+
+bool pred2(const void *e)
+{
+    return *(int*)e > 3;
+}
+
+bool pred3(const void *e)
+{
+    return *(int*)e > 5;
+}
+
 TEST_GROUP_C_SETUP(DequeTests)
 {
   stat = deque_new(&deque);
@@ -867,4 +882,178 @@ TEST_C(DequeTestsConf, DequeBufferExpansion)
 
     const int elem5 = *((int*) buff[4]);
     CHECK_EQUAL_C_INT(elem5, f);
+};
+
+TEST_C(DequeTests, DequeFilter1)
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, deque_size(deque));
+
+    Deque *filter = NULL;
+    deque_filter(deque, pred1, &filter);
+    CHECK_EQUAL_C_INT(3, deque_size(filter));
+    const void * const* buff = deque_get_buffer(filter);
+
+    CHECK_EQUAL_C_POINTER(buff[0], &a);
+    CHECK_EQUAL_C_POINTER(buff[1], &b);
+
+    const void *elem = buff[2];
+    CHECK_EQUAL_C_POINTER(elem, &c);
+    free(filter);
+};
+
+TEST_C(DequeTests, DequeFilter2)
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, deque_size(deque));
+
+    Deque *filter = NULL;
+    deque_filter(deque, pred2, &filter);
+    const void * const* buff = deque_get_buffer(filter);
+
+    CHECK_EQUAL_C_INT(3, deque_size(filter));
+    CHECK_EQUAL_C_POINTER(buff[0], &d);
+    CHECK_EQUAL_C_POINTER(buff[1], &e);
+    CHECK_EQUAL_C_POINTER(buff[2], &f);
+
+    free(filter);
+};
+
+TEST_C(DequeTests, DequeFilter3)
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, deque_size(deque));
+
+    Deque *filter = NULL;
+    deque_filter(deque, pred3, &filter);
+    const void * const* buff = deque_get_buffer(filter);
+
+    CHECK_EQUAL_C_INT(1, deque_size(filter));
+    CHECK_EQUAL_C_POINTER(buff[0], &f);
+
+    free(filter);
+};
+
+TEST_C(DequeTests, DequeFilterMut1)
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, deque_size(deque));
+
+    deque_filter_mut(deque, pred1);
+    CHECK_EQUAL_C_INT(3, deque_size(deque));
+
+    int *removed = NULL;
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(a, *removed);
+
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(b, *removed);
+
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(c, *removed);
+};
+
+TEST_C(DequeTests, DequeFilterMut2)
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, deque_size(deque));
+
+    deque_filter_mut(deque, pred2);
+    CHECK_EQUAL_C_INT(3, deque_size(deque));
+
+    int *removed = NULL;
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(d, *removed);
+
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(e, *removed);
+
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(f, *removed);
+};
+
+
+TEST_C(DequeTests, DequeFilterMut3)
+{
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
+    int e = 5;
+    int f = 6;
+
+    deque_add_last(deque, &a);
+    deque_add_last(deque, &b);
+    deque_add_last(deque, &c);
+    deque_add_last(deque, &d);
+    deque_add_last(deque, &e);
+    deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, deque_size(deque));
+
+    deque_filter_mut(deque, pred3);
+    CHECK_EQUAL_C_INT(1, deque_size(deque));
+
+    int *removed = NULL;
+    deque_remove_first(deque, (void*) &removed);
+    CHECK_EQUAL_C_INT(f, *removed);
 };

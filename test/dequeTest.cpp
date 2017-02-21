@@ -35,6 +35,13 @@ TEST_C_WRAPPER(DequeTests, DequeZipIterAdd);
 TEST_C_WRAPPER(DequeTests, DequeZipIterNext);
 TEST_C_WRAPPER(DequeTests, DequeZipIterReplace);
 
+TEST_C_WRAPPER(DequeTests, DequeFilter1);
+TEST_C_WRAPPER(DequeTests, DequeFilter2);
+TEST_C_WRAPPER(DequeTests, DequeFilter3);
+TEST_C_WRAPPER(DequeTests, DequeFilterMut1);
+TEST_C_WRAPPER(DequeTests, DequeFilterMut2);
+TEST_C_WRAPPER(DequeTests, DequeFilterMut3);
+
 TEST_GROUP_C_WRAPPER(DequeTestsConf)
 {
   TEST_GROUP_C_SETUP_WRAPPER(DequeTestsConf);
