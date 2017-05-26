@@ -819,6 +819,75 @@ void deque_foreach(Deque *deque, void (*fn) (void *))
 }
 
 /**
+ * Filters the Deque by modifying it. It removes all elements that don't
+ * return true on pred(element).
+ *
+ * @param[in] deque deque that is to be filtered
+ * @param[in] pred  predicate function which returns true if the element should
+ *                  be kept in the Deque
+ *
+ * @return CC_OK if the deque was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ * if the Deque is empty.
+ */
+enum cc_stat deque_filter_mut(Deque *deque, bool (*pred) (const void*))
+{
+    if (deque_size(deque) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    size_t i = 0, c = deque->capacity - 1;
+
+    while (i < deque_size(deque)) {
+        size_t d_index = (deque->first + i) & c;
+
+        if (!pred(deque->buffer[d_index])) {
+            deque_remove_at(deque, i, NULL);
+        } else {
+            i++;
+        }
+    }
+
+    return CC_OK;
+}
+
+/**
+ * Filters the Deque by creating a new Deque that contains all elements from the
+ * original Deque that return true on pred(element) without modifying the original
+ * deque.
+ *
+ * @param[in] deque deque that is to be filtered
+ * @param[in] deque predicate function which returns true if the element should
+ *                  be kept in the filtered deque
+ * @param[out] out pointer to where the new filtered deque is to be stored
+ *
+ * @return CC_OK if the deque was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the deque is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new deque failed.
+ */
+enum cc_stat deque_filter(Deque *deque, bool (*pred) (const void*), Deque **out)
+{
+    if (deque_size(deque) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    size_t i;
+    Deque *filtered = NULL;
+    deque_new(&filtered);
+
+    if (!filtered)
+        return CC_ERR_ALLOC;
+
+    for (i = 0; i < deque->size; i++) {
+        size_t d_index = (deque->first + i) & (deque->capacity - 1);
+
+        if (pred(deque->buffer[d_index])) {
+            deque_add(filtered, deque->buffer[d_index]);
+        }
+    }
+
+    *out = filtered;
+    return CC_OK;
+}
+
+/**
  * Copies the elements from the Deque's buffer to the buffer buff. This function
  * only copies the elements instead of the whole buffer and also realigns the buffer
  * in the process.
