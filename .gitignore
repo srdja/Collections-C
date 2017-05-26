@@ -1,3 +1,4 @@
+build
 src/docconf
 .project
 .cproject
@@ -12,7 +13,6 @@ config.bak
 *.o
 src/.libs
 src/.deps
-*.in
 configure
 depcomp
 *.lo

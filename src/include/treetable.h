@@ -18,14 +18,14 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TREETABLE_H__
-#define __TREETABLE_H__
+#ifndef COLLECTIONS_C_TREETABLE_H
+#define COLLECTIONS_C_TREETABLE_H
 
 #include "common.h"
 
 /**
- * An ordered key-value map. TreeTable support logarithmic time insertion,
- * removal and lookup of values.
+ * An ordered key-value map. TreeTable supports logarithmic time
+ * insertion, removal and lookup of values.
  */
 typedef struct treetable_s TreeTable;
 
@@ -69,22 +69,12 @@ typedef struct tree_table_entry_s {
 } TreeTableEntry;
 
 /**
- * TreeTable iterator object. Used to iterate over the entries of the table.
- * The iterator also supports operations for safely removing elements during
- * iteration.
+ * TreeTable iterator structure. Used to iterate over the entries
+ * of the table. The iterator also supports operations for safely
+ * removing elements during iteration.
  *
- * @code
- * TreeTableIter i;
- * treetable_iter_init(&i);
- *
- * while (treetable_iter_has_next(&i)) {
- *     TreeTableEntry *e = treetable_iter_next(&i);
- *     e->key;
- *     e->value;
- * }
- * @endcode
- *
- * @note This structure should only be modified through the iterator functions.
+ * @note This structure should only be modified through the
+ * iterator functions.
  */
 typedef struct tree_table_iter_s {
     TreeTable *table;
@@ -93,22 +83,11 @@ typedef struct tree_table_iter_s {
 } TreeTableIter;
 
 /**
- * TreeTable configuration object. Used to initialize a new TreeTable with
- * specific values.
- *
- * @code
- * TreeTableConf c;
- * treetable_conf_init(&c);
- *
- * c.cmp = mycmpfunc;
- * c.mem_alloc = mymalloc;
- * ...
- *
- * TreeTable *t = treetable_new_conf(&c);
- * @endcode
+ * TreeTable configuration structure. Used to initialize a new
+ * TreeTable with specific attributes.
  */
 typedef struct treetable_conf_s {
-    int    (*cmp)         (void *k1, void *k2);
+    int    (*cmp)         (const void *k1, const void *k2);
     void  *(*mem_alloc)   (size_t size);
     void  *(*mem_calloc)  (size_t blocks, size_t size);
     void   (*mem_free)    (void *block);
@@ -116,8 +95,8 @@ typedef struct treetable_conf_s {
 
 
 void          treetable_conf_init        (TreeTableConf *conf);
-enum cc_stat  treetable_new              (int (*cmp) (void *, void *), TreeTable **tt);
-enum cc_stat  treetable_new_conf         (const TreeTableConf const *conf, TreeTable **tt);
+enum cc_stat  treetable_new              (int (*cmp) (const void*, const void*), TreeTable **tt);
+enum cc_stat  treetable_new_conf         (TreeTableConf const * const conf, TreeTable **tt);
 
 void          treetable_destroy          (TreeTable *table);
 enum cc_stat  treetable_add              (TreeTable *table, void *key, void *val);
@@ -127,25 +106,24 @@ void          treetable_remove_all       (TreeTable *table);
 enum cc_stat  treetable_remove_first     (TreeTable *table, void **out);
 enum cc_stat  treetable_remove_last      (TreeTable *table, void **out);
 
-enum cc_stat  treetable_get              (TreeTable *table, void *key, void **out);
-enum cc_stat  treetable_get_first_value  (TreeTable *table, void **out);
-enum cc_stat  treetable_get_first_key    (TreeTable *table, void **out);
-enum cc_stat  treetable_get_last_value   (TreeTable *table, void **out);
-enum cc_stat  treetable_get_last_key     (TreeTable *table, void **out);
-enum cc_stat  treetable_get_greater_than (TreeTable *table, void *key, void **out);
-enum cc_stat  treetable_get_lesser_than  (TreeTable *table, void *key, void **out);
+enum cc_stat  treetable_get              (TreeTable const * const table, const void *key, void **out);
+enum cc_stat  treetable_get_first_value  (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_first_key    (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_last_value   (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_last_key     (TreeTable const * const table, void **out);
+enum cc_stat  treetable_get_greater_than (TreeTable const * const table, const void *key, void **out);
+enum cc_stat  treetable_get_lesser_than  (TreeTable const * const table, const void *key, void **out);
 
-size_t        treetable_size             (TreeTable *table);
-bool          treetable_contains_key     (TreeTable *table, void *key);
-size_t        treetable_contains_value   (TreeTable *table, void *key);
+size_t        treetable_size             (TreeTable const * const table);
+bool          treetable_contains_key     (TreeTable const * const table, const void *key);
+size_t        treetable_contains_value   (TreeTable const * const table, const void *value);
 
 void          treetable_foreach_key      (TreeTable *table, void (*op) (const void*));
 void          treetable_foreach_value    (TreeTable *table, void (*op) (void*));
 
 void          treetable_iter_init        (TreeTableIter *iter, TreeTable *table);
-bool          treetable_iter_has_next    (TreeTableIter *iter);
-void          treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
-void          treetable_iter_remove      (TreeTableIter *iter);
+enum cc_stat  treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
+enum cc_stat  treetable_iter_remove      (TreeTableIter *iter, void **out);
 
 #ifdef DEBUG
 #define RB_ERROR_CONSECUTIVE_RED 0
@@ -154,6 +132,6 @@ void          treetable_iter_remove      (TreeTableIter *iter);
 #define RB_ERROR_OK              4
 
 int treetable_assert_rb_rules(TreeTable *table);
-#endif
+#endif /* DEBUG */
 
-#endif
+#endif /* COLLECTIONS_C_TREETABLE_H */

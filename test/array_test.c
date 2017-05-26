@@ -1,577 +1,14 @@
 #include <time.h>
-
-#include "../src/array.h"
-#include "test.h"
-
-void test_array_add();
-void test_array_add_at();
-void test_array_replace_at();
-void test_array_remove();
-void test_array_remove_at();
-void test_array_remove_all();
-void test_array_get_at();
-void test_array_index_of();
-void test_array_subarray();
-void test_array_copy_shallow();
-void test_array_copy_deep();
-void test_array_reverse();
-void test_array_trim_capacity();
-void test_array_contains();
-void test_array_capacity();
-void test_array_sort();
-
-void test_array_iter();
-void test_array_iter_remove();
-void test_array_iter_add();
-
-int main(int argc, char **argv)
-{
-    cc_set_exit_on_failure(false);
-
-    test_array_add();
-    test_array_add_at();
-    test_array_replace_at();
-    test_array_remove();
-    test_array_remove_at();
-    test_array_remove_all();
-    test_array_get_at();
-    test_array_index_of();
-    test_array_subarray();
-    test_array_copy_shallow();
-    test_array_copy_deep();
-    test_array_reverse();
-    test_array_trim_capacity();
-    test_array_contains();
-    test_array_capacity();
-    test_array_sort();
-    test_array_iter();
-
-    return cc_get_status();
-}
-
-
-void test_array_add()
-{
-    Array *v;
-    int stat = array_new(&v);
-
-    cc_assert(stat == CC_OK,
-              cc_msg("array_add: Expected status %d but got %d instead", CC_OK, stat));
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-
-    array_add(v, &a);
-    array_add(v, &b);
-    array_add(v, &c);
-
-    int *ar;
-    int *br;
-    int *cr;
-    array_get_at(v, 0, (void*) &ar);
-    array_get_at(v, 1, (void*) &br);
-    array_get_at(v, 2, (void*) &cr);
-
-    cc_assert(*ar == a,
-              cc_msg("array_add: Added element not in the expected position"));
-
-    cc_assert(*br == b,
-              cc_msg("array_add: Added element not in the expected position"));
-
-    cc_assert(*cr == c,
-              cc_msg("array_add: Added element not in the expected position"));
-
-    array_destroy(v);
-}
-
-
-void test_array_add_at()
-{
-    ArrayConf vc;
-    array_conf_init(&vc);
-    vc.capacity = 20;
-
-    Array *v;
-    array_new_conf(&vc, &v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-    int e = 233;
-
-    int ins = 123;
-
-    array_add(v, &a);
-    array_add(v, &b);
-    array_add(v, &c);
-    array_add(v, &e);
-
-    array_add_at(v, &ins, 1);
-
-    int *i0;
-    int *i1;
-    int *i2;
-    int *i3;
-    int *i4;
-
-    array_get_at(v, 0, (void*)&i0);
-    array_get_at(v, 1, (void*)&i1);
-    array_get_at(v, 2, (void*)&i2);
-    array_get_at(v, 3, (void*)&i3);
-    array_get_at(v, 4, (void*)&i4);
-
-    cc_assert(*i0 == a,
-              cc_msg("array_add_at: Expected %d at index 0, but got %d", a, i0));
-
-    cc_assert(*i1 == ins,
-              cc_msg("array_add_at: Expected %d at index 1, but got %d", ins, i1));
-
-    cc_assert(*i2 == b,
-              cc_msg("array_add_at: Expected %d at index 2, but got %d", b, i2));
-
-    cc_assert(*i3 == c,
-              cc_msg("array_add_at: Expected %d at index 3, but got %d", c, i3));
-
-    array_destroy(v);
-
-    Array *ar;
-    array_new(&ar);
-
-    size_t s = array_size(ar);
-
-    cc_assert(s == 0,
-              cc_msg("array_add_at: Expected size 0, but got %d", s));
-
-    int status = array_add_at(ar, (void*) &a, 1);
-
-    cc_assert(status != CC_OK,
-              cc_msg("array_add_at: Expected operation failure"));
-
-    array_destroy(ar);
-}
-
-
-void test_array_replace_at()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-
-    int replacement = 11;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-
-    array_replace_at(v, (void*)&replacement, 2, NULL);
-
-    int *repl;
-    array_get_at(v, 2, (void*) &repl);
-
-    cc_assert(repl != &c,
-              cc_msg("array_replace_at: Unique element"
-                     "still present after beeing replaced"));
-
-    cc_assert(repl == &replacement,
-              cc_msg("array_replace_at: Replacement"
-                     "element not at the expected index"));
-
-    array_destroy(v);
-}
-
-
-void test_array_remove()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-    int e = 11;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&e);
-
-    array_remove(v, &c, NULL);
-
-    cc_assert(array_size(v) == 3,
-              cc_msg("array_remove: Expected "
-                     "size was 3, but got %d",
-                     array_size(v)));
-
-    int *r;
-    array_get_at(v, 2, (void*) &r);
-
-    cc_assert(r == &e,
-              cc_msg("array_remove: Unexpected"
-                     " element at index 2"));
-
-    array_destroy(v);
-}
-
-
-void test_array_remove_at()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-    int e = 11;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&e);
-
-    array_remove_at(v, 2, NULL);
-
-    cc_assert(array_size(v) == 3,
-              cc_msg("array_remove_at: Expected "
-                     "size was 3, but got %d",
-                     array_size(v)));
-
-    int *r;
-    array_get_at(v, 2, (void*) &r);
-
-    cc_assert(r == &e,
-              cc_msg("array_remove_at: Unexpected"
-                     " element at index 2"));
-
-    array_destroy(v);
-}
-
-void test_array_remove_all()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-    int e = 11;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&e);
-
-    array_remove_all(v);
-
-    cc_assert(array_size(v) == 0,
-              cc_msg("array_remove_all: Expected"
-                     " size was 0, but got %d", array_size(v)));
-
-    array_destroy(v);
-}
-
-
-void test_array_get_at()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-    int e = 11;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&e);
-
-    int *ar;
-    int *cr;
-    array_get_at(v, 0, (void*) &ar);
-    array_get_at(v, 2, (void*) &cr);
-
-    cc_assert(*ar == a,
-              cc_msg("array_get: Expected value was %d, but got %d", a, ar));
-
-    cc_assert(*cr == c,
-              cc_msg("array_get: Expected value was %d, but got %d", c, cr));
-
-    array_destroy(v);
-}
-
-
-void test_array_index_of()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-
-    size_t ai;
-    array_index_of(v, &a, &ai);
-
-    size_t ci;
-    array_index_of(v, &c, &ci);
-
-    cc_assert(ai == 0,
-              cc_msg("array_index_of: Expected index was 0, but got %d", ai));
-
-    cc_assert(ci == 2,
-              cc_msg("array_index_of: Expected index was 2, but got %d", ci));
-
-    array_destroy(v);
-}
-
-
-void test_array_subarray()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 23;
-    int b = 32;
-    int c = 55;
-    int e = 11;
-    int f = 43;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&e);
-    array_add(v, (void*)&f);
-
-
-    Array *sub;
-    array_subarray(v, 1, 3, &sub);
-
-    cc_assert(array_size(sub) == 3,
-              cc_msg("array_subarray: Expected "
-                     "subarray size was 3, but got %d",
-                     array_size(sub)));
-
-    int *s0;
-    int *s1;
-    int *s2;
-    array_get_at(sub, 0, (void*)&s0);
-    array_get_at(sub, 1, (void*)&s1);
-    array_get_at(sub, 2, (void*)&s2);
-
-    cc_assert(s0 == &b,
-              cc_msg("array_subarray: Expected element at index 0 was %d, but got %d", b, *s0));
-
-    cc_assert(s1 == &c,
-              cc_msg("array_subarray: Expected element at index 1 was %d, but got %d", c, *s1));
-
-    cc_assert(s2 == &e,
-              cc_msg("array_subarray: Expected element at index 2 was %d, but got %d", e, *s2));
-
-    array_destroy(v);
-    array_destroy(sub);
-}
-
-
-void test_array_copy_shallow()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-
-    Array *cp;
-    array_copy_shallow(v, &cp);
-
-    cc_assert(array_size(cp) == array_size(v),
-              cc_msg("array_copy_shallow: Array size missmatch"));
-
-
-    int *ga;
-    int *gb;
-    array_get_at(v, 2, (void*)&ga);
-    array_get_at(cp, 2, (void*)&gb);
-
-    cc_assert(ga == gb,
-              cc_msg("array_copy_shallow: Element missmatch at index 2"));
-
-    array_destroy(v);
-    array_destroy(cp);
-}
-
-
-void *copy(void *val)
-{
-    int v = *((int*) val);
-    int *new = malloc(sizeof(int));
-    *new = v;
-    return new;
-}
-
-
-void test_array_copy_deep()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-
-    Array *cp;
-    array_copy_deep(v, copy, &cp);
-
-    cc_assert(array_size(cp) == array_size(v),
-              cc_msg("array_copy_deep: Array size missmatch"));
-
-    int *ca;
-    array_get_at(cp, 0, (void*) &ca);
-
-    cc_assert(*ca == a,
-              cc_msg("array_copy_deep: Value missmatch at index 2"));
-
-    array_destroy(v);
-    array_destroy_free(cp);
-}
-
-
-void test_array_reverse()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-
-    array_reverse(v);
-
-    int *i0;
-    int *i1;
-    int *i2;
-    array_get_at(v, 0, (void*)&i0);
-    array_get_at(v, 1, (void*)&i1);
-    array_get_at(v, 2, (void*)&i2);
-
-    cc_assert(*i0 == c && *i1 == b && *i2 == a,
-              cc_msg("array_reverse: Unexpected element order after reverse"));
-
-    array_destroy(v);
-}
-
-
-void test_array_trim_capacity()
-{
-    ArrayConf vc;
-    array_conf_init(&vc);
-    vc.capacity = 20;
-
-    Array *v;
-    array_new_conf(&vc, &v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-
-    array_add(v, &a);
-    array_add(v, &b);
-    array_add(v, &c);
-
-    size_t c1 = array_capacity(v);
-    int    op = array_trim_capacity(v);
-    size_t c2 = array_capacity(v);
-
-    cc_assert(c1 == 20,
-              cc_msg("array_trim_capacity: Expected initial capacity was 20, but got %d", c1));
-
-    cc_assert(c2 == 3,
-              cc_msg("array_trim_capacity: Expected trimmed capacity was 3, but got %d", c2));
-
-    array_destroy(v);
-}
-
-
-void test_array_contains()
-{
-    Array *v;
-    array_new(&v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-    int d = 23;
-
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&c);
-
-    int cc = array_contains(v, &c);
-    int ca = array_contains(v, &a);
-    int cd = array_contains(v, &d);
-
-    cc_assert(cc == 2,
-              cc_msg("array_contains: Expected number of elements was 2, but got %d", cc));
-
-    cc_assert(ca == 1,
-              cc_msg("array_contains: Expected number of elements was 1, but got %d", ca));
-
-    cc_assert(cd == 0,
-              cc_msg("array_contains: Expected number of elements was 0, but got %d", cd));
-
-    array_destroy(v);
-}
-
-
-void test_array_capacity()
-{
-    ArrayConf vc;
-    array_conf_init(&vc);
-    vc.capacity = 1;
-
-    Array *v;
-    array_new_conf(&vc, &v);
-
-    int a = 5;
-    int b = 12;
-    int c = 848;
-    int d = 23;
-
-    array_add(v, (void*)&a);
-
-    cc_assert(array_capacity(v) == 1,
-              cc_msg("array_capacity: Expected capacity was 1, but got %d",
-                     array_capacity(v)));
-
-    array_add(v, (void*)&b);
-
-    cc_assert(array_capacity(v) == 2,
-              cc_msg("array_capacity: Expected capacity was 2, but got %d",
-                     array_capacity(v)));
-
-    array_destroy(v);
-}
+#include <stdint.h>
+#include <stdio.h>
+
+#include "array.h"
+#include "CppUTest/TestHarness_c.h"
+
+static Array *v1;
+static Array *v2;
+static int stat;
+static ArrayConf vc;
 
 int comp(void const *e1, void const *e2)
 {
@@ -585,61 +22,358 @@ int comp(void const *e1, void const *e2)
     return 0;
 }
 
-void test_array_sort()
+void *copy(void *val)
 {
-    Array *v;
-    array_new(&v);
-
-    srand(time(NULL));
-
-    int size = 10;
-    int i;
-    for (i = 0; i < size; i++) {
-        int *e = malloc(sizeof(int));
-        *e = rand() % 100;
-        array_add(v, (void*)e);
-    }
-
-    array_sort(v, comp);
-
-    int *prev;
-    array_get_at(v, 0, (void*)&prev);
-    for (i = 0; i < size; i++) {
-        int *e;
-        array_get_at(v, i, (void*)&e);
-
-        cc_assert(*prev <= *e,
-                  cc_msg("array_sort: preceding element greater than the current"));
-
-        prev = e;
-    }
-    array_destroy_free(v);
+    int *N = (int*)malloc(sizeof(int));
+    *N = *((int*)val);
+    return N;
 }
 
-
-void test_array_iter()
+bool pred1(const void *e)
 {
-     test_array_iter_remove();
-     test_array_iter_add();
+    return *(int*)e == 0;
 }
 
-void test_array_iter_remove()
+bool pred2(const void *e)
 {
-    Array *v;
-    array_new(&v);
+    return *(int*)e != 0;
+}
 
+void reduce_add(void *e1, void *e2, void *result)
+{
+    int el1 = e1 ? *((int*)e1) : 0;
+    int el2 = e2 ? *((int*)e2) : 0;
+    *((int*)result) = el1 + el2;
+}
+
+TEST_GROUP_C_SETUP(ArrayTestsWithDefaults)
+{
+    stat = array_new(&v1);
+}
+
+TEST_GROUP_C_TEARDOWN(ArrayTestsWithDefaults)
+{
+    array_destroy(v1);
+}
+
+TEST_C(ArrayTestsWithDefaults, ArrayAdd)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+    CHECK_EQUAL_C_INT(CC_OK, stat);
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    int *ar;
+    int *br;
+    int *cr;
+
+    array_get_at(v1, 0, (void*)&ar);
+    array_get_at(v1, 1, (void*)&br);
+    array_get_at(v1, 2, (void*)&cr);
+
+    CHECK_EQUAL_C_INT(a, *ar);
+    CHECK_EQUAL_C_INT(b, *br);
+    CHECK_EQUAL_C_INT(c, *cr);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayAddAt2)
+{
+    int a = 5;
+    CHECK_EQUAL_C_INT(0, array_size(v1));
+    CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, array_add_at(v1, &a, 1));
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayReplaceAt)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+
+    int replacement = 11;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    array_replace_at(v1, &replacement, 2, NULL);
+
+    int *repl;
+    array_get_at(v1, 2, (void*)&repl);
+
+    CHECK_C(*repl != c);
+    CHECK_C(*repl == replacement);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayRemove)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+    int e = 11;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &e);
+
+    array_remove(v1, &c, NULL);
+
+    CHECK_EQUAL_C_INT(3, array_size(v1));
+
+    int *r;
+    array_get_at(v1, 2, (void*)&r);
+
+    CHECK_EQUAL_C_POINTER(r, &e);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayRemoveAt)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+    int e = 11;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &e);
+
+    array_remove_at(v1, 2, NULL);
+
+    CHECK_EQUAL_C_INT(3, array_size(v1));
+
+    int *r;
+    array_get_at(v1, 2, (void*)&r);
+
+    CHECK_EQUAL_C_POINTER(r, &e);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayRemoveAll)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+    int e = 11;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &e);
+
+    array_remove_all(v1);
+
+    CHECK_EQUAL_C_INT(0, array_size(v1));
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayGetAt)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+    int e = 11;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &e);
+
+    int *ar;
+    int *cr;
+    array_get_at(v1, 0, (void*)&ar);
+    array_get_at(v1, 2, (void*)&cr);
+
+    CHECK_EQUAL_C_INT(a, *ar);
+    CHECK_EQUAL_C_INT(c, *cr);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayIndexOf)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    size_t ai;
+    array_index_of(v1, &a, &ai);
+
+    size_t ci;
+    array_index_of(v1, &c, &ci);
+
+    CHECK_EQUAL_C_INT(0, ai);
+    CHECK_EQUAL_C_INT(2, ci);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArraySubarray)
+{
+    int a = 23;
+    int b = 32;
+    int c = 55;
+    int e = 11;
+    int f = 43;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &e);
+    array_add(v1, &f);
+
+
+    Array *sub;
+    array_subarray(v1, 1, 3, &sub);
+
+    CHECK_EQUAL_C_INT(3, array_size(sub));
+
+    int *s0;
+    int *s1;
+    int *s2;
+    array_get_at(sub, 0, (void*)&s0);
+    array_get_at(sub, 1, (void*)&s1);
+    array_get_at(sub, 2, (void*)&s2);
+
+    CHECK_EQUAL_C_POINTER(&b, s0);
+    CHECK_EQUAL_C_POINTER(&c, s1);
+    CHECK_EQUAL_C_POINTER(&e, s2);
+
+    array_destroy(sub);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayShallowCopy)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    // Array *cp;
+    array_copy_shallow(v1, &v2);
+
+    CHECK_EQUAL_C_INT(array_size(v2), array_size(v1));
+
+    int *ga;
+    int *gb;
+    array_get_at(v1, 2, (void*)&ga);
+    array_get_at(v2, 2, (void*)&gb);
+
+    CHECK_EQUAL_C_INT(*ga, *gb);
+
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayDeepCopy)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    array_copy_deep(v1, copy, &v2);
+
+    CHECK_EQUAL_C_INT(array_size(v2), array_size(v1));
+
+    int *ca;
+    array_get_at(v2, 0, (void*) &ca);
+
+    CHECK_EQUAL_C_INT(a, *ca);
+    array_destroy_free(v2);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayReverse)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    array_reverse(v1);
+
+    int *i0;
+    int *i1;
+    int *i2;
+    array_get_at(v1, 0, (void*)&i0);
+    array_get_at(v1, 1, (void*)&i1);
+    array_get_at(v1, 2, (void*)&i2);
+
+    CHECK_EQUAL_C_INT(c, *i0);
+    CHECK_EQUAL_C_INT(b, *i1);
+    CHECK_EQUAL_C_INT(a, *i2);
+};
+
+
+TEST_C(ArrayTestsWithDefaults, ArrayContains)
+{
     int a = 5;
     int b = 12;
     int c = 848;
     int d = 23;
 
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&d);
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &c);
+
+    int cc = array_contains(v1, &c);
+    int ca = array_contains(v1, &a);
+    int cd = array_contains(v1, &d);
+
+    CHECK_EQUAL_C_INT(2, cc);
+    CHECK_EQUAL_C_INT(1, ca);
+    CHECK_EQUAL_C_INT(0, cd);
+};
+
+
+TEST_C(ArrayTestsWithDefaults, ArraySort)
+{
+    srand(time(NULL));
+
+    int size = 10;
+    int i;
+    for (i = 0; i < size; i++) {
+        int *e = (int*)malloc(sizeof(int));
+        *e = rand() % 100;
+        array_add(v1, (void*)e);
+    }
+    array_sort(v1, comp);
+
+    int *prev;
+    array_get_at(v1, 0, (void**)&prev);
+    for (i = 0; i < size; i++) {
+        int *e;
+        array_get_at(v1, i, (void*)&e);
+        CHECK_C(*prev <= *e);
+        prev = e;
+    }
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayIterRemove)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+    int d = 23;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &d);
 
     ArrayIter iter;
-    array_iter_init(&iter, v);
+    array_iter_init(&iter, v1);
 
     int *e;
     while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
@@ -647,47 +381,398 @@ void test_array_iter_remove()
             array_iter_remove(&iter, NULL);
     }
 
-    cc_assert(array_contains(v, &c) == 0,
-              cc_msg("array_iter_remove: Element still present after removal"));
+    CHECK_EQUAL_C_INT(0, array_contains(v1, &c));
+};
 
-    array_destroy(v);
-}
-
-void test_array_iter_add()
+TEST_C(ArrayTestsWithDefaults, ArrayIterAdd)
 {
-    Array *v;
-    array_new(&v);
+    int a = 1;
+    int b = 2;
+    int c = 3;
+    int d = 4;
 
+    int N = 80;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &d);
+
+    ArrayIter iter;
+    array_iter_init(&iter, v1);
+
+    int *e;
+    while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+        if (*e == 3)
+            array_iter_add(&iter, &N);
+    }
+
+    CHECK_EQUAL_C_INT(5, array_size(v1));
+
+    void *n;
+    array_get_at(v1, 3, &n);
+    CHECK_EQUAL_C_INT(N, *((int*)n));
+    CHECK_EQUAL_C_INT(1, array_contains(v1, &N));
+
+    array_get_at(v1, 4, (void*)&n);
+    CHECK_EQUAL_C_INT(4, *((int*)n));
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayIterReplace)
+{
     int a = 5;
     int b = 12;
     int c = 848;
     int d = 23;
 
-    int new = 80;
+    int replacement = 42;
 
-    array_add(v, (void*)&a);
-    array_add(v, (void*)&b);
-    array_add(v, (void*)&c);
-    array_add(v, (void*)&d);
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &d);
 
     ArrayIter iter;
-    array_iter_init(&iter, v);
+    array_iter_init(&iter, v1);
 
     int *e;
+    int *old;
     while (array_iter_next(&iter, (void*) &e) != CC_ITER_END) {
-        if (array_iter_index(&iter) == 2)
-            array_iter_add(&iter, (void*) &new);
+        if (*e == c)
+            array_iter_replace(&iter, (void*)&replacement, (void*)&old);
     }
 
-    void *n;
-    array_get_at(v, 2, &n);
+    size_t index;
+    array_index_of(v1, (void*) &replacement, &index);
 
-    cc_assert(*((int*)n) == new,
-              cc_msg("array_iter_add: Expected element at index 2 was %d"
-                     ", but got %d instead", new, *((int*)n)));
+    CHECK_EQUAL_C_INT(2, index);
+    CHECK_EQUAL_C_INT(0, array_contains(v1, &c));
+};
 
-    cc_assert(array_contains(v, &new) == 1,
-              cc_msg("array_iter_add: Element not present after being added"));
+TEST_C(ArrayTestsWithDefaults, ArrayZipIterNext)
+{
+    array_add(v1, "a");
+    array_add(v1, "b");
+    array_add(v1, "c");
+    array_add(v1, "d");
 
-    array_destroy(v);
-}
+    array_new(&v2);
+
+    array_add(v2, "e");
+    array_add(v2, "f");
+    array_add(v2, "g");
+
+    ArrayZipIter zip;
+    array_zip_iter_init(&zip, v1, v2);
+
+    size_t i = 0;
+
+    void *e1, *e2;
+    while (array_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (i == 0) {
+            CHECK_EQUAL_C_STRING("a", (char*) e1);
+            CHECK_EQUAL_C_STRING("e", (char*) e2);
+        }
+        if (i == 2) {
+            CHECK_EQUAL_C_STRING("c", (char*) e1);
+            CHECK_EQUAL_C_STRING("g", (char*) e2);
+        }
+        i++;
+    }
+    CHECK_EQUAL_C_INT(3, i);
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayZipIterRemove)
+{
+    array_add(v1, "a");
+    array_add(v1, "b");
+    array_add(v1, "c");
+    array_add(v1, "d");
+
+    array_new(&v2);
+
+    array_add(v2, "e");
+    array_add(v2, "f");
+    array_add(v2, "g");
+
+    ArrayZipIter zip;
+    array_zip_iter_init(&zip, v1, v2);
+
+    void *e1, *e2;
+    void *r1, *r2;
+    while (array_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            array_zip_iter_remove(&zip, &r1, &r2);
+    }
+    CHECK_EQUAL_C_STRING("b", (char*) r1);
+    CHECK_EQUAL_C_INT(0, array_contains(v1, "b"));
+    CHECK_EQUAL_C_INT(0, array_contains(v2, "f"));
+    CHECK_EQUAL_C_INT(3, array_size(v1));
+    CHECK_EQUAL_C_INT(2, array_size(v2));
+
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayZipIterAdd)
+{
+    array_add(v1, "a");
+    array_add(v1, "b");
+    array_add(v1, "c");
+    array_add(v1, "d");
+
+    array_new(&v2);
+
+    array_add(v2, "e");
+    array_add(v2, "f");
+    array_add(v2, "g");
+
+    char *h = "h";
+    char *i = "i";
+
+    ArrayZipIter zip;
+    array_zip_iter_init(&zip, v1, v2);
+
+    void *e1, *e2;
+    while (array_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            array_zip_iter_add(&zip, h, i);
+    }
+
+    size_t index;
+
+    CHECK_EQUAL_C_INT(CC_OK, array_index_of(v1, "h", &index));
+    CHECK_EQUAL_C_INT(2, index);
+    CHECK_EQUAL_C_INT(CC_OK, array_index_of(v2, "i", &index));
+    CHECK_EQUAL_C_INT(2, index);
+    CHECK_EQUAL_C_INT(CC_OK, array_index_of(v1, "c", &index));
+    CHECK_EQUAL_C_INT(3, index);
+    CHECK_EQUAL_C_INT(1, array_contains(v1, "h"));
+    CHECK_EQUAL_C_INT(1, array_contains(v2, "i"));
+    CHECK_EQUAL_C_INT(5, array_size(v1));
+    CHECK_EQUAL_C_INT(4, array_size(v2));
+
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayZipIterReplace)
+{
+    array_add(v1, "a");
+    array_add(v1, "b");
+    array_add(v1, "c");
+    array_add(v1, "d");
+
+    array_new(&v2);
+
+    array_add(v2, "e");
+    array_add(v2, "f");
+    array_add(v2, "g");
+
+    char *h = "h";
+    char *i = "i";
+
+    ArrayZipIter zip;
+    array_zip_iter_init(&zip, v1, v2);
+
+    void *e1, *e2;
+    void *r1, *r2;
+    while (array_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0) {
+            array_zip_iter_replace(&zip, h, i, &r1, &r2);
+        }
+    }
+
+    size_t index;
+
+    CHECK_EQUAL_C_INT(CC_OK, array_index_of(v1, "h", &index));
+    CHECK_EQUAL_C_INT(1, index);
+    CHECK_EQUAL_C_INT(CC_OK, array_index_of(v2, i, &index));
+    CHECK_EQUAL_C_INT(1, index);
+    CHECK_EQUAL_C_INT(1, array_contains(v1, "h"));
+    CHECK_EQUAL_C_INT(1, array_contains(v2, "i"));
+
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsWithDefaults, ArrayReduce)
+{
+    int a = 1;
+    int b = 78;
+    int c = 12;
+    int d = 2;
+    int e = 8;
+
+    array_add(v1, &a);
+    int result;
+    array_reduce(v1, reduce_add, (void*)&result);
+
+    CHECK_EQUAL_C_INT(1, result);
+
+    array_add(v1, &b);
+    array_reduce(v1, reduce_add, (void*)&result);
+
+    CHECK_EQUAL_C_INT(79, result);
+
+    array_add(v1, &c);
+    array_add(v1, &d);
+    array_add(v1, &e);
+    array_reduce(v1, reduce_add, (void*)&result);
+
+    CHECK_EQUAL_C_INT(101, result);
+};
+
+TEST_GROUP_C_SETUP(ArrayTestsArrayConf)
+{
+    array_conf_init(&vc);
+    vc.capacity = 20;
+    array_new_conf(&vc, &v1);
+
+    ArrayConf vc1;
+    array_conf_init(&vc1);
+    vc1.capacity = 1;
+    array_new_conf(&vc1, &v2);
+};
+
+TEST_GROUP_C_TEARDOWN(ArrayTestsArrayConf)
+{
+    array_destroy(v1);
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsArrayConf, ArrayAddAt)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+    int e = 233;
+
+    int ins = 123;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+    array_add(v1, &e);
+
+    array_add_at(v1, &ins, 1);
+
+    int *i0;
+    int *i1;
+    int *i2;
+    int *i3;
+    int *i4;
+
+    array_get_at(v1, 0, (void*)&i0);
+    array_get_at(v1, 1, (void*)&i1);
+    array_get_at(v1, 2, (void*)&i2);
+    array_get_at(v1, 3, (void*)&i3);
+    array_get_at(v1, 4, (void*)&i4);
+
+    CHECK_EQUAL_C_INT(a, *i0);
+    CHECK_EQUAL_C_INT(ins, *i1);
+    CHECK_EQUAL_C_INT(b, *i2);
+    CHECK_EQUAL_C_INT(c, *i3);
+};
+
+TEST_C(ArrayTestsArrayConf, ArrayTrimCapacity)
+{
+    int a = 5;
+    int b = 12;
+    int c = 848;
+
+    array_add(v1, &a);
+    array_add(v1, &b);
+    array_add(v1, &c);
+
+    CHECK_EQUAL_C_INT(20, array_capacity(v1));
+    array_trim_capacity(v1);
+    CHECK_EQUAL_C_INT(3, array_capacity(v1));
+};
+
+TEST_C(ArrayTestsArrayConf, ArrayCapacity)
+{
+    int a = 5;
+    int b = 12;
+
+    array_add(v2, (void*)&a);
+    CHECK_EQUAL_C_INT(1, array_capacity(v2));
+
+    array_add(v2, (void*)&b);
+    CHECK_EQUAL_C_INT(2, array_capacity(v2));
+};
+
+TEST_GROUP_C_SETUP(ArrayTestsFilter)
+{
+    array_new(&v1);
+    for(int i=0;i<20; i++) {
+        int *v = (int*)malloc(sizeof(int));
+        *v = i % 2;
+        array_add(v1, (void*)v);
+    }
+};
+
+TEST_GROUP_C_TEARDOWN(ArrayTestsFilter)
+{
+    array_destroy(v1);
+};
+
+TEST_C(ArrayTestsFilter, ArrayFilterMut1)
+{
+    int ret = array_filter_mut(v1, pred1);
+    CHECK_EQUAL_C_INT(CC_OK, ret);
+
+    CHECK_EQUAL_C_INT(10, array_size(v1));
+
+    ArrayIter i;
+    array_iter_init(&i, v1);
+    void *e;
+    while (array_iter_next(&i, &e) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(0, *(int*)e);
+    }
+};
+
+TEST_C(ArrayTestsFilter, ArrayFilterMut2)
+{
+    array_filter_mut(v1, pred2);
+
+    CHECK_EQUAL_C_INT(10, array_size(v1));
+
+    ArrayIter i;
+    array_iter_init(&i, v1);
+    void *e;
+    while(array_iter_next(&i, &e) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(1, *(int*)e);
+    }
+};
+
+TEST_C(ArrayTestsFilter, ArrayFilter1)
+{
+    array_filter(v1, pred1, &v2);
+
+    CHECK_EQUAL_C_INT(10, array_size(v2));
+
+    ArrayIter i;
+    array_iter_init(&i, v2);
+    void *e;
+    while (array_iter_next(&i, &e) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(0, *(int*)e);
+    }
+
+    array_destroy(v2);
+};
+
+TEST_C(ArrayTestsFilter, ArrayFilter2)
+{
+    CHECK_EQUAL_C_INT(20, array_size(v1));
+    array_filter(v1, pred2, &v2);
+
+    CHECK_EQUAL_C_INT(10, array_size(v2));
+
+    ArrayIter i;
+    array_iter_init(&i, v2);
+    void *e;
+    while(array_iter_next(&i, &e) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(1, *(int*)e);
+    }
+
+    array_destroy(v2);
+};

@@ -18,15 +18,16 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HASHSET_H_
-#define HASHSET_H_
+#ifndef COLLECTIONS_C_HASHSET_H
+#define COLLECTIONS_C_HASHSET_H
 
 #include "common.h"
 #include "hashtable.h"
 
 /**
- * An unordered set. The lookup, deletion, and insertion are performed in
- * amortized constant time and in the worst case in amortized linear time.
+ * An unordered set. The lookup, deletion, and insertion are
+ * performed in amortized constant time and in the worst case
+ * in amortized linear time.
  */
 typedef struct hashset_s HashSet;
 
@@ -36,18 +37,9 @@ typedef struct hashset_s HashSet;
 typedef HashTableConf HashSetConf;
 
 /**
- * HashSet iterator object. Used to iterate over the elements of the set.
- * The iterator also supports operations for safely removing elements
- * during iteration.
- *
- * @code
- * HashSetIter i;
- * hashset_iter_init(&i);
- *
- * while (hashset_iter_has_next(&i)) {
- *     MyType *e = hashset_iter_next(&i);
- * }
- * @endcode
+ * HashSet iterator structure. Used to iterate over the elements
+ * of the HashSet. The iterator also supports operations for safely
+ * removing elements during iteration.
  */
 typedef struct hashset_iter_s {
     HashTableIter iter;
@@ -56,7 +48,7 @@ typedef struct hashset_iter_s {
 void          hashset_conf_init     (HashSetConf *conf);
 
 enum cc_stat  hashset_new           (HashSet **hs);
-enum cc_stat  hashset_new_conf      (const HashSetConf const* conf, HashSet **hs);
+enum cc_stat  hashset_new_conf      (HashSetConf const * const conf, HashSet **hs);
 void          hashset_destroy       (HashSet *set);
 
 enum cc_stat  hashset_add           (HashSet *set, void *element);
@@ -70,8 +62,7 @@ size_t        hashset_capacity      (HashSet *set);
 void          hashset_foreach       (HashSet *set, void (*op) (const void*));
 
 void          hashset_iter_init     (HashSetIter *iter, HashSet *set);
-bool          hashset_iter_has_next (HashSetIter *iter);
-const void   *hashset_iter_next     (HashSetIter *iter);
+enum cc_stat  hashset_iter_next     (HashSetIter *iter, void **out);
 enum cc_stat  hashset_iter_remove   (HashSetIter *iter, void **out);
 
-#endif /* HASHSET_H_ */
+#endif /* COLLECTIONS_C_HASHSET_H */

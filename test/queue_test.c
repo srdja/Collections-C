@@ -1,27 +1,24 @@
-#include "../src/queue.h"
-#include "test.h"
+#include "queue.h"
+#include "CppUTest/TestHarness_c.h"
 
-void test_queue_poll();
-void test_queue_enqueue();
-void test_queue_iter();
+static Queue *q;
+static Queue *q2;
+static int stat;
 
-int main(int argc, char **argv)
+TEST_GROUP_C_SETUP(QueueTestsWithDefaults)
 {
-    cc_set_exit_on_failure(false);
+    stat = queue_new(&q);
+    queue_new(&q2);
+};
 
-    test_queue_poll();
-    test_queue_enqueue();
-    test_queue_iter();
-
-    return cc_get_status();
-}
-
-
-void test_queue_enqueue()
+TEST_GROUP_C_TEARDOWN(QueueTestsWithDefaults)
 {
-    Queue *q;
-    queue_new(&q);
+    queue_destroy(q);
+    queue_destroy(q2);
+};
 
+TEST_C(QueueTestsWithDefaults, QueueEnqueue)
+{
     int a = 1;
     int b = 2;
     int c = 3;
@@ -29,29 +26,20 @@ void test_queue_enqueue()
     queue_enqueue(q, &a);
     queue_enqueue(q, &b);
 
-    cc_assert(queue_size(q) == 2,
-              cc_msg("queue_enqueue: Qeueu size not as expected"));
-
+    CHECK_EQUAL_C_INT(2, queue_size(q));
 
     void *p;
     queue_peek(q, &p);
-    cc_assert(p == &a,
-              cc_msg("queue_enqueue: Front element not as expected."));
+    CHECK_EQUAL_C_POINTER(&a, p);
 
     queue_enqueue(q, &c);
 
     queue_peek(q, &p);
-    cc_assert(p == &a,
-              cc_msg("queue_enqueue: Front element not as expected."));
+    CHECK_EQUAL_C_POINTER(&a, p);
+};
 
-    queue_destroy(q);
-}
-
-void test_queue_poll()
+TEST_C(QueueTestsWithDefaults, QueuePoll)
 {
-    Queue *q;
-    queue_new(&q);
-
     int a = 1;
     int b = 2;
     int c = 3;
@@ -63,29 +51,20 @@ void test_queue_poll()
     void *p;
 
     queue_poll(q, &p);
-    cc_assert(p == &a,
-              cc_msg("queue_peek: Front element not as expected."));
+    CHECK_EQUAL_C_POINTER(&a, p);
 
     queue_peek(q, &p);
-    cc_assert(p == &b,
-              cc_msg("queue_peek: Front element not as expected."));
+    CHECK_EQUAL_C_POINTER(&b, p);
 
     queue_poll(q, &p);
-    cc_assert(p == &b,
-              cc_msg("queue_peek: Front element not as expected."));
+    CHECK_EQUAL_C_POINTER(&b, p);
 
     queue_peek(q, &p);
-    cc_assert(p == &c,
-              cc_msg("queue_peek: Front element not as expected."));
+    CHECK_EQUAL_C_POINTER(&c, p);
+};
 
-    queue_destroy(q);
-}
-
-void test_queue_iter()
+TEST_C(QueueTestsWithDefaults, QueueIter)
 {
-    Queue *q;
-    queue_new(&q);
-
     int a = 1;
     int b = 2;
     int c = 3;
@@ -113,9 +92,39 @@ void test_queue_iter()
             z++;
     }
 
-    cc_assert(x == 1 && y == 1 && z == 1,
-              cc_msg("queue_iter: Unexpected number of elments returned "
-                     "by the iterator."));
+    CHECK_EQUAL_C_INT(1, x);
+    CHECK_EQUAL_C_INT(1, y);
+    CHECK_EQUAL_C_INT(1, z);
+};
 
-    queue_destroy(q);
+
+TEST_C(QueueTestsWithDefaults, QueueZipIterNext)
+{
+    queue_enqueue(q, "a");
+    queue_enqueue(q, "b");
+    queue_enqueue(q, "c");
+    queue_enqueue(q, "d");
+
+    queue_enqueue(q2, "e");
+    queue_enqueue(q2, "f");
+    queue_enqueue(q2, "g");
+
+    QueueZipIter zip;
+    queue_zip_iter_init(&zip, q, q2);
+
+    size_t i = 0;
+
+    void *e1, *e2;
+    while (queue_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (i == 0) {
+            CHECK_EQUAL_C_STRING("d", (char*)e1);
+            CHECK_EQUAL_C_STRING("g", (char*)e2);
+        }
+        if (i == 2) {
+            CHECK_EQUAL_C_STRING("b", (char*)e1);
+            CHECK_EQUAL_C_STRING("e", (char*)e2);
+        }
+        i++;
+    }
+    CHECK_EQUAL_C_INT(3, i);
 }

@@ -18,18 +18,13 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __HASHTABLE_H__
-#define __HASHTABLE_H__
+#ifndef COLLECTIONS_C_HASHTABLE_H
+#define COLLECTIONS_C_HASHTABLE_H
 
 #include "array.h"
+#include "common.h"
 
 #define KEY_LENGTH_VARIABLE  -1
-#define KEY_LENGTH_DOUBLE    sizeof(double)
-#define KEY_LENGTH_FLOAT     sizeof(float)
-#define KEY_LENGTH_INT       sizeof(int)
-#define KEY_LENGTH_CHAR      sizeof(char)
-#define KEY_LENGTH_SHORT     sizeof(short)
-#define KEY_LENGHT_LONG      sizeof(long)
 #define KEY_LENGTH_POINTER   sizeof(void*)
 
 /**
@@ -65,20 +60,9 @@ typedef struct table_entry_s {
 } TableEntry;
 
 /**
- * HashTable iterator object. Used to iterate over the entries of the table
- * in an undefined order. The iterator also supports operations for safely
- * removing elements during iteration.
- *
- * @code
- * HashTableIter i;
- * hashtable_iter_init(&i);
- *
- * while (hashtable_iter_has_next(&i)) {
- *     TableEntry *e = hashtable_iter_next(&i);
- *     e->key;
- *     e->value;
- * }
- * @endcode
+ * HashTable iterator object. Used to iterate over the entries of
+ * the table in an undefined order. The iterator also supports operations
+ * for safely removing elements during iteration.
  *
  * @note This structure should only be modified through the iterator functions.
  */
@@ -90,20 +74,8 @@ typedef struct hashtable_iter {
 } HashTableIter;
 
 /**
- * HashTable configuration object. Used to initialize a new HashTable with
- * specific values.
- *
- * @code
- * HashTableConf c;
- * hashtable_conf_init(&c);
- *
- * c.key_length  = sizeof(MyType);
- * c.key_compare = my_cmp_function;
- * c.hash        = GENERAL_HASH;
- * c.hash_seed   = 12345;
- *
- * HashTable *t = hashtable_new_conf(&c);
- * @endcode
+ * HashTable configuration object. Used to initialize a new HashTable
+ * with specific values.
  */
 typedef struct hashtable_conf_s {
     /**
@@ -133,7 +105,7 @@ typedef struct hashtable_conf_s {
 
     /**
      * The key comparator function */
-    bool   (*key_compare) (void *key1, void *key2);
+    int    (*key_compare) (const void *key1, const void *key2);
 
     /**
      * Memory allocators used to allocate the HashTable structure
@@ -146,7 +118,7 @@ typedef struct hashtable_conf_s {
 
 void          hashtable_conf_init       (HashTableConf *conf);
 enum cc_stat  hashtable_new             (HashTable **out);
-enum cc_stat  hashtable_new_conf        (const HashTableConf const* conf, HashTable **out);
+enum cc_stat  hashtable_new_conf        (HashTableConf const * const conf, HashTable **out);
 
 void          hashtable_destroy         (HashTable *table);
 enum cc_stat  hashtable_add             (HashTable *table, void *key, void *val);
@@ -161,15 +133,6 @@ size_t        hashtable_capacity        (HashTable *table);
 enum cc_stat  hashtable_get_keys        (HashTable *table, Array **out);
 enum cc_stat  hashtable_get_values      (HashTable *table, Array **out);
 
-bool          hashtable_string_key_cmp  (void *key1, void *key2);
-bool          hashtable_float_key_cmp   (void *key1, void *key2);
-bool          hashtable_char_key_cmp    (void *key1, void *key2);
-bool          hashtable_short_key_cmp   (void *key1, void *key2);
-bool          hashtable_double_key_cmp  (void *key1, void *key2);
-bool          hashtable_int_key_cmp     (void *key1, void *key2);
-bool          hashtable_long_key_cmp    (void *key1, void *key2);
-bool          hashtable_pointer_key_cmp (void *key1, void *key2);
-
 size_t        hashtable_hash_string     (const void *key, int len, uint32_t seed);
 size_t        hashtable_hash            (const void *key, int len, uint32_t seed);
 size_t        hashtable_hash_ptr        (const void *key, int len, uint32_t seed);
@@ -178,22 +141,13 @@ void          hashtable_foreach_key     (HashTable *table, void (*op) (const voi
 void          hashtable_foreach_value   (HashTable *table, void (*op) (void *));
 
 void          hashtable_iter_init       (HashTableIter *iter, HashTable *table);
-bool          hashtable_iter_has_next   (HashTableIter *iter);
-void          hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
+enum cc_stat  hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
 enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 
-#define CMP_STRING   hashtable_string_key_cmp
-#define CMP_FLOAT    hashtable_float_key_cmp
-#define CMP_CHAR     hashtable_char_key_cmp
-#define CMP_SHORT    hasthable_short_key_cmp
-#define CMP_LONG     hashtable_long_key_cmp
-#define CMP_DOUBLE   hashtable_double_key_cmp
-#define CMP_INT      hashtable_int_key_cmp
-#define CMP_POINTER  hashtable_pointer_key_cmp
 
 #define GENERAL_HASH hashtable_hash
 #define STRING_HASH  hashtable_hash_string
 #define POINTER_HASH hashtable_hash_ptr
 
 
-#endif /* __HASHTABLE_H__ */
+#endif /* COLLECTIONS_C_HASHTABLE_H */

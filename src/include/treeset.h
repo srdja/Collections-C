@@ -18,39 +18,27 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TREESET_H_
-#define __TREESET_H_
+#ifndef COLLECTIONS_C_TREESET_H
+#define COLLECTIONS_C_TREESET_H
 
 #include "common.h"
 #include "treetable.h"
 
 /**
- * An ordered set. The lookup, deletion, and insertion are performed in
- * logarithmic time.
+ * An ordered set. The lookup, deletion, and insertion are
+ * performed in logarithmic time.
  */
 typedef struct treeset_s TreeSet;
 
 /**
- * TreeSet configuration object.
+ * TreeSet configuration structure.
  */
 typedef TreeTableConf TreeSetConf;
 
 /**
- * TreeSet iterator object. Used to iterate over the elements of the set.
+ * TreeSet iterator structure. Used to iterate over the elements of the set.
  * The iterator also supports operations for safely removing elements
  * during iteration.
- *
- * @code
- * TreeSetIter i;
- * treeset_iter_init(&i);
- *
- * int * const* e;
- *
- * while (treeset_iter_has_next(&i)) {
- *     treeset_iter_next(&i, &e);
- *     do_something(e);
- * }
- * @endcode
  */
 typedef struct treeset_iter_s {
     TreeTableIter i;
@@ -58,8 +46,8 @@ typedef struct treeset_iter_s {
 
 
 void          treeset_conf_init        (TreeSetConf *conf);
-enum cc_stat  treeset_new              (int (*cmp) (void*, void*), TreeSet **set);
-enum cc_stat  treeset_new_conf         (const TreeSetConf const* conf, TreeSet **set);
+enum cc_stat  treeset_new              (int (*cmp) (const void*, const void*), TreeSet **set);
+enum cc_stat  treeset_new_conf         (TreeSetConf const * const conf, TreeSet **set);
 
 void          treeset_destroy          (TreeSet *set);
 
@@ -78,8 +66,7 @@ size_t        treeset_size             (TreeSet *set);
 void          treeset_foreach          (TreeSet *set, void (*op) (const void*));
 
 void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
-bool          treeset_iter_has_next    (TreeSetIter *iter);
-void          treeset_iter_next        (TreeSetIter *iter, void **element);
-void          treeset_iter_remove      (TreeSetIter *iter);
+enum cc_stat  treeset_iter_next        (TreeSetIter *iter, void **element);
+enum cc_stat  treeset_iter_remove      (TreeSetIter *iter, void **out);
 
-#endif
+#endif /* COLLECTIONS_C_TREESET_H */

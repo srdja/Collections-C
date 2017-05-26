@@ -31,12 +31,14 @@ struct slist_s {
     void   (*mem_free)   (void *block);
 };
 
+
 static void* unlink              (SList *list, SNode *node, SNode *prev);
 static bool  unlink_all          (SList *list, bool freed);
 static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
-static enum cc_stat  get_node_at         (SList *list, size_t index, SNode **node, SNode **prev);
-static enum cc_stat  get_node            (SList *list, void *element, SNode **node, SNode **prev);
 static bool  link_all_externally (SList *list, SNode **h, SNode **t);
+static enum cc_stat get_node_at  (SList *list, size_t index, SNode **node, SNode **prev);
+static enum cc_stat get_node     (SList *list, void *element, SNode **node, SNode **prev);
+
 
 /**
  * Initializes the fields SListConf struct to default values.
@@ -51,9 +53,12 @@ void slist_conf_init(SListConf *conf)
 }
 
 /**
- * Returns a new empty list, or NULL if the memory allocation fails.
+ * Creates a new empty list and returns a status code.
  *
- * @return a new list, or NULL if the memory allocation fails
+ * @param[out] out Pointer to a SList that is being created.
+ *
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
+ * memory allocation for the new SList structure failed.
  */
 enum cc_stat slist_new(SList **out)
 {
@@ -63,17 +68,21 @@ enum cc_stat slist_new(SList **out)
 }
 
 /**
- * Returns a new empty SList based on the specified SListConf struct.
+ * Creates a new empty SList based on the specified SListConf struct and
+ * returns a status code.
  *
  * The SList is allocated using the allocators specified in the SListConf
- * struct. THe allocation may fail if the underlying allocator fails.
+ * struct. The allocation may fail if the underlying allocator fails.
  *
- * @param[in] conf SList configuration. All fields must be initialized
- *                 to appropriate values.
+ * @param[in] conf SList configuration struct. All fields must be initialized
+ *            to appropriate values.
  *
- * @return a new SList if the allocation was successful, or NULL if not.
+ * @param[out] out Pointer to a SList that is being createdo
+ *
+ * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
+ * memory allocation for the new SList structure failed.
  */
-enum cc_stat slist_new_conf(const SListConf const* conf, SList **out)
+enum cc_stat slist_new_conf(SListConf const * const conf, SList **out)
 {
     SList *list = conf->mem_calloc(1, sizeof(SList));
 
@@ -89,47 +98,40 @@ enum cc_stat slist_new_conf(const SListConf const* conf, SList **out)
 }
 
 /**
- * Destroys the list structure, but leaves the data that is holds intact
+ * Destroys the list structure, but leaves the data that is holds intact.
  *
- * @param[in] list a list to destroy
-  *
- * @return true if the operation was successful
+ * @param[in] list SList that is to be destroyed
  */
-bool slist_destroy(SList *list)
+void slist_destroy(SList *list)
 {
-    bool success = slist_remove_all(list);
+    slist_remove_all(list);
     list->mem_free(list);
-    return success;
 }
 
 /**
- * Destroys the list structure along with all the data it holds. This function
- * returns true if the operation was successful, or false if the list was already
- * empty.
+ * Destroys the list structure along with all the data it holds.
  *
  * @note
  * This function should not be called on a list that has some of it's elements
  * allocated on the stack.
  *
- * @param[in] list the list to be destroyed
- * @return true if the operation was successful
+ * @param[in] list SList that is to be destroyed
  */
-bool slist_destroy_free(SList *list)
+void slist_destroy_free(SList *list)
 {
-    bool success = slist_remove_all_free(list);
+    slist_remove_all_free(list);
     list->mem_free(list);
-    return success;
 }
 
 /**
  * Adds a new element to the list. The element is appended to the list making it
- * the last element of the list. This function returns false if the memory
- * allocation for the new element has fails.
+ * the last element of the list.
  *
- * @param[in] list the list to which the element is being added
- * @param[in] element element being added
+ * @param[in] list SList to which the element is being added
+ * @param[in] element element that is being added
  *
- * @return true if the element was successfully added to the list.
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
+ * memory allocation for the new element has failed.
  */
 enum cc_stat slist_add(SList *list, void *element)
 {
@@ -138,13 +140,13 @@ enum cc_stat slist_add(SList *list, void *element)
 
 /**
  * Prepends a new element to the list (adds a new "head") making it the first
- * element of the list. This function returns false if the memory allocation for
- * the new element fails.
+ * element of the list.
  *
- * @param[in] list the list to which the element is being added
- * @param[in] element element being added
+ * @param[in] list SList to which the element is being added
+ * @param[in] element element that is being added
  *
- * @return true if the element was successfully added to the list
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
+ * memory allocation for the new element has failed.
  */
 enum cc_stat slist_add_first(SList *list, void *element)
 {
@@ -168,13 +170,13 @@ enum cc_stat slist_add_first(SList *list, void *element)
 
 /**
  * Appends a new element to the list (adds a new "tail") making it the last
- * element of the list. This function returns false if the memory allocation for
- * the new element fails.
+ * element of the list.
  *
- * @param[in] list the list to which the element is being added
- * @param[in] element element being added
+ * @param[in] list SList to which the element is being added
+ * @param[in] element element that is being added
  *
- * @return true if the element was successfully added to the list
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC if the
+ * memory allocation for the new element has failed.
  */
 enum cc_stat slist_add_last(SList *list, void *element)
 {
@@ -197,18 +199,20 @@ enum cc_stat slist_add_last(SList *list, void *element)
 }
 
 /**
- * Adds a new element at the specified location in the list and shifts all
- * subsequent elements by one. This operation cannot be performed on an empty
- * list. The index at which the new element is being added must be within the
- * bounds of the list. This function returns false if either the index is out
- * of bounds, or if the memory allocation for the new element fails.
+ * Adds a new element at the specified location in the SList and shifts all
+ * subsequent elements by one. The index at which the new element is being
+ * added must be within the bounds of the list.
  *
- * @param[in] list the list to which this element is being added
- * @param[in] element element being added
+ * @note This operation cannot be performed on an empty list.
+ *
+ * @param[in] list SList to which this element is being added
+ * @param[in] element element that is being added
  * @param[in] index the position in the list at which the new element is being
  *                  added
  *
- * @return true if the element was successfully added to the list
+ * @return CC_OK if the element was successfully added, CC_ERR_OUT_OF_RANGE if
+ * the specified index was not in range, or CC_ERR_ALLOC if the memory
+ * allocation for the new element failed.
  */
 enum cc_stat slist_add_at(SList *list, void *element, size_t index)
 {
@@ -242,15 +246,13 @@ enum cc_stat slist_add_at(SList *list, void *element, size_t index)
 
 /**
  * Adds all elements from the second list to the first. The elements from the
- * second list are added after the last element of the first list. This function
- * returns false if no elements were added to the first list. This could be the
- * case if either the second list is empty or if the memory allocation for the
- * element that are being added fails.
+ * second list are added after the last element of the first list.
  *
- * @param[in] list1 the list to which the elements are being added
- * @param[in] list2 the list from which the elements are being taken.
+ * @param[in] list1 SList to which the elements are being added
+ * @param[in] list2 SList from which the elements are being taken
  *
- * @return true if the elements were successfully added
+ * @return CC_OK if the elements where successfully added, or CC_ERR_ALLOC if
+ * the memory allocation for the new elements failed.
  */
 enum cc_stat slist_add_all(SList *list1, SList *list2)
 {
@@ -278,17 +280,16 @@ enum cc_stat slist_add_all(SList *list1, SList *list2)
 /**
  * Adds all element from the second list to the first at the specified position
  * by shifting all subsequent elements by the size of the second list. The index
- * must be within the range of the list. This function returns false if no
- * elements were added to the first list. This could be the case if either the
- * second list is empty or if the memory allocation for the elements being added
- * fails.
+ * must be within the range of the first list.
  *
- * @param[in] list1 the list to which the elements are being added
- * @param[in] list2 the list from which the elements are being taken
+ * @param[in] list1 SList to which the elements are being added
+ * @param[in] list2 SList from which the elements are being taken
  * @param[in] index position in the first list at which the elements should be
  *                  added
  *
- * @return true if the elements were successfully added
+ * @return CC_OK if the elements were successfully added,
+ * CC_ERR_INDEX_OUT_OF_BOUNDS if the index was out of range, or
+ * CC_ERR_ALLOC if the memory allocation for the new elements failed.
  */
 enum cc_stat slist_add_all_at(SList *list1, SList *list2, size_t index)
 {
@@ -366,14 +367,14 @@ static bool link_all_externally(SList *list, SNode **h, SNode **t)
 }
 
 /**
- * Splices the two singly linked lists together by appending the second list to
- * the first. This function moves all the elements from the second list into
+ * Splices the two SLists together by appending the second list to the
+ * first. This function moves all the elements from the second list into
  * the first list, leaving the second list empty.
  *
  * @param[in] list1 The consumer list to which the elements are moved.
  * @param[in] list2 The producer list from which the elements are moved.
  *
- * @return true if the operation was successful
+ * @return CC_OK if the elements were successfully moved
  */
 enum cc_stat slist_splice(SList *list1, SList *list2)
 {
@@ -397,18 +398,18 @@ enum cc_stat slist_splice(SList *list1, SList *list2)
 }
 
 /**
- * Splices the two singly lists together at the specified index of the first list.
- * this function moves all the elements from the second list into the first list
- * at the position specified by the <code>index</code> parameter. After this
- * operation the second list will be left empty. This function returns false if the
- * second list is already empty or if the specified index is out of bounds.
+ * Splices the two SLists together at the specified index of the first list.
+ * this function moves all the elements from the second list into the first
+ * list at the position specified by the <code>index</code> parameter. After
+ * this operation the second list will be left empty.
  *
  * @param[in] list1 the consumer list to which the elements are moved
  * @param[in] list2 the producer list from which the elements are moved
- * @param[in] index the index in the first list after which the elements from the
- *                  second list should be inserted
+ * @param[in] index the index in the first list after which the elements
+ *                   from the second list should be inserted
  *
- * @return true if at least one element was moved from the second list
+ * @return CC_OK if the elements were successfully moved, CC_ERR_OUT_OF_RANGE if
+ * the index was not in range,
  */
 enum cc_stat slist_splice_at(SList *list1, SList *list2, size_t index)
 {
@@ -462,15 +463,16 @@ static INLINE void splice_between(SList *l1, SList *l2, SNode *base, SNode *end)
 }
 
 /**
- * Removes and returns the first occurrence of the element from the specified
- * list. If the element if not a part of the list, NULL is returned instead.
- * NULL may also be returned if the removed element was NULL. Calling <code>
- * slist_contains()</code> before this function can resolve the ambiguity.
+ * Removes the first occurrence of the element from the specified SList
+ * and optionally sets the out parameter to the value of the removed element.
  *
- * @param[in] list a list from which the element is being removed
- * @param[in] element element being removed
+ * @param[in] list SList from which the element is being removed
+ * @param[in] element element that is being removed
+ * @param[out] out Pointer to where the removed value is stored, or NULL
+ *                 if it is to be ignored
  *
- * @return the removed element
+ * @return CC_OK if the element was successfully removed, or
+ * CC_ERR_VALUE_NOT_FOUND if the element was not found.
  */
 enum cc_stat slist_remove(SList *list, void *element, void **out)
 {
@@ -491,18 +493,18 @@ enum cc_stat slist_remove(SList *list, void *element, void **out)
 }
 
 /**
- * Removes and returns the element at the specified index. The index must be
- * within the bounds of the list. In case the index is out of bounds this
- * function returns NULL. NULL may also be returned if the element at the
- * specified index is actually NULL. Calling <code>slist_contains()</code>
- * before this function can resolve this ambiguity.
+ * Removes the element at the specified index and optionally sets
+ * the out parameter to the value of the removed element. The index
+ * must be within the bounds of the list.
  *
- * @param[in] list the list from which the element is being removed.
- * @param[in] index Index of the element is being removed. Must be be within the
- *            index range of the list.
+ * @param[in] list  SList from which the element is being removed
+ * @param[in] index Index of the element that is being removed. Must be be
+ *                  within the index range of the list.
+ * @param[out] out  Pointer to where the removed value is stored,
+ *                  or NULL if it is to be ignored
  *
- * @return the removed element, or NULL
- *
+ * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
+ * if the index was out of range.
  */
 enum cc_stat slist_remove_at(SList *list, size_t index, void **out)
 {
@@ -523,12 +525,15 @@ enum cc_stat slist_remove_at(SList *list, size_t index, void **out)
 }
 
 /**
- * Removes and returns the first (head) element of the list. If the list is
- * empty, NULL is returned instead.
+ * Removes the first (head) element of the list and optionally sets the out
+ * parameter to the value of the removed element.
  *
- * @param[in] list the list from which the first element is being removed
+ * @param[in] list SList from which the first element is being removed
+ * @param[out] out Pointer to where the removed value is stored, or NLLL if it is
+ *                 to be ignored
  *
- * @return the removed element, or NULL
+ * @return CC_OK if the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND
+ * if the list is empty.
  */
 enum cc_stat slist_remove_first(SList *list, void **out)
 {
@@ -544,12 +549,15 @@ enum cc_stat slist_remove_first(SList *list, void **out)
 }
 
 /**
- * Removes and returns the last (tail) element of the list. If the list is
- * empty, NULL is returned instead.
+ * Removes the last (tail) element of the list and optionally sets the out
+ * parameter to the value of the removed element.
  *
- * @param[in] list the list from which the last element is being removed
+ * @param[in] list SList from which the last element is being removed
+ * @param[out] out Pointer to where the removed value is stored, or NULL if it is
+ *                 to be ignored
  *
- * @return the removed element, or NULL
+ * @return CC_OK if the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND
+ * if the list is empty.
  */
 enum cc_stat slist_remove_last(SList *list, void **out)
 {
@@ -573,13 +581,12 @@ enum cc_stat slist_remove_last(SList *list, void **out)
 }
 
 /**
- * Removes all elements from the specified list. This function returns true if at
- * least one element was removed, or false if the list was already empty.
+ * Removes all elements from the specified list.
  *
- * @param[in] list the list from which all elements are being removed
+ * @param[in] list SList from which all elements are being removed
  *
- * @return true if the operation was successful and at least one element was
- *         removed, or false if the list was already empty
+ * @return CC_OK if the elements were successfully removed, or CC_ERR_VALUE_NOT_FOUND
+ * if the list was already empty.
  */
 enum cc_stat slist_remove_all(SList *list)
 {
@@ -594,19 +601,16 @@ enum cc_stat slist_remove_all(SList *list)
 }
 
 /**
- * Removes and frees all the elements from the specified list. This function
- * returns true if at least one element was removed and freed, or false if
- * the list was already empty.
+ * Removes and frees all the elements from the specified list.
  *
  * @note
  * This function should not be called on a list that has some of it's elements
  * allocated on the stack.
  *
- * @param[in] list the list from which all the elements are being removed and
- *            freed
+ * @param[in] list SList from which all the elements are being removed and freed
  *
- * @return true if the operation was successful and at least one element was
- *         removed or false if the list is already empty
+ * @return CC_OK if the element were successfully removed and freed, or
+ * CC_ERR_VALUE_NOT_FOUND if the list was already empty.
  */
 enum cc_stat slist_remove_all_free(SList *list)
 {
@@ -621,15 +625,18 @@ enum cc_stat slist_remove_all_free(SList *list)
 }
 
 /**
- * Replaces an element at the specified location and returns the old element.
- * The specified index must be within the bounds of the list. This function
- * returns false if the specified index is out of range.
+ * Replaces an element at the specified location and optionally sets the out parameter
+ * to the value of the replaced element. The specified index must be within the bounds
+ * of the list.
  *
- * @param[in] list the list on which this operation is performed
+ * @param[in] list    SList on which this operation is performed
  * @param[in] element the replacement element
- * @param[in] index index of the element being replaced
+ * @param[in] index   index of the element being replaced
+ * @param[out] out    Pointer to where the replaced element is stored, or NULL if
+ *                    it is to be ignored
  *
- * @return the replaced element
+ * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE
+ *         if the index was out of range.
  */
 enum cc_stat slist_replace_at(SList *list, void *element, size_t index, void **out)
 {
@@ -651,12 +658,13 @@ enum cc_stat slist_replace_at(SList *list, void *element, size_t index, void **o
 }
 
 /**
- * Returns the first element from the specified list, or NULL if the list is
- * empty.
+ * Gets the first element from the specified list and sets the out parameter to
+ * its value.
  *
- * @param[in] list the list whose first element is being returned.
+ * @param[in] list SList whose first element is being returned
+ * @param[in] out  Pointer to where the element is stored
  *
- * @return the first element of the list, or NULL in case the list is empty.
+ * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
 enum cc_stat slist_get_first(SList *list, void **out)
 {
@@ -669,12 +677,13 @@ enum cc_stat slist_get_first(SList *list, void **out)
 }
 
 /**
- * Returns the last element from the specified list. or NULL if the list is
- * empty.
+ * Gets the last element from the specified list and sets the out parameter to
+ * its value.
  *
- * @param[in] list list whose last element is being returned
+ * @param[in] list SList whose last element is being returned
+ * @param[out] out Pointer to where the element is stored
  *
- * @return the last element of the list, or NULL in case the list is empty.
+ * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
 enum cc_stat slist_get_last(SList *list, void **out)
 {
@@ -687,14 +696,16 @@ enum cc_stat slist_get_last(SList *list, void **out)
 }
 
 /**
- * Returns the list element from the specified index. In case the index is out
- * of bounds, this function returns NULL instead.
+ * Gets the list element from the specified index and sets the out parameter to
+ * its value.
  *
- * @param[in] list  list from which the element is being returned.
+ * @param[in] list  SList from which the element is being returned.
  * @param[in] index The index of a list element being returned. The index must
  *                  be within the bound of the list.
+ * @param[out] out  Pointer to where the element is stored
  *
- * @return The list element at the specified index.
+ * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the index
+ * was out of range.
  */
 enum cc_stat slist_get_at(SList *list, size_t index, void **out)
 {
@@ -712,11 +723,11 @@ enum cc_stat slist_get_at(SList *list, size_t index, void **out)
 }
 
 /**
- * Returns the number of elements in the specified list.
+ * Returns the number of elements in the specified SList.
  *
- * @param[in] list whose size is being returned
+ * @param[in] list SList whose size is being returned
  *
- * @return the number of the elements contained in the specified list
+ * @return The number of elements contained in the specified SList.
  */
 size_t slist_size(SList *list)
 {
@@ -726,7 +737,7 @@ size_t slist_size(SList *list)
 /**
  * Reverses the order of elements in the specified list.
  *
- * @param[in] list the list that is being reversed
+ * @param[in] list SList that is being reversed
  */
 void slist_reverse(SList *list)
 {
@@ -734,43 +745,43 @@ void slist_reverse(SList *list)
         return;
 
     SNode *prev = NULL;
+    SNode *next = NULL;
     SNode *flip = list->head;
-    SNode *next = flip->next;
 
     list->tail = list->head;
 
-    size_t i;
-    for (i = 0; i < list->size; i++) {
+    while (flip) {
+        next = flip->next;
         flip->next = prev;
-
         prev = flip;
         flip = next;
-        next = next ? next->next : NULL;
     }
-
     list->head = prev;
 }
 
 /**
- * Returns a sublist of the specified list. The returned sublist contains all
+ * Creates a sublist of the specified list. The created sublist contains all
  * the elements from the list that are contained between the two indices
  * including the elements at the indices. For example if a list contains 5
  * elements [5, 6, 7, 8, 9], a sublist from index 1 to 3 will will be a new
- * list of length 3, containing [6, 7, 8]. The returned sublist is only a copy of
+ * list of length 3, containing [6, 7, 8]. The created sublist is only a copy of
  * the original lists structure, meaning the data it points to is not copied.
  *
  * @note The sublist is allocated using the original lists allocators and also
  *       inherits the configuration of the original list.
  *
- * @param[in] list the list from which the sublist is taken
+ * @param[in] list SList from which the sublist is taken
  * @param[in] from The beginning index, ie., the first element to be included.
  *                 Must be a positive integer and may not exceed the list size
  *                 or the end index.
  * @param[in] to   The ending index, ie., the last element to be included. Must
  *                 be a positive integer no greater that the list size and no
  *                 smaller that the beginning index.
+ * @param[out] out Pointer to where the new sublist is stored.
  *
- * @return a new sublist or NULL if any of the indices are out of list bounds
+ * @return CC_OK if the sublist was successfully created, CC_ERR_INVALID_RANGE
+ * if the specified index range is invalid, or CC_ERR_ALLOC if the memory allocation
+ * for the new sublist failed.
  */
 enum cc_stat slist_sublist(SList *list, size_t from, size_t to, SList **out)
 {
@@ -788,8 +799,10 @@ enum cc_stat slist_sublist(SList *list, size_t from, size_t to, SList **out)
 
     status = get_node_at(list, from, &node, &base);
 
-    if (status != CC_OK)
+    if (status != CC_OK) {
+        slist_destroy(sub);
         return status;
+    }
 
     size_t i;
     for (i = from; i <= to; i++) {
@@ -805,16 +818,18 @@ enum cc_stat slist_sublist(SList *list, size_t from, size_t to, SList **out)
 }
 
 /**
- * Returns a shallow copy of the specified list. A shallow copy is a copy of the
+ * Creates a shallow copy of the specified list. A shallow copy is a copy of the
  * list structure. This operation does not copy the actual data that this list
  * holds.
  *
  * @note The new list is allocated using the original lists allocators and also
  *       inherits the configuration of the original list.
  *
- * @param[in] list list to be copied
+ * @param[in] list SList to be copied
+ * @param[out] out Pointer to where the newly created copy is stored
  *
- * @return a shallow copy of the list
+ * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
+ * memory allocation for the copy failed.
  */
 enum cc_stat slist_copy_shallow(SList *list, SList **out)
 {
@@ -839,7 +854,7 @@ enum cc_stat slist_copy_shallow(SList *list, SList **out)
 }
 
 /**
- * Returns a deep copy of the specified list. This function copies the structure
+ * Creates a deep copy of the specified list. This function copies the structure
  * of the list along with all the data it holds. The element copying is done
  * through the specified copy function that should return a pointer to the copy
  * of the element passed to it.
@@ -847,11 +862,13 @@ enum cc_stat slist_copy_shallow(SList *list, SList **out)
  * @note The new list is allocated using the original lists allocators and also
  *       inherits the configuration of the original list.
  *
- * @param[in] list list to be copied
- * @param[in] cp  the copy function that should return a pointer to the copy of
+ * @param[in] list SList to be copied
+ * @param[in] cp   the copy function that should return a pointer to the copy of
  *                 the data.
+ * @param[out] out Pointer to where the newly created copy is stored
  *
- * @return a deep copy of the list
+ * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
+ * memory allocation for the copy failed.
  */
 enum cc_stat slist_copy_deep(SList *list, void *(*cp) (void*), SList **out)
 {
@@ -877,21 +894,35 @@ enum cc_stat slist_copy_deep(SList *list, void *(*cp) (void*), SList **out)
 
 /**
  * Returns an integer representing the number of occurrences of the specified
- * element within the list.
+ * element within the SList.
  *
- * @param[in] list list on which the search is performed
- * @param[in] element element being looked for
+ * @param[in] list SList on which the search is performed
+ * @param[in] element element being searched for
  *
  * @return number of found matches
  */
 size_t slist_contains(SList *list, void *element)
 {
-    SNode *node = list->head;
+    return slist_contains_value(list, element, cc_common_cmp_ptr);
+}
 
+/**
+ * Returns the number of occurrences of the value pointed to by <code>element</code>
+ * within the specified SList.
+ *
+ * @param[in] list SList on which the search is performed
+ * @param[in] element element being searched for
+ * @param[in] cmp Comparator function which returns 0 if the values passed to it are equal
+ *
+ * @return number of occurrences of the value
+ */
+size_t slist_contains_value(SList *list, void *element, int (*cmp) (const void*, const void*))
+{
+    SNode *node = list->head;
     size_t e_count = 0;
 
     while (node) {
-        if (node->data == element)
+        if (cmp(node->data, element) == 0)
             e_count++;
         node = node->next;
     }
@@ -899,15 +930,14 @@ size_t slist_contains(SList *list, void *element)
 }
 
 /**
- * Returns the index of the specified element, or <code>CC_ERR_OUT_OF_RANGE</code> if
- * the element is not found. The returned index is the index of the first
- * occurrence of the element starting from the beginning of the list.
+ * Gets the index of the specified element. The returned index is the index
+ * of the first occurrence of the element starting from the beginning of the list.
  *
- * @param[in] list    the list on which this operation is performed
+ * @param[in] list    the SList on which this operation is performed
  * @param[in] element the element whose index is being looked up
+ * @param[out] index  Pointer to where the index is stored
  *
- * @return the index of the specified element or <code>CC_ERR_OUT_OF_RANGE</code> if
- *         the element is not found.
+ * @return CC_OK if the index was found, or CC_OUT_OF_RANGE if not.
  */
 enum cc_stat slist_index_of(SList *list, void *element, size_t *index)
 {
@@ -926,14 +956,16 @@ enum cc_stat slist_index_of(SList *list, void *element, size_t *index)
 }
 
 /**
- * Returns an array representation of the specified list. None of the elements
+ * Creates an array representation of the specified list. None of the elements
  * are copied into the array and thus any modification of the elements within
- * the array will affect the list elements as well. The size of the returned
+ * the array will affect the list elements as well. The size of the created
  * array is the same as the size of the list from which the array was constructed.
  *
- * @param[in] list the list on which this operation is being performed
+ * @param[in] list SList on which this operation is being performed
+ * @param[out] out Pointer to where the newly created array is stored
  *
- * @return an array representation of the specified list
+ * @return CC_OK if the array was successfully created, or CC_ERR_ALLOC if the
+ * memory allocation for the new array failed.
  */
 enum cc_stat slist_to_array(SList *list, void ***out)
 {
@@ -963,12 +995,15 @@ enum cc_stat slist_to_array(SList *list, void ***out)
  * dereferencing will be required before the data can be used for comparison:
  * eg. <code>my_type e = *(*((my_type**) ptr));</code>.
  *
- * @param[in] list list to be sorted
+ * @param[in] list SList to be sorted
  * @param[in] cmp the comparator function that must be of type <code>
  *                int cmp(const void e1*, const void e2*)</code> that
  *                returns < 0 if the first element goes before the second,
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first.
+ *
+ * @return CC_OK if the sort was performed successfully, or CC_ERR_ALLOC
+ * if the sort could not allocate enough memory to performed the sort.
  */
 enum cc_stat slist_sort(SList *list, int (*cmp) (void const *e1, void const *e2))
 {
@@ -1012,11 +1047,85 @@ void slist_foreach(SList *list, void (*op) (void *))
     }
 }
 
+
+/**
+ * Filters the SList by creating a new SList that contains all elements from the
+ * original SList that return true on pred(element) without modifying the original
+ * SList.
+ *
+ * @param[in] list Slist that is to be filtered
+ * @param[in] pred predicate function which returns true if the element should
+ *                 be kept in the filtered SList
+ * @param[out] out pointer to where the new filtered SList is to be stored
+ *
+ * @return CC_OK if the SList was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the SList is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new SList failed.
+ */
+enum cc_stat slist_filter(SList *list, bool (*pred) (const void*), SList **out)
+{
+  if (slist_size(list) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    SList *filtered = NULL;
+    slist_new(&filtered);
+
+    if (!filtered)
+        return CC_ERR_ALLOC;
+
+    SNode *curr = list->head;
+    while (curr) {
+        if (pred(curr->data)) {
+	  slist_add(filtered, curr->data);
+        }
+
+        curr = curr->next;
+    }
+
+    *out = filtered;
+    return CC_OK;
+}
+
+
+/**
+ * Filters the SList by modifying it. It removes all elements that don't
+ * return true on pred(element).
+ *
+ * @param[in] list Slist that is to be filtered
+ * @param[in] pred predicate function which returns true if the element should
+ *                 be kept in the Slist
+ *
+ * @return CC_OK if the Slist was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ * if the Slist is empty.
+ */
+enum cc_stat slist_filter_mut(SList *list, bool (*pred) (const void*))
+{
+    if (slist_size(list) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    SNode *curr = list->head;
+    SNode *next = NULL, *prev =NULL;
+
+    while (curr) {
+        next = curr->next;
+
+        if (!pred(curr->data)) {
+            unlink(list, curr, prev);
+        } else {
+            prev = curr;
+	}
+        curr = next;
+    }
+
+    return CC_OK;
+}
+
+
 /**
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized
- * @param[in] list the slist to iterate over
+ * @param[in] list SList to iterate over
  */
 void slist_iter_init(SListIter *iter, SList *list)
 {
@@ -1028,12 +1137,19 @@ void slist_iter_init(SListIter *iter, SList *list)
 }
 
 /**
- * Removes and returns the last returned element by <code>slist_iter_next()
- * </code> function without invalidating the iterator.
+ * Removes the last returned element by <code>slist_iter_next()</code>
+ * function without invalidating the iterator and optionally sets the out
+ * parameter to the value of the removed element.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * slist_iter_next()</code>
  *
  * @param[in] iter the iterator on which this operation is being performed
+ * @param[out] out Pointer to where the removed element is stored, or NULL
+ *                 if it is to be ignored
  *
- * @return the removed element
+ * @return CC_OK if the element was successfully removed, or
+ * CC_ERR_VALUE_NOT_FOUND
  */
 enum cc_stat slist_iter_remove(SListIter *iter, void **out)
 {
@@ -1055,8 +1171,14 @@ enum cc_stat slist_iter_remove(SListIter *iter, void **out)
  * <code>slist_iter_next()</code> function without invalidating the
  * iterator.
  *
+ * @note This function should only ever be called after a call to <code>
+ * slist_iter_next()</code>
+ *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added
+ *
+ * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC
+ * if the memory allocation for the new element failed.
  */
 enum cc_stat slist_iter_add(SListIter *iter, void *element)
 {
@@ -1066,15 +1188,12 @@ enum cc_stat slist_iter_add(SListIter *iter, void *element)
         return CC_ERR_ALLOC;
 
     new_node->data = element;
-    new_node->next = iter->current;
+    new_node->next = iter->next;
 
-    if (iter->prev)
-        iter->prev->next = new_node;
+    iter->current->next = new_node;
 
-    iter->prev = new_node;
-
-    if ((iter->index - 1) == 0)
-        iter->list->head = new_node;
+    if (iter->index == iter->list->size)
+        iter->list->tail = new_node;
 
     iter->index++;
     iter->list->size++;
@@ -1083,12 +1202,19 @@ enum cc_stat slist_iter_add(SListIter *iter, void *element)
 
 /**
  * Replaces the last returned element by <code>slist_iter_next()</code>
- * with the specified element.
+ * with the specified element and optionally sets the out parameter to
+ * the value of the replaced element.
  *
- * @param[in] iter the iterator on which this operation is being pefromed
+ * @note This function should only ever be called after a call to <code>
+ * slist_iter_next()</code>
+
+ * @param[in] iter the iterator on which this operation is being preformed
  * @param[in] element the replacement element
+ * @param[out] out Pointer to where the replaced element is stored, or NULL
+ *                if it is to be ignored
  *
- * @return the replaced element
+ * @return CC_OK if the element was replaced successfully, or
+ * CC_ERR_VALUE_NOT_FOUND
  */
 enum cc_stat slist_iter_replace(SListIter *iter, void *element, void **out)
 {
@@ -1105,11 +1231,14 @@ enum cc_stat slist_iter_replace(SListIter *iter, void *element, void **out)
 }
 
 /**
- * Returns the next element in the sequence and advances the iterator.
+ * Advances the iterator and sets the out parameter to the value of the
+ * next element in the sequence.
  *
  * @param[in] iter the iterator that is being advanced
+ * @param[out] out Pointer to where the next element is set
  *
- * @return the next element in the sequence
+ * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
+ * end of the list has been reached.
  */
 enum cc_stat slist_iter_next(SListIter *iter, void **out)
 {
@@ -1125,14 +1254,13 @@ enum cc_stat slist_iter_next(SListIter *iter, void **out)
     iter->next = iter->next->next;
     iter->index++;
 
-    if (out)
-        *out = data;
+    *out = data;
 
     return CC_OK;
 }
 
 /**
- * Return s the index of the last returned element by <code>slist_iter_next()
+ * Returns the index of the last returned element by <code>slist_iter_next()
  * </code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
@@ -1145,7 +1273,199 @@ size_t slist_iter_index(SListIter *iter)
 }
 
 /**
- * Unlinks the node from the list and returns the data tat was associated with it.
+ * Initializes the zip iterator.
+ *
+ * @param[in] iter Iterator that is being initialized
+ * @param[in] l1   First SList
+ * @param[in] l2   Second SList
+ */
+void slist_zip_iter_init(SListZipIter *iter, SList *l1, SList *l2)
+{
+    iter->index      = 0;
+    iter->l1         = l1;
+    iter->l2         = l2;
+    iter->l1_current = NULL;
+    iter->l2_current = NULL;
+    iter->l1_prev    = NULL;
+    iter->l2_prev    = NULL;
+    iter->l1_next    = l1->head;
+    iter->l2_next    = l2->head;
+}
+
+/**
+ * Outputs the next element pair in the sequence and advances the iterator.
+ *
+ * @param[in]  iter Iterator that is being advanced
+ * @param[out] out1 Output of the first SList element
+ * @param[out] out2 Output of the second SList element
+ *
+ * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
+ * of the lists has been reached.
+ */
+enum cc_stat slist_zip_iter_next(SListZipIter *iter, void **out1, void **out2)
+{
+    if (!iter->l1_next || !iter->l2_next)
+        return CC_ITER_END;
+
+    void *data1 = iter->l1_next->data;
+    void *data2 = iter->l2_next->data;
+
+    if (iter->l1_current)
+        iter->l1_prev = iter->l1_current;
+
+    if (iter->l2_current)
+        iter->l2_prev = iter->l2_current;
+
+    iter->l1_current = iter->l1_next;
+    iter->l2_current = iter->l2_next;
+    iter->l1_next    = iter->l1_next->next;
+    iter->l2_next    = iter->l2_next->next;
+
+    iter->index++;
+
+    *out1 = data1;
+    *out2 = data2;
+
+    return CC_OK;
+}
+
+/**
+ * Adds a new element pair to the slists after the last returned element pair by
+ * <code>slist_zip_iter_next()</code> and immediately before an element pair
+ * that would be returned by a subsequent call to <code>slist_zip_iter_next()</code>
+ * without invalidating the iterator.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * slist_zip_iter_next()</code>
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ * @param[in] e1   element added to the first slist
+ * @param[in] e2   element added to the second slist
+ *
+ * @return CC_OK if the element pair was successfully added to the slists, or
+ * CC_ERR_ALLOC if the memory allocation for the new elements failed.
+ */
+enum cc_stat slist_zip_iter_add(SListZipIter *iter, void *e1, void *e2)
+{
+    SNode *new_node1 = iter->l1->mem_calloc(1, sizeof(SNode));
+
+    if (!new_node1)
+        return CC_ERR_ALLOC;
+
+    SNode *new_node2 = iter->l2->mem_calloc(1, sizeof(SNode));
+
+    if (!new_node2) {
+        iter->l1->mem_free(new_node1);
+        return CC_ERR_ALLOC;
+    }
+
+    new_node1->data = e1;
+    new_node2->data = e2;
+
+    new_node1->next = iter->l1_next;
+    new_node2->next = iter->l2_next;
+
+    iter->l1_current->next = new_node1;
+    iter->l2_current->next = new_node2;
+
+    if (iter->index == iter->l1->size)
+        iter->l1->tail = new_node1;
+
+    if (iter->index == iter->l2->size)
+        iter->l2->tail = new_node2;
+
+    iter->index++;
+    iter->l1->size++;
+    iter->l2->size++;
+
+    return CC_OK;
+}
+
+/**
+ * Removes and outputs the last returned element pair by <code>slist_zip_iter_next()
+ * </code> without invalidating the iterator.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * slist_zip_iter_next()</code>
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[out] out1 Output of the removed element from the first Slist
+ * @param[out] out2 Output of the removed element from the second Slist
+ *
+ * @return CC_OK of the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND.
+ */
+enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
+{
+    if (!iter->l1_current || !iter->l2_current)
+        return CC_ERR_VALUE_NOT_FOUND;
+
+    void *e1 = unlink(iter->l1, iter->l1_current, iter->l1_prev);
+    void *e2 = unlink(iter->l2, iter->l2_current, iter->l2_prev);
+
+    iter->l1_current = NULL;
+    iter->l2_current = NULL;
+
+    iter->index--;
+
+    if (out1)
+        *out1 = e1;
+
+    if (out2)
+        *out2 = e2;
+
+    return CC_OK;
+}
+
+/**
+ * Replaces the last returned element pair by <code>slist_zip_iter_next()</code>
+ * with the specified replacement element pair.
+ *
+ * @note This function should only ever be called after a call to <code>
+ * slist_zip_iter_next()</code>
+ *
+ * @param[in]  iter Iterator on which this operation is being performed
+ * @param[in]  e1   First slist's replacement element
+ * @param[in]  e2   Second slist's replacement element
+ * @param[out] out1 Output of the replaced element from the first slist
+ * @param[out] out2 Output of the replaced element from the second slist
+ *
+ * @return CC_OK of the element was successfully replaced, or CC_ERR_VALUE_NOT_FOUND.
+ */
+enum cc_stat slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+{
+    if (!iter->l1_current || !iter->l2_current)
+        return CC_ERR_VALUE_NOT_FOUND;
+
+    void *old1 = iter->l1_current->data;
+    void *old2 = iter->l2_current->data;
+
+    iter->l1_current->data = e1;
+    iter->l2_current->data = e2;
+
+    if (out1)
+        *out1 = old1;
+
+    if (out2)
+        *out2 = old2;
+
+    return CC_OK;
+}
+
+/**
+ * Returns the index of the last returned element pair by <code>slist_zip_iter_next()</code>.
+ *
+ * @param[in] iter Iterator on which this operation is being performed
+ *
+ * @return current iterator index
+ */
+size_t slist_zip_iter_index(SListZipIter *iter)
+{
+    return iter->index - 1;
+}
+
+/**
+ * Unlinks the node from the list and returns the data that was associated with it and
+ * also adjusts the head / tail of the list if necessary.
  *
  * @param[in] list the list from which the node is being unlinked
  * @parma[in] node the node being unlinked
@@ -1159,8 +1479,7 @@ static void *unlink(SList *list, SNode *node, SNode *prev)
 
     if (prev)
         prev->next = node->next;
-
-    if (!prev)
+    else
         list->head = node->next;
 
     if (!node->next)
@@ -1211,7 +1530,8 @@ static bool unlink_all(SList *list, bool freed)
  * @param[out] prev the node that immediately precedes the node at the
  *                  specified index
  *
- * @return true if the operation was successful
+ * @return CC_OK if the node was found, or CC_ERR_OUT_OF_RANGE if the index
+ * was out of range.
  */
 static enum cc_stat
 get_node_at(SList *list, size_t index, SNode **node, SNode **prev)
@@ -1241,7 +1561,7 @@ get_node_at(SList *list, size_t index, SNode **node, SNode **prev)
  * @param[out] prev the node that immediately precedes the node at the
  *                  specified index
  *
- * @return true if a node containing the specified data was found
+ * @return CC_OK if the node was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
 static enum cc_stat
 get_node(SList *list, void *element, SNode **node, SNode **prev)

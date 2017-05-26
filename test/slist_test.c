@@ -1,686 +1,14 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "../src/slist.h"
-#include "test.h"
-
-void slist_1_to_10(SList **list);
-void slist_1234(SList **list);
-void slist_5677(SList **list);
-
-void test_slist_new();
-void test_slist_add();
-void test_slist_add_last();
-void test_slist_add_first();
-void test_slist_add_all();
-void test_slist_add_all_at();
-void test_slist_add_at();
-void test_slist_remove();
-void test_slist_remove_first();
-void test_slist_remove_last();
-void test_slist_remove_at();
-void test_slist_remove_all();
-void test_slist_get_first();
-void test_slist_get_last();
-void test_slist_get();
-void test_slist_index_of();
-void test_slist_contains();
-void test_slist_replace_at();
-void test_slist_copy_shallow();
-void test_slist_copy_deep();
-void test_slist_sublist();
-void test_slist_sort();
-void test_slist_iter();
-void test_slist_reverse();
-void test_slist_sort();
-void test_slist_splice();
-void test_slist_splice_at();
-void test_slist_to_array();
-
-
-int main(int argc, char **argv)
-{
-    cc_set_status(PASS);
-    cc_set_exit_on_failure(false);
-
-    test_slist_new();
-    test_slist_add();
-    test_slist_add_first();
-    test_slist_add_last();
-    test_slist_add_at();
-    test_slist_add_all();
-    test_slist_add_all_at();
-    test_slist_remove();
-    test_slist_remove_first();
-    test_slist_remove_last();
-    test_slist_remove_at();
-    test_slist_remove_all();
-    test_slist_get_first();
-    test_slist_get_last();
-    test_slist_get();
-    test_slist_index_of();
-    test_slist_contains();
-    test_slist_replace_at();
-    test_slist_copy_shallow();
-    test_slist_copy_deep();
-    test_slist_sublist();
-    test_slist_sort();
-    test_slist_reverse();
-    test_slist_iter();
-    test_slist_splice();
-    test_slist_splice_at();
-    test_slist_to_array();
-
-    return cc_get_status();
-}
-
-
-void test_slist_validate_structure(SList *list, char *test_name)
-{
-    size_t expected_size = slist_size(list);
-    size_t fw_size = 0;
-
-    void *head;
-    slist_get_first(list, &head);
-
-    void *tail;
-    slist_get_last(list, &tail);
-
-    SListIter i;
-    slist_iter_init(&i, list);
-
-    void *e;
-    while (slist_iter_next(&i, &e) != CC_ITER_END) {
-        if (fw_size == 0) {
-            cc_assert(head == e,
-                      cc_msg("slist_structure_validate: "
-                             "head not as expected during"
-                             " ascending iteration at %s",
-                             test_name));
-        }
-        fw_size++;
-    }
-    cc_assert(fw_size == expected_size,
-              cc_msg("slist_structure_validate: "
-                     "unexpected forward size at %s. Expected %d, but got %d",
-                     test_name, expected_size, fw_size));
-}
-
-
-void test_slist_new()
-{
-    SList *list = NULL;
-    slist_new(&list);
-
-    SList *list2 = NULL;
-    slist_new(&list2);
-
-    if (list == NULL || list2 == NULL)
-      goto exit;
-
-
-    void *e = NULL;
-    slist_get_first(list, &e);
-    cc_assert(e == NULL,
-              cc_msg("slist_new: Expected NULL first element."));
-
-    slist_get_last(list, &e);
-    cc_assert(e == NULL,
-              cc_msg("slist_new: Expected NULL last element."));
-
-    cc_assert(slist_size(list) == 0,
-              cc_msg("slist_new: Expected size 0, but got %d",
-                     slist_size(list)));
-
-    cc_assert(list != list2,
-              cc_msg("slist_new: Expected a new instance"));
-
-exit:
-    slist_destroy(list);
-    slist_destroy(list2);
-}
-
-
-void test_slist_add_last()
-{
-    SList *list;
-    slist_new(&list);
-
-    int a = 8;
-    int b = 3;
-    int c = 20;
-    int d = 1;
-
-    int append = 90;
-
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
-
-    int size = slist_size(list);
-    int *last;
-    slist_get_last(list, (void*) &last);
-
-    cc_assert(size == 4,
-              cc_msg("slist_add_last: Expected size"
-                     " was 4, but got %d!", size));
-
-    cc_assert(*last == d,
-           cc_msg("slist_add_last: Expected last"
-                  " element was %d, but got %d!",
-                  d, *last));
-
-    slist_add_last(list, &append);
-
-    size = slist_size(list);
-
-    slist_get_last(list, (void*) &last);
-
-    cc_assert(size == 5,
-              cc_msg("slist_add_last: Expected size"
-                     " was 5, but got %d!", size));
-
-    cc_assert(*last == append,
-              cc_msg("slist_add_last: Expected last "
-                     "element was %d, but got %d!",
-                     append, *last));
-
-    test_slist_validate_structure(list, "slist_add_last");
-
-    slist_destroy(list);
-}
-
-
-void test_slist_add_first()
-{
-    SList *list;
-    slist_new(&list);
-
-    int a = 8;
-    int b = 3;
-    int c = 20;
-    int d = 1;
-
-    int prepend = 90;
-
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
-
-    int size = slist_size(list);
-    int *first;
-    slist_get_first(list, (void*) &first);
-
-    cc_assert(size == 4,
-              cc_msg("slist_add_first: Expected size"
-                     " was 4, but got %d!", size));
-
-    cc_assert(*first == a,
-              cc_msg("slist_add_first: Expectd first"
-                     " element was %d, but got %d!",
-                     prepend, *first));
-
-    slist_add_first(list, &prepend);
-
-    size = slist_size(list);
-    slist_get_first(list, (void*) &first);
-
-    cc_assert(size == 5,
-              cc_msg("slist_add_first: Expected size"
-                     " was 4, but got %d!", size));
-
-    cc_assert(*first == prepend,
-              cc_msg("slist_add_first: Expected first"
-                     " element was %d, but got %d",
-                     prepend, *first));
-
-    test_slist_validate_structure(list, "slist_add_first");
-
-    slist_destroy(list);
-}
-
-
-void test_slist_add()
-{
-    SList *list;
-    slist_new(&list);
-
-    char *s1 = "e1", *s2 = "e2", *s3 = "e3", *s4 = "e4";
-
-    enum cc_stat r1 = slist_add(list, s1);
-    enum cc_stat r2 = slist_add(list, s2);
-    enum cc_stat r3 = slist_add(list, s3);
-    enum cc_stat r4 = slist_add(list, s4);
-
-    if (r1 == CC_OK && r2 == CC_OK && r3 == CC_OK && r4 == CC_OK) {
-         cc_assert(slist_size(list) == 4,
-                   cc_msg("slist_add: Expected "
-                          "ssize 4, but got %d",
-                          slist_size(list)));
-    }
-
-    void *e;
-    slist_get_first(list, &e);
-    cc_assert(e != NULL,
-              cc_msg("slist_add: First element"
-                     " not expected to be NULL!"));
-
-    slist_get_last(list, &e);
-    cc_assert(e != NULL,
-              cc_msg("slist_add: Last element"
-                     " not expected to be NULL!"));
-
-
-    test_slist_validate_structure(list, "slist_add");
-
-    slist_destroy(list);
-}
-
-
-void test_slist_add_at()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int ins = 90;
-
-    slist_add_at(list, &ins, 3);
-
-    cc_assert(slist_size(list) == 5,
-              cc_msg("slist_add_at: Expected size "
-                     "was 5, but got %d!", slist_size(list)));
-
-    int *new;
-    slist_get_at(list, 3, (void*)&new);
-
-    cc_assert(*new == ins,
-              cc_msg("slist_add_at: Expected element"
-                     " at index 2 was %d, but got %d!", ins, *new));
-
-    test_slist_validate_structure(list, "slist_add_at");
-
-    slist_remove(list, &ins, NULL);
-    slist_destroy_free(list);
-}
-
-
-void test_slist_add_all()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *list2;
-    slist_5677(&list2);
-
-    slist_add_all(list2, list);
-
-    cc_assert(slist_size(list2) == 8,
-              cc_msg("slist_add_all: Expected size"
-                     " was 8, but got %d!", slist_size(list2)));
-
-    int *l1last;
-    slist_get_last(list, (void*) &l1last);
-
-    int *l2last;
-    slist_get_last(list2, (void*) &l2last);
-
-    cc_assert(*l1last == *l2last,
-              cc_msg("slist_add_all: Expected last"
-                     " element was %d, but got %d!",
-                     *l1last, *l2last));
-
-    test_slist_validate_structure(list, "slist_add_all");
-
-    slist_destroy(list);
-    slist_destroy_free(list2);
-}
-
-
-void test_slist_add_all_at()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *list2;
-    slist_5677(&list2);
-
-    slist_add_all_at(list, list2, 2);
-
-    cc_assert(slist_size(list2) == 4,
-              cc_msg("slist_add_all_at: Expected size"
-                     " was 4, but got %d!", slist_size(list2)));
-
-    cc_assert(slist_size(list) == 8,
-              cc_msg("slist_add_all_at: Expected size"
-                     " was 8, but got %d!", slist_size(list)));
-
-    int *last;
-    slist_get_last(list, (void*) &last);
-
-    int *l1i5;
-    slist_get_at(list, 5, (void*) &l1i5);
-
-    int *l2i2;
-    slist_get_at(list2, 2, (void*) &l2i2);
-
-    cc_assert(*last == 4,
-              cc_msg("slist_add_all_at: Expected last"
-                     " element was 4, but got %d!", *last));
-
-    cc_assert(*l1i5 == *l2i2,
-              cc_msg("slist_add_all_at: Expected element"
-                     " at index 5 was %d, but got %d!", *l1i5, *l2i2));
-
-    test_slist_validate_structure(list, "slist_add_at");
-
-    slist_destroy(list2);
-    slist_destroy_free(list);
-}
-
-
-void test_slist_remove()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int *e;
-    slist_get_at(list, 1, (void*)&e);
-
-    slist_remove(list, e, NULL);
-
-    cc_assert(slist_size(list) == 3,
-              cc_msg("slist_remove: Expected size"
-                     " was 3, but got %d!", slist_size(list)));
-
-    cc_assert(slist_contains(list, e) == 0,
-              cc_msg("slist_remove: The list still"
-                     " contains the removed element!"));
-
-    test_slist_validate_structure(list, "slist_remove");
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_remove_first()
-{
-    SList *list;
-    slist_1234(&list);
-
-    slist_remove_first(list, NULL);
-
-    cc_assert(slist_size(list) == 3,
-              cc_msg("slist_remove_first: Expected "
-                     "size was 3, but got %d!",
-                     slist_size(list)));
-
-    int *first;
-    slist_get_first(list, (void*) &first);
-
-    cc_assert(*first == 2,
-              cc_msg("slist_remove_first: Expected "
-                     "first element was 2, but got %d!",
-                     *first));
-
-    test_slist_validate_structure(list, "slist_remove_first");
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_remove_last()
-{
-    SList *list;
-    slist_1234(&list);
-
-    slist_remove_last(list, NULL);
-
-    cc_assert(slist_size(list) == 3,
-              cc_msg("slist_remove_last: Expected"
-                     " size was 3, but got %d!",
-                     slist_size(list)));
-
-    int *last;
-    slist_get_last(list, (void*) &last);
-
-    cc_assert(*last == 3,
-              cc_msg("slist_remove_last: Expected"
-                     " last element was 3, but got %d!",
-                     *last));
-
-    test_slist_validate_structure(list, "slist_remove_last");
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_remove_at()
-{
-    SList *list;
-    slist_1234(&list);
-
-    slist_remove_at(list, 2, NULL);
-
-    int *e;
-    slist_get_at(list, 2, (void*) &e);
-
-    cc_assert(*e == 4,
-           cc_msg("slist_remove_at: Expected element"
-                  " was 4, but got %d!", *e));
-
-    cc_assert(slist_size(list) == 3,
-              cc_msg("slist_remove_at: Expected size"
-                     " was 3, but got %d!", slist_size(list)));
-
-    slist_remove_at(list, 0, NULL);
-
-    slist_get_at(list, 0, (void*) &e);
-
-    cc_assert(*e == 2,
-              cc_msg("slist_remove_at: Expected element"
-                     " was 2, but got %d!", *e));
-
-    test_slist_validate_structure(list, "slist_remove_at");
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_remove_all()
-{
-    SList *list;
-    slist_1234(&list);
-    slist_remove_all(list);
-
-    cc_assert(slist_size(list) == 0,
-              cc_msg("slist_remove_all: Expected size"
-                     " was 0, but got %d", slist_size(list)));
-
-    void *e = NULL;
-    slist_get_first(list, &e);
-    cc_assert(e == NULL,
-              cc_msg("slist_remove_all: First not NULL "
-                     "as expected"));
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_get_first()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int *first;
-    slist_get_first(list, (void*) &first);
-
-    cc_assert(*first == 1,
-              cc_msg("slist_get_first: Expected first"
-                     " element was 1, but got %d", *first));
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_get_last()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int *last;
-    slist_get_last(list, (void*) &last);
-
-    cc_assert(*last == 4,
-              cc_msg("slist_get_last: Expected last"
-                     " element was 4, but got %d", *last));
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_get()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int *e;
-    slist_get_at(list, 1, (void*) &e);
-
-    cc_assert(*e == 2,
-              cc_msg("slist_get: Expected element at"
-                     " index 1 was 2, but got %d", *e));
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_index_of()
-{
-    SList *list;
-    slist_new(&list);
-
-    int a = 8;
-    int b = 3;
-    int c = 20;
-    int d = 1;
-
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
-
-    size_t i0;
-    slist_index_of(list, &a, &i0);
-    size_t i1;
-    slist_index_of(list, &c, &i1);
-
-    cc_assert(i0 == 0,
-              cc_msg("slist_index_of: Expected "
-                     "index 0, but got %d", i0));
-
-    cc_assert(i1 == 2,
-              cc_msg("slist_index_of: Expected "
-                     "index 2, but got %d", i1));
-
-    slist_destroy(list);
-}
-
-
-void test_slist_replace_at()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int *replacement = (int*) malloc(sizeof(int));
-    *replacement = 32;
-
-    slist_replace_at(list, replacement, 2, NULL);
-
-    void *e;
-    slist_get_at(list, 2, &e);
-    cc_assert((int*) e == replacement,
-              cc_msg("slist_replace_at: Unexpected"
-                     " element at index 2"));
-
-    slist_destroy_free(list);
-}
-
-
-void test_slist_contains()
-{
-    SList *list;
-    slist_new(&list);
-
-    int a = 8;
-    int b = 3;
-    int c = 20;
-    int d = 7;
-    int e = 32;
-
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
-
-    size_t c1 = slist_contains(list, &b);
-    size_t c2 = slist_contains(list, &d);
-    size_t c3 = slist_contains(list, &e);
-
-    cc_assert(c1 == 2,
-              cc_msg("slist_contains: Expected number"
-                     " contained was 2, but got %d", c1));
-
-    cc_assert(c2 == 1,
-              cc_msg("slist_contains: Expected number"
-                     " contained was 1, but got %d", c2));
-
-    cc_assert(c3 == 0,
-              cc_msg("slist_contains: Expected number"
-                     " contained was 0, but got %d", c3));
-
-    slist_destroy(list);
-}
-
-
-void test_slist_copy_shallow()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *cp;
-    slist_copy_shallow(list, &cp);
-
-    cc_assert(slist_size(cp) == 4,
-              cc_msg("slist_copy_shallow: Expected "
-                     "size was 4, but got %d", slist_size(cp)));
-
-    void *e1;
-    void *e2;
-
-    slist_get_first(cp, &e1);
-    slist_get_first(list, &e2);
-    cc_assert(e1 == e2,
-              cc_msg("slist_copy_shallow: First element missmatch"));
-
-    slist_get_last(cp, &e1);
-    slist_get_last(list, &e2);
-    cc_assert(e1 == e2,
-              cc_msg("slist_copy_shallow: Last element missmatch"));
-
-    slist_get_at(cp, 3, &e1);
-    slist_get_at(list, 3, &e2);
-    cc_assert(e1 == e2,
-              cc_msg("slist_copy_shallow: Element at "
-                     "index 3 missmatch"));
-
-    slist_destroy_free(cp);
-    slist_destroy(list);
-}
-
+#include "slist.h"
+#include "CppUTest/TestHarness_c.h"
+
+static SList *list;
+static SList *list2;
+static int stat;
 
 void *copy(void *e1)
 {
@@ -689,292 +17,26 @@ void *copy(void *e1)
     return cp;
 }
 
-
-void test_slist_copy_deep()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *cp;
-    slist_copy_deep(list, copy, &cp);
-
-    cc_assert(slist_size(cp) == 4,
-              cc_msg("slist_copy_deep: Expected size"
-                     " was 4, but got %d", slist_size(cp)));
-
-    int *e;
-    slist_get_at(cp, 2, (void*) &e);
-
-    void *e2;
-    slist_get_at(list, 2, &e2);
-    cc_assert(*e == *((int*) e2),
-              cc_msg("slist_copy_deep: Expected element"
-                     " at index 2 was 3, but got %d", e));
-
-    slist_get_at(list, 2, &e2);
-    slist_get_at(cp, 2, (void*) &e);
-
-    cc_assert(e != e2,
-              cc_msg("slist_copy_deep: Both lists point"
-                     " to the same value at index 2"));
-
-    slist_destroy_free(cp);
-    slist_destroy_free(list);
-}
-
-
-void test_slist_sublist()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *sub;
-    slist_sublist(list, 1, 2, &sub);
-
-    cc_assert(slist_size(sub) == 2,
-              cc_msg("slist_sublist: Expected size"
-                     " was 2 but got %d", slist_size(sub)));
-
-    int *s1;
-    slist_get_at(sub, 1, (void*) &s1);
-
-    int *l2;
-    slist_get_at(list, 2, (void*) &l2);
-
-    cc_assert(*s1 == *l2,
-              cc_msg("slist_sublist: Expected element"
-                     " at index 1 was %d, but got %d", *l2, *s1));
-
-    slist_destroy(sub);
-    slist_destroy_free(list);
-}
-
-
-void test_slist_splice()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *list2;
-    slist_5677(&list2);
-
-    slist_splice(list, list2);
-
-    cc_assert(slist_size(list) == 8,
-              cc_msg("slist_splice: Expected "
-                     "size was 8, but got %d!",
-                     slist_size(list)));
-
-    cc_assert(slist_size(list2) == 0,
-              cc_msg("slist_splice: Expected "
-                     "size was 0, but got %d!",
-                     slist_size(list2)));
-
-    int *last;
-    slist_get_last(list, (void*) &last);
-
-    int *first;
-    slist_get_first(list, (void*) &first);
-
-    int *i4;
-    slist_get_at(list, 4, (void*) &i4);
-
-    cc_assert(*last == 7,
-              cc_msg("slist_splice: Expected last"
-                     " element was 7, but got %d!",
-                     *last));
-
-    cc_assert(*first == 1,
-              cc_msg("slist_splice: Expected first"
-                     " element was 1, but got %d!",
-                     *first));
-
-    cc_assert(*i4 == 5,
-              cc_msg("slist_splice: Expected element"
-                     " at index 4 was 5, but got %d!",
-                     *i4));
-
-    test_slist_validate_structure(list, "slist_splice");
-
-    slist_destroy(list2);
-    slist_destroy_free(list);
-}
-
-
-void test_slist_splice_at()
-{
-    SList *list;
-    slist_1234(&list);
-
-    SList *list2;
-    slist_5677(&list2);
-
-    slist_splice_at(list, list2, 2);
-
-    cc_assert(slist_size(list) == 8,
-              cc_msg("slist_splice_after: Expected"
-                     " size was 8, but got %d!", slist_size(list)));
-
-    cc_assert(slist_size(list2) == 0,
-              cc_msg("slist_splice_after: Expected"
-                     " size was 0, but got %d!", slist_size(list2)));
-
-    int *first;
-    slist_get_first(list, (void*) &first);
-
-    int *last;
-    slist_get_last(list, (void*) &last);
-
-    int *i2;
-    slist_get_at(list, 2, (void*) &i2);
-
-    cc_assert(*first == 1,
-              cc_msg("slist_splice_after: Expected"
-                     " first element was 1, but got %d!", *first));
-
-    cc_assert(*last == 4,
-              cc_msg("slist_splice_after: Expected"
-                     " last element was 4, but got %d!", *last));
-
-    cc_assert(*i2 == 5,
-              cc_msg("slist_splice_after: Expected"
-                     " element at index 2 was 5, but got %d", *i2));
-
-    test_slist_validate_structure(list, "slist_splice_at");
-
-    slist_destroy(list2);
-    slist_destroy_free(list);
-}
-
-
-void test_slist_to_array()
-{
-    SList *list;
-    slist_1234(&list);
-
-    int **array;
-    slist_to_array(list, (void*) &array);
-
-    void *e;
-    slist_get_at(list, 0, &e);
-    cc_assert(e == array[0],
-              cc_msg("slist_to_array: Array index 0"
-                     " does not match list index 0"));
-
-    slist_get_at(list, 2, &e);
-    cc_assert(e == array[2],
-              cc_msg("slist_to_array: Array index 2"
-                     " does not match list index 2"));
-
-    slist_get_at(list, 3, &e);
-    cc_assert(e == array[3],
-              cc_msg("slist_to_array: Array index 3"
-                     " does not match list index 3"));
-
-    free(array);
-    slist_destroy_free(list);
-}
-
-void test_slist_iter_add()
-{
-    SList *list;
-    slist_1234(&list);
-    int ins = 32;
-
-    SListIter iter;
-    slist_iter_init(&iter, list);
-
-    while (slist_iter_next(&iter, NULL) != CC_ITER_END) {
-        int i = slist_iter_index(&iter);
-        if (i == 3)
-            slist_iter_add(&iter, &ins);
-    }
-
-    cc_assert(slist_size(list) == 5,
-              cc_msg("slist_iter_add: Expected size"
-                     " was 5, but got %d", slist_size(list)));
-
-    int *li3;
-    slist_get_at(list, 3, (void*) &li3);
-
-    int *li4;
-    slist_get_at(list, 4, (void*) &li4);
-
-    cc_assert(*li3 == ins,
-              cc_msg("slist_iter_add: Expected element at"
-                     " index 3 was %d, but got %d", ins, *li3));
-
-    cc_assert(*li4 == 4,
-              cc_msg("slist_iter_add: Expected element at"
-                     " index 4 was 4, but got %d,", *li4));
-
-
-    slist_iter_init(&iter, list);
-    while (slist_iter_next(&iter, NULL) != CC_ITER_END) {
-        if (slist_iter_index(&iter) == 0)
-            slist_iter_add(&iter, &ins);
-    }
-
-    void *e;
-    slist_get_first(list, &e);
-
-    cc_assert(*((int*) e) == ins,
-              cc_msg("slist_iter_add: Expected first element to be %d"
-                     ", but got %d instead", ins, *((int*)e)));
-
-    cc_assert(slist_size(list) == 6,
-              cc_msg("slist_iter_add: Expected size "
-                     "was 6 but got %d", slist_size(list)));
-
-    test_slist_validate_structure(list, "list_iter_add");
-
-    slist_destroy(list);
-}
-
-
-void test_slist_iter_remove()
-{
-    SList *list;
-    slist_1234(&list);
-    int  *rm;
-    slist_get_at(list, 2, (void*) &rm);
-
-    SListIter iter;
-    slist_iter_init(&iter, list);
-
-    int *e;
-    while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
-        if (*e == 3) {
-            slist_iter_remove(&iter, NULL);
-        }
-    }
-    cc_assert(slist_size(list) == 3,
-              cc_msg("slist_iter_remove: Expected size"
-                     " was 3, but got %d", slist_size(list)));
-
-    cc_assert(slist_contains(list, rm) == 0,
-              cc_msg("slist_iter_remove: List contains"
-                     " unique element after removal"));
-
-    test_slist_validate_structure(list, "slist_iter_remove");
-
-    slist_destroy(list);
-}
-
-
-void test_slist_iter()
-{
-    test_slist_iter_add();
-    test_slist_iter_remove();
-}
-
-
 void p(void *e)
 {
     int *i = e;
     printf("%d ", *i);
 }
 
+bool pred1(const void *e)
+{
+    return *(int*)e == 0;
+}
+
+bool pred2(const void *e)
+{
+    return *(int*)e >= 3;
+}
+
+bool pred3(const void *e)
+{
+    return *(int*)e > 0;
+}
 
 int cmp(void const *e1, void const *e2)
 {
@@ -988,82 +50,116 @@ int cmp(void const *e1, void const *e2)
     return 0;
 }
 
-
-void test_slist_sort()
+TEST_GROUP_C_SETUP(SlistTestsWithDefaults)
 {
-    SList *l;
-    slist_new(&l);
+    stat = slist_new(&list);
+    slist_new(&list2);
+};
 
-    srand(time(NULL));
+TEST_GROUP_C_TEARDOWN(SlistTestsWithDefaults)
+{
+    slist_destroy(list);
+    slist_destroy(list2);
+};
 
-    int size = 1000;
-    int i;
-    for (i = 0; i < size; i++) {
-        int *e = malloc(sizeof(int));
-        *e = rand() % 100000;
-        slist_add(l, e);
-    }
-    slist_sort(l, cmp);
+TEST_C(SlistTestsWithDefaults, SListNew)
+{
+    SList *list2 = NULL;
+    slist_new(&list2);
+    CHECK_C(list != NULL);
+    CHECK_C(list2 != NULL);
 
-    SListIter iter;
-    slist_iter_init(&iter, l);
+    void *e = NULL;
+    slist_get_first(list, &e);
+    CHECK_C(NULL == e);
 
-    void *prev    = 0;
-    void *current = 0;
+    slist_get_last(list, &e);
+    CHECK_C(NULL == e);
+    CHECK_EQUAL_C_INT(0, slist_size(list));
+    CHECK_C(list != list2);
+};
+
+TEST_C(SlistTestsWithDefaults, SListAddLast)
+{
+    int a = 8;
+    int b = 3;
+    int c = 20;
+    int d = 1;
+
+    int append = 90;
+
+    slist_add(list, &a);
+    slist_add(list, &b);
+    slist_add(list, &c);
+    slist_add(list, &d);
+
+    slist_size(list);
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+
+    int *last;
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_INT(d, *last);
+
+    slist_add_last(list, &append);
+    CHECK_EQUAL_C_INT(5, slist_size(list));
+
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_INT(append, *last);
+};
+
+TEST_C(SlistTestsWithDefaults, SListAddFirst)
+{
+    int a = 8;
+    int b = 3;
+    int c = 20;
+    int d = 1;
+
+    int prepend = 90;
+
+    slist_add(list, &a);
+    slist_add(list, &b);
+    slist_add(list, &c);
+    slist_add(list, &d);
+
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+
+    int *first;
+    slist_get_first(list, (void*) &first);
+    CHECK_EQUAL_C_INT(a, *first);
+
+    slist_add_first(list, &prepend);
+
+    CHECK_EQUAL_C_INT(5, slist_size(list));
+    slist_get_first(list, (void*) &first);
+    CHECK_EQUAL_C_INT(prepend, *first);
+};
+
+TEST_C(SlistTestsWithDefaults, SListAdd)
+{
+    char *s1 = "e1", *s2 = "e2", *s3 = "e3", *s4 = "e4";
+
+    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s1));
+    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s2));
+    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s3));
+    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s4));
+
     void *e;
+    slist_get_first(list, &e);
+    CHECK_C(e != NULL);
 
-    slist_iter_next(&iter, &prev);
-    while (slist_iter_next(&iter, &e) != CC_ITER_END) {
-        cc_assert(*((int*)prev) <= *((int*)e),
-                  cc_msg("slist_sort: preceding "
-                         "element greater than the current"));
-        prev = e;
+    slist_get_last(list, &e);
+    CHECK_C(e != NULL);
+};
+
+TEST_GROUP_C_SETUP(SlistTestsSlistPrepopulated)
+{
+    slist_new(&list);
+
+    for(int i = 1; i < 5; i++) {
+        int *p = (int*)malloc(sizeof(int));
+        *p = i;
+        slist_add(list, p);
     }
-    slist_destroy_free(l);
-}
-
-void test_slist_reverse()
-{
-    SList *l;
-    slist_1_to_10(&l);
-
-    slist_foreach(l, p);
-    printf("\n");
-
-    slist_reverse(l);
-
-    slist_foreach(l, p);
-    printf("\n");
-}
-
-void slist_1234(SList **out)
-{
-    SList *list;
-    slist_new(&list);
-
-    int *a = (int*) malloc(sizeof(int));
-    int *b = (int*) malloc(sizeof(int));
-    int *c = (int*) malloc(sizeof(int));
-    int *d = (int*) malloc(sizeof(int));
-
-    *a = 1;
-    *b = 2;
-    *c = 3;
-    *d = 4;
-
-    slist_add(list, a);
-    slist_add(list, b);
-    slist_add(list, c);
-    slist_add(list, d);
-
-    *out = list;
-}
-
-
-void slist_5677(SList **out)
-{
-    SList *list;
-    slist_new(&list);
 
     int *a = (int*) malloc(sizeof(int));
     int *b = (int*) malloc(sizeof(int));
@@ -1075,52 +171,701 @@ void slist_5677(SList **out)
     *c = 7;
     *d = 7;
 
-    slist_add(list, a);
-    slist_add(list, b);
-    slist_add(list, c);
-    slist_add(list, d);
+    slist_new(&list2);
 
-    *out = list;
-}
+    slist_add(list2, a);
+    slist_add(list2, b);
+    slist_add(list2, c);
+    slist_add(list2, d);
 
+};
 
-void slist_1_to_10(SList **out)
+TEST_GROUP_C_TEARDOWN(SlistTestsSlistPrepopulated)
 {
-    SList *list;
-    slist_new(&list);
+    slist_destroy(list);
+    slist_destroy(list2);
+};
 
-    int *e1 = (int*) malloc(sizeof(int));
-    int *e2 = (int*) malloc(sizeof(int));
-    int *e3 = (int*) malloc(sizeof(int));
-    int *e4 = (int*) malloc(sizeof(int));
-    int *e5 = (int*) malloc(sizeof(int));
-    int *e6 = (int*) malloc(sizeof(int));
-    int *e7 = (int*) malloc(sizeof(int));
-    int *e8 = (int*) malloc(sizeof(int));
-    int *e9 = (int*) malloc(sizeof(int));
-    int *e10 = (int*) malloc(sizeof(int));
+TEST_C(SlistTestsSlistPrepopulated, SListAddAt)
+{
+    int *ins = (int*)malloc(sizeof(int));
+    *ins = 90;
 
-    *e1 = 1;
-    *e2 = 2;
-    *e3 = 3;
-    *e4 = 4;
-    *e5 = 5;
-    *e6 = 6;
-    *e7 = 7;
-    *e8 = 8;
-    *e9 = 9;
-    *e10 = 10;
+    slist_add_at(list, ins, 2);
+    CHECK_EQUAL_C_INT(5, slist_size(list));
 
-    slist_add(list, e1);
-    slist_add(list, e2);
-    slist_add(list, e3);
-    slist_add(list, e4);
-    slist_add(list, e5);
-    slist_add(list, e6);
-    slist_add(list, e7);
-    slist_add(list, e8);
-    slist_add(list, e9);
-    slist_add(list, e10);
+    int *new;
+    slist_get_at(list, 2, (void*)&new);
+    CHECK_EQUAL_C_INT(*ins, *new);
+    CHECK_EQUAL_C_INT(CC_OK, slist_add_at(list, ins, 4));
+    CHECK_EQUAL_C_INT(CC_OK, slist_add_at(list, ins, 0));
 
-    *out = list;
-}
+    void *el;
+    slist_get_first(list, &el);
+    CHECK_EQUAL_C_INT(*ins, *((int*)el));
+
+    slist_get_first(list, &el);
+    CHECK_EQUAL_C_INT(*ins, *((int*)el));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListAddAll)
+{
+    slist_add_all(list2, list);
+
+    CHECK_EQUAL_C_INT(8, slist_size(list2));
+
+    int *l1last;
+    slist_get_last(list, (void*) &l1last);
+
+    int *l2last;
+    slist_get_last(list2, (void*) &l2last);
+    CHECK_EQUAL_C_INT(*l1last, *l2last);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListAddAllAt)
+{
+    slist_add_all_at(list, list2, 2);
+    CHECK_EQUAL_C_INT(4, slist_size(list2));
+    CHECK_EQUAL_C_INT(8, slist_size(list));
+
+    int *last;
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_INT(4, *last);
+
+    int *l1i5;
+    slist_get_at(list, 5, (void*) &l1i5);
+
+    int *l2i2;
+    slist_get_at(list2, 2, (void*) &l2i2);
+    CHECK_EQUAL_C_INT(*l1i5, *l2i2);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListRemove)
+{
+    int *e;
+    CHECK_EQUAL_C_INT(CC_OK, slist_get_at(list, 1, (void*) &e));
+
+    slist_remove(list, e, NULL);
+    CHECK_EQUAL_C_INT(3, slist_size(list));
+    CHECK_EQUAL_C_INT(0, slist_contains(list, e));
+    free(e);
+};
+
+
+TEST_C(SlistTestsSlistPrepopulated, SListRemoveFirst)
+{
+    int *first;
+    slist_remove_first(list, (void*) &first);
+    free(first);
+    CHECK_EQUAL_C_INT(3, slist_size(list));
+
+    slist_get_first(list, (void*) &first);
+    CHECK_EQUAL_C_INT(2, *first);
+};
+
+
+TEST_C(SlistTestsSlistPrepopulated, SListRemoveLast)
+{
+    int *last;
+    slist_remove_last(list, (void*) &last);
+    free(last);
+
+    CHECK_EQUAL_C_INT(3, slist_size(list));
+
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_INT(3, *last);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListRemoveAt)
+{
+    int *e;
+    slist_remove_at(list, 2, (void*) &e);
+    free(e);
+
+    slist_get_at(list, 2, (void*) &e);
+    CHECK_EQUAL_C_INT(4, *e);
+    CHECK_EQUAL_C_INT(3, slist_size(list));
+
+    slist_remove_at(list, 0, (void*) &e);
+    free(e);
+
+    slist_get_at(list, 0, (void*) &e);
+    CHECK_EQUAL_C_INT(2, *e);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListRemoveAll)
+{
+    slist_remove_all_free(list);
+    CHECK_EQUAL_C_INT(0, slist_size(list));
+
+    void *e = NULL;
+    slist_get_first(list, &e);
+    CHECK_C(e == NULL);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListGetFirst)
+{
+    int *first;
+    slist_get_first(list, (void*) &first);
+    CHECK_EQUAL_C_INT(1, *first);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListGetLast)
+{
+    int *last;
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_INT(4, *last);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListGet)
+{
+    int *e;
+    slist_get_at(list, 1, (void*) &e);
+    CHECK_EQUAL_C_INT(2, *e);
+};
+
+TEST_C(SlistTestsWithDefaults, SListIndexOf)
+{
+    int a = 8;
+    int b = 3;
+    int c = 20;
+    int d = 1;
+
+    slist_add(list, &a);
+    slist_add(list, &b);
+    slist_add(list, &c);
+    slist_add(list, &d);
+
+    size_t idx;
+    slist_index_of(list, &a, &idx);
+    CHECK_EQUAL_C_INT(0, idx);
+
+    slist_index_of(list, &c, &idx);
+    CHECK_EQUAL_C_INT(2, idx);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListReplaceAt)
+{
+    int *replacement = (int*) malloc(sizeof(int));
+    *replacement = 32;
+
+    int *e;
+    slist_replace_at(list, replacement, 2, (void*) &e);
+    free(e);
+
+    slist_get_at(list, 2, (void*) &e);
+    CHECK_EQUAL_C_POINTER(replacement, e);
+};
+
+TEST_C(SlistTestsWithDefaults, SListContains)
+{
+    int a = 8;
+    int b = 3;
+    int c = 20;
+    int d = 7;
+    int e = 32;
+
+    slist_add(list, &a);
+    slist_add(list, &b);
+    slist_add(list, &b);
+    slist_add(list, &c);
+    slist_add(list, &d);
+
+    CHECK_EQUAL_C_INT(2, slist_contains(list, &b));
+    CHECK_EQUAL_C_INT(1, slist_contains(list, &d));
+    CHECK_EQUAL_C_INT(0, slist_contains(list, &e));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListCopyShallow)
+{
+    SList *cp;
+    slist_copy_shallow(list, &cp);
+    CHECK_EQUAL_C_INT(4, slist_size(cp));
+
+    void *e1;
+    void *e2;
+
+    slist_get_first(cp, &e1);
+    slist_get_first(list, &e2);
+    CHECK_EQUAL_C_POINTER(e1, e2);
+
+    slist_get_last(cp, &e1);
+    slist_get_last(list, &e2);
+    CHECK_EQUAL_C_POINTER(e1, e2);
+
+    slist_get_at(cp, 3, &e1);
+    slist_get_at(list, 3, &e2);
+    CHECK_EQUAL_C_POINTER(e1, e2);
+
+    slist_destroy(cp);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SlistCopyDeep)
+{
+    SList *cp;
+    slist_copy_deep(list, copy, &cp);
+    CHECK_EQUAL_C_INT(4, slist_size(cp));
+
+    int *e;
+    slist_get_at(cp, 2, (void*) &e);
+
+    void *e2;
+    slist_get_at(list, 2, &e2);
+    CHECK_EQUAL_C_INT(*e, *(int*)e2);
+
+    slist_get_at(list, 2, &e2);
+    slist_get_at(cp, 2, (void*) &e);
+    CHECK_C(e != e2);
+
+    slist_destroy_free(cp);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListSublist)
+{
+    SList *sub;
+    slist_sublist(list, 1, 2, &sub);
+    CHECK_EQUAL_C_INT(2, slist_size(sub));
+
+    int *s1;
+    slist_get_at(sub, 1, (void*) &s1);
+
+    int *l2;
+    slist_get_at(list, 2, (void*) &l2);
+    CHECK_EQUAL_C_INT(*s1, *l2);
+
+    slist_destroy(sub);
+};
+
+
+TEST_C(SlistTestsSlistPrepopulated, SListSplice)
+{
+    slist_splice(list, list2);
+    CHECK_EQUAL_C_INT(8, slist_size(list));
+    CHECK_EQUAL_C_INT(0, slist_size(list2));
+
+    int *e;
+    slist_get_last(list, (void*) &e);
+    CHECK_EQUAL_C_INT(7, *e);
+
+    slist_get_first(list, (void*) &e);
+    CHECK_EQUAL_C_INT(1, *e);
+
+    slist_get_at(list, 4, (void*) &e);
+    CHECK_EQUAL_C_INT(5, *e);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListSpliceAt)
+{
+    slist_splice_at(list, list2, 2);
+    CHECK_EQUAL_C_INT(8, slist_size(list));
+    CHECK_EQUAL_C_INT(0, slist_size(list2));
+
+    int *e;
+    slist_get_first(list, (void*) &e);
+    CHECK_EQUAL_C_INT(1, *e);
+
+    slist_get_last(list, (void*) &e);
+    CHECK_EQUAL_C_INT(4, *e);
+
+    slist_get_at(list, 2, (void*) &e);
+    CHECK_EQUAL_C_INT(5, *e);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListToArray)
+{
+    int **array;
+    slist_to_array(list, (void*) &array);
+
+    void *e;
+    slist_get_at(list, 0, &e);
+    CHECK_EQUAL_C_POINTER(e, array[0]);
+
+    slist_get_at(list, 2, &e);
+    CHECK_EQUAL_C_POINTER(e, array[2]);
+
+    slist_get_at(list, 3, &e);
+    CHECK_EQUAL_C_POINTER(e, array[3]);
+    free(array);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListIterAdd)
+{
+    int *ins = (int*) malloc(sizeof(int));
+    *ins = 32;
+
+    SListIter iter;
+    slist_iter_init(&iter, list);
+
+    int *el;
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == 3)
+            slist_iter_add(&iter, ins);
+    }
+    CHECK_EQUAL_C_INT(5, slist_size(list));
+
+    int *li3;
+    slist_get_at(list, 3, (void*) &li3);
+    CHECK_EQUAL_C_INT(*li3, *ins);
+
+    int *li4;
+    slist_get_at(list, 4, (void*) &li4);
+    CHECK_EQUAL_C_INT(4, *li4);
+
+    ins = (int*) malloc(sizeof(int));
+    *ins = 32;
+
+    slist_iter_init(&iter, list);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        if (*el == 4)
+            slist_iter_add(&iter, ins);
+    }
+
+    void *e;
+    slist_get_last(list, &e);
+    CHECK_EQUAL_C_INT(*ins, *(int*)e);
+    CHECK_EQUAL_C_INT(6, slist_size(list));
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListIterRemove)
+{
+    int  *rm;
+    slist_get_at(list, 2, (void*) &rm);
+
+    SListIter iter;
+    slist_iter_init(&iter, list);
+
+    int *e;
+    while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+        if (*e == 3) {
+            slist_iter_remove(&iter, NULL);
+            free(e);
+        }
+    }
+    CHECK_EQUAL_C_INT(3, slist_size(list));
+    CHECK_EQUAL_C_INT(0, slist_contains(list, rm));
+};
+
+TEST_C(SlistTestsWithDefaults, SListZipIterNext)
+{
+    slist_add(list, "a");
+    slist_add(list, "b");
+    slist_add(list, "c");
+    slist_add(list, "d");
+
+    slist_add(list2, "e");
+    slist_add(list2, "f");
+    slist_add(list2, "g");
+
+    SListZipIter zip;
+    slist_zip_iter_init(&zip, list, list2);
+
+    size_t i = 0;
+
+    void *e1, *e2;
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (i == 0) {
+            CHECK_EQUAL_C_STRING("a", (char*)e1);
+            CHECK_EQUAL_C_STRING("e", (char*)e2);
+        }
+        if (i == 2) {
+            CHECK_EQUAL_C_STRING("c", (char*)e1);
+            CHECK_EQUAL_C_STRING("g", (char*)e2);
+        }
+        i++;
+    }
+    CHECK_EQUAL_C_INT(3, i);
+};
+
+TEST_C(SlistTestsWithDefaults, SListZipIterAdd)
+{
+    slist_add(list, "a");
+    slist_add(list, "b");
+    slist_add(list, "c");
+    slist_add(list, "d");
+
+    slist_add(list2, "e");
+    slist_add(list2, "f");
+    slist_add(list2, "g");
+
+    char *h = "h";
+    char *i = "i";
+
+    SListZipIter zip;
+    slist_zip_iter_init(&zip, list, list2);
+
+    void *e1, *e2;
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            slist_zip_iter_add(&zip, h, i);
+    }
+
+    size_t index;
+    slist_index_of(list, "h", &index);
+    CHECK_EQUAL_C_INT(2, index);
+
+    slist_index_of(list, "i", &index);
+    CHECK_EQUAL_C_INT(2, index);
+
+    slist_index_of(list, "c", &index);
+    CHECK_EQUAL_C_INT(3, index);
+
+    CHECK_EQUAL_C_INT(1, slist_contains(list, "h"));
+    CHECK_EQUAL_C_INT(1, slist_contains(list2, "i"));
+    CHECK_EQUAL_C_INT(5, slist_size(list));
+    CHECK_EQUAL_C_INT(4, slist_size(list2));
+
+    slist_zip_iter_init(&zip, list, list2);
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e2, "g") == 0)
+            slist_zip_iter_add(&zip, "x", "y");
+    }
+
+    char *last;
+    slist_get_last(list2, (void*) &last);
+    CHECK_EQUAL_C_STRING("y", last);
+
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_STRING("d", last);
+};
+
+TEST_C(SlistTestsWithDefaults, SListZipIterRemove)
+{
+    slist_add(list, "a");
+    slist_add(list, "b");
+    slist_add(list, "c");
+    slist_add(list, "d");
+
+    slist_add(list2, "e");
+    slist_add(list2, "f");
+    slist_add(list2, "g");
+
+    SListZipIter zip;
+    slist_zip_iter_init(&zip, list, list2);
+
+    void *e1, *e2;
+    void *r1, *r2;
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+    }
+
+    CHECK_EQUAL_C_STRING("b", (char*)r1);
+    CHECK_EQUAL_C_STRING("f", (char*)r2);
+    CHECK_EQUAL_C_INT(0, slist_contains(list, "b"));
+    CHECK_EQUAL_C_INT(0, slist_contains(list2, "f"));
+    CHECK_EQUAL_C_INT(3, slist_size(list));
+    CHECK_EQUAL_C_INT(2, slist_size(list2));
+
+    slist_zip_iter_init(&zip, list, list2);
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e2, "e") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+
+        if (strcmp((char*) e2, "g") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+    }
+
+    char *first = "";
+    char *last  = "";
+
+    CHECK_EQUAL_C_INT(CC_ERR_VALUE_NOT_FOUND, slist_get_first(list2, (void*) &first));
+    CHECK_EQUAL_C_INT(CC_ERR_VALUE_NOT_FOUND, slist_get_last(list2, (void*) &last));
+
+    slist_get_first(list, (void*) &first);
+    CHECK_EQUAL_C_STRING("d", first);
+
+    slist_get_last(list, (void*) &last);
+    CHECK_EQUAL_C_STRING("d", last);
+
+    // consecutive removes
+    slist_add(list, "a");
+    slist_add(list, "b");
+    slist_add(list, "c");
+    slist_add(list, "d");
+
+    slist_add(list2, "a");
+    slist_add(list2, "b");
+    slist_add(list2, "c");
+    slist_add(list2, "d");
+
+    slist_zip_iter_init(&zip, list, list2);
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+
+        if (strcmp((char*) e1, "c") == 0)
+            slist_zip_iter_remove(&zip, &r1, &r2);
+    }
+    // test something here
+};
+
+TEST_C(SlistTestsWithDefaults, SListZipIterReplace)
+{
+    slist_add(list, "a");
+    slist_add(list, "b");
+    slist_add(list, "c");
+    slist_add(list, "d");
+
+    slist_add(list2, "e");
+    slist_add(list2, "f");
+    slist_add(list2, "g");
+
+    char *h = "h";
+    char *i = "i";
+
+    SListZipIter zip;
+    slist_zip_iter_init(&zip, list, list2);
+
+    void *e1, *e2;
+    void *r1, *r2;
+    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+        if (strcmp((char*) e1, "b") == 0)
+            slist_zip_iter_replace(&zip, h, i, &r1, &r2);
+    }
+
+    size_t index;
+    slist_index_of(list, "h", &index);
+    CHECK_EQUAL_C_INT(1, index);
+
+    slist_index_of(list, "i", &index);
+    CHECK_EQUAL_C_INT(1, index);
+    CHECK_EQUAL_C_INT(1, slist_contains(list, "h"));
+    CHECK_EQUAL_C_INT(1, slist_contains(list2, "i"));
+};
+
+TEST_C(SlistTestsWithDefaults, SListSort)
+{
+    srand(time(NULL));
+
+    int size = 1000;
+    int i;
+    for (i = 0; i < size; i++) {
+        int *e = malloc(sizeof(int));
+        *e = rand() % 100000;
+        slist_add(list, e);
+    }
+    slist_sort(list, cmp);
+
+    SListIter iter;
+    slist_iter_init(&iter, list);
+
+    void *prev    = 0;
+    void *e;
+
+    slist_iter_next(&iter, &prev);
+    while (slist_iter_next(&iter, &e) != CC_ITER_END) {
+        CHECK_C(*(int*)prev <= *(int*)e);
+        prev = e;
+    }
+};
+
+TEST_C(SlistTestsWithDefaults, SListReverse)
+{
+    int *e;
+    for(int i=0;i<10;i++) {
+        e = (int*)malloc(sizeof(int));
+        *e = i;
+        slist_add(list, e);
+    }
+    slist_reverse(list);
+
+    SListIter i;
+    slist_iter_init(&i, list);
+
+    void *el;
+    int next = 9;
+    while (slist_iter_next(&i, &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(next, *(int*)el);
+        next--;
+    }
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter1)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred1, &filter);
+
+    CHECK_EQUAL_C_INT(0, slist_size(filter));
+
+    void *e = NULL;
+    slist_get_first(filter, &e);
+    CHECK_C(e == NULL);
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter2)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred2, &filter);
+    CHECK_EQUAL_C_INT(2, slist_size(filter));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 3;
+    slist_iter_init(&iter, filter);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilter3)
+{
+    SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter(list, pred3, &filter);
+    CHECK_EQUAL_C_INT(4, slist_size(filter));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 1;
+    slist_iter_init(&iter, filter);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut1)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred1);
+
+    CHECK_EQUAL_C_INT(0, slist_size(list));
+    void *e = NULL;
+    slist_get_first(list, &e);
+    CHECK_C(e == NULL);
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut2)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred2);
+    CHECK_EQUAL_C_INT(2, slist_size(list));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 3;
+    slist_iter_init(&iter, list);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
+};
+
+TEST_C(SlistTestsSlistPrepopulated, SListFilterMut3)
+{
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+    slist_filter_mut(list, pred3);
+    CHECK_EQUAL_C_INT(4, slist_size(list));
+
+    SListIter iter;
+    int *el = NULL;
+    int i = 1;
+    slist_iter_init(&iter, list);
+    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+        CHECK_EQUAL_C_INT(i++, *el);
+    }
+
+};
