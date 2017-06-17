@@ -244,6 +244,17 @@ enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out
     return CC_OK;
 }
 
+enum cc_stat array_swap_at(Array *ar, size_t index1, size_t index2)
+{
+    void *tmp;
+    if(index1 >= ar->size || index2 >= ar->size)
+        return CC_ERR_OUT_OF_RANGE;
+    tmp = ar->buffer[index1];
+    ar->buffer[index1] = ar->buffer[index2];
+    ar->buffer[index2] = tmp;
+    return CC_OK;
+}
+
 /**
  * Removes the specified element from the Array if such element exists and
  * optionally sets the out parameter to the value of the removed element.
