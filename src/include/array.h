@@ -96,6 +96,7 @@ void          array_destroy_free    (Array *ar);
 enum cc_stat  array_add             (Array *ar, void *element);
 enum cc_stat  array_add_at          (Array *ar, void *element, size_t index);
 enum cc_stat  array_replace_at      (Array *ar, void *element, size_t index, void **out);
+enum cc_stat  array_swap_at         (Array *ar, size_t index1, size_t index2);
 
 enum cc_stat  array_remove          (Array *ar, void *element, void **out);
 enum cc_stat  array_remove_at       (Array *ar, size_t index, void **out);
