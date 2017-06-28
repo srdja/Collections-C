@@ -56,8 +56,8 @@ typedef struct pqueue_conf_s {
     int (*comparator)(const void *a, const void *b);
 } PQueueConf;
 
-void          pqueue_conf_init       (PQueueConf *conf);
-enum cc_stat  pqueue_new             (PQueue **out);
+void          pqueue_conf_init       (PQueueConf *conf, int (*)(const void *, const void *));
+enum cc_stat  pqueue_new             (PQueue **out, int (*)(const void *, const void *));
 enum cc_stat  pqueue_new_conf        (PQueueConf const * const conf, PQueue **out);
 void          pqueue_destroy         (PQueue *pqueue);
 void          pqueue_destroy_free    (PQueue *pqueue);

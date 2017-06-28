@@ -21,6 +21,10 @@
 #include "array.h"
 #include "pqueue.h"
 
+#define CC_PARENT(x) ((x)-1)/2
+#define CC_LEFT(x) 2*(x)+1
+#define CC_RIGHT(x) 2*(x)+2
+
 struct pqueue_s {
     Array *v;
 
@@ -37,23 +41,20 @@ struct pqueue_s {
     int   (*comparator) (const void *a, const void *b);
 };
 
-static int cc_default_comparator(const void *a, const void *b);
-static size_t cc_parent(size_t a);
 static void cc_heapify(PQueue *pqueue, size_t index);
-static size_t cc_left(size_t a);
-static size_t cc_right(size_t a);
 
 
 /*
  * Initializes the fields of PQueueConf to default values
  * @param[in, out] conf PQueueConf structure that is being initialized
+ * @param[in] comp The comparator function required for PQueue
  */
 
 
-void pqueue_conf_init (PQueueConf *conf)
+void pqueue_conf_init (PQueueConf *conf, int (*comp)(const void *, const void *))
 {
     array_conf_init(&conf->cfg);
-    conf->comparator = cc_default_comparator;
+    conf->comparator = comp;
 }
 
 /**
@@ -65,10 +66,10 @@ void pqueue_conf_init (PQueueConf *conf)
  * memory allocation for the new PQueue structure failed.
  */
 
-enum cc_stat pqueue_new (PQueue **out)
+enum cc_stat pqueue_new (PQueue **out, int (*comp)(const void *, const void *))
 {
     PQueueConf conf;
-    pqueue_conf_init(&conf);
+    pqueue_conf_init(&conf, comp);
     return pqueue_new_conf(&conf, out);
 }
 
@@ -166,13 +167,13 @@ enum cc_stat pqueue_push(PQueue *pqueue, void *element)
     if(i == 0)
         return CC_OK;
     array_get_at(pqueue->v, i, &child);
-    array_get_at(pqueue->v, cc_parent(i), &parent);
+    array_get_at(pqueue->v, CC_PARENT(i), &parent);
     while(i != 0 && pqueue->comparator(child, parent) > 0)
     {
-        array_swap_at(pqueue->v, i, cc_parent(i));
-        i = cc_parent(i);
+        array_swap_at(pqueue->v, i, CC_PARENT(i));
+        i = CC_PARENT(i);
         array_get_at(pqueue->v, i, &child);
-        array_get_at(pqueue->v, cc_parent(i), &parent);
+        array_get_at(pqueue->v, CC_PARENT(i), &parent);
     }
     return CC_OK;
 }
@@ -214,52 +215,6 @@ enum cc_stat pqueue_pop(PQueue *pqueue, void **out)
 }
 
 /*
- * A default comparator function for the ints.
- * @param[in] two pointers a and b which are needed to be compared, they are
- *     stored in the PQueue structure
- * @return positive value if value at a is greater than at b, 0 if value at a
- *     is equal to at of b, negative value if a is smaller than b.
- */
-
-static int cc_default_comparator(const void *a, const void *b)
-{
-    return *((int *) a) - *((int *) b);
-}
-
-/*
- * A function used to find the parent of the node number i.
- * @param[in] a, the index of node in the heap
- * @return a non-negative integer, which is the index of the parent of node i
- */
-
-static size_t cc_parent(size_t a)
-{
-    return (a - 1) / 2;
-}
-
-/*
- * A function used to find the left child of the node number i.
- * @param[in] a, the index of node in the heap
- * @return a non-negative integer, which is the index of the left child of node i
- */
-
-static size_t cc_left(size_t a)
-{
-    return 2 * a + 1;
-}
-
-/*
- * A function used to find the right child of the node number i.
- * @param[in] a, the index of node in the heap
- * @return a non-negative integer, which is the index of the right child of node i
- */
-
-static size_t cc_right(size_t a)
-{
-    return 2 * a + 2;
-}
-
-/*
  * Function to maintain the heap property of the PQueue
  * @param[in] pqueue the PQueue structure whose heap property is to be maintained
  * @param[in] index the index from where we need to apply this operation
@@ -270,7 +225,7 @@ static void cc_heapify(PQueue *pqueue, size_t index)
     if(array_size(pqueue->v) == 1 || array_size(pqueue->v) == 0)
         return;
     void *left, *right, *indexPtr;
-    size_t L = cc_left(index), R = cc_right(index), tmp = index;
+    size_t L = CC_LEFT(index), R = CC_RIGHT(index), tmp = index;
     array_get_at(pqueue->v, index, &indexPtr);
     array_get_at(pqueue->v, L, &left);
     array_get_at(pqueue->v, R, &right);
@@ -284,9 +239,7 @@ static void cc_heapify(PQueue *pqueue, size_t index)
         indexPtr = right;
         index = R;
     }
-    if(index == tmp)
-        return;
-    else
+    if(index != tmp)
     {
         array_swap_at(pqueue->v, index, tmp);
         cc_heapify(pqueue, index);

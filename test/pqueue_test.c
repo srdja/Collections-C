@@ -16,16 +16,20 @@ static int comp(const void *a, const void *b)
         return beta1 - beta2;
 }
 
+static int comp2(const void *a, const void *b)
+{
+    return *((int *)a) - *((int *)b);
+}
+
 static PQueue *p1, *p2;
 
 
 
 TEST_GROUP_C_SETUP(PQueueTestsWithDefaults)
 {
-    pqueue_new(&p1);
+    pqueue_new(&p1, comp2);
     PQueueConf cfg;
-    pqueue_conf_init(&cfg);
-    cfg.comparator = comp;
+    pqueue_conf_init(&cfg, comp);
     pqueue_new_conf(&cfg, &p2);
 };
 
