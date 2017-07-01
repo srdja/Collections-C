@@ -160,18 +160,18 @@ void bitset_destroy_free(Bitset *bs)
  * The index starts from left and is 0-indexed
  *
  * @param[in] bs the Bitset whose bit we need
- * @param[pos] the position parameter
+ * @param[index] the position parameter
  *
  * @return 1, if the bit at given position was set
  *         0, if the bit at given position was unset
  *        -1, if the bit at given position was invalid
  */
 
-int bitset_getbit_at(Bitset *bs, size_t pos)
+int bitset_getbit_at(Bitset *bs, size_t index)
 {
-    size_t q = pos / 8, r = 7 - pos % 8;
+    size_t q = index / 8, r = 7 - index % 8;
     char *ch;
-    if(pos >= bs->size)
+    if(index >= bs->size)
         return INVALID_BIT;
     array_get_at(bs->v, q, (void **)&ch);
     if((*ch & (1 << r)) == 0)
@@ -184,17 +184,21 @@ int bitset_getbit_at(Bitset *bs, size_t pos)
  * Sets the bit at the position specified in the bitset
  *
  * @param[in] bs the bitmask whose bit need to be set
- * @param[in] pos the position of the bit to be set
+ * @param[in] index the position of the bit to be set
  * @return CC_OK if the operation was successful otherwise
  * if the position was invalid, CC_ERR_OUT_OF_RANGE is returned
  */
 
-enum cc_stat bitset_setbit_at(Bitset *bs, size_t pos)
+enum cc_stat bitset_setbit_at(Bitset *bs, size_t index)
 {
-    size_t q = pos / 8, r = 7 - pos % 8;
+    size_t q = index / 8, r = 7 - index % 8;
     char *ch;
-    if(pos >= bs->size)
+    int bit;
+    if(index >= bs->size)
         return CC_ERR_OUT_OF_RANGE;
+    bit = bitset_getbit_at(bs, index);
+    if(bit == 0)
+        nOne++, nZeros--;
     array_get_at(bs->v, q, (void **)&ch);
     *ch = *ch | (1 << r);
     return CC_OK;
@@ -204,17 +208,20 @@ enum cc_stat bitset_setbit_at(Bitset *bs, size_t pos)
  * Unsets the bit at the position specified in the bitset
  *
  * @param[in] bs the bitmask whose bit need to be unset
- * @param[in] pos the position of the bit to be unset
+ * @param[in] index the position of the bit to be unset
  * @return CC_OK if the operation was successful otherwise
  * if the position was invalid, CC_ERR_OUT_OF_RANGE is returned
  */
 
-enum cc_stat bitset_unsetbit_at(Bitset *bs, size_t pos)
+enum cc_stat bitset_unsetbit_at(Bitset *bs, size_t index)
 {
-    size_t q = pos / 8, r = 7 - pos % 8;
+    size_t q = index / 8, r = 7 - index % 8;
     char *ch;
-    if(pos >= bs->size)
+    if(index >= bs->size)
         return CC_ERR_OUT_OF_RANGE;
+    bit = bitset_getbit_at(bs, index);
+    if(bit == 1)
+        nOne--, nZeros++;
     array_get_at(bs->v, q, (void **)&ch);
     *ch = *ch & ~(1 << r);
     return CC_OK;
@@ -224,20 +231,20 @@ enum cc_stat bitset_unsetbit_at(Bitset *bs, size_t pos)
  * Flips the bit at the position specified in the bitset
  *
  * @param[in] bs the bitmask whose bit need to be flip
- * @param[in] pos the position of the bit to be flip
+ * @param[in] index the position of the bit to be flip
  * @return CC_OK if the operation was successful otherwise
  * if the position was invalid, CC_ERR_OUT_OF_RANGE is returned
  */
 
-enum cc_stat bitset_flipbit_at(Bitset *bs, size_t pos)
+enum cc_stat bitset_flipbit_at(Bitset *bs, size_t index)
 {
-    int bit = bitset_getbit_at(bs, pos);
-    if(pos >= bs->size)
+    int bit = bitset_getbit_at(bs, index);
+    if(index >= bs->size)
         return CC_ERR_OUT_OF_RANGE;
     if(bit == 0)
-        return bitset_setbit_at(bs, pos);
+        return bitset_setbit_at(bs, index);
     else if(bit == 1)
-        return bitset_unsetbit_at(bs, pos);
+        return bitset_unsetbit_at(bs, index);
     else
         return CC_ERR_OUT_OF_RANGE;
 
