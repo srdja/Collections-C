@@ -198,7 +198,7 @@ enum cc_stat bitset_setbit_at(Bitset *bs, size_t index)
         return CC_ERR_OUT_OF_RANGE;
     bit = bitset_getbit_at(bs, index);
     if(bit == 0)
-        nOne++, nZeros--;
+        bs->nOnes++, bs->nZeros--;
     array_get_at(bs->v, q, (void **)&ch);
     *ch = *ch | (1 << r);
     return CC_OK;
@@ -219,9 +219,9 @@ enum cc_stat bitset_unsetbit_at(Bitset *bs, size_t index)
     char *ch;
     if(index >= bs->size)
         return CC_ERR_OUT_OF_RANGE;
-    bit = bitset_getbit_at(bs, index);
+    int bit = bitset_getbit_at(bs, index);
     if(bit == 1)
-        nOne--, nZeros++;
+        bs->nOnes--, bs->nZeros++;
     array_get_at(bs->v, q, (void **)&ch);
     *ch = *ch & ~(1 << r);
     return CC_OK;
