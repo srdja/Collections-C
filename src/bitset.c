@@ -39,6 +39,8 @@ struct bitset_s
     size_t size;
 };
 
+static void *cp(void *P);
+
 /*
  * Initializes the fields of BitsetConf to default values
  * @param[in, out] conf BitsetConf structure that is being initialized
@@ -124,6 +126,24 @@ enum cc_stat bitset_new_conf (BitsetConf const * const conf, Bitset **out)
     }
 
     *out = bset;
+    return CC_OK;
+}
+
+enum cc_stat bitset_copy(Bitset *bs, Bitset **out)
+{
+    Bitset *copy = (Bitset *) bs->mem_alloc(sizeof(Bitset));
+    if(!copy) {
+        return CC_ERR_ALLOC;
+    }
+    if(array_copy_deep(bs->v, cp, &copy->v) != CC_OK)
+        return CC_ERR_ALLOC;
+    copy->mem_alloc = bs->mem_alloc;
+    copy->mem_calloc = bs->mem_calloc;
+    copy->mem_free = bs->mem_free;
+    copy->nOnes = bs->nOnes;
+    copy->nZeros = bs->nZeros;
+    copy->size = bs->size;
+    *out = copy;
     return CC_OK;
 }
 
@@ -367,4 +387,11 @@ enum cc_stat bitset_and(Bitset *bs1, Bitset *bs2, Bitset **out)
 {
     /*TODO Implement this function*/
     return CC_OK;
+}
+
+static void *cp(void *P)
+{
+    char *ret = (char *) malloc(sizeof(char));
+    *ret = *((char *)P);
+    return (void *) ret;
 }
