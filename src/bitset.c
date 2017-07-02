@@ -129,6 +129,15 @@ enum cc_stat bitset_new_conf (BitsetConf const * const conf, Bitset **out)
     return CC_OK;
 }
 
+/*
+ * Do a deep copy of the bitset bt to the out
+ * @param[in] bs bitset whose copy is to be made
+ * @param[out] the bitset where the copy is to be stored
+ *
+ * @return CC_OK if the operation was a success otherwise CC_ERR_ALLOC
+ * if there was error in allocation of memory
+ */
+
 enum cc_stat bitset_copy(Bitset *bs, Bitset **out)
 {
     Bitset *copy = (Bitset *) bs->mem_alloc(sizeof(Bitset));
@@ -388,6 +397,12 @@ enum cc_stat bitset_and(Bitset *bs1, Bitset *bs2, Bitset **out)
     /*TODO Implement this function*/
     return CC_OK;
 }
+
+/*
+ * A helper function for the bitset_copy, creates a memory of 1 byte and returns
+ * @param[in] P the pointer to the memory whose copy is needed
+ * @return ret the pointer of new memory location and value of P copied to it
+ */
 
 static void *cp(void *P)
 {
