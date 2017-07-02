@@ -309,3 +309,62 @@ enum cc_stat bitset_flipbits_range(Bitset *bs, size_t l, size_t r)
         bitset_flipbit_at(bs, i);
     return CC_OK;
 }
+
+/*
+ * Return the number of the set bits in the bitset
+ * @param[in] bs the bitset on which this query is done
+ *
+ * @return the number of ones in the bitset
+ */
+
+size_t bitset_count_ones(Bitset *bs)
+{
+    return bs->nOnes;
+}
+
+/*
+ * Return the number of the unset bits in the bitset
+ * @param[in] bs the bitset on which this query is done
+ *
+ * @return the number of zeros in the bitset
+ */
+
+size_t bitset_count_zeros(Bitset *bs)
+{
+    return bs->nZeros;
+}
+
+/*
+ * Return the number of the bits in the bitset
+ * @param[in] bs the bitset on which this query is done
+ * @return the size of the bitset bs
+ */
+
+size_t bitset_size(Bitset *bs)
+{
+    return bs->size;
+}
+
+/*
+ * Apply the bitwise AND operator on the bitsets bs1 and bs2
+ * if the out is NULL then the resulting bitset is set to bs1
+ * if the size of the two bitsets are not equal then the 
+ * result will be of big bitset and the remaining bits of the bitset
+ * are 0 on which the operation can't be performed.
+ * The and operation will be performed in the direction of right to left
+ * which is according to standard AND operation.
+ *
+ * @param[in, out] bs1 is input bitset, if out is NULL then output will
+ * be stored in it
+ * @param[in] bs2 the second bitset
+ * @param[out] out set the output to the out, if its NULL then output is bs1
+ *
+ * @return CC_OK if there is success or CC_ERR_ALLOC if there was error in
+ * allocation of memory for the new bitset
+ */
+
+enum cc_stat bitset_and(Bitset *bs1, Bitset *bs2, Bitset **out)
+{
+    /*TODO Implement this function*/
+    return CC_OK;
+}
