@@ -500,6 +500,16 @@ enum cc_stat bitset_xor(Bitset *bs1, Bitset *bs2, Bitset **out)
 
 }
 
+/*
+ * Do the bitwise NOT operatinon on bs and store the result in out
+ *
+ * @param[in] bs the input bitset
+ * @param[out] out the output of function
+ *
+ * @return CC_ERR_ALLOC if error in allocation of memory
+ * otherwise CC_OK
+ */
+
 enum cc_stat bitset_not(Bitset *bs, Bitset **out)
 {
     Bitset *tmp;
