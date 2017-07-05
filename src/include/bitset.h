@@ -57,7 +57,7 @@ enum cc_stat bitset_copy               (Bitset *bs1, Bitset **out);
 void          bitset_destroy           (Bitset *bs);
 void          bitset_destroy_free      (Bitset *bs);
 
-int          bitset_getbit_at          (Bitset *bs, size_t index);
+ssize_t       bitset_getbit_at         (Bitset *bs, size_t index);
 enum cc_stat bitset_setbit_at          (Bitset *bs, size_t index);
 enum cc_stat bitset_unsetbit_at        (Bitset *bs, size_t index);
 enum cc_stat bitset_flipbit_at         (Bitset *bs, size_t index);

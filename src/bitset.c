@@ -20,6 +20,7 @@
 
 #include "array.h"
 #include "bitset.h"
+#include <stdio.h>
 
 #define DEFAULT_SIZE 64
 #define CEIL(x,y) x/y+(x%y!=0)
@@ -196,7 +197,7 @@ void bitset_destroy_free(Bitset *bs)
  *        -1, if the bit at given position was invalid
  */
 
-int bitset_getbit_at(Bitset *bs, size_t index)
+ssize_t bitset_getbit_at(Bitset *bs, size_t index)
 {
     size_t q = index / 8, r = 7 - index % 8;
     char *ch;
@@ -376,17 +377,17 @@ size_t bitset_size(Bitset *bs)
 
 /*
  * Apply the bitwise AND operator on the bitsets bs1 and bs2
- * if the out is NULL then the resulting bitset is set to bs1
  * if the size of the two bitsets are not equal then the 
  * result will be of big bitset and the remaining bits of the bitset
  * are 0 on which the operation can't be performed.
  * The and operation will be performed in the direction of right to left
  * which is according to standard AND operation.
  *
- * @param[in, out] bs1 is input bitset, if out is NULL then output will
- * be stored in it
+ * The result will be stored int the out
+ *
+ * @param[in] bs1 is input bitset
  * @param[in] bs2 the second bitset
- * @param[out] out set the output to the out, if its NULL then output is bs1
+ * @param[out] out set the output to the out
  *
  * @return CC_OK if there is success or CC_ERR_ALLOC if there was error in
  * allocation of memory for the new bitset
@@ -394,7 +395,25 @@ size_t bitset_size(Bitset *bs)
 
 enum cc_stat bitset_and(Bitset *bs1, Bitset *bs2, Bitset **out)
 {
-    /*TODO Implement this function*/
+    Bitset *tmp1, *tmp2;
+    enum cc_stat status;
+    bs1->size > bs2->size ? (status = bitset_copy(bs1, &tmp1), tmp2 = bs2) : (status = bitset_copy(bs2, &tmp1), tmp2 = bs1);
+    if(status != CC_OK)
+        return status;
+    ssize_t i, j;
+    for(i = tmp1->size - 1, j = tmp2->size - 1; i >= 0 && j >= 0; i--, j--)
+    {
+        ssize_t bit1 = bitset_getbit_at(tmp1, i);
+        ssize_t bit2 = bitset_getbit_at(tmp2, j);
+        bit1 = bit1 & bit2;
+        if(bit1 == 0)
+            bitset_unsetbit_at(tmp1, i);
+        else
+            bitset_setbit_at(tmp1, i);
+    }
+    for(i = tmp1->size - tmp2->size - 1; i >= 0; i--)
+        bitset_unsetbit_at(tmp1, i);
+    *out = tmp1;
     return CC_OK;
 }
 
