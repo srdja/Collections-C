@@ -20,7 +20,6 @@
 
 #include "array.h"
 #include "bitset.h"
-#include <stdio.h>
 
 #define DEFAULT_SIZE 64
 #define CEIL(x,y) x/y+(x%y!=0)
@@ -380,7 +379,7 @@ size_t bitset_size(Bitset *bs)
  * if the size of the two bitsets are not equal then the 
  * result will be of big bitset and the remaining bits of the bitset
  * are 0 on which the operation can't be performed.
- * The and operation will be performed in the direction of right to left
+ * The AND operation will be performed in the direction of right to left
  * which is according to standard AND operation.
  *
  * The result will be stored int the out
@@ -414,6 +413,101 @@ enum cc_stat bitset_and(Bitset *bs1, Bitset *bs2, Bitset **out)
     for(i = tmp1->size - tmp2->size - 1; i >= 0; i--)
         bitset_unsetbit_at(tmp1, i);
     *out = tmp1;
+    return CC_OK;
+}
+
+/*
+ * Apply the bitwise OR operator on the bitsets bs1 and bs2
+ * if the size of the two bitsets are not equal then the 
+ * result will be of big bitset and the remaining bits of the bitset
+ * are left as were in the big bitset on which the operation can't be performed.
+ * As the standard OR operation the 0 | X = X, so they were left as it is
+ * The OR operation will be performed in the direction of right to left
+ * which is according to standard OR operation.
+ *
+ * The result will be stored int the out
+ *
+ * @param[in] bs1 is input bitset
+ * @param[in] bs2 the second bitset
+ * @param[out] out set the output to the out
+ *
+ * @return CC_OK if there is success or CC_ERR_ALLOC if there was error in
+ * allocation of memory for the new bitset
+ */
+
+enum cc_stat bitset_or(Bitset *bs1, Bitset *bs2, Bitset **out)
+{
+    Bitset *tmp1, *tmp2;
+    enum cc_stat status;
+    bs1->size > bs2->size ? (status = bitset_copy(bs1, &tmp1), tmp2 = bs2) : (status = bitset_copy(bs2, &tmp1), tmp2 = bs1);
+    if(status != CC_OK)
+        return status;
+    ssize_t i, j;
+    for(i = tmp1->size - 1, j = tmp2->size - 1; i >= 0 && j >= 0; i--, j--)
+    {
+        ssize_t bit1 = bitset_getbit_at(tmp1, i);
+        ssize_t bit2 = bitset_getbit_at(tmp2, j);
+        bit1 = bit1 | bit2;
+        if(bit1 == 0)
+            bitset_unsetbit_at(tmp1, i);
+        else
+            bitset_setbit_at(tmp1, i);
+    }
+    *out = tmp1;
+    return CC_OK;
+
+}
+
+/*
+ * Apply the bitwise XOR operator on the bitsets bs1 and bs2
+ * if the size of the two bitsets are not equal then the 
+ * result will be of big bitset and the remaining bits of the bitset
+ * are left as were in the big bitset on which the operation can't be performed.
+ * As the standard OR operation the 0 ^ X = X, so they were left as it is
+ * The XOR operation will be performed in the direction of right to left
+ * which is according to standard XOR operation.
+ *
+ * The result will be stored int the out
+ *
+ * @param[in] bs1 is input bitset
+ * @param[in] bs2 the second bitset
+ * @param[out] out set the output to the out
+ *
+ * @return CC_OK if there is success or CC_ERR_ALLOC if there was error in
+ * allocation of memory for the new bitset
+ */
+
+enum cc_stat bitset_xor(Bitset *bs1, Bitset *bs2, Bitset **out)
+{
+    Bitset *tmp1, *tmp2;
+    enum cc_stat status;
+    bs1->size > bs2->size ? (status = bitset_copy(bs1, &tmp1), tmp2 = bs2) : (status = bitset_copy(bs2, &tmp1), tmp2 = bs1);
+    if(status != CC_OK)
+        return status;
+    ssize_t i, j;
+    for(i = tmp1->size - 1, j = tmp2->size - 1; i >= 0 && j >= 0; i--, j--)
+    {
+        ssize_t bit1 = bitset_getbit_at(tmp1, i);
+        ssize_t bit2 = bitset_getbit_at(tmp2, j);
+        bit1 = bit1 ^ bit2;
+        if(bit1 == 0)
+            bitset_unsetbit_at(tmp1, i);
+        else
+            bitset_setbit_at(tmp1, i);
+    }
+    *out = tmp1;
+    return CC_OK;
+
+}
+
+enum cc_stat bitset_not(Bitset *bs, Bitset **out)
+{
+    Bitset *tmp;
+    enum cc_stat status = bitset_copy(bs, &tmp);
+    if(status != CC_OK)
+        return status;
+    bitset_flipbits_range(tmp, 0, tmp->size - 1);
+    *out = tmp;
     return CC_OK;
 }
 
