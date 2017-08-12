@@ -7,7 +7,7 @@ git clone https://github.com/yourusername/Collections-C.git
 ```
 You can now start working on the project, but before you do, here are some general guidelines that will make contributing a lot easier:
 
-* if wish to work on some major new feature, it's usually a good idea to open an issue first, so that it can be discussed
+* if you wish to work on some major new feature, it's usually a good idea to open an issue first, so that it can be discussed
 * when writing code, follow the code [K&R code fomatting style](https://en.wikipedia.org/wiki/Indent_style#K.26R_style) using 4 space indentation. In general, make sure that the code you write is formatted in the same way that everything else is formatted.
 * if you are writing some new code that is not covered by the tests, try to write tests for it too
 * before commiting your changes make sure that the project builds correctly and that the tests are passing
@@ -41,7 +41,7 @@ git merge upstream/master
 ```
 
 ## Finding something to work on
-There is always something to work on, be it fixing bugs, writing documentation or adding cool new features. You can start by looking through the [issues](https://github.com/srdja/Collections-C/issues) to find something intereseting.
+There is always something to work on, be it fixing bugs, writing documentation or adding cool new features. You can start by looking through the [issues](https://github.com/srdja/Collections-C/issues) to find something interesting.
 If you have a cool new idea, or you've found a bug and there is no issue for it, go ahead and open a [new issue](https://github.com/srdja/Collections-C/issues/new) for it.
 
 If you're just starting out, look for issues with a [low-hanging fruit](https://github.com/srdja/Collections-C/issues?q=is%3Aissue+is%3Aopen+label%3A%22low-hanging+fruit%22) tag. These issues should be fairly easy to fix, and they are also a good starting point for contributing.
