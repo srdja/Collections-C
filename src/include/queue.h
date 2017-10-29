@@ -75,4 +75,25 @@ void         queue_zip_iter_init   (QueueZipIter *iter, Queue *q1, Queue *q2);
 enum cc_stat queue_zip_iter_next   (QueueZipIter *iter, void **out1, void **out2);
 enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 
+
+#define QUEUE_FOREACH(val, queue, body)                                 \
+    {                                                                   \
+        QueueIter queue_iter_53d46d2a04458e7b;                          \
+        queue_iter_init(&queue_iter_53d46d2a04458e7b, queue);           \
+        void *val;                                                      \
+        while (queue_iter_next(&queue_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
+#define QUEUE_FOREACH_ZIP(val1, val2, queue1, queue2, body)             \
+    {                                                                   \
+        QueueZipIter queue_zip_iter_ea08d3e52f25883b3;                  \
+        queue_zip_iter_init(&queue_zip_iter_ea08d3e52f25883b, queue1, queue2); \
+        void *val1;                                                     \
+        void *val2;                                                     \
+        while (queue_zip_iter_next(&queue_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+            body                                                        \
+                }
+
 #endif /* COLLECTIONS_C_QUEUE_H */

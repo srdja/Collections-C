@@ -147,4 +147,24 @@ enum cc_stat  slist_zip_iter_replace(SListZipIter *iter, void *e1, void *e2, voi
 size_t        slist_zip_iter_index  (SListZipIter *iter);
 
 
+#define SLIST_FOREACH(val, slist, body)                                 \
+    {                                                                   \
+        SlistIter slist_iter_53d46d2a04458e7b;                          \
+        slist_iter_init(&slist_iter_53d46d2a04458e7b, slist);           \
+        void *val;                                                      \
+        while (slist_iter_next(&slist_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
+#define SLIST_FOREACH_ZIP(val1, val2, slist1, slist2, body)             \
+    {                                                                   \
+        SlistZipIter slist_zip_iter_ea08d3e52f25883b3;                  \
+        slist_zip_iter_init(&slist_zip_iter_ea08d3e52f25883b, slist1, slist2); \
+        void *val1;                                                     \
+        void *val2;                                                     \
+        while (slist_zip_iter_next(&slist_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+            body                                                        \
+                }
+
 #endif /* COLLECTIONS_C_SLIST_H */

@@ -69,4 +69,14 @@ void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
 enum cc_stat  treeset_iter_next        (TreeSetIter *iter, void **element);
 enum cc_stat  treeset_iter_remove      (TreeSetIter *iter, void **out);
 
+
+#define TREESET_FOREACH(val, treeset, body)                             \
+    {                                                                   \
+        TreesetIter treeset_iter_53d46d2a04458e7b;                      \
+        treeset_iter_init(&treeset_iter_53d46d2a04458e7b, treeset);     \
+        void *val;                                                      \
+        while (treeset_iter_next(&treeset_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
 #endif /* COLLECTIONS_C_TREESET_H */

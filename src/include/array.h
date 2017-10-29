@@ -145,4 +145,25 @@ size_t        array_zip_iter_index  (ArrayZipIter *iter);
 
 const void* const* array_get_buffer(Array *ar);
 
+
+#define ARRAY_FOREACH(val, array, body)         \
+    {                                           \
+        ArrayIter array_iter_53d46d2a04458e7b;  \
+        array_iter_init(&array_iter_53d46d2a04458e7b, array);   \
+        void *val;                                              \
+        while (array_iter_next(&array_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
+#define ARRAY_FOREACH_ZIP(val1, val2, array1, array2, body)     \
+    {                                                           \
+        ArrayZipIter array_zip_iter_ea08d3e52f25883b3;                 \
+        array_zip_iter_init(&array_zip_iter_ea08d3e52f25883b, array1, array2); \
+        void *val1;                                                     \
+        void *val2;                                                     \
+        while (array_zip_iter_next(&array_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+            body                                                        \
+                }
+
 #endif /* COLLECTIONS_C_ARRAY_H */

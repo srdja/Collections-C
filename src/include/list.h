@@ -163,4 +163,26 @@ enum cc_stat  list_zip_iter_remove (ListZipIter *iter, void **out1, void **out2)
 enum cc_stat  list_zip_iter_replace(ListZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 size_t        list_zip_iter_index  (ListZipIter *iter);
 
+
+#define LIST_FOREACH(val, list, body)                                   \
+    {                                                                   \
+        ListIter list_iter_53d46d2a04458e7b;                            \
+        list_iter_init(&list_iter_53d46d2a04458e7b, list);              \
+        void *val;                                                      \
+        while (list_iter_next(&list_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
+#define LIST_FOREACH_ZIP(val1, val2, list1, list2, body)                \
+    {                                                                   \
+        ListZipIter list_zip_iter_ea08d3e52f25883b3;                    \
+        list_zip_iter_init(&list_zip_iter_ea08d3e52f25883b, list1, list2); \
+        void *val1;                                                     \
+        void *val2;                                                     \
+        while (list_zip_iter_next(&list_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
 #endif /* COLLECTIONS_C_LIST_H */

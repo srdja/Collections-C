@@ -79,5 +79,24 @@ enum cc_stat  stack_zip_iter_next   (StackZipIter *iter, void **out1, void **out
 enum cc_stat  stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 
 
+#define STACK_FOREACH(val, stack, body)                                 \
+    {                                                                   \
+        StackIter stack_iter_53d46d2a04458e7b;                          \
+        stack_iter_init(&stack_iter_53d46d2a04458e7b, stack);           \
+        void *val;                                                      \
+        while (stack_iter_next(&stack_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
+#define STACK_FOREACH_ZIP(val1, val2, stack1, stack2, body)             \
+    {                                                                   \
+        StackZipIter stack_zip_iter_ea08d3e52f25883b3;                  \
+        stack_zip_iter_init(&stack_zip_iter_ea08d3e52f25883b, stack1, stack2); \
+        void *val1;                                                     \
+        void *val2;                                                     \
+        while (stack_zip_iter_next(&stack_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+            body                                                        \
+                }
 
 #endif /* COLLECTIONS_C_STACK_H */

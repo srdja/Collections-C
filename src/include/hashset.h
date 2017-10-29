@@ -65,4 +65,14 @@ void          hashset_iter_init     (HashSetIter *iter, HashSet *set);
 enum cc_stat  hashset_iter_next     (HashSetIter *iter, void **out);
 enum cc_stat  hashset_iter_remove   (HashSetIter *iter, void **out);
 
+
+#define HASHSET_FOREACH(val, hashset, body)                             \
+    {                                                                   \
+        HashsetIter hashset_iter_53d46d2a04458e7b;                      \
+        hashset_iter_init(&hashset_iter_53d46d2a04458e7b, hashset);     \
+        void *val;                                                      \
+        while (hashset_iter_next(&hashset_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
 #endif /* COLLECTIONS_C_HASHSET_H */

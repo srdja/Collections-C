@@ -125,6 +125,17 @@ void          treetable_iter_init        (TreeTableIter *iter, TreeTable *table)
 enum cc_stat  treetable_iter_next        (TreeTableIter *iter, TreeTableEntry *entry);
 enum cc_stat  treetable_iter_remove      (TreeTableIter *iter, void **out);
 
+
+#define TREETABLE_FOREACH(entry, treetable, body)                       \
+    {                                                                   \
+        TreetableIter treetable_iter_53d46d2a04458e7b;                  \
+        treetable_iter_init(&treetable_iter_53d46d2a04458e7b, treetable); \
+        TreeTableEntry *val;                                            \
+        while (treetable_iter_next(&treetable_iter_53d46d2a04458e7b, &entry) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
 #ifdef DEBUG
 #define RB_ERROR_CONSECUTIVE_RED 0
 #define RB_ERROR_BLACK_HEIGHT    1

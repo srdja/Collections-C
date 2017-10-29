@@ -138,4 +138,26 @@ size_t        deque_zip_iter_index  (DequeZipIter *iter);
 
 const void* const* deque_get_buffer (Deque const * const deque);
 
+
+#define DEQUE_FOREACH(val, deque, body)                                 \
+    {                                                                   \
+        DequeIter deque_iter_53d46d2a04458e7b;                          \
+        deque_iter_init(&deque_iter_53d46d2a04458e7b, deque);           \
+        void *val;                                                      \
+        while (deque_iter_next(&deque_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
+#define DEQUE_FOREACH_ZIP(val1, val2, deque1, deque2, body)             \
+    {                                                                   \
+        DequeZipIter deque_zip_iter_ea08d3e52f25883b3;                  \
+        deque_zip_iter_init(&deque_zip_iter_ea08d3e52f25883b, deque1, deque2); \
+        void *val1;                                                     \
+        void *val2;                                                     \
+        while (deque_zip_iter_next(&deque_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+            body                                                        \
+                }
+
+
 #endif /* COLLECTIONS_C_DEQUE_H */
