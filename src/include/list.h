@@ -97,7 +97,7 @@ void          list_conf_init       (ListConf *conf);
 enum cc_stat  list_new             (List **list);
 enum cc_stat  list_new_conf        (ListConf const * const conf, List **list);
 void          list_destroy         (List *list);
-void          list_destroy_free    (List *list);
+void          list_destroy_cb      (List *list, void (*cb) (void*));
 
 enum cc_stat  list_splice          (List *list1, List *list2);
 enum cc_stat  list_splice_at       (List *list, List *list2, size_t index);
@@ -115,7 +115,7 @@ enum cc_stat  list_remove_last     (List *list, void **out);
 enum cc_stat  list_remove_at       (List *list, size_t index, void **out);
 
 enum cc_stat  list_remove_all      (List *list);
-enum cc_stat  list_remove_all_free (List *list);
+enum cc_stat  list_remove_all_cb   (List *list, void (*cb) (void*));
 
 enum cc_stat  list_get_at          (List *list, size_t index, void **out);
 enum cc_stat  list_get_first       (List *list, void **out);

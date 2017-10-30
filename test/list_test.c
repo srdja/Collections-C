@@ -396,7 +396,7 @@ TEST_GROUP_C_SETUP(ListTestsListPrefilled)
 
 TEST_GROUP_C_TEARDOWN(ListTestsListPrefilled)
 {
-    list_destroy_free(list1);
+    list_destroy_cb(list1, free);
     list_destroy(list2);
 };
 
@@ -683,7 +683,7 @@ TEST_C(ListTestsListPrefilled, ListRemoveAll)
     list_get_first(list1, (void*) &e);
     CHECK_EQUAL_C_INT(1, *e);
 
-    list_remove_all_free(list1);
+    list_remove_all_cb(list1, free);
     CHECK_EQUAL_C_INT(0, list_size(list1));
 
     e = NULL;
@@ -736,7 +736,7 @@ TEST_C(ListTestsListPrefilled, ListCopyDeep)
     list_get_at(list1, 2, (void*) &le);
     CHECK_C(e != le);
 
-    list_destroy_free(cp);
+    list_destroy_cb(cp, free);
 };
 
 

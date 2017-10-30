@@ -115,9 +115,9 @@ void stack_destroy(Stack *stack)
  *
  * @param[in] stack the stack to be destroyed
  */
-void stack_destroy_free(Stack *stack)
+void stack_destroy_cb(Stack *stack, void (*cb) (void*))
 {
-    array_destroy_free(stack->v);
+    array_destroy_cb(stack->v, cb);
     free(stack);
 }
 

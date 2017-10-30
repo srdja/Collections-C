@@ -141,9 +141,9 @@ void pqueue_destroy(PQueue *pqueue)
  * @param[in] pqueue the Priority Queue to be destroyed
  */
 
-void pqueue_destroy_free(PQueue *pqueue)
+void pqueue_destroy_cb(PQueue *pqueue, void (*cb) (void*))
 {
-    array_destroy_free(pqueue->v);
+    array_destroy_cb(pqueue->v, cb);
     pqueue->mem_free(pqueue);
 }
 

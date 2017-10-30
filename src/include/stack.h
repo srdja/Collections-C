@@ -61,7 +61,7 @@ void          stack_conf_init       (StackConf *conf);
 enum cc_stat  stack_new             (Stack **out);
 enum cc_stat  stack_new_conf        (StackConf const * const conf, Stack **out);
 void          stack_destroy         (Stack *stack);
-void          stack_destroy_free    (Stack *stack);
+void          stack_destroy_cb      (Stack *stack, void (*cb) (void*));
 
 enum cc_stat  stack_push            (Stack *stack, void *element);
 enum cc_stat  stack_peek            (Stack *stack, void **out);

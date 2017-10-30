@@ -49,7 +49,7 @@ typedef struct pqueue_conf_s {
 
 
     /**
-     * comparator, used to hold the address of the function which will 
+     * comparator, used to hold the address of the function which will
      * be used to compare the elements of the PQueue
      */
 
@@ -60,7 +60,7 @@ void          pqueue_conf_init       (PQueueConf *conf, int (*)(const void *, co
 enum cc_stat  pqueue_new             (PQueue **out, int (*)(const void *, const void *));
 enum cc_stat  pqueue_new_conf        (PQueueConf const * const conf, PQueue **out);
 void          pqueue_destroy         (PQueue *pqueue);
-void          pqueue_destroy_free    (PQueue *pqueue);
+void          pqueue_destroy_cb      (PQueue *pqueue, void (*cb) (void*));
 
 enum cc_stat  pqueue_push            (PQueue *pqueue, void *element);
 enum cc_stat  pqueue_top             (PQueue *pqueue, void **out);

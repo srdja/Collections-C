@@ -446,7 +446,7 @@ TEST_C(DequeTests, DequeCopyDeep)
     CHECK_EQUAL_C_INT(1, *ca);
     CHECK_EQUAL_C_INT(2, *cb);
     CHECK_EQUAL_C_INT(3, *cc);
-    deque_destroy_free(copy);
+    deque_destroy_cb(copy, free);
     free(a);
     free(b);
     free(c);

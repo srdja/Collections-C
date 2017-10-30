@@ -91,7 +91,7 @@ enum cc_stat  array_new_conf        (ArrayConf const * const conf, Array **out);
 void          array_conf_init       (ArrayConf *conf);
 
 void          array_destroy         (Array *ar);
-void          array_destroy_free    (Array *ar);
+void          array_destroy_cb      (Array *ar, void (*cb) (void*));
 
 enum cc_stat  array_add             (Array *ar, void *element);
 enum cc_stat  array_add_at          (Array *ar, void *element, size_t index);

@@ -295,7 +295,7 @@ TEST_C(SlistTestsSlistPrepopulated, SListRemoveAt)
 
 TEST_C(SlistTestsSlistPrepopulated, SListRemoveAll)
 {
-    slist_remove_all_free(list);
+    slist_remove_all_cb(list, free);
     CHECK_EQUAL_C_INT(0, slist_size(list));
 
     void *e = NULL;
@@ -417,7 +417,7 @@ TEST_C(SlistTestsSlistPrepopulated, SlistCopyDeep)
     slist_get_at(cp, 2, (void*) &e);
     CHECK_C(e != e2);
 
-    slist_destroy_free(cp);
+    slist_destroy_cb(cp, free);
 };
 
 TEST_C(SlistTestsSlistPrepopulated, SListSublist)

@@ -85,7 +85,7 @@ enum cc_stat  deque_new_conf        (DequeConf const * const conf, Deque **deque
 void          deque_conf_init       (DequeConf *conf);
 
 void          deque_destroy         (Deque *deque);
-void          deque_destroy_free    (Deque *deque);
+void          deque_destroy_cb      (Deque *deque, void (*cb) (void*));
 
 enum cc_stat  deque_add             (Deque *deque, void *element);
 enum cc_stat  deque_add_first       (Deque *deque, void *element);
@@ -98,7 +98,7 @@ enum cc_stat  deque_remove_at       (Deque *deque, size_t index, void **out);
 enum cc_stat  deque_remove_first    (Deque *deque, void **out);
 enum cc_stat  deque_remove_last     (Deque *deque, void **out);
 void          deque_remove_all      (Deque *deque);
-void          deque_remove_all_free (Deque *deque);
+void          deque_remove_all_cb   (Deque *deque, void (*cb) (void*));
 
 enum cc_stat  deque_get_at          (Deque const * const deque, size_t index, void **out);
 enum cc_stat  deque_get_first       (Deque const * const deque, void **out);

@@ -58,7 +58,7 @@ void         queue_conf_init       (QueueConf *conf);
 enum cc_stat queue_new             (Queue **q);
 enum cc_stat queue_new_conf        (QueueConf const * const conf, Queue **q);
 void         queue_destroy         (Queue *queue);
-void         queue_destroy_free    (Queue *queue);
+void         queue_destroy_cb      (Queue *queue, void (*cb) (void*));
 
 enum cc_stat queue_peek            (Queue const * const queue, void **out);
 enum cc_stat queue_poll            (Queue *queue, void **out);

@@ -287,7 +287,7 @@ TEST_C(ArrayTestsWithDefaults, ArrayDeepCopy)
     array_get_at(v2, 0, (void*) &ca);
 
     CHECK_EQUAL_C_INT(a, *ca);
-    array_destroy_free(v2);
+    array_destroy_cb(v2, free);
 };
 
 TEST_C(ArrayTestsWithDefaults, ArrayReverse)

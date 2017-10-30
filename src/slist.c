@@ -33,7 +33,7 @@ struct slist_s {
 
 
 static void* unlink              (SList *list, SNode *node, SNode *prev);
-static bool  unlink_all          (SList *list, bool freed);
+static bool  unlink_all          (SList *list, void (*cb) (void*));
 static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
 static bool  link_all_externally (SList *list, SNode **h, SNode **t);
 static enum cc_stat get_node_at  (SList *list, size_t index, SNode **node, SNode **prev);
@@ -117,9 +117,9 @@ void slist_destroy(SList *list)
  *
  * @param[in] list SList that is to be destroyed
  */
-void slist_destroy_free(SList *list)
+void slist_destroy_cb(SList *list, void (*cb) (void*))
 {
-    slist_remove_all_free(list);
+    slist_remove_all_cb(list, cb);
     list->mem_free(list);
 }
 
@@ -590,7 +590,7 @@ enum cc_stat slist_remove_last(SList *list, void **out)
  */
 enum cc_stat slist_remove_all(SList *list)
 {
-    bool unlinked = unlink_all(list, false);
+    bool unlinked = unlink_all(list, NULL);
 
     if (unlinked) {
         list->head = NULL;
@@ -612,9 +612,9 @@ enum cc_stat slist_remove_all(SList *list)
  * @return CC_OK if the element were successfully removed and freed, or
  * CC_ERR_VALUE_NOT_FOUND if the list was already empty.
  */
-enum cc_stat slist_remove_all_free(SList *list)
+enum cc_stat slist_remove_all_cb(SList *list, void (*cb) (void*))
 {
-    bool unlinked = unlink_all(list, true);
+    bool unlinked = unlink_all(list, cb);
 
     if (unlinked) {
         list->head = NULL;
@@ -1500,7 +1500,7 @@ static void *unlink(SList *list, SNode *node, SNode *prev)
  *
  * @return false if the list is already y empty, otherwise returns true
  */
-static bool unlink_all(SList *list, bool freed)
+static bool unlink_all(SList *list, void (*cb) (void*))
 {
     if (list->size == 0)
         return false;
@@ -1510,8 +1510,8 @@ static bool unlink_all(SList *list, bool freed)
     while (n) {
         SNode *tmp = n->next;
 
-        if (freed)
-            list->mem_free(n->data);
+        if (cb)
+            cb(n->data);
 
         list->mem_free(n);
         n = tmp;

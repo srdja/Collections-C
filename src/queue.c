@@ -111,9 +111,9 @@ void queue_destroy(Queue *queue)
  *
  * @param[in] queue the queue that is to be destroyed
  */
-void queue_destroy_free(Queue *queue)
+void queue_destroy_cb(Queue *queue, void (*cb) (void*))
 {
-    deque_destroy_free(queue->d);
+    deque_destroy_cb(queue->d, cb);
     free(queue);
 }
 

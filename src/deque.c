@@ -127,9 +127,9 @@ void deque_destroy(Deque *deque)
  *
  * @param[in] deque Deque that is to be destroyed
  */
-void deque_destroy_free(Deque *deque)
+void deque_destroy_cb(Deque *deque, void (*cb) (void*))
 {
-    deque_remove_all_free(deque);
+    deque_remove_all_cb(deque, cb);
     deque_destroy(deque);
 }
 
@@ -495,9 +495,9 @@ void deque_remove_all(Deque *deque)
  *
  * @param[in] deque Deque from which all elements are being removed
  */
-void deque_remove_all_free(Deque *deque)
+void deque_remove_all_cb(Deque *deque, void (*cb) (void*))
 {
-    deque_foreach(deque, deque->mem_free);
+    deque_foreach(deque, cb);
     deque_remove_all(deque);
 }
 

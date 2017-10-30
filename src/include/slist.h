@@ -88,7 +88,7 @@ void          slist_conf_init       (SListConf *conf);
 enum cc_stat  slist_new             (SList **list);
 enum cc_stat  slist_new_conf        (SListConf const * const conf, SList **list);
 void          slist_destroy         (SList *list);
-void          slist_destroy_free    (SList *list);
+void          slist_destroy_cb      (SList *list, void (*cb) (void*));
 
 enum cc_stat  slist_splice          (SList *list1, SList *list2);
 enum cc_stat  slist_splice_at       (SList *list1, SList *list2, size_t index);
@@ -106,7 +106,7 @@ enum cc_stat  slist_remove_last     (SList *list, void **out);
 enum cc_stat  slist_remove_at       (SList *list, size_t index, void **out);
 
 enum cc_stat  slist_remove_all      (SList *list);
-enum cc_stat  slist_remove_all_free (SList *list);
+enum cc_stat  slist_remove_all_cb   (SList *list, void (*cb) (void*));
 
 enum cc_stat  slist_get_at          (SList *list, size_t index, void **out);
 enum cc_stat  slist_get_first       (SList *list, void **out);

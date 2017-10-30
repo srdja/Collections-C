@@ -141,11 +141,11 @@ void array_destroy(Array *ar)
  *
  * @param[in] ar the array that is being destroyed
  */
-void array_destroy_free(Array *ar)
+void array_destroy_cb(Array *ar, void (*cb) (void*))
 {
     size_t i;
     for (i = 0; i < ar->size; i++)
-        ar->mem_free(ar->buffer[i]);
+        cb(ar->buffer[i]);
 
     array_destroy(ar);
 }

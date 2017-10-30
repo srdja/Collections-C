@@ -33,7 +33,7 @@ struct list_s {
 
 
 static void *unlink              (List *list, Node *node);
-static bool  unlink_all          (List *list, bool free);
+static bool  unlink_all          (List *list, void (*cb) (void*));
 static void  link_behind         (Node *node, Node *inserted);
 static void  link_after          (Node *base, Node *inserted);
 static void  swap                (Node *n1, Node *n2);
@@ -123,9 +123,9 @@ void list_destroy(List *list)
  *
  * @param[in] list list that is to be destroyed
  */
-void list_destroy_free(List *list)
+void list_destroy_cb(List *list, void (*cb) (void*))
 {
-    list_remove_all_free(list);
+    list_remove_all_cb(list, cb);
     list->mem_free(list);
 }
 
@@ -606,7 +606,7 @@ enum cc_stat list_remove_last(List *list, void **out)
  */
 enum cc_stat list_remove_all(List *list)
 {
-    bool unlinked = unlink_all(list, false);
+    bool unlinked = unlink_all(list, NULL);
 
     if (unlinked) {
         list->head = NULL;
@@ -629,9 +629,9 @@ enum cc_stat list_remove_all(List *list)
  * @return CC_OK if the elements were successfully removed and freed, or
  * CC_ERR_VALUE_NOT_FOUND if the list was already empty.
  */
-enum cc_stat list_remove_all_free(List *list)
+enum cc_stat list_remove_all_cb(List *list, void (*cb) (void*))
 {
-    bool unlinked = unlink_all(list, true);
+    bool unlinked = unlink_all(list, cb);
 
     if (unlinked) {
         list->head = NULL;
@@ -1933,7 +1933,7 @@ static void *unlink(List *list, Node *node)
  *
  * @return false if the list is already empty, otherwise returns true.
  */
-static bool unlink_all(List *list, bool freed)
+static bool unlink_all(List *list, void (*cb) (void*))
 {
     if (list->size == 0)
         return false;
@@ -1943,8 +1943,8 @@ static bool unlink_all(List *list, bool freed)
     while (node) {
         Node *tmp = node->next;
 
-        if (freed)
-            list->mem_free(node->data);
+        if (cb)
+            cb(node->data);
 
         unlink(list, node);
         node = tmp;
