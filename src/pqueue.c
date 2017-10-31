@@ -21,41 +21,51 @@
 #include "array.h"
 #include "pqueue.h"
 
-#define CC_PARENT(x) ((x)-1)/2
-#define CC_LEFT(x) 2*(x)+1
-#define CC_RIGHT(x) 2*(x)+2
+
+#define CC_PARENT(x) (x - 1) / 2
+#define CC_LEFT(x)    2 * x + 1
+#define CC_RIGHT(x)   2 * x + 2
+
+
+#define DEFAULT_CAPACITY 8
+#define DEFAULT_EXPANSION_FACTOR 2
+
 
 struct pqueue_s {
-    Array *v;
+    size_t   size;
+    size_t   capacity;
+    float    exp_factor;
+    void   **buffer;
 
-    /*
-     * Memory management function pointers
-     */
+    /* Memory management function pointers */
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
 
-    /*
-     * Comparator function pointer, for compairing the elements of PQueue
-     */
-    int   (*comparator) (const void *a, const void *b);
+    /*  Comparator function pointer, for compairing the elements of PQueue */
+    int   (*cmp) (const void *a, const void *b);
 };
 
-static void cc_heapify(PQueue *pqueue, size_t index);
+
+static void pqueue_heapify(PQueue *pqueue, size_t index);
 
 
-/*
+/**
  * Initializes the fields of PQueueConf to default values
+ *
  * @param[in, out] conf PQueueConf structure that is being initialized
  * @param[in] comp The comparator function required for PQueue
  */
-
-
-void pqueue_conf_init (PQueueConf *conf, int (*comp)(const void *, const void *))
+void pqueue_conf_init(PQueueConf *conf, int (*cmp)(const void *, const void *))
 {
-    array_conf_init(&conf->cfg);
-    conf->comparator = comp;
+    conf->mem_alloc  = malloc;
+    conf->mem_calloc = calloc;
+    conf->mem_free   = free;
+    conf->cmp        = cmp;
+    conf->exp_factor = DEFAULT_EXPANSION_FACTOR;
+    conf->capacity   = DEFAULT_CAPACITY;
 }
+
 
 /**
  * Creates a new empty pqueue and returns a status code.
@@ -65,11 +75,10 @@ void pqueue_conf_init (PQueueConf *conf, int (*comp)(const void *, const void *)
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
  * memory allocation for the new PQueue structure failed.
  */
-
-enum cc_stat pqueue_new (PQueue **out, int (*comp)(const void *, const void *))
+enum cc_stat pqueue_new(PQueue **out, int (*cmp)(const void*, const void*))
 {
     PQueueConf conf;
-    pqueue_conf_init(&conf, comp);
+    pqueue_conf_init(&conf, cmp);
     return pqueue_new_conf(&conf, out);
 }
 
@@ -90,32 +99,43 @@ enum cc_stat pqueue_new (PQueue **out, int (*comp)(const void *, const void *))
  * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
  * allocation for the new PQueue structure failed.
  */
-
 enum cc_stat pqueue_new_conf(PQueueConf const * const conf, PQueue **out)
 {
-    PQueue *pQ = conf->cfg.mem_calloc(1, sizeof(PQueue));
-    if (!pQ)
+    float ex;
+
+    /* The expansion factor must be greater than one for the
+     * array to grow */
+    if (conf->exp_factor <= 1)
+        ex = DEFAULT_EXPANSION_FACTOR;
+    else
+        ex = conf->exp_factor;
+
+    /* Needed to avoid an integer overflow on the first resize and
+     * to easily check for any future overflows. */
+    if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity)
+        return CC_ERR_INVALID_CAPACITY;
+
+    PQueue *pq = conf->mem_calloc(1, sizeof(PQueue));
+
+    if (!pq)
         return CC_ERR_ALLOC;
 
-    pQ->mem_alloc = conf->cfg.mem_alloc;
-    pQ->mem_calloc = conf->cfg.mem_calloc;
-    pQ->mem_free = conf->cfg.mem_free;
+    void **buff = conf->mem_alloc(conf->capacity * sizeof(void*));
 
-    pQ->comparator = conf->comparator;
-
-    Array *array;
-    enum cc_stat status;
-
-    if ((status = array_new_conf(&conf->cfg, &array)) == CC_OK) {
-        pQ->v = array;
-    } else {
-        conf->cfg.mem_free(pQ);
-        return status;
+    if (!buff) {
+        conf->mem_free(pq);
+        return CC_ERR_ALLOC;
     }
 
-    *out = pQ;
+    pq->mem_alloc  = conf->mem_alloc;
+    pq->mem_calloc = conf->mem_calloc;
+    pq->mem_free   = conf->mem_free;
+    pq->cmp        = conf->cmp;
+    pq->buffer     = buff;
+    pq->exp_factor = ex;
+    pq->capacity   = conf->capacity;
 
-
+    *out = pq;
     return CC_OK;
 }
 
@@ -123,13 +143,12 @@ enum cc_stat pqueue_new_conf(PQueueConf const * const conf, PQueue **out)
  * Destroys the specified PQueue structure, while leaving the data it holds
  * intact.
  *
- * @param[in] pqueue the PQueue to be destroyed
+ * @param[in] pq the PQueue to be destroyed
  */
-
-void pqueue_destroy(PQueue *pqueue)
+void pqueue_destroy(PQueue *pq)
 {
-    array_destroy(pqueue->v);
-    pqueue->mem_free(pqueue);
+    pq->mem_free(pq->buffer);
+    pq->mem_free(pq);
 }
 
 /**
@@ -138,47 +157,97 @@ void pqueue_destroy(PQueue *pqueue)
  * @note This function should not be called on a PQueue that has some of its
  * elements allocated on the Stack (stack memory of function calls).
  *
- * @param[in] pqueue the Priority Queue to be destroyed
+ * @param[in] pq the Priority Queue to be destroyed
  */
-
-void pqueue_destroy_cb(PQueue *pqueue, void (*cb) (void*))
+void pqueue_destroy_cb(PQueue *pq, void (*cb) (void*))
 {
-    array_destroy_cb(pqueue->v, cb);
-    pqueue->mem_free(pqueue);
+    size_t i;
+    for (i = 0; i < pq->size; i++)
+        cb(pq->buffer[i]);
+
+    pqueue_destroy(pq);
 }
 
-/*
+/**
+ * Expands the Pqueue capacity. This might fail if the the new buffer
+ * cannot be allocated. In case the expansion would overflow the index
+ * range, a maximum capacity buffer is allocated instead. If the capacity
+ * is already at the maximum capacity, no new buffer is allocated.
+ *
+ * @param[in] pq pqueue whose capacity is being expanded
+ *
+ * @return CC_OK if the buffer was expanded successfully, CC_ERR_ALLOC if
+ * the memory allocation for the new buffer failed, or CC_ERR_MAX_CAPACITY
+ * if the pqueue is already at maximum capacity.
+ */
+static enum cc_stat expand_capacity(PQueue *pq)
+{
+    if (pq->capacity == CC_MAX_ELEMENTS)
+        return CC_ERR_MAX_CAPACITY;
+
+    size_t new_capacity = pq->capacity * pq->exp_factor;
+
+    /* As long as the capacity is greater that the expansion factor
+     * at the point of overflow, this is check is valid. */
+    if (new_capacity <= pq->capacity)
+        pq->capacity = CC_MAX_ELEMENTS;
+    else
+        pq->capacity = new_capacity;
+
+    void **new_buff = pq->mem_alloc(new_capacity * sizeof(void*));
+
+    if (!new_buff)
+        return CC_ERR_ALLOC;
+
+    memcpy(new_buff, pq->buffer, pq->size * sizeof(void*));
+
+    pq->mem_free(pq->buffer);
+    pq->buffer = new_buff;
+
+    return CC_OK;
+}
+
+/**
  * Pushes the element in the pqueue
- * @param[in] pqueue the priority queue in which the element is to be pushed
+ *
+ * @param[in] pq the priority queue in which the element is to be pushed
  * @param[in] element the element which is needed to be pushed
  *
  * @return CC_OK if the element was successfully pushed, or CC_ERR_ALLOC
  * if the memory allocation for the new element failed.
  */
-
-enum cc_stat pqueue_push(PQueue *pqueue, void *element)
+enum cc_stat pqueue_push(PQueue *pq, void *element)
 {
+    size_t i = pq->size;
 
-    int i = array_size(pqueue->v);
-    void *child, *parent;
-    enum cc_stat status = array_add(pqueue->v, element);
-    if(status == CC_ERR_ALLOC)
-        return status;
-    if(i == 0)
+    if (i >= pq->capacity) {
+        enum cc_stat status = expand_capacity(pq);
+        if (status != CC_OK)
+            return status;
+    }
+
+    pq->buffer[i] = element;
+    pq->size++;
+
+    if (i == 0)
         return CC_OK;
-    array_get_at(pqueue->v, i, &child);
-    array_get_at(pqueue->v, CC_PARENT(i), &parent);
-    while(i != 0 && pqueue->comparator(child, parent) > 0)
-    {
-        array_swap_at(pqueue->v, i, CC_PARENT(i));
-        i = CC_PARENT(i);
-        array_get_at(pqueue->v, i, &child);
-        array_get_at(pqueue->v, CC_PARENT(i), &parent);
+
+    void *child  = pq->buffer[i];
+    void *parent = pq->buffer[CC_PARENT(i)];
+
+    while (i != 0 && pq->cmp(child, parent) > 0) {
+        void *tmp = pq->buffer[i];
+        pq->buffer[i] = pq->buffer[CC_PARENT(i)];
+        pq->buffer[CC_PARENT(i)] = tmp;
+
+        i      = CC_PARENT(i);
+        child  = pq->buffer[i];
+        parent = pq->buffer[CC_PARENT(i)];
     }
     return CC_OK;
 }
 
-/*
+/**
  * Gets the most prioritized element from the queue without popping it
  * @param[in] pqueue the PQueue structure of which the top element is needed
  * @param[out] out pointer where the element is stored
@@ -186,62 +255,80 @@ enum cc_stat pqueue_push(PQueue *pqueue, void *element)
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if the
  * PQueue is empty.
  */
-
-enum cc_stat pqueue_top(PQueue *pqueue, void **out)
+enum cc_stat pqueue_top(PQueue *pq, void **out)
 {
-    return array_get_at(pqueue->v, 0, out);
+    if (pq->size == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    *out = pq->buffer[0];
+    return CC_OK;
 }
 
-/*
+/**
  * Removes the most prioritized element from the PQueue
- * @param[in] pqueue the PQueue structure whose element is needed to be popped
+ * @param[in] pq the PQueue structure whose element is needed to be popped
  * @param[out] out the pointer where the removed element will be stored
  *
  * return CC_OK if the element was popped successfully, or CC_ERR_OUT_OF_RANGE
  * if pqueue was empty
  */
-
-enum cc_stat pqueue_pop(PQueue *pqueue, void **out)
+enum cc_stat pqueue_pop(PQueue *pq, void **out)
 {
-    void *tmp;
-    if(array_size(pqueue->v) == 0)
+    if (pq->size == 0)
         return CC_ERR_OUT_OF_RANGE;
-    array_swap_at(pqueue->v, 0, array_size(pqueue->v) - 1);
-    array_remove_last(pqueue->v, &tmp);
-    cc_heapify(pqueue, 0);
-    if(out)
+
+    void *tmp = pq->buffer[0];
+    pq->buffer[0] = pq->buffer[pq->size - 1];
+    pq->buffer[pq->size - 1] = tmp;
+
+    tmp = pq->buffer[pq->size - 1];
+    pq->size--;
+
+    pqueue_heapify(pq, 0);
+
+    if (out)
         *out = tmp;
+
     return CC_OK;
 }
 
-/*
- * Function to maintain the heap property of the PQueue
- * @param[in] pqueue the PQueue structure whose heap property is to be maintained
+/**
+ * Maintains the heap property of the PQueue
+ *
+ * @param[in] pq the PQueue structure whose heap property is to be maintained
  * @param[in] index the index from where we need to apply this operation
  */
-
-static void cc_heapify(PQueue *pqueue, size_t index)
+static void pqueue_heapify(PQueue *pq, size_t index)
 {
-    if(array_size(pqueue->v) == 1 || array_size(pqueue->v) == 0)
+    if (pq->size <= 1)
         return;
-    void *left, *right, *indexPtr;
-    size_t L = CC_LEFT(index), R = CC_RIGHT(index), tmp = index;
-    array_get_at(pqueue->v, index, &indexPtr);
-    array_get_at(pqueue->v, L, &left);
-    array_get_at(pqueue->v, R, &right);
-    if(L >= array_size(pqueue->v) || R >= array_size(pqueue->v))
+
+    size_t L   = CC_LEFT(index);
+    size_t R   = CC_RIGHT(index);
+    size_t tmp = index;
+
+    void *left     = pq->buffer[L];
+    void *right    = pq->buffer[R];
+    void *indexPtr = pq->buffer[index];
+
+    if (L >= pq->size || R >= pq->size)
         return;
-    if(pqueue->comparator(indexPtr, left) < 0) {
+
+    if (pq->cmp(indexPtr, left) < 0) {
         indexPtr = left;
         index = L;
     }
-    if(pqueue->comparator(indexPtr, right) < 0) {
+
+    if (pq->cmp(indexPtr, right) < 0) {
         indexPtr = right;
         index = R;
     }
-    if(index != tmp)
-    {
-        array_swap_at(pqueue->v, index, tmp);
-        cc_heapify(pqueue, index);
+
+    if (index != tmp) {
+        void *swap_tmp = pq->buffer[tmp];
+        pq->buffer[tmp] = pq->buffer[index];
+        pq->buffer[index] = swap_tmp;
+
+        pqueue_heapify(pq, index);
     }
 }

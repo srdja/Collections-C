@@ -38,22 +38,26 @@ typedef struct pqueue_s PQueue;
  **/
 
 typedef struct pqueue_conf_s {
+    /**
+     * The initial capacity of the array */
+    size_t capacity;
 
     /**
-     * cfg it is the basic configuration of the PQueue
-     * it includes info to create the memory for PQueue
-     */
-
-    ArrayConf cfg;
-
-
+     * The rate at which the buffer expands (capacity * exp_factor). */
+    float  exp_factor;
 
     /**
      * comparator, used to hold the address of the function which will
      * be used to compare the elements of the PQueue
      */
+    int (*cmp) (const void *a, const void *b);
 
-    int (*comparator)(const void *a, const void *b);
+    /**
+     * Memory allocators used to allocate the Array structure and the
+     * underlying data buffers. */
+    void *(*mem_alloc)  (size_t size);
+    void *(*mem_calloc) (size_t blocks, size_t size);
+    void  (*mem_free)   (void *block);
 } PQueueConf;
 
 void          pqueue_conf_init       (PQueueConf *conf, int (*)(const void *, const void *));
