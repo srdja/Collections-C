@@ -18,7 +18,6 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "array.h"
 #include "pqueue.h"
 
 
