@@ -242,7 +242,7 @@ Linking dynamically produces a smaller executable, but requires `libcollectc.so`
 
 ### Linking problems
 
-Sometimes the compiler may have trouble finding the library or the headers. This is usually because the it's looking for them in the wrong directory, which may happen if the library or the headers or both are installed in a non-standard directory or not installed at all.
+Sometimes the compiler may have trouble finding the library or the headers. This is usually because it's looking for them in the wrong directory, which may happen if the library or the headers or both are installed in a non-standard directory or not installed at all.
 
 If this is the case, we can explicitly tell the compiler where to look for them by passing the `-I[path to headers]` and `-L[path to libraries]` options:
 
