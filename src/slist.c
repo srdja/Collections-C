@@ -529,7 +529,7 @@ enum cc_stat slist_remove_at(SList *list, size_t index, void **out)
  * parameter to the value of the removed element.
  *
  * @param[in] list SList from which the first element is being removed
- * @param[out] out Pointer to where the removed value is stored, or NLLL if it is
+ * @param[out] out Pointer to where the removed value is stored, or NULL if it is
  *                 to be ignored
  *
  * @return CC_OK if the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND
