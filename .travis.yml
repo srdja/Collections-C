@@ -1,5 +1,5 @@
 language: c
-dist: trusty
+dist: xenial
 sudo: required
 
 compiler:
@@ -7,10 +7,6 @@ compiler:
   - clang
 
 before_install:
-  - sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu bionic main"
-  - sudo add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu bionic universe"
-  - sudo apt-get -qq update
-  - sudo apt-get dist-upgrade
   - sudo apt-get install -y cmake && sudo apt-get install -y cpputest && sudo apt-get install -y gcc && sudo apt-get install -y libcpputest-dev && sudo apt-get install -y clang
 
 script:
