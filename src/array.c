@@ -312,7 +312,7 @@ enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
         *out = ar->buffer[index];
 
     if (index != ar->size - 1) {
-        size_t block_size = (ar->size - index) * sizeof(void*);
+        size_t block_size = (ar->size - 1 - index) * sizeof(void*);
 
         memmove(&(ar->buffer[index]),
                 &(ar->buffer[index + 1]),
