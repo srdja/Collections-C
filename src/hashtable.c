@@ -87,7 +87,7 @@ enum cc_stat hashtable_new_conf(HashTableConf const * const conf, HashTable **ou
         return CC_ERR_ALLOC;
 
     table->capacity = round_pow_two(conf->initial_capacity);
-    table->buckets  = conf->mem_calloc(table->capacity, sizeof(TableEntry *));
+    table->buckets  = conf->mem_calloc(table->capacity, sizeof(TableEntry));
 
     if (!table->buckets) {
         conf->mem_free(table);
@@ -417,7 +417,7 @@ static enum cc_stat resize(HashTable *t, size_t new_capacity)
     if (t->capacity == MAX_POW_TWO)
         return CC_ERR_MAX_CAPACITY;
 
-    TableEntry **new_buckets = t->mem_calloc(new_capacity, sizeof(TableEntry *));
+    TableEntry **new_buckets = t->mem_calloc(new_capacity, sizeof(TableEntry));
 
     if (!new_buckets)
         return CC_ERR_ALLOC;
