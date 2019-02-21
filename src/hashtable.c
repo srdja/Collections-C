@@ -686,6 +686,7 @@ void hashtable_foreach_value(HashTable *table, void (*fn) (void *val))
  */
 void hashtable_iter_init(HashTableIter *iter, HashTable *table)
 {
+    memset(iter, 0, sizeof(HashTableIter));
     iter->table = table;
 
     size_t i;
