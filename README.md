@@ -99,7 +99,7 @@ make
 ```
 This will build both the static and the dynamic library.
 
-### Runing tests
+### Running tests
 
 ```
 make test
