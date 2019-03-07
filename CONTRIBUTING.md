@@ -10,14 +10,14 @@ You can now start working on the project, but before you do, here are some gener
 * if you wish to work on some major new feature, it's usually a good idea to open an issue first, so that it can be discussed
 * when writing code, follow the code [K&R code fomatting style](https://en.wikipedia.org/wiki/Indent_style#K.26R_style) using 4 space indentation. In general, make sure that the code you write is formatted in the same way that everything else is formatted.
 * if you are writing some new code that is not covered by the tests, try to write tests for it too
-* before commiting your changes make sure that the project builds correctly and that the tests are passing
+* before committing your changes make sure that the project builds correctly and that the tests are passing
 
 After you're done working on your changes, commit your work and push it to your fork.
 
-You can then open a [pull request](https://help.github.com/articles/using-pull-requests/) from your fork to the upstream repository. After the pull request is made, we will comment / review it and might also suggest some changes. After all that is done, the pull request is merged.
+You can then open a [pull request](https://help.github.com/articles/using-pull-requests/) from your fork to the upstream repository. After the pull request is made, we will comment / review it and might also suggest some changes. After all that is -done, the pull request is merged.
 
 ## Synchronizing your fork with the upstream
-You might have forked the repository a while ago, and in the meantime some changes were added to the upstream repository. Now if you want to send a Pull Request you might run into merge issues. To solve this issue make sure you have your fork synchronized with the upstream repository before you make any changes. 
+You might have forked the repository a while ago, and in the meantime some changes were added to the upstream repository. Now if you want to send a Pull Request you might run into merge issues. To solve this issue make sure you have your fork synchronized with the upstream repository before you make any changes.
 
 To synchronize your fork, you first need to clone it if you don't already have a local copy:
 ```bash
