@@ -14,7 +14,7 @@ You can now start working on the project, but before you do, here are some gener
 
 After you're done working on your changes, commit your work and push it to your fork.
 
-You can then open a [pull request](https://help.github.com/articles/using-pull-requests/) from your fork to the upstream repository. After the pull request is made, we will comment / review it and might also suggest some changes. After all that is -done, the pull request is merged.
+You can then open a [pull request](https://help.github.com/articles/using-pull-requests/) from your fork to the upstream repository. After the pull request is made, we will comment / review it and might also suggest some changes. After all that is done, the pull request is merged.
 
 ## Synchronizing your fork with the upstream
 You might have forked the repository a while ago, and in the meantime some changes were added to the upstream repository. Now if you want to send a Pull Request you might run into merge issues. To solve this issue make sure you have your fork synchronized with the upstream repository before you make any changes.
