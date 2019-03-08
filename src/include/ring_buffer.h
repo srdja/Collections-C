@@ -3,7 +3,7 @@
  * @Date:   2019-03-07T10:32:52-06:00
  * @Email:  silentcat@protonmail.com
  * @Last modified by:   silentcat
- * @Last modified time: 2019-03-07T12:07:42-06:00
+ * @Last modified time: 2019-03-07T22:50:44-06:00
  */
 
 #ifndef COLLECTIONS_C_RBUF_H
@@ -24,7 +24,7 @@ typedef struct ring_buffer_conf {
 
 typedef struct ring_buffer {
 
-    size_t capacity;
+    size_t size, capacity;
     int head, tail;
     uint64_t *buf;
 

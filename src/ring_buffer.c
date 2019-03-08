@@ -3,11 +3,11 @@
  * @Date:   2019-03-07T10:32:56-06:00
  * @Email:  silentcat@protonmail.com
  * @Last modified by:   silentcat
- * @Last modified time: 2019-03-07T13:39:06-06:00
+ * @Last modified time: 2019-03-07T22:58:26-06:00
  */
 
 #include "include/ring_buffer.h"
-
+#include <stdio.h>
 
 enum cc_stat rbuf_new(Rbuf **rbuf)
 {
@@ -33,6 +33,7 @@ enum cc_stat rbuf_conf_new(RbufConf *rconf, Rbuf **rbuf)
     ringbuf->mem_calloc = rconf->mem_calloc;
     ringbuf->mem_free = rconf->mem_free;
     ringbuf->capacity = DEFAULT_RBUF_CAPACITY;
+    ringbuf->size = 0;
     ringbuf->head = 0, ringbuf->tail = 0;
     *rbuf = ringbuf;
     return CC_OK;
@@ -55,26 +56,28 @@ void rbuf_destroy(Rbuf *rbuf)
 
 int rbuf_is_empty(Rbuf *rbuf)
 {
-    return (rbuf->head == rbuf->tail);
+    return (rbuf->size == 0);
 }
 
 enum cc_stat rbuf_enqueue(Rbuf *rbuf, uint64_t item)
 {
-  if (!rbuf)
-     return CC_ERR_ALLOC;
-  rbuf->buf[rbuf->head] = item;
-  rbuf->head = (rbuf->head + 1) % rbuf->capacity;
-  return CC_OK;
+    if (!rbuf)
+       return CC_ERR_ALLOC;
+    rbuf->buf[rbuf->head] = item;
+    rbuf->head = (rbuf->head + 1) % rbuf->capacity;
+    ++rbuf->size;
+    return CC_OK;
 }
 
 enum cc_stat rbuf_dequeue(Rbuf *rbuf, uint64_t *out)
 {
-  if (!rbuf)
-     return CC_ERR_ALLOC;
-  if (!rbuf_is_empty(rbuf))
-     return CC_ERR_MAX_CAPACITY;
-  *out = rbuf->buf[rbuf->tail];
-  rbuf->buf[rbuf->tail] = 0x0;
-  rbuf->tail = (rbuf->tail + 1) % rbuf->capacity;
-  return CC_OK;
+    if (!rbuf)
+       return CC_ERR_ALLOC;
+    if (rbuf_is_empty(rbuf))
+       return CC_ERR_MAX_CAPACITY;
+    *out = rbuf->buf[rbuf->tail];
+    rbuf->buf[rbuf->tail] = 0x0;
+    rbuf->tail = (rbuf->tail + 1) % rbuf->capacity;
+    --rbuf->size;
+    return CC_OK;
 }
