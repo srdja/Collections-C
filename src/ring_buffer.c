@@ -3,10 +3,19 @@
  * @Date:   2019-03-07T10:32:56-06:00
  * @Email:  silentcat@protonmail.com
  * @Last modified by:   silentcat
- * @Last modified time: 2019-03-09T14:10:11-06:00
+ * @Last modified time: 2019-03-09T15:06:15-06:00
  */
 
 #include "include/ring_buffer.h"
+
+struct ring_buffer_conf {
+
+   size_t capacity;
+   void *(*mem_alloc)  (size_t size);
+   void *(*mem_calloc) (size_t blocks, size_t size);
+   void  (*mem_free)   (void *block);
+
+};
 
 struct ring_buffer {
 
@@ -66,15 +75,14 @@ bool rbuf_is_empty(Rbuf *rbuf)
     return (rbuf->size == 0);
 }
 
-enum cc_stat rbuf_enqueue(Rbuf *rbuf, uint64_t item)
+void rbuf_enqueue(Rbuf *rbuf, uint64_t item)
 {
-    rbuf->buf[rbuf->head] = item;
-    rbuf->head = (rbuf->head + 1) % rbuf->capacity;
     if (rbuf->head == rbuf->tail)
        rbuf->tail = (rbuf->tail + 1) % rbuf->capacity;
+    rbuf->buf[rbuf->head] = item;
+    rbuf->head = (rbuf->head + 1) % rbuf->capacity;
     if (rbuf->size < rbuf->capacity)
        ++rbuf->size;
-    return CC_OK;
 }
 
 enum cc_stat rbuf_dequeue(Rbuf *rbuf, uint64_t *out)
@@ -85,4 +93,9 @@ enum cc_stat rbuf_dequeue(Rbuf *rbuf, uint64_t *out)
     rbuf->tail = (rbuf->tail + 1) % rbuf->capacity;
     --rbuf->size;
     return CC_OK;
+}
+
+uint64_t rbuf_access(Rbuf *rbuf, int index)
+{
+  return rbuf->buf[index];
 }
