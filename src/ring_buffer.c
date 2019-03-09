@@ -3,7 +3,7 @@
  * @Date:   2019-03-07T10:32:56-06:00
  * @Email:  silentcat@protonmail.com
  * @Last modified by:   silentcat
- * @Last modified time: 2019-03-09T15:20:55-06:00
+ * @Last modified time: 2019-03-09T15:23:25-06:00
  */
 
 #include "include/ring_buffer.h"
@@ -102,5 +102,5 @@ enum cc_stat rbuf_dequeue(Rbuf *rbuf, uint64_t *out)
 
 uint64_t rbuf_peek(Rbuf *rbuf, int index)
 {
-  return rbuf->buf[index];
+    return rbuf->buf[index];
 }
