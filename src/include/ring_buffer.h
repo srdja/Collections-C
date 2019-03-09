@@ -3,7 +3,7 @@
  * @Date:   2019-03-07T10:32:52-06:00
  * @Email:  silentcat@protonmail.com
  * @Last modified by:   silentcat
- * @Last modified time: 2019-03-09T15:05:44-06:00
+ * @Last modified time: 2019-03-09T15:14:36-06:00
  */
 
 #ifndef COLLECTIONS_C_RBUF_H
@@ -23,8 +23,9 @@ enum cc_stat  rbuf_conf_new      (RbufConf *rconf, Rbuf **rbuf);
 void          rbuf_enqueue       (Rbuf *rbuf, uint64_t item);
 enum cc_stat  rbuf_dequeue       (Rbuf *rbuf, uint64_t *out);
 bool          rbuf_is_empty      (Rbuf *rbuf);
+size_t        rbuf_size          (Rbuf *rbuf);
 void          rbuf_destroy       (Rbuf *rbuf);
-uint64_t      rbuf_access        (Rbuf *rbuf, int index);
+uint64_t      rbuf_peek          (Rbuf *rbuf, int index);
 
 
 #endif

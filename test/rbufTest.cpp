@@ -3,7 +3,7 @@
  * @Date:   2019-03-07T21:58:26-06:00
  * @Email:  silentcat@protonmail.com
  * @Last modified by:   silentcat
- * @Last modified time: 2019-03-07T22:57:28-06:00
+ * @Last modified time: 2019-03-09T15:13:05-06:00
  */
 
  #include "CppUTest/TestHarness_c.h"
@@ -17,6 +17,7 @@
 
  TEST_C_WRAPPER(RbufTest, RbufEnqueue);
  TEST_C_WRAPPER(RbufTest, RbufDequeue);
+ TEST_C_WRAPPER(RbufTest, RbufEnqueuePastCapacity);
 
  int main(int argc, char **argv) {
      return RUN_ALL_TESTS(argc, argv);
