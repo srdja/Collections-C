@@ -147,7 +147,7 @@ enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 
 #define HASHTABLE_FOREACH(entry, hashtable, body)                       \
     {                                                                   \
-        HashtableIter hashtable_iter_53d46d2a04458e7b;                  \
+        HashTableIter hashtable_iter_53d46d2a04458e7b;                  \
         hashtable_iter_init(&hashtable_iter_53d46d2a04458e7b, hashtable); \
         TableEntry *val;                                                \
         while (hashtable_iter_next(&hashtable_iter_53d46d2a04458e7b, &entry) != CC_ITER_END) \
