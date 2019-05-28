@@ -32,8 +32,8 @@ struct slist_s {
 };
 
 
-static void* unlink              (SList *list, SNode *node, SNode *prev);
-static bool  unlink_all          (SList *list, void (*cb) (void*));
+static void* unlinkn              (SList *list, SNode *node, SNode *prev);
+static bool  unlinkn_all          (SList *list, void (*cb) (void*));
 static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
 static bool  link_all_externally (SList *list, SNode **h, SNode **t);
 static enum cc_stat get_node_at  (SList *list, size_t index, SNode **node, SNode **prev);
@@ -484,7 +484,7 @@ enum cc_stat slist_remove(SList *list, void *element, void **out)
     if (status != CC_OK)
         return status;
 
-    void *val = unlink(list, node, prev);
+    void *val = unlinkn(list, node, prev);
 
     if (out)
         *out = val;
@@ -516,7 +516,7 @@ enum cc_stat slist_remove_at(SList *list, size_t index, void **out)
     if (status != CC_OK)
         return status;
 
-    void *e = unlink(list, node, prev);
+    void *e = unlinkn(list, node, prev);
 
     if (out)
         *out = e;
@@ -540,7 +540,7 @@ enum cc_stat slist_remove_first(SList *list, void **out)
     if (list->size == 0)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e = unlink(list, list->head, NULL);
+    void *e = unlinkn(list, list->head, NULL);
 
     if (out)
         *out = e;
@@ -572,7 +572,7 @@ enum cc_stat slist_remove_last(SList *list, void **out)
     if (status != CC_OK)
         return status;
 
-    void *e = unlink(list, node, prev);
+    void *e = unlinkn(list, node, prev);
 
     if (out)
         *out = e;
@@ -590,7 +590,7 @@ enum cc_stat slist_remove_last(SList *list, void **out)
  */
 enum cc_stat slist_remove_all(SList *list)
 {
-    bool unlinked = unlink_all(list, NULL);
+    bool unlinked = unlinkn_all(list, NULL);
 
     if (unlinked) {
         list->head = NULL;
@@ -614,7 +614,7 @@ enum cc_stat slist_remove_all(SList *list)
  */
 enum cc_stat slist_remove_all_cb(SList *list, void (*cb) (void*))
 {
-    bool unlinked = unlink_all(list, cb);
+    bool unlinked = unlinkn_all(list, cb);
 
     if (unlinked) {
         list->head = NULL;
@@ -1110,7 +1110,7 @@ enum cc_stat slist_filter_mut(SList *list, bool (*pred) (const void*))
         next = curr->next;
 
         if (!pred(curr->data)) {
-            unlink(list, curr, prev);
+            unlinkn(list, curr, prev);
         } else {
             prev = curr;
 	}
@@ -1156,7 +1156,7 @@ enum cc_stat slist_iter_remove(SListIter *iter, void **out)
     if (!iter->current)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e = unlink(iter->list, iter->current, iter->prev);
+    void *e = unlinkn(iter->list, iter->current, iter->prev);
     iter->current = NULL;
     iter->index--;
 
@@ -1399,8 +1399,8 @@ enum cc_stat slist_zip_iter_remove(SListZipIter *iter, void **out1, void **out2)
     if (!iter->l1_current || !iter->l2_current)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e1 = unlink(iter->l1, iter->l1_current, iter->l1_prev);
-    void *e2 = unlink(iter->l2, iter->l2_current, iter->l2_prev);
+    void *e1 = unlinkn(iter->l1, iter->l1_current, iter->l1_prev);
+    void *e2 = unlinkn(iter->l2, iter->l2_current, iter->l2_prev);
 
     iter->l1_current = NULL;
     iter->l2_current = NULL;
@@ -1473,7 +1473,7 @@ size_t slist_zip_iter_index(SListZipIter *iter)
  *
  * @return the data that was at this node
  */
-static void *unlink(SList *list, SNode *node, SNode *prev)
+static void *unlinkn(SList *list, SNode *node, SNode *prev)
 {
     void *data = node->data;
 
@@ -1500,7 +1500,7 @@ static void *unlink(SList *list, SNode *node, SNode *prev)
  *
  * @return false if the list is already y empty, otherwise returns true
  */
-static bool unlink_all(SList *list, void (*cb) (void*))
+static bool unlinkn_all(SList *list, void (*cb) (void*))
 {
     if (list->size == 0)
         return false;

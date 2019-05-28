@@ -32,8 +32,8 @@ struct list_s {
 };
 
 
-static void *unlink              (List *list, Node *node);
-static bool  unlink_all          (List *list, void (*cb) (void*));
+static void *unlinkn              (List *list, Node *node);
+static bool  unlinkn_all          (List *list, void (*cb) (void*));
 static void  link_behind         (Node *node, Node *inserted);
 static void  link_after          (Node *base, Node *inserted);
 static void  swap                (Node *n1, Node *n2);
@@ -515,7 +515,7 @@ enum cc_stat list_remove(List *list, void *element, void **out)
     if (out)
         *out = node->data;
 
-    unlink(list, node);
+    unlinkn(list, node);
     return CC_OK;
 }
 
@@ -544,7 +544,7 @@ enum cc_stat list_remove_at(List *list, size_t index, void **out)
     if (out)
         *out = node->data;
 
-    unlink(list, node);
+    unlinkn(list, node);
     return CC_OK;
 }
 
@@ -564,7 +564,7 @@ enum cc_stat list_remove_first(List *list, void **out)
     if (!list->size)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e = unlink(list, list->head);
+    void *e = unlinkn(list, list->head);
 
     if (out)
         *out = e;
@@ -588,7 +588,7 @@ enum cc_stat list_remove_last(List *list, void **out)
     if (!list->size)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e = unlink(list, list->tail);
+    void *e = unlinkn(list, list->tail);
 
     if (out)
         *out = e;
@@ -606,7 +606,7 @@ enum cc_stat list_remove_last(List *list, void **out)
  */
 enum cc_stat list_remove_all(List *list)
 {
-    bool unlinked = unlink_all(list, NULL);
+    bool unlinked = unlinkn_all(list, NULL);
 
     if (unlinked) {
         list->head = NULL;
@@ -631,7 +631,7 @@ enum cc_stat list_remove_all(List *list)
  */
 enum cc_stat list_remove_all_cb(List *list, void (*cb) (void*))
 {
-    bool unlinked = unlink_all(list, cb);
+    bool unlinked = unlinkn_all(list, cb);
 
     if (unlinked) {
         list->head = NULL;
@@ -1241,7 +1241,7 @@ enum cc_stat list_filter_mut(List *list, bool (*pred) (const void*))
         next = curr->next;
 
         if (!pred(curr->data)) {
-            unlink(list, curr);
+            unlinkn(list, curr);
         }
         curr = next;
     }
@@ -1323,7 +1323,7 @@ enum cc_stat list_iter_remove(ListIter *iter, void **out)
     if (!iter->last)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e = unlink(iter->list, iter->last);
+    void *e = unlinkn(iter->list, iter->last);
     iter->last = NULL;
 
     if (out)
@@ -1500,7 +1500,7 @@ enum cc_stat list_diter_remove(ListIter *iter, void **out)
     if (!iter->last)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e = unlink(iter->list, iter->last);
+    void *e = unlinkn(iter->list, iter->last);
     iter->last = NULL;
 
     if (out)
@@ -1691,8 +1691,8 @@ enum cc_stat list_zip_iter_remove(ListZipIter *iter, void **out1, void **out2)
     if (!iter->l1_last || !iter->l2_last)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    void *e1 = unlink(iter->l1, iter->l1_last);
-    void *e2 = unlink(iter->l2, iter->l2_last);
+    void *e1 = unlinkn(iter->l1, iter->l1_last);
+    void *e2 = unlinkn(iter->l2, iter->l2_last);
 
     iter->l1_last = NULL;
     iter->l2_last = NULL;
@@ -1902,7 +1902,7 @@ static void swap_adjacent(Node *n1, Node *n2)
  *
  * @return the data that was at this node.
  */
-static void *unlink(List *list, Node *node)
+static void *unlinkn(List *list, Node *node)
 {
     void *data = node->data;
 
@@ -1933,7 +1933,7 @@ static void *unlink(List *list, Node *node)
  *
  * @return false if the list is already empty, otherwise returns true.
  */
-static bool unlink_all(List *list, void (*cb) (void*))
+static bool unlinkn_all(List *list, void (*cb) (void*))
 {
     if (list->size == 0)
         return false;
@@ -1946,7 +1946,7 @@ static bool unlink_all(List *list, void (*cb) (void*))
         if (cb)
             cb(node->data);
 
-        unlink(list, node);
+        unlinkn(list, node);
         node = tmp;
     }
     return true;
