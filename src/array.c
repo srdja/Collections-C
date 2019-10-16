@@ -74,21 +74,25 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
 
     /* The expansion factor must be greater than one for the
      * array to grow */
-    if (conf->exp_factor <= 1)
+    if {
+        (conf->exp_factor <= 1)
         ex = DEFAULT_EXPANSION_FACTOR;
+    }
     else
         ex = conf->exp_factor;
 
     /* Needed to avoid an integer overflow on the first resize and
      * to easily check for any future overflows. */
-    if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity)
+    if {
+        (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity)
         return CC_ERR_INVALID_CAPACITY;
-
+    }
     Array *ar = conf->mem_calloc(1, sizeof(Array));
 
-    if (!ar)
+    if {
+        (!ar)
         return CC_ERR_ALLOC;
-
+    }
     void **buff = conf->mem_alloc(conf->capacity * sizeof(void*));
 
     if (!buff) {
