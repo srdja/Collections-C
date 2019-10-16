@@ -21,10 +21,12 @@ int cmp(void const *e1, void const *e2)
     int i = *(*((int**) e1));
     int j = *(*((int**) e2));
 
-    if (i < j)
+    if (i < j){
         return -1;
-    if (i == j)
+    }
+    if (i == j){
         return 0;
+    }
     return 1;
 }
 
