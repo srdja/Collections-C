@@ -90,9 +90,11 @@ enum cc_stat list_new_conf(ListConf const * const conf, List **out)
 {
     List *list = conf->mem_calloc(1, sizeof(List));
 
-    if (!list)
+    if (!list){
+        
         return CC_ERR_ALLOC;
-
+    }
+    
     list->mem_alloc  = conf->mem_alloc;
     list->mem_calloc = conf->mem_calloc;
     list->mem_free   = conf->mem_free;
@@ -108,9 +110,11 @@ enum cc_stat list_new_conf(ListConf const * const conf, List **out)
  */
 void list_destroy(List *list)
 {
-    if (list->size > 0)
+    if (list->size > 0){
+        
         list_remove_all(list);
-
+    }
+    
     list->mem_free(list);
 }
 
