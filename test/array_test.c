@@ -15,11 +15,15 @@ int comp(void const *e1, void const *e2)
     int *i = *((int**) e1);
     int *j = *((int**) e2);
 
-    if (*i < *j)
+    if {
+        (*i < *j)
         return -1;
-    if (*i > *j)
-        return 1;
-    return 0;
+    }
+     if {
+         (*i > *j)
+         return 1;
+    }
+         return 0;
 }
 
 void *copy(void *val)
