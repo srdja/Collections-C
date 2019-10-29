@@ -276,7 +276,7 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
         return CC_ERR_VALUE_NOT_FOUND;
 
     if (index != ar->size - 1) {
-        size_t block_size = (ar->size - index) * sizeof(void*);
+        size_t block_size = (ar->size - 1 - index) * sizeof(void*);
 
         memmove(&(ar->buffer[index]),
                 &(ar->buffer[index + 1]),
