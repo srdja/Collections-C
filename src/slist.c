@@ -903,7 +903,15 @@ enum cc_stat slist_copy_deep(SList *list, void *(*cp) (void*), SList **out)
  */
 size_t slist_contains(SList *list, void *element)
 {
-    return slist_contains_value(list, element, cc_common_cmp_ptr);
+    SNode *node = list->head;
+    size_t e_count = 0;
+
+    while (node) {
+        if (node->data == element)
+            e_count++;
+        node = node->next;
+    }
+    return e_count;
 }
 
 /**

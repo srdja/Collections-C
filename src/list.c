@@ -954,7 +954,15 @@ enum cc_stat list_to_array(List *list, void ***out)
  */
 size_t list_contains(List *list, void *element)
 {
-    return list_contains_value(list, element, cc_common_cmp_ptr);
+    Node *node = list->head;
+    size_t e_count = 0;
+
+    while (node) {
+        if (node->data == element)
+            e_count++;
+        node = node->next;
+    }
+    return e_count;
 }
 
 /**
@@ -1995,7 +2003,7 @@ static Node *get_node(List *list, void *element)
 {
     Node *node = list->head;
     while (node) {
-        if (cc_common_cmp_ptr(node->data, element) == 0)
+        if (node->data == element)
             return node;
         node = node->next;
     }
