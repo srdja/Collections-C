@@ -28,6 +28,11 @@ int cmp(void const *e1, void const *e2)
     return 1;
 }
 
+int zero_if_ptr_eq(void const *e1, void const *e2)
+{
+    return !(e1 == e2);
+}
+
 void *copy(void *e1)
 {
     int *cp = (int *) malloc(sizeof(int));
@@ -176,10 +181,10 @@ TEST_C(ListTestsWithDefaults, ListIndexOf)
     list_add(list1, &d);
 
     size_t idx;
-    list_index_of(list1, &a, cc_common_cmp_ptr, &idx);
+    list_index_of(list1, &a, zero_if_ptr_eq, &idx);
     CHECK_EQUAL_C_INT(0, idx);
 
-    list_index_of(list1, &c, cc_common_cmp_ptr, &idx);
+    list_index_of(list1, &c, zero_if_ptr_eq, &idx);
     CHECK_EQUAL_C_INT(2, idx);
 };
 
@@ -266,14 +271,14 @@ TEST_C(ListTestsWithDefaults, ListZipIterAdd)
     }
 
     size_t index;
-    list_index_of(list1, "h", cc_common_cmp_ptr, &index);
+    list_index_of(list1, "h", zero_if_ptr_eq, &index);
 
     CHECK_EQUAL_C_INT(2, index);
 
-    list_index_of(list1, "i", cc_common_cmp_ptr, &index);
+    list_index_of(list1, "i", zero_if_ptr_eq, &index);
     CHECK_EQUAL_C_INT(2, index);
 
-    list_index_of(list1, "c", cc_common_cmp_ptr, &index);
+    list_index_of(list1, "c", zero_if_ptr_eq, &index);
     CHECK_EQUAL_C_INT(3, index);
 
     CHECK_EQUAL_C_INT(1, list_contains(list1, "h"));
@@ -349,10 +354,10 @@ TEST_C(ListTestsWithDefaults, ListZipIterReplace)
     }
 
     size_t index;
-    list_index_of(list1, "h", cc_common_cmp_ptr, &index);
+    list_index_of(list1, "h", zero_if_ptr_eq, &index);
     CHECK_EQUAL_C_INT(1, index);
 
-    list_index_of(list1, "i", cc_common_cmp_ptr, &index);
+    list_index_of(list1, "i", zero_if_ptr_eq, &index);
     CHECK_EQUAL_C_INT(1, index);
     CHECK_EQUAL_C_INT(1, list_contains(list1, "h"));
     CHECK_EQUAL_C_INT(1, list_contains(list2, "i"));

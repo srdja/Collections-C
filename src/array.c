@@ -729,7 +729,13 @@ enum cc_stat array_trim_capacity(Array *ar)
  */
 size_t array_contains(Array *ar, void *element)
 {
-    return array_contains_value(ar, element, cc_common_cmp_ptr);
+    size_t o = 0;
+    size_t i;
+    for (i = 0; i < ar->size; i++) {
+        if (ar->buffer[i] == element)
+            o++;
+    }
+    return o;
 }
 
 /**

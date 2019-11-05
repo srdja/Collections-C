@@ -709,7 +709,15 @@ void deque_reverse(Deque *deque)
  */
 size_t deque_contains(Deque const * const deque, const void *element)
 {
-    return deque_contains_value(deque, element, cc_common_cmp_ptr);
+    size_t i;
+    size_t o = 0;
+
+    for (i = 0; i < deque->size; i++) {
+        size_t p = (deque->first + i) & (deque->capacity - 1);
+        if (deque->buffer[p] == element)
+            o++;
+    }
+    return o;
 }
 
 /**
