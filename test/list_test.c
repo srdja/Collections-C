@@ -354,10 +354,10 @@ TEST_C(ListTestsWithDefaults, ListZipIterReplace)
     }
 
     size_t index;
-    list_index_of(list1, "h", zero_if_ptr_eq, &index);
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list1, "h", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(1, index);
 
-    list_index_of(list1, "i", zero_if_ptr_eq, &index);
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list2, "i", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(1, index);
     CHECK_EQUAL_C_INT(1, list_contains(list1, "h"));
     CHECK_EQUAL_C_INT(1, list_contains(list2, "i"));
