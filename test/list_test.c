@@ -544,7 +544,7 @@ TEST_C(ListTestsListPrefilled, ListIterDescAdd)
     CHECK_EQUAL_C_INT(*a, *el);
 };
 
-TEST_C(ListTestsListPrefilled, ListReverese)
+TEST_C(ListTestsListPrefilled, ListReverse)
 {
     int *last_old;
     list_get_last(list1, (void*) &last_old);

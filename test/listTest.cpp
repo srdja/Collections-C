@@ -32,7 +32,7 @@ TEST_C_WRAPPER(ListTestsListPrefilled, ListIterAdd);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListIterRemove);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListIterDescRemove);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListIterDescAdd);
-TEST_C_WRAPPER(ListTestsListPrefilled, ListReverese);
+TEST_C_WRAPPER(ListTestsListPrefilled, ListReverse);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListToArray);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListSpliceAt);
 TEST_C_WRAPPER(ListTestsListPrefilled, ListSplice);
