@@ -391,7 +391,7 @@ TEST_GROUP_C_SETUP(ListTestsListPrefilled)
     *a = 5;
     *b = 6;
     *c = 7;
-    *d = 7;
+    *d = 8;
 
     list_add(list2, a);
     list_add(list2, b);
@@ -413,12 +413,12 @@ TEST_C(ListTestsListPrefilled, ListAddAllAt)
 
     int *last;
     list_get_last(list1, (void*) &last);
-    int *l1i5;
-    list_get_at(list1, 5, (void*) &l1i5);
+    int *l1i4;
+    list_get_at(list1, 4, (void*) &l1i4);
     int *l2i2;
     list_get_at(list2, 2, (void*) &l2i2);
     CHECK_EQUAL_C_INT(4, *last);
-    CHECK_EQUAL_C_INT(*l1i5, *l2i2);
+    CHECK_EQUAL_C_INT(*l1i4, *l2i2);
 };
 
 
@@ -606,7 +606,7 @@ TEST_C(ListTestsListPrefilled, ListSplice)
 
     int *el;
     list_get_last(list1, (void*) &el);
-    CHECK_EQUAL_C_INT(7, *el);
+    CHECK_EQUAL_C_INT(8, *el);
 
     list_get_first(list1, (void*) &el);
     CHECK_EQUAL_C_INT(1, *el);
