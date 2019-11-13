@@ -479,7 +479,7 @@ TEST_C(ListTestsListPrefilled, ListIterRemove)
         }
     }
     CHECK_EQUAL_C_INT(3, list_size(list1));
-    CHECK_EQUAL_C_INT(CC_OK, list_contains(list1, rm));
+    CHECK_EQUAL_C_INT(0, list_contains(list1, rm));
 };
 
 TEST_C(ListTestsListPrefilled, ListIterDescRemove)
