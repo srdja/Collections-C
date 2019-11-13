@@ -475,11 +475,11 @@ TEST_C(ListTestsListPrefilled, ListIterRemove)
     while (list_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (*e == 3) {
             list_iter_remove(&iter, NULL);
-            free(e);
         }
     }
     CHECK_EQUAL_C_INT(3, list_size(list1));
     CHECK_EQUAL_C_INT(0, list_contains(list1, rm));
+    free(rm);
 };
 
 TEST_C(ListTestsListPrefilled, ListIterDescRemove)
