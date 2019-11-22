@@ -774,8 +774,9 @@ size_t hashtable_hash_string(const void *key, int len, uint32_t seed)
     const    char   *str  = key;
     register size_t  hash = seed + 5381 + len + 1; /* Suppress the unused param warning */
 
-    while (*str++)
-        hash = ((hash << 5) + hash) ^ *str;
+    int c;
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) ^ c;
 
     return hash;
 }
