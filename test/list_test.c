@@ -271,14 +271,13 @@ TEST_C(ListTestsWithDefaults, ListZipIterAdd)
     }
 
     size_t index;
-    list_index_of(list1, "h", zero_if_ptr_eq, &index);
-
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list1, "h", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(2, index);
 
-    list_index_of(list1, "i", zero_if_ptr_eq, &index);
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list2, "i", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(2, index);
 
-    list_index_of(list1, "c", zero_if_ptr_eq, &index);
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list1, "c", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(3, index);
 
     CHECK_EQUAL_C_INT(1, list_contains(list1, "h"));
@@ -354,10 +353,10 @@ TEST_C(ListTestsWithDefaults, ListZipIterReplace)
     }
 
     size_t index;
-    list_index_of(list1, "h", zero_if_ptr_eq, &index);
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list1, "h", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(1, index);
 
-    list_index_of(list1, "i", zero_if_ptr_eq, &index);
+    CHECK_EQUAL_C_INT(CC_OK, list_index_of(list2, "i", zero_if_ptr_eq, &index));
     CHECK_EQUAL_C_INT(1, index);
     CHECK_EQUAL_C_INT(1, list_contains(list1, "h"));
     CHECK_EQUAL_C_INT(1, list_contains(list2, "i"));
@@ -391,7 +390,7 @@ TEST_GROUP_C_SETUP(ListTestsListPrefilled)
     *a = 5;
     *b = 6;
     *c = 7;
-    *d = 7;
+    *d = 8;
 
     list_add(list2, a);
     list_add(list2, b);
@@ -413,12 +412,12 @@ TEST_C(ListTestsListPrefilled, ListAddAllAt)
 
     int *last;
     list_get_last(list1, (void*) &last);
-    int *l1i5;
-    list_get_at(list1, 5, (void*) &l1i5);
+    int *l1i4;
+    list_get_at(list1, 4, (void*) &l1i4);
     int *l2i2;
     list_get_at(list2, 2, (void*) &l2i2);
     CHECK_EQUAL_C_INT(4, *last);
-    CHECK_EQUAL_C_INT(*l1i5, *l2i2);
+    CHECK_EQUAL_C_INT(*l1i4, *l2i2);
 };
 
 
@@ -475,11 +474,11 @@ TEST_C(ListTestsListPrefilled, ListIterRemove)
     while (list_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (*e == 3) {
             list_iter_remove(&iter, NULL);
-            free(e);
         }
     }
     CHECK_EQUAL_C_INT(3, list_size(list1));
-    CHECK_EQUAL_C_INT(CC_OK, list_contains(list1, rm));
+    CHECK_EQUAL_C_INT(0, list_contains(list1, rm));
+    free(rm);
 };
 
 TEST_C(ListTestsListPrefilled, ListIterDescRemove)
@@ -544,7 +543,7 @@ TEST_C(ListTestsListPrefilled, ListIterDescAdd)
     CHECK_EQUAL_C_INT(*a, *el);
 };
 
-TEST_C(ListTestsListPrefilled, ListReverese)
+TEST_C(ListTestsListPrefilled, ListReverse)
 {
     int *last_old;
     list_get_last(list1, (void*) &last_old);
@@ -606,7 +605,7 @@ TEST_C(ListTestsListPrefilled, ListSplice)
 
     int *el;
     list_get_last(list1, (void*) &el);
-    CHECK_EQUAL_C_INT(7, *el);
+    CHECK_EQUAL_C_INT(8, *el);
 
     list_get_first(list1, (void*) &el);
     CHECK_EQUAL_C_INT(1, *el);
