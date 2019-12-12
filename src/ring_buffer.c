@@ -41,7 +41,7 @@ enum cc_stat rbuf_conf_new(RbufConf *rconf, Rbuf **rbuf)
     Rbuf *ringbuf = rconf->mem_calloc(1, sizeof(Rbuf));
     if (!ringbuf)
        return CC_ERR_ALLOC;
-    if (!(ringbuf->buf = rconf->mem_calloc(rconf->capacity, sizeof(Rbuf)))) {
+    if (!(ringbuf->buf = rconf->mem_calloc(rconf->capacity, sizeof(uint64_t)))) {
       rconf->mem_free(ringbuf);
       return CC_ERR_ALLOC;
     }
