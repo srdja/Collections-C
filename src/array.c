@@ -679,9 +679,10 @@ enum cc_stat array_filter(Array *ar, bool (*pred) (const void*), Array **out)
  */
 void array_reverse(Array *ar)
 {
-    size_t i;
-    size_t j;
-    for (i = 0, j = ar->size - 1; i < (ar->size - 1) / 2; i++, j--) {
+    if (ar->size == 0)
+        return;
+
+    for (size_t i = 0, j = ar->size - 1; i < j; i++, j--) {
         void *tmp = ar->buffer[i];
         ar->buffer[i] = ar->buffer[j];
         ar->buffer[j] = tmp;
