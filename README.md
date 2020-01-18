@@ -119,6 +119,12 @@ sudo make install
 ```
 By default the libraries and headers will be installed in `/usr/local/lib/` and `/usr/local/include` directories.
 
+You have to make the system's runtime aware of the location of the new library to be able to run dynamically linked applications.
+This might be as simple as running the following command if your `/etc/ld.so.conf` contains the install directory.
+```
+sudo ldconfig
+```
+
 ## Using Collections-C in your programs
 
 ### A simple program
