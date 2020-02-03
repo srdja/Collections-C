@@ -145,14 +145,18 @@ enum cc_stat  hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
 enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
 
 
-#define HASHTABLE_FOREACH(entry, hashtable, body)                       \
+#define HASHTABLE_FOREACH(hashtable, key_53d46d2a04458e7b, value_53d46d2a04458e7b, body) \
     {                                                                   \
         HashTableIter hashtable_iter_53d46d2a04458e7b;                  \
         hashtable_iter_init(&hashtable_iter_53d46d2a04458e7b, hashtable); \
-        TableEntry *val;                                                \
-        while (hashtable_iter_next(&hashtable_iter_53d46d2a04458e7b, &entry) != CC_ITER_END) \
+        TableEntry *entry_53d46d2a04458e7b;                             \
+        while (hashtable_iter_next(&hashtable_iter_53d46d2a04458e7b, &entry_53d46d2a04458e7b) != CC_ITER_END) \
+        {                                                               \
+            key_53d46d2a04458e7b = entry_53d46d2a04458e7b->key;         \
+            value_53d46d2a04458e7b = entry_53d46d2a04458e7b->value;     \
             body                                                        \
-                }
+                }                                                       \
+    }
 
 
 #define GENERAL_HASH hashtable_hash
