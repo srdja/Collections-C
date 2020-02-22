@@ -919,38 +919,30 @@ uint64_t hashtable_hash(const void *key, int len, uint32_t seed)
  */
 uint64_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
 {
-    const int nblocks = len / 4;
-
-    uint64_t h1 = seed;
-    uint64_t h2 = seed;
+    uint32_t h1 = seed;
+    uint32_t h2 = seed;
 
     const uint64_t c1 = BIG_CONSTANT(0x87c37b91114253d5);
     const uint64_t c2 = BIG_CONSTANT(0x4cf5ad432745937f);
 
-    int i;
-    for (i = 0; i < nblocks; i++) {
-        uint64_t k1 = ((uintptr_t) key >> (2 * i)) & 0xff;
-        uint64_t k2 = ROTL64(k1, 13);
+    uint32_t k1 = (uint32_t)  (uintptr_t) key;
+    uint32_t k2 = (uint32_t) ((uintptr_t) key >> (uint64_t) 32);
 
-        k1 *= c1;
-        k1  = ROTL64(k1,31);
-        k1 *= c2;
-        h1 ^= k1;
-        h1  = ROTL64(h1,27);
-        h1 += h2;
-        h1  = h1 * 5 + 0x52dce729;
+    k1 *= c1;
+    k1  = rotl32(k1,31);
+    k1 *= c2;
+    h1 ^= k1;
+    h1  = rotl32(h1,27);
+    h1 += h2;
+    h1  = h1 * 5 + 0x52dce729;
 
-        k2 *= c2;
-        k2  = ROTL64(k2,33);
-        k2 *= c1;
-        h2 ^= k2;
-        h2  = ROTL64(h2,31);
-        h2 += h1;
-        h2  = h2 * 5 + 0x38495ab5;
-    }
-
-    /* Since the pointers are power of two length
-     * we don't need a tail mix */
+    k2 *= c2;
+    k2  = rotl32(k2,33);
+    k2 *= c1;
+    h2 ^= k2;
+    h2  = rotl32(h2,31);
+    h2 += h1;
+    h2  = h2 * 5 + 0x38495ab5;
 
     h1 ^= len; h2 ^= len;
 
@@ -963,7 +955,9 @@ uint64_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
     h1 += h2;
     h2 += h1;
 
-    return h1;
+    uint64_t result = ((uint64_t) h1 << 32) | (uint64_t) h2;
+
+    return result;
 }
 
 
@@ -1038,25 +1032,20 @@ size_t hashtable_hash(const void *key, int len, uint32_t seed)
  */
 size_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
 {
-    const int nblocks = len / 4;
-
     uint32_t h1 = seed;
 
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
 
-    int i;
-    for (i = 0; i < nblocks; i++) {
-        uint32_t k1 = ((uintptr_t) key >> (2*i)) & 0xff;
+    uint32_t k1 = (uint32_t) (uintptr_t) key;
 
-        k1 *= c1;
-        k1 = ROTL32(k1,15);
-        k1 *= c2;
+    k1 *= c1;
+    k1 = ROTL32(k1,15);
+    k1 *= c2;
 
-        h1 ^= k1;
-        h1 = ROTL32(h1,13);
-        h1 = h1*5+0xe6546b64;
-    }
+    h1 ^= k1;
+    h1 = ROTL32(h1,13);
+    h1 = h1*5+0xe6546b64;
 
     /* Since the pointers are power of two length
      * we don't need a tail mix */
