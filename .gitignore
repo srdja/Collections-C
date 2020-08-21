@@ -37,6 +37,8 @@ test/*.trs
 test/.deps/*
 src/.*
 test-driver
+.DS_Store
+.vscode
 
 test/treetable_test
 
