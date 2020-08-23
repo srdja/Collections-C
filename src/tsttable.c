@@ -181,7 +181,7 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
     char *postfix = key + (last_index + 1);
 
     if(*last_node) {
-        if(!(*last_node)->eow){
+        if(!(*last_node)->eow) {
             (*last_node)->data = table->mem_alloc(sizeof(TSTTableEntry));
             if(!(*last_node)->data)
                 return CC_ERR_ALLOC;
@@ -217,7 +217,7 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat tsttable_get (TSTTable *table, char *key, void **out){
+enum cc_stat tsttable_get (TSTTable *table, char *key, void **out) {
     size_t key_len = strlen(key);
 
     TSTTableNode ** last_node;
@@ -321,7 +321,7 @@ static void remove_eow_node(TSTTable *table, TSTTableNode *node) {
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out){
+enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out) {
     size_t key_len = strlen(key);
 
     TSTTableNode ** last_node;
@@ -423,25 +423,41 @@ void tsttable_iter_init (TSTTableIter *iter, TSTTable *table) {
 enum cc_stat tsttable_iter_next (TSTTableIter *iter, TSTTableEntry **out) {
     TSTTableNode * node;
     enum cc_stat stat = stack_pop(iter->stack, (void**)&node);
+    if(stat != CC_OK)
+        return CC_ITER_END;
 
     while (1) {
-        if(stat != CC_OK)
-            return CC_ITER_END;
+        if(node) {
+            if(node->right)
+                stack_push(iter->stack, node->right);
+            if(node->mid)
+                stack_push(iter->stack, node->mid);
+            stack_push(iter->stack, node);
+            stack_push(iter->stack, NULL);
+            if(node->left)
+                stack_push(iter->stack, node->left);
 
-        if(node->right)
-            stack_push(iter->stack, node->right);
-        if(node->mid)
-            stack_push(iter->stack, node->mid);
-        if(node->left)
-            stack_push(iter->stack, node->left);
-
-        if(node->eow) {
-            *out = node->data;
-            iter->current_node = node;
-            return CC_OK;
+            stack_pop(iter->stack, (void*)&node);
+            if(stat != CC_OK)
+                return CC_ITER_END;
         }
-        else
-            stat = stack_pop(iter->stack, (void**)&node);
+
+        if(node == NULL) {
+            stack_pop(iter->stack, (void**)&node);
+            if(stat != CC_OK)
+                return CC_ITER_END;
+
+            if(node->eow) {
+                *out = node->data;
+                iter->current_node = node;
+                return CC_OK;
+            }
+            else {
+                stack_pop(iter->stack, (void**)&node);
+                if(stat != CC_OK)
+                    return CC_ITER_END;
+            }
+        }
     }
 }
 
