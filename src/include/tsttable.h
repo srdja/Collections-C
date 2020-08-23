@@ -64,7 +64,7 @@ enum cc_stat  tsttable_iter_next       (TSTTableIter *iter, TSTTableEntry **out)
 enum cc_stat  tsttable_iter_remove     (TSTTableIter *iter, void **out);
 
 
-#define TSTREE_FOREACH(tsttable, key_53d46d2a04458e7b, value_53d46d2a04458e7b, body)  \
+#define TSTTABLE_FOREACH(tsttable, key_53d46d2a04458e7b, value_53d46d2a04458e7b, body)  \
     {                                                                               \
         TSTTableIter tsttable_iter_53d46d2a04458e7b;                                    \
         tsttable_iter_init(&tsttable_iter_53d46d2a04458e7b, tsttable);                    \

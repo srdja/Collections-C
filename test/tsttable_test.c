@@ -293,7 +293,7 @@ TEST_C(TSTTableTests, TSTTableLoop)
 
     i = 0;
     char * key, *value;
-    TSTREE_FOREACH(tst, key, value, {
+    TSTTABLE_FOREACH(tst, key, value, {
         CHECK_EQUAL_C_STRING(key, keys[i]);
         CHECK_EQUAL_C_STRING(value, values[i]);
         i += 1;
