@@ -105,48 +105,33 @@ void tsttable_destroy (TSTTable *table) {
 }
 
 /**
- * get the last tree node that has a match with a key's char.
- * @note a NULL is returned only when the table is empty (table->root == null).
+ * sotre the address of the last matched node of the given key in last_node.
+ * if the key has unmatched chars, then the the location of where to insert 
+ * the next char is stored in last_node.
  */
-static TSTTableNode * get_last_matching_node(TSTTable * table, char *key, size_t key_len, size_t * index) {
-    TSTTableNode * node = table->root;
-    *index = 0;
+static void get_last_node(TSTTable * table, TSTTableNode ***last_node, int *last_index, char *key, size_t key_len) {
+    *last_node = &table->root;
+    *last_index = -1;
 
-    if(!node)
-        return NULL;
-
-    char c = key[*index];
-    while (1) {
-        int cmp = table->char_cmp(c, node->c);
-        if(cmp < 0) {
-            if(node->left)
-                node = node->left;
-            else
-                return node;         
-        }
-        else if(cmp > 0) {
-            if(node->right)
-                node = node->right;
-            else
-                return node;
-        }
+    while (**last_node && (*last_index + 1) < key_len) {
+        char c = key[*last_index + 1];
+        int cmp = table->char_cmp(c, (**last_node)->c);
+        if(cmp < 0)
+            *last_node = &((**last_node)->left);
+        else if(cmp > 0)
+            *last_node = &((**last_node)->right);
         else if(cmp == 0) {
-            if(node->mid) {
-                if(*index >= key_len - 1)
-                    return node;
-                    
-                *index += 1;
-                c = key[*index];
-                node = node->mid;
-            }
-            else
-                return node;
+            *last_index += 1;
+            if(*last_index + 1 == key_len)
+                break;
+            else 
+                *last_node = &((**last_node)->mid);
         }
     }
 }
 
 /**
- * make a list of nodes connected by their 'mid' pointer. This last matches the provided key
+ * make a list of nodes connected by their 'mid' pointer. This list matches the provided key
  * and starts at **begin and ends at **end.
  * */
 static enum cc_stat make_mid_subtree(TSTTable *table, TSTTableNode **begin, TSTTableNode **end, char *key, size_t key_len) {
@@ -186,67 +171,40 @@ static enum cc_stat make_mid_subtree(TSTTable *table, TSTTableNode **begin, TSTT
  */
 enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
     size_t key_len = strlen(key);
-    
-    if(table->root == NULL) {
-        TSTTableNode *end;
-        enum cc_stat status = make_mid_subtree(table, &(table->root), &end, key, key_len);
-        if(status != CC_OK)
-            return status;
 
-        table->root->parent = NULL;
-        end->data = table->mem_alloc(sizeof(TSTTableEntry));
-        if(!end->data)
-            return CC_ERR_ALLOC;
+    TSTTableNode ** last_node;
+    int last_index;
 
-        end->data->key = key;
-        end->data->value = val;
-        table->size += 1;
-        return CC_OK;
-    }
+    get_last_node(table, &last_node, &last_index, key, key_len);
 
+    size_t postfix_len = key_len - (last_index + 1);
+    char *postfix = key + (last_index + 1);
 
-    size_t last_index = 0;
-    TSTTableNode * last_node = get_last_matching_node(table, key, key_len, &last_index);
-
-    if (last_node && last_index >= key_len-1) {
-        if(!last_node->eow) {
-            last_node->data = table->mem_alloc(sizeof(TSTTableEntry));
-            if(!last_node->data)
+    if(*last_node) {
+        if(!(*last_node)->eow){
+            (*last_node)->data = table->mem_alloc(sizeof(TSTTableEntry));
+            if(!(*last_node)->data)
                 return CC_ERR_ALLOC;
-
             table->size += 1;
         }
-        last_node->data->key = key;
-        last_node->data->value = val;
+        (*last_node)->data->key = key;
+        (*last_node)->data->value = val;
         return CC_OK;
     }
 
-    else {
-        TSTTableNode *begin;
-        TSTTableNode *end;
-        enum cc_stat status = make_mid_subtree(table, &begin, &end, key + last_index, key_len - last_index);
-        if(status != CC_OK)
-            return status;
-        
-        begin->parent = last_node;
+    TSTTableNode *begin, *end;
+    enum cc_stat status = make_mid_subtree(table, &begin, &end, postfix, postfix_len);
+    if(status != CC_OK)
+        return CC_ERR_ALLOC;
+    end->data = table->mem_alloc(sizeof(TSTTableEntry));
+    if(!end->data)
+        return CC_ERR_ALLOC;
+    table->size += 1;
+    end->data->key = key;
+    end->data->value = val;
 
-        int cmp = table->char_cmp(key[last_index], last_node->c);
-        if(cmp < 0)
-            last_node->left = begin;
-        else if (cmp  > 0)
-            last_node->right = begin;
-        else if (cmp == 0)
-            last_node->mid = begin;
-
-        end->data = table->mem_alloc(sizeof(TSTTableEntry));
-        if(!end->data)
-            return CC_ERR_ALLOC;
-        
-        table->size += 1;
-        end->data->key = key;
-        end->data->value = val;
-        return CC_OK;
-    }
+    *last_node = begin;
+    return CC_OK;
 }
 
 /**
@@ -260,15 +218,17 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
 enum cc_stat tsttable_get (TSTTable *table, char *key, void **out){
-    size_t last_index;
     size_t key_len = strlen(key);
-    TSTTableNode * last_node = get_last_matching_node(table, key, key_len, &last_index);
 
-    if(last_node && last_node->eow && last_index >= key_len - 1) {
-        *out = last_node->data->value;
+    TSTTableNode ** last_node;
+    int last_index;
+    get_last_node(table, &last_node, &last_index, key, key_len);
+
+    if(*last_node && (*last_node)->eow && last_index + 1 == key_len) {
+        *out = (*last_node)->data->value;
         return CC_OK;
     }
-    else 
+    else
         return CC_ERR_KEY_NOT_FOUND;
 }
 
@@ -363,14 +323,16 @@ static void remove_eow_node(TSTTable *table, TSTTableNode *node) {
  */
 enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out){
     size_t key_len = strlen(key);
-    size_t last_index;
-    TSTTableNode * last_node = get_last_matching_node(table, key, key_len, &last_index);
-    
-    if(last_node && last_node->eow && last_index >= key_len - 1) {
+
+    TSTTableNode ** last_node;
+    int last_index;
+    get_last_node(table, &last_node, &last_index, key, key_len);
+
+    if(*last_node && (*last_node)->eow && last_index + 1 == key_len) {
         if(out)
-            *out = last_node->data->value;
-        remove_eow_node(table, last_node);
-        table->size -= 1;
+            *out = (*last_node)->data->value;
+        remove_eow_node(table, *last_node);
+        table->size = (table->size > 0) ? (table->size - 1) : 0;
         return CC_OK;
     }
     else

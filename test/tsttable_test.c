@@ -55,6 +55,43 @@ TEST_C(TSTTableTests, TSTTableAdd)
     CHECK_EQUAL_C_POINTER(r, a);
 };
 
+TEST_C(TSTTableTests, TSTTableAddSubKeys)
+{
+    char pairs [16][2][20]  = {
+        {"one", "111"},
+        {"two", "222"},
+        {"three", "333"},
+        {"onee", "444"},
+        {"onez", "555"},
+        {"onec", "666"},
+        {"oneea", "777"},
+        {"oneec", "888"},
+        {"oneez", "999"},
+        {"onezz", "aaa"},
+        {"oneza", "bbb"},
+        {"onezk", "ccc"},
+        {"onecc", "ddd"},
+        {"oneca", "eee"},
+        {"onecz", "fff"},
+        {"oneck", "000"},
+    };
+    int n = 16;
+
+    for(int i = 0; i < n; i++) {
+        stat = tsttable_add(tst, pairs[i][0], pairs[i][1]);
+        CHECK_C(stat == CC_OK);
+    }
+
+    CHECK_EQUAL_C_INT(n, tsttable_size(tst));
+
+    for(int i = 0; i < n; i++) {
+        char * value;
+        stat = tsttable_get(tst, pairs[i][0], (void**)&value);
+        CHECK_C(stat == CC_OK);
+        CHECK_EQUAL_C_STRING(value, pairs[i][1]);
+    }
+}
+
 TEST_C(TSTTableTests, TSTTableReplacingAdd)
 {
     char *a = "value";
