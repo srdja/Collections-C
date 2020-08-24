@@ -121,6 +121,8 @@ By default the libraries and headers will be installed in `/usr/local/lib/` and 
 
 You have to make the system's runtime aware of the location of the new library to be able to run dynamically linked applications.
 This might be as simple as running the following command if your `/etc/ld.so.conf` contains the install directory.
+
+**Note: macOS doesn't support ldconfig.**
 ```
 sudo ldconfig
 ```
@@ -156,6 +158,8 @@ Now we need to compile and link our program. Since `make` builds both the static
 ### Linking statically
 
 If we wish to statically link the library to our program we can pass the `-static` flag to the compiler
+
+**Note:** On macOS, the **`-static`** flag is not very friendly (it requires that all the libraries are statically linked). So we can replace **`-static -lcollectc`** with the full path to the static library. Which is **`/usr/local/lib/libcollectc.a`** by default.
 
 ```
 gcc hello.c -static -lcollectc -o hello

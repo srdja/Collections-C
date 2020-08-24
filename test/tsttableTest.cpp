@@ -19,6 +19,7 @@ TEST_GROUP_C_WRAPPER(TSTTableTests)
 };
 
 TEST_C_WRAPPER(TSTTableTests, TSTTableAdd);
+TEST_C_WRAPPER(TSTTableTests, TSTTableAddSubKeys);
 TEST_C_WRAPPER(TSTTableTests, TSTTableReplacingAdd);
 TEST_C_WRAPPER(TSTTableTests, TSTTableRemove);
 TEST_C_WRAPPER(TSTTableTests, TSTTableRemoveAll);
