@@ -37,9 +37,12 @@ typedef struct tsttable_data_s {
  * iterator functions.
  */
 typedef struct tsttable_iter_s {
-    TSTTable    *table;
-    void        *stack;
-    void        *current_node;
+    TSTTable        *table;
+    void            *previous_node;
+    void            *current_node;
+    void            *next_node;
+    bool            advanced_on_remove;
+    enum cc_stat    next_stat;
 } TSTTableIter;
 
 

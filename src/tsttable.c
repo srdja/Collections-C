@@ -1,5 +1,4 @@
 #include "tsttable.h"
-#include "stack.h"
 
 /**
  * A Ternary Search Tree Table Node.
@@ -109,23 +108,30 @@ void tsttable_destroy (TSTTable *table) {
  * if the key has unmatched chars, then the the location of where to insert 
  * the next char is stored in last_node.
  */
-static void get_last_node(TSTTable * table, TSTTableNode ***last_node, int *last_index, char *key, size_t key_len) {
+static void get_last_node(TSTTable * table, TSTTableNode ***last_node, TSTTableNode ** last_parent, int *last_index, char *key, size_t key_len) {
     *last_node = &table->root;
     *last_index = -1;
+    *last_parent = NULL;
 
     while (**last_node && (*last_index + 1) < key_len) {
         char c = key[*last_index + 1];
         int cmp = table->char_cmp(c, (**last_node)->c);
-        if(cmp < 0)
+        if(cmp < 0) {
+            *last_parent = **last_node;
             *last_node = &((**last_node)->left);
-        else if(cmp > 0)
+        }
+        else if(cmp > 0) {
+            *last_parent = **last_node;
             *last_node = &((**last_node)->right);
+        }
         else if(cmp == 0) {
             *last_index += 1;
             if(*last_index + 1 == key_len)
                 break;
-            else 
+            else {
+                *last_parent = **last_node;
                 *last_node = &((**last_node)->mid);
+            }
         }
     }
 }
@@ -173,9 +179,10 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
     size_t key_len = strlen(key);
 
     TSTTableNode ** last_node;
+    TSTTableNode * last_parent;
     int last_index;
 
-    get_last_node(table, &last_node, &last_index, key, key_len);
+    get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
 
     size_t postfix_len = key_len - (last_index + 1);
     char *postfix = key + (last_index + 1);
@@ -196,6 +203,7 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
     enum cc_stat status = make_mid_subtree(table, &begin, &end, postfix, postfix_len);
     if(status != CC_OK)
         return CC_ERR_ALLOC;
+    begin->parent = last_parent;
     end->data = table->mem_alloc(sizeof(TSTTableEntry));
     if(!end->data)
         return CC_ERR_ALLOC;
@@ -220,9 +228,10 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
 enum cc_stat tsttable_get (TSTTable *table, char *key, void **out) {
     size_t key_len = strlen(key);
 
+    TSTTableNode * last_parent;
     TSTTableNode ** last_node;
     int last_index;
-    get_last_node(table, &last_node, &last_index, key, key_len);
+    get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
 
     if(*last_node && (*last_node)->eow && last_index + 1 == key_len) {
         *out = (*last_node)->data->value;
@@ -325,8 +334,9 @@ enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out) {
     size_t key_len = strlen(key);
 
     TSTTableNode ** last_node;
+    TSTTableNode * last_parent;
     int last_index;
-    get_last_node(table, &last_node, &last_index, key, key_len);
+    get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
 
     if(*last_node && (*last_node)->eow && last_index + 1 == key_len) {
         if(out)
@@ -405,9 +415,9 @@ void tsttable_foreach_value (TSTTable *table, void (*fn) (void *)) {
 void tsttable_iter_init (TSTTableIter *iter, TSTTable *table) {
     iter->table = table;
     iter->current_node = NULL;
-    stack_new((Stack**)&(iter->stack));
-    if(table->root)
-        stack_push(iter->stack, table->root);
+    iter->next_node = table->root;
+    iter->previous_node = NULL;
+    iter->advanced_on_remove = 0;
 }
 
 /**
@@ -421,44 +431,74 @@ void tsttable_iter_init (TSTTableIter *iter, TSTTable *table) {
  * end of the TSTTable has been reached.
  */
 enum cc_stat tsttable_iter_next (TSTTableIter *iter, TSTTableEntry **out) {
-    TSTTableNode * node;
-    enum cc_stat stat = stack_pop(iter->stack, (void**)&node);
-    if(stat != CC_OK)
-        return CC_ITER_END;
+    TSTTableNode * node = iter->next_node;
+    TSTTableNode * previous_node = iter->current_node;
+    TSTTableNode * next_node = NULL;
 
-    while (1) {
-        if(node) {
-            if(node->right)
-                stack_push(iter->stack, node->right);
-            if(node->mid)
-                stack_push(iter->stack, node->mid);
-            stack_push(iter->stack, node);
-            stack_push(iter->stack, NULL);
-            if(node->left)
-                stack_push(iter->stack, node->left);
-
-            stack_pop(iter->stack, (void*)&node);
-            if(stat != CC_OK)
-                return CC_ITER_END;
-        }
-
-        if(node == NULL) {
-            stack_pop(iter->stack, (void**)&node);
-            if(stat != CC_OK)
-                return CC_ITER_END;
-
-            if(node->eow) {
-                *out = node->data;
-                iter->current_node = node;
-                return CC_OK;
-            }
-            else {
-                stack_pop(iter->stack, (void**)&node);
-                if(stat != CC_OK)
-                    return CC_ITER_END;
-            }
-        }
+    if(iter->advanced_on_remove) {
+        iter->advanced_on_remove = 0;
+        return iter->next_stat;
     }
+
+    int error = 0;
+    while(node) {
+        if(previous_node == node->parent) {
+            if(node->left)
+                next_node = node->left;
+            else if(node->mid) 
+                next_node = node->mid;
+            else if(node->right)
+                next_node = node->right;
+            else if(node->parent)
+                next_node = node->parent;
+            else error = 1;
+        }
+        else if(previous_node == node->left) {
+            if(node->mid)
+                next_node = node->mid;
+            else if(node->right)
+                next_node = node->right;
+            else if(node->parent)
+                next_node = node->parent;
+            else error = 1;
+        }
+        else if(previous_node == node->mid) {
+            if(node->right)
+                next_node = node->right;
+            else if(node->parent)
+                next_node = node->parent;
+            else error = 1;
+        }
+        else if(previous_node == node->right) {
+            if(node->parent)
+                next_node = node->parent;
+            else error = 1;
+        }
+        else error = 1;
+
+        if(error) {
+            iter->next_node = NULL;
+            iter->current_node = NULL;
+            iter->previous_node = NULL;
+            return CC_ITER_END;
+        }
+        else if(node->eow) {
+            *out = node->data;
+            iter->current_node = node;
+            iter->next_node = next_node;
+            iter->previous_node = previous_node;
+            return CC_OK;
+        }
+
+        previous_node = node;
+        node = next_node;
+        next_node = NULL;
+    }
+
+    iter->next_node = NULL;
+    iter->current_node = NULL;
+    iter->previous_node = NULL;
+    return CC_ITER_END;
 }
 
 /**
@@ -485,8 +525,14 @@ enum cc_stat tsttable_iter_remove (TSTTableIter *iter, void **out) {
         *out = node->data->value;
     }
 
-    remove_eow_node(iter->table, iter->current_node);
-    iter->current_node = NULL;
+    TSTTableNode * to_remove_eow = iter->current_node;
+    
+    TSTTableEntry *entry;
+    enum cc_stat next_stat = tsttable_iter_next(iter, &entry);
+    iter->advanced_on_remove = 1;
+    iter->next_stat = next_stat;
+
+    remove_eow_node(iter->table, to_remove_eow);
     iter->table->size -= 1;
 
     return CC_OK;
