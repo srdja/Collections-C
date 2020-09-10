@@ -109,23 +109,30 @@ void tsttable_destroy (TSTTable *table) {
  * if the key has unmatched chars, then the the location of where to insert 
  * the next char is stored in last_node.
  */
-static void get_last_node(TSTTable * table, TSTTableNode ***last_node, int *last_index, char *key, size_t key_len) {
+static void get_last_node(TSTTable * table, TSTTableNode ***last_node, TSTTableNode ** last_parent, int *last_index, char *key, size_t key_len) {
     *last_node = &table->root;
     *last_index = -1;
+    *last_parent = NULL;
 
     while (**last_node && (*last_index + 1) < key_len) {
         char c = key[*last_index + 1];
         int cmp = table->char_cmp(c, (**last_node)->c);
-        if(cmp < 0)
+        if(cmp < 0) {
+            *last_parent = **last_node;
             *last_node = &((**last_node)->left);
-        else if(cmp > 0)
+        }
+        else if(cmp > 0) {
+            *last_parent = **last_node;
             *last_node = &((**last_node)->right);
+        }
         else if(cmp == 0) {
             *last_index += 1;
             if(*last_index + 1 == key_len)
                 break;
-            else 
+            else {
+                *last_parent = **last_node;
                 *last_node = &((**last_node)->mid);
+            }
         }
     }
 }
@@ -173,9 +180,10 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
     size_t key_len = strlen(key);
 
     TSTTableNode ** last_node;
+    TSTTableNode * last_parent;
     int last_index;
 
-    get_last_node(table, &last_node, &last_index, key, key_len);
+    get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
 
     size_t postfix_len = key_len - (last_index + 1);
     char *postfix = key + (last_index + 1);
@@ -196,6 +204,7 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
     enum cc_stat status = make_mid_subtree(table, &begin, &end, postfix, postfix_len);
     if(status != CC_OK)
         return CC_ERR_ALLOC;
+    begin->parent = last_parent;
     end->data = table->mem_alloc(sizeof(TSTTableEntry));
     if(!end->data)
         return CC_ERR_ALLOC;
@@ -220,9 +229,10 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val) {
 enum cc_stat tsttable_get (TSTTable *table, char *key, void **out) {
     size_t key_len = strlen(key);
 
+    TSTTableNode * last_parent;
     TSTTableNode ** last_node;
     int last_index;
-    get_last_node(table, &last_node, &last_index, key, key_len);
+    get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
 
     if(*last_node && (*last_node)->eow && last_index + 1 == key_len) {
         *out = (*last_node)->data->value;
@@ -325,8 +335,9 @@ enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out) {
     size_t key_len = strlen(key);
 
     TSTTableNode ** last_node;
+    TSTTableNode * last_parent;
     int last_index;
-    get_last_node(table, &last_node, &last_index, key, key_len);
+    get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
 
     if(*last_node && (*last_node)->eow && last_index + 1 == key_len) {
         if(out)
