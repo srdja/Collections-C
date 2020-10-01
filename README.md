@@ -1,7 +1,7 @@
 Collections-C
 =============
 
-> A library of generic data structures including a list, array, hashtable, deque etc..
+> A library of generic data structures including a list, array, hashtable, deque, string etc..
 
 [![Codeship Status for srdja/Collections-C](https://app.codeship.com/projects/493e5560-6064-0137-ef52-72c4cd7e8b98/status?branch=master)](https://app.codeship.com/projects/344074)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)
