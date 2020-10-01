@@ -69,7 +69,7 @@ array_destroy(ar);
 
 ### Dependencies
 
-- C compiler (gcc, clang, etc...)
+- C compiler (gcc,MinGW, clang, etc...)
 - cmake (>= 3.5)
 - [testing only] cpputest (>=3.8)
 - pkg-config
