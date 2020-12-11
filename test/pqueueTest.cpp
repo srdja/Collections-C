@@ -9,6 +9,7 @@ TEST_GROUP_C_WRAPPER(PQueueTestsWithDefaults)
 
 TEST_C_WRAPPER(PQueueTestsWithDefaults, PqueuePush);
 TEST_C_WRAPPER(PQueueTestsWithDefaults, PqueuePop);
+TEST_C_WRAPPER(PQueueTestsWithDefaults, PqueuePopLastTwos);
 
 int main(int argc, char **argv) {
     return RUN_ALL_TESTS(argc, argv);

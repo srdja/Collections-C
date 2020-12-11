@@ -310,15 +310,12 @@ static void pqueue_heapify(PQueue *pq, size_t index)
     void *right    = pq->buffer[R];
     void *indexPtr = pq->buffer[index];
 
-    if (L >= pq->size || R >= pq->size)
-        return;
-
-    if (pq->cmp(indexPtr, left) < 0) {
+    if (L < pq->size && pq->cmp(indexPtr, left) < 0) {
         indexPtr = left;
         index = L;
     }
 
-    if (pq->cmp(indexPtr, right) < 0) {
+    if (R < pq->size && pq->cmp(indexPtr, right) < 0) {
         indexPtr = right;
         index = R;
     }
