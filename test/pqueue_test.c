@@ -64,7 +64,7 @@ TEST_C(PQueueTestsWithDefaults, PqueuePush)
     pqueue_push(p2, (void *) &A);
     pqueue_top(p2, (void *) &ptr2);
     CHECK_EQUAL_C_POINTER(&A, ptr2);
-    
+
     pqueue_push(p2, (void *) &B);
     pqueue_top(p2, (void *) &ptr2);
     CHECK_EQUAL_C_POINTER(&A, ptr2);
@@ -100,7 +100,7 @@ TEST_C(PQueueTestsWithDefaults, PqueuePop)
     C.a = 5, C.b = 100;
 
     pqueue_push(p2, (void *) &A);
-    
+
     pqueue_push(p2, (void *) &B);
 
     pqueue_push(p2, (void *) &C);
@@ -113,4 +113,35 @@ TEST_C(PQueueTestsWithDefaults, PqueuePop)
 
     pqueue_pop(p2, (void *) &ptr2);
     CHECK_EQUAL_C_POINTER(&B, ptr2);
+};
+
+TEST_C(PQueueTestsWithDefaults, PqueuePopLastTwos)
+{
+    int a = 1, b = 3, c = 5, d = -6, e = 7;
+    int *ptr;
+
+    pqueue_push(p1, (void *) &a);
+
+    pqueue_push(p1, (void *) &b);
+
+    pqueue_push(p1, (void *) &c);
+
+    pqueue_push(p1, (void *) &d);
+
+    pqueue_push(p1, (void *) &e);
+
+    pqueue_pop(p1, (void *) &ptr);
+    CHECK_EQUAL_C_POINTER(&e, ptr);
+
+    pqueue_pop(p1, (void *)&ptr);
+    CHECK_EQUAL_C_POINTER(&c, ptr);
+
+    pqueue_pop(p1, (void *)&ptr);
+    CHECK_EQUAL_C_POINTER(&b, ptr);
+
+    pqueue_pop(p1, (void *)&ptr);
+    CHECK_EQUAL_C_POINTER(&a, ptr);
+
+    pqueue_pop(p1, (void *)&ptr);
+    CHECK_EQUAL_C_POINTER(&d, ptr);
 };
