@@ -1,0 +1,16 @@
+language: c
+dist: focal
+sudo: required
+
+compiler:
+  - gcc
+  - clang
+
+before_install:
+  - sudo apt-get install -y cmake && sudo apt-get install -y cpputest && sudo apt-get install -y gcc && sudo apt-get install -y libcpputest-dev && sudo apt-get install -y clang
+
+script:
+  - mkdir build && cd build
+  - cmake ..
+  - make
+  - make test
