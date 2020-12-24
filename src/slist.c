@@ -32,8 +32,8 @@ struct slist_s {
 };
 
 
-static void* unlinkn              (SList *list, SNode *node, SNode *prev);
-static bool  unlinkn_all          (SList *list, void (*cb) (void*));
+static void* unlinkn             (SList *list, SNode *node, SNode *prev);
+static bool  unlinkn_all         (SList *list, void (*cb) (void*));
 static void  splice_between      (SList *list1, SList *list2, SNode *base, SNode *end);
 static bool  link_all_externally (SList *list, SNode **h, SNode **t);
 static enum cc_stat get_node_at  (SList *list, size_t index, SNode **node, SNode **prev);
