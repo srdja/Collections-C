@@ -20,8 +20,8 @@
 
 #include "treeset.h"
 
-struct treeset_s {
-    TreeTable *t;
+struct cc_treeset_s {
+    CC_TreeTable *t;
     int       *dummy;
 
     void *(*mem_alloc)  (size_t size);
@@ -30,54 +30,54 @@ struct treeset_s {
 };
 
 /**
- * Initializes the fields of the TreeSetConf struct to default values.
+ * Initializes the fields of the CC_TreeSetConf struct to default values.
  *
  * @param[in, out] conf the configuration struct that is being initialized
  */
-void treeset_conf_init(TreeSetConf *conf)
+void cc_treeset_conf_init(CC_TreeSetConf *conf)
 {
-    treetable_conf_init(conf);
+    cc_treetable_conf_init(conf);
 }
 
 /**
- * Creates a new TreeSet and returns a status code.
+ * Creates a new CC_TreeSet and returns a status code.
  *
  * @param[in] cmp the comparator function used to order elements
- * @param[out] out pointer to where the newly created TreeSet is to be stored
+ * @param[out] out pointer to where the newly created CC_TreeSet is to be stored
  *
  * @return  CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new TreeSet failed.
+ * allocation for the new CC_TreeSet failed.
  */
-enum cc_stat treeset_new(int (*cmp) (const void*, const void*), TreeSet **set)
+enum cc_stat cc_treeset_new(int (*cmp) (const void*, const void*), CC_TreeSet **set)
 {
-    TreeSetConf conf;
-    treeset_conf_init(&conf);
+    CC_TreeSetConf conf;
+    cc_treeset_conf_init(&conf);
     conf.cmp = cmp;
-    return treeset_new_conf(&conf, set);
+    return cc_treeset_new_conf(&conf, set);
 }
 
 /**
- * Creates a new TreeSet based on the specified TreeSetConf struct and returns
+ * Creates a new CC_TreeSet based on the specified CC_TreeSetConf struct and returns
  * a status code.
  *
- * The TreeSet is allocated using the allocators specified in the TreeSetConf
+ * The CC_TreeSet is allocated using the allocators specified in the CC_TreeSetConf
  * object. The allocation may fail if the underlying allocator fails.
  *
- * @param[in] conf  TreeSet configuration struct. All fields must be initialized.
- * @param[out] out Pointer to where the newly created TreeSet is stored
+ * @param[in] conf  CC_TreeSet configuration struct. All fields must be initialized.
+ * @param[out] out Pointer to where the newly created CC_TreeSet is stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new TreeSet structure failed.
+ * allocation for the new CC_TreeSet structure failed.
  */
-enum cc_stat treeset_new_conf(TreeSetConf const * const conf, TreeSet **tset)
+enum cc_stat cc_treeset_new_conf(CC_TreeSetConf const * const conf, CC_TreeSet **tset)
 {
-    TreeSet *set = conf->mem_calloc(1, sizeof(TreeSet));
+    CC_TreeSet *set = conf->mem_calloc(1, sizeof(CC_TreeSet));
 
     if (!set)
         return CC_ERR_ALLOC;
 
-    TreeTable *table;
-    enum cc_stat s = treetable_new_conf(conf, &table);
+    CC_TreeTable *table;
+    enum cc_stat s = cc_treetable_new_conf(conf, &table);
 
     if (s != CC_OK) {
         conf->mem_free(set);
@@ -94,13 +94,13 @@ enum cc_stat treeset_new_conf(TreeSetConf const * const conf, TreeSet **tset)
 }
 
 /**
- * Destroys the specified TreeSet.
+ * Destroys the specified CC_TreeSet.
  *
- * @param[in] set the TreeSet to be destroyed
+ * @param[in] set the CC_TreeSet to be destroyed
  */
-void treeset_destroy(TreeSet *set)
+void cc_treeset_destroy(CC_TreeSet *set)
 {
-    treetable_destroy(set->t);
+    cc_treetable_destroy(set->t);
     set->mem_free(set);
 }
 
@@ -113,13 +113,13 @@ void treeset_destroy(TreeSet *set)
  * @return CC_OK if the operation was successful, or CC_ERR_ALLOC if the
  * memory allocation for the new element failed.
  */
-enum cc_stat treeset_add(TreeSet *set, void *element)
+enum cc_stat cc_treeset_add(CC_TreeSet *set, void *element)
 {
-    return treetable_add(set->t, element, set->dummy);
+    return cc_treetable_add(set->t, element, set->dummy);
 }
 
 /**
- * Removes the specified element from the TreeSet and sets the out
+ * Removes the specified element from the CC_TreeSet and sets the out
  * parameter to its value.
  *
  * @param[in] set the set from which the element is being removed
@@ -130,9 +130,9 @@ enum cc_stat treeset_add(TreeSet *set, void *element)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_VALUE_NOT_FOUND
  * if the value was not found.
  */
-enum cc_stat treeset_remove(TreeSet *set, void *element, void **out)
+enum cc_stat cc_treeset_remove(CC_TreeSet *set, void *element, void **out)
 {
-    if (treetable_remove(set->t, element, out) == CC_ERR_KEY_NOT_FOUND)
+    if (cc_treetable_remove(set->t, element, out) == CC_ERR_KEY_NOT_FOUND)
         return CC_ERR_VALUE_NOT_FOUND;
 
     return CC_OK;
@@ -143,9 +143,9 @@ enum cc_stat treeset_remove(TreeSet *set, void *element, void **out)
  *
  * @param set the set from which all elements are being removed
  */
-void treeset_remove_all(TreeSet *set)
+void cc_treeset_remove_all(CC_TreeSet *set)
 {
-    treetable_remove_all(set->t);
+    cc_treetable_remove_all(set->t);
 }
 
 /**
@@ -156,9 +156,9 @@ void treeset_remove_all(TreeSet *set)
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treeset_get_first(TreeSet *set, void **out)
+enum cc_stat cc_treeset_get_first(CC_TreeSet *set, void **out)
 {
-    if (treetable_get_first_key(set->t, out) == CC_ERR_KEY_NOT_FOUND)
+    if (cc_treetable_get_first_key(set->t, out) == CC_ERR_KEY_NOT_FOUND)
         return CC_ERR_VALUE_NOT_FOUND;
 
     return CC_OK;
@@ -172,9 +172,9 @@ enum cc_stat treeset_get_first(TreeSet *set, void **out)
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treeset_get_last(TreeSet *set, void **out)
+enum cc_stat cc_treeset_get_last(CC_TreeSet *set, void **out)
 {
-    if (treetable_get_last_key(set->t, out) == CC_ERR_KEY_NOT_FOUND)
+    if (cc_treetable_get_last_key(set->t, out) == CC_ERR_KEY_NOT_FOUND)
         return CC_ERR_VALUE_NOT_FOUND;
 
     return CC_OK;
@@ -189,9 +189,9 @@ enum cc_stat treeset_get_last(TreeSet *set, void **out)
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treeset_get_greater_than(TreeSet *set, void *element, void **out)
+enum cc_stat cc_treeset_get_greater_than(CC_TreeSet *set, void *element, void **out)
 {
-    if (treetable_get_greater_than(set->t, element, out) == CC_ERR_KEY_NOT_FOUND)
+    if (cc_treetable_get_greater_than(set->t, element, out) == CC_ERR_KEY_NOT_FOUND)
         return CC_ERR_VALUE_NOT_FOUND;
 
     return CC_OK;
@@ -206,9 +206,9 @@ enum cc_stat treeset_get_greater_than(TreeSet *set, void *element, void **out)
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treeset_get_lesser_than(TreeSet *set, void *element, void **out)
+enum cc_stat cc_treeset_get_lesser_than(CC_TreeSet *set, void *element, void **out)
 {
-    if (treetable_get_lesser_than(set->t, element, out) == CC_ERR_KEY_NOT_FOUND)
+    if (cc_treetable_get_lesser_than(set->t, element, out) == CC_ERR_KEY_NOT_FOUND)
         return CC_ERR_VALUE_NOT_FOUND;
 
     return CC_OK;
@@ -222,9 +222,9 @@ enum cc_stat treeset_get_lesser_than(TreeSet *set, void *element, void **out)
  *
  * @return true if the specified element is an element of the set.
  */
-bool treeset_contains(TreeSet *set, void *element)
+bool cc_treeset_contains(CC_TreeSet *set, void *element)
 {
-    return treetable_contains_key(set->t, element);
+    return cc_treetable_contains_key(set->t, element);
 }
 
 /**
@@ -234,21 +234,21 @@ bool treeset_contains(TreeSet *set, void *element)
  *
  * @return the size of the set.
  */
-size_t treeset_size(TreeSet *set)
+size_t cc_treeset_size(CC_TreeSet *set)
 {
-    return treetable_size(set->t);
+    return cc_treetable_size(set->t);
 }
 
 /**
- * Applies the function fn to each element of the TreeSet.
+ * Applies the function fn to each element of the CC_TreeSet.
  *
  * @param[in] set the set on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each element
  *               of the set
  */
-void treeset_foreach(TreeSet *set, void (*fn) (const void*))
+void cc_treeset_foreach(CC_TreeSet *set, void (*fn) (const void*))
 {
-    treetable_foreach_key(set->t, fn);
+    cc_treetable_foreach_key(set->t, fn);
 }
 
 /**
@@ -257,9 +257,9 @@ void treeset_foreach(TreeSet *set, void (*fn) (const void*))
  * @param[in] iter the iterator that is being initialized
  * @param[in] set the set on which this iterator will operate
  */
-void treeset_iter_init(TreeSetIter *iter, TreeSet *set)
+void cc_treeset_iter_init(CC_TreeSetIter *iter, CC_TreeSet *set)
 {
-    treetable_iter_init(&(iter->i), set->t);
+    cc_treetable_iter_init(&(iter->i), set->t);
 }
 
 /**
@@ -270,13 +270,13 @@ void treeset_iter_init(TreeSetIter *iter, TreeSet *set)
  * @param[out] element pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the TreeSet has been reached.
+ * end of the CC_TreeSet has been reached.
  */
-enum cc_stat treeset_iter_next(TreeSetIter *iter, void **element)
+enum cc_stat cc_treeset_iter_next(CC_TreeSetIter *iter, void **element)
 {
-    TreeTableEntry entry;
+    CC_TreeTableEntry entry;
 
-    if (treetable_iter_next(&(iter->i), &entry) != CC_OK)
+    if (cc_treetable_iter_next(&(iter->i), &entry) != CC_OK)
         return CC_ITER_END;
 
     *element = entry.key;
@@ -284,12 +284,12 @@ enum cc_stat treeset_iter_next(TreeSetIter *iter, void **element)
 }
 
 /**
- * Removes the last returned element by <code>treeset_iter_next()</code>
+ * Removes the last returned element by <code>cc_treeset_iter_next()</code>
  * function without invalidating the iterator and optionally sets the
  * out parameter to the value of the removed element.
  *
  * @note This Function should only ever be called after a call to <code>
- * treeset_iter_next()</code>.
+ * cc_treeset_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is performed
  * @param[out] out pointer to where the removed element is stored, or NULL
@@ -298,7 +298,7 @@ enum cc_stat treeset_iter_next(TreeSetIter *iter, void **element)
  * @return CC_OK if the element was successfully removed, or
  * CC_ERR_KEY_NOT_FOUND.
  */
-enum cc_stat treeset_iter_remove(TreeSetIter *iter, void **out)
+enum cc_stat cc_treeset_iter_remove(CC_TreeSetIter *iter, void **out)
 {
-    return treetable_iter_remove(&(iter->i), out);
+    return cc_treetable_iter_remove(&(iter->i), out);
 }

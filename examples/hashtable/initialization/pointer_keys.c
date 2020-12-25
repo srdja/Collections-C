@@ -23,12 +23,12 @@ int main(int argc, char **argv)
 
     /* Define the config structure (for more details check the
        configuration example) */
-    HashTableConf config;
+    CC_HashTableConf config;
 
     /* While it's not necessary, it's always a good idea to initialize the
        config structure to default values and then override whichever
        value we need. */
-    hashtable_conf_init(&config);
+    cc_hashtable_conf_init(&config);
 
     /* The length of our key should be equal to the length of a pointer. */
     config.key_length  = sizeof(void*);
@@ -45,19 +45,19 @@ int main(int argc, char **argv)
     ************************************************************/
 
     /* Define a new table pointer */
-    HashTable *table;
+    CC_HashTable *table;
 
     /* Create a new hashtable that accepts pointers as keys and assign to
      *table*. The return value indicates the success or failure of the
      operation. */
-    enum cc_stat status = hashtable_new_conf(&config, &table);
+    enum cc_stat status = cc_hashtable_new_conf(&config, &table);
 
     /* It's always a good idea to check whether the allocation of a new
        structure was successful or not.*/
     if (status != CC_OK) {
         /* Do some error handling */
         if (status == CC_ERR_ALLOC) {
-            /* This is the only kind of error hashtable_new can return.
+            /* This is the only kind of error cc_hashtable_new can return.
                It means that the allocation has failed. */
         }
     }
@@ -68,14 +68,14 @@ int main(int argc, char **argv)
 
     /* We can now add pointer keys to our table. */
     void *pointer = malloc(16);
-    hashtable_add(table, (void*) pointer, "bar");
+    cc_hashtable_add(table, (void*) pointer, "bar");
 
     /* We can even hackishly use it for direct integer keys. */
     uintptr_t number  = 23123;
-    hashtable_add(table, (void*) number, "foo");
+    cc_hashtable_add(table, (void*) number, "foo");
 
     /* After we're done using the table, we can destroy it with. This
        only destroys the structure, not the actual data inside of it. */
-    hashtable_destroy(table);
+    cc_hashtable_destroy(table);
     return 0;
 }

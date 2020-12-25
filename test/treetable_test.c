@@ -6,7 +6,7 @@
 #include "deque.h"
 #include "CppUTest/TestHarness_c.h"
 
-static TreeTable *table;
+static CC_TreeTable *table;
 
 int cmp(const void *k1, const void *k2)
 {
@@ -21,17 +21,17 @@ int cmp(const void *k1, const void *k2)
         return 0;
 }
 
-TEST_GROUP_C_SETUP(TreeTableTestsWithDefaults)
+TEST_GROUP_C_SETUP(CC_TreeTableTestsWithDefaults)
 {
-    treetable_new(cmp, &table);
+    cc_treetable_new(cmp, &table);
 };
 
-TEST_GROUP_C_TEARDOWN(TreeTableTestsWithDefaults)
+TEST_GROUP_C_TEARDOWN(CC_TreeTableTestsWithDefaults)
 {
-    treetable_destroy(table);
+    cc_treetable_destroy(table);
 }
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableAdd)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableAdd)
 {
     int a = 1;
     int b = 2;
@@ -42,20 +42,20 @@ TEST_C(TreeTableTestsWithDefaults, TreeTableAdd)
     int g = 7;
     int h = 8;
 
-    treetable_add(table, &a, "a");
-    treetable_add(table, &b, "b");
-    treetable_add(table, &c, "c");
-    treetable_add(table, &d, "d");
-    treetable_add(table, &e, "e");
-    treetable_add(table, &f, "f");
-    treetable_add(table, &g, "g");
-    treetable_add(table, &h, "h");
+    cc_treetable_add(table, &a, "a");
+    cc_treetable_add(table, &b, "b");
+    cc_treetable_add(table, &c, "c");
+    cc_treetable_add(table, &d, "d");
+    cc_treetable_add(table, &e, "e");
+    cc_treetable_add(table, &f, "f");
+    cc_treetable_add(table, &g, "g");
+    cc_treetable_add(table, &h, "h");
 
-    CHECK_EQUAL_C_INT(1, treetable_contains_key(table, &a));
-    CHECK_EQUAL_C_INT(1, treetable_contains_key(table, &e));
+    CHECK_EQUAL_C_INT(1, cc_treetable_contains_key(table, &a));
+    CHECK_EQUAL_C_INT(1, cc_treetable_contains_key(table, &e));
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableRemove)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemove)
 {
     int a = 1;
     int b = 2;
@@ -66,204 +66,204 @@ TEST_C(TreeTableTestsWithDefaults, TreeTableRemove)
     int g = 7;
     int h = 8;
 
-    treetable_add(table, &a, "a");
-    treetable_add(table, &b, "b");
-    treetable_add(table, &c, "c");
-    treetable_add(table, &d, "d");
-    treetable_add(table, &e, "e");
-    treetable_add(table, &f, "f");
-    treetable_add(table, &g, "g");
-    treetable_add(table, &h, "h");
+    cc_treetable_add(table, &a, "a");
+    cc_treetable_add(table, &b, "b");
+    cc_treetable_add(table, &c, "c");
+    cc_treetable_add(table, &d, "d");
+    cc_treetable_add(table, &e, "e");
+    cc_treetable_add(table, &f, "f");
+    cc_treetable_add(table, &g, "g");
+    cc_treetable_add(table, &h, "h");
 
-    treetable_remove(table, &f, NULL);
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &f));
+    cc_treetable_remove(table, &f, NULL);
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &f));
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableRemoveAll)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveAll)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &a, "a");
-    treetable_add(table, &b, "b");
-    treetable_add(table, &c, "c");
-    treetable_add(table, &d, "d");
+    cc_treetable_add(table, &a, "a");
+    cc_treetable_add(table, &b, "b");
+    cc_treetable_add(table, &c, "c");
+    cc_treetable_add(table, &d, "d");
 
-    treetable_remove_all(table);
+    cc_treetable_remove_all(table);
 
-    CHECK_EQUAL_C_INT(0, treetable_size(table));
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &a));
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &b));
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &c));
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &d));
+    CHECK_EQUAL_C_INT(0, cc_treetable_size(table));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &a));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &b));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &c));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &d));
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableGet)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGet)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    treetable_add(table, &a, "a");
-    treetable_add(table, &b, "b");
-    treetable_add(table, &c, "c");
+    cc_treetable_add(table, &a, "a");
+    cc_treetable_add(table, &b, "b");
+    cc_treetable_add(table, &c, "c");
 
     char *ra;
     char *rb;
     char *rc;
-    treetable_get(table, &a, (void*) &ra);
-    treetable_get(table, &b, (void*) &rb);
-    treetable_get(table, &c, (void*) &rc);
+    cc_treetable_get(table, &a, (void*) &ra);
+    cc_treetable_get(table, &b, (void*) &rb);
+    cc_treetable_get(table, &c, (void*) &rc);
 
     CHECK_EQUAL_C_STRING("a", ra);
     CHECK_EQUAL_C_STRING("b", rb);
     CHECK_EQUAL_C_STRING("c", rc);
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableSize)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableSize)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    treetable_add(table, &a, "a");
-    treetable_add(table, &b, "b");
-    treetable_add(table, &c, "c");
+    cc_treetable_add(table, &a, "a");
+    cc_treetable_add(table, &b, "b");
+    cc_treetable_add(table, &c, "c");
 
-    CHECK_EQUAL_C_INT(3, treetable_size(table));
+    CHECK_EQUAL_C_INT(3, cc_treetable_size(table));
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableGetFirst)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetFirst)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &c, "a");
-    treetable_add(table, &d, "b");
-    treetable_add(table, &b, "c");
-    treetable_add(table, &a, "d");
+    cc_treetable_add(table, &c, "a");
+    cc_treetable_add(table, &d, "b");
+    cc_treetable_add(table, &b, "c");
+    cc_treetable_add(table, &a, "d");
 
     int *first;
-    treetable_get_first_key(table, (void*) &first);
+    cc_treetable_get_first_key(table, (void*) &first);
 
     CHECK_EQUAL_C_INT(a, *first);
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableGetLast)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetLast)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &c, "a");
-    treetable_add(table, &d, "b");
-    treetable_add(table, &b, "c");
-    treetable_add(table, &a, "d");
+    cc_treetable_add(table, &c, "a");
+    cc_treetable_add(table, &d, "b");
+    cc_treetable_add(table, &b, "c");
+    cc_treetable_add(table, &a, "d");
 
     int *last;
-    treetable_get_last_key(table, (void*) &last);
+    cc_treetable_get_last_key(table, (void*) &last);
 
     CHECK_EQUAL_C_INT(d, *last);
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableRemoveFirst)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveFirst)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &c, "a");
-    treetable_add(table, &d, "b");
-    treetable_add(table, &b, "c");
-    treetable_add(table, &a, "d");
+    cc_treetable_add(table, &c, "a");
+    cc_treetable_add(table, &d, "b");
+    cc_treetable_add(table, &b, "c");
+    cc_treetable_add(table, &a, "d");
 
-    treetable_remove_first(table, NULL);
+    cc_treetable_remove_first(table, NULL);
 
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &a));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &a));
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableRemoveLast)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveLast)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &c, "a");
-    treetable_add(table, &d, "b");
-    treetable_add(table, &b, "c");
-    treetable_add(table, &a, "d");
+    cc_treetable_add(table, &c, "a");
+    cc_treetable_add(table, &d, "b");
+    cc_treetable_add(table, &b, "c");
+    cc_treetable_add(table, &a, "d");
 
-    treetable_remove_last(table, NULL);
+    cc_treetable_remove_last(table, NULL);
 
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &d));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &d));
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableGetGreaterThan)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetGreaterThan)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &c, "a");
-    treetable_add(table, &d, "b");
-    treetable_add(table, &b, "c");
-    treetable_add(table, &a, "d");
+    cc_treetable_add(table, &c, "a");
+    cc_treetable_add(table, &d, "b");
+    cc_treetable_add(table, &b, "c");
+    cc_treetable_add(table, &a, "d");
 
     int *g;
-    treetable_get_greater_than(table, &b, (void*) &g);
+    cc_treetable_get_greater_than(table, &b, (void*) &g);
 
     CHECK_EQUAL_C_INT(c, *g);
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableGetLessThan)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetLessThan)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &c, "a");
-    treetable_add(table, &d, "b");
-    treetable_add(table, &b, "c");
-    treetable_add(table, &a, "d");
+    cc_treetable_add(table, &c, "a");
+    cc_treetable_add(table, &d, "b");
+    cc_treetable_add(table, &b, "c");
+    cc_treetable_add(table, &a, "d");
 
     int *g;
-    treetable_get_lesser_than(table, &b, (void*) &g);
+    cc_treetable_get_lesser_than(table, &b, (void*) &g);
 
     CHECK_EQUAL_C_INT(a, *g);
 };
 
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableIterNext)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterNext)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    treetable_add(table, &a, "1");
-    treetable_add(table, &b, "2");
-    treetable_add(table, &c, "3");
-    treetable_add(table, &d, "5");
+    cc_treetable_add(table, &a, "1");
+    cc_treetable_add(table, &b, "2");
+    cc_treetable_add(table, &c, "3");
+    cc_treetable_add(table, &d, "5");
 
     int one   = 0;
     int two   = 0;
     int three = 0;
     int four  = 0;
 
-    TreeTableIter iter;
-    treetable_iter_init(&iter, table);
+    CC_TreeTableIter iter;
+    cc_treetable_iter_init(&iter, table);
 
-    TreeTableEntry entry;
-    while (treetable_iter_next(&iter, &entry) != CC_ITER_END) {
+    CC_TreeTableEntry entry;
+    while (cc_treetable_iter_next(&iter, &entry) != CC_ITER_END) {
         int const *key = entry.key;
 
         if (*key == a)
@@ -285,32 +285,32 @@ TEST_C(TreeTableTestsWithDefaults, TreeTableIterNext)
     CHECK_EQUAL_C_INT(1, four);
 };
 
-TEST_C(TreeTableTestsWithDefaults, TreeTableIterRemove)
+TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterRemove)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    treetable_add(table, &a, "a");
-    treetable_add(table, &b, "a");
-    treetable_add(table, &c, "a");
+    cc_treetable_add(table, &a, "a");
+    cc_treetable_add(table, &b, "a");
+    cc_treetable_add(table, &c, "a");
 
-    TreeTableIter iter;
-    treetable_iter_init(&iter, table);
+    CC_TreeTableIter iter;
+    cc_treetable_iter_init(&iter, table);
 
-    TreeTableEntry entry;
-    while (treetable_iter_next(&iter, &entry) != CC_ITER_END) {
+    CC_TreeTableEntry entry;
+    while (cc_treetable_iter_next(&iter, &entry) != CC_ITER_END) {
         int const *key = entry.key;
 
         if (*key == b) {
             CHECK_EQUAL_C_INT(CC_OK,
-                              treetable_iter_remove(&iter, NULL));
+                              cc_treetable_iter_remove(&iter, NULL));
 
             CHECK_EQUAL_C_INT(CC_ERR_KEY_NOT_FOUND,
-                              treetable_iter_remove(&iter, NULL));
+                              cc_treetable_iter_remove(&iter, NULL));
         }
     }
 
-    CHECK_EQUAL_C_INT(2, treetable_size(table));
-    CHECK_EQUAL_C_INT(0, treetable_contains_key(table, &b));
+    CHECK_EQUAL_C_INT(2, cc_treetable_size(table));
+    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &b));
 };

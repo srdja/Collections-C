@@ -33,14 +33,14 @@ typedef struct queue_s Queue;
 /**
  * Queue configuration object.
  */
-typedef DequeConf QueueConf;
+typedef CC_DequeConf QueueConf;
 
 /**
  * Queue iterator object. Used to iterate over the elements of a
  * queue in an ascending order.
  */
 typedef struct queue_iter_s {
-    DequeIter i;
+    CC_DequeIter i;
 } QueueIter;
 
 /**
@@ -50,7 +50,7 @@ typedef struct queue_iter_s {
  * and removing elements during iteration.
  */
 typedef struct queue_zip_iter_s {
-    DequeZipIter i;
+    CC_DequeZipIter i;
 } QueueZipIter;
 
 

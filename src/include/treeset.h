@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C_TREESET_H
-#define COLLECTIONS_C_TREESET_H
+#ifndef COLLECTIONS_C_CC_TREESET_H
+#define COLLECTIONS_C_CC_TREESET_H
 
 #include "common.h"
 #include "treetable.h"
@@ -28,55 +28,55 @@
  * An ordered set. The lookup, deletion, and insertion are
  * performed in logarithmic time.
  */
-typedef struct treeset_s TreeSet;
+typedef struct cc_treeset_s CC_TreeSet;
 
 /**
- * TreeSet configuration structure.
+ * CC_TreeSet configuration structure.
  */
-typedef TreeTableConf TreeSetConf;
+typedef CC_TreeTableConf CC_TreeSetConf;
 
 /**
- * TreeSet iterator structure. Used to iterate over the elements of the set.
+ * CC_TreeSet iterator structure. Used to iterate over the elements of the set.
  * The iterator also supports operations for safely removing elements
  * during iteration.
  */
-typedef struct treeset_iter_s {
-    TreeTableIter i;
-} TreeSetIter;
+typedef struct cc_treeset_iter_s {
+    CC_TreeTableIter i;
+} CC_TreeSetIter;
 
 
-void          treeset_conf_init        (TreeSetConf *conf);
-enum cc_stat  treeset_new              (int (*cmp) (const void*, const void*), TreeSet **set);
-enum cc_stat  treeset_new_conf         (TreeSetConf const * const conf, TreeSet **set);
+void          cc_treeset_conf_init        (CC_TreeSetConf *conf);
+enum cc_stat  cc_treeset_new              (int (*cmp) (const void*, const void*), CC_TreeSet **set);
+enum cc_stat  cc_treeset_new_conf         (CC_TreeSetConf const * const conf, CC_TreeSet **set);
 
-void          treeset_destroy          (TreeSet *set);
+void          cc_treeset_destroy          (CC_TreeSet *set);
 
-enum cc_stat  treeset_add              (TreeSet *set, void *element);
-enum cc_stat  treeset_remove           (TreeSet *set, void *element, void **out);
-void          treeset_remove_all       (TreeSet *set);
+enum cc_stat  cc_treeset_add              (CC_TreeSet *set, void *element);
+enum cc_stat  cc_treeset_remove           (CC_TreeSet *set, void *element, void **out);
+void          cc_treeset_remove_all       (CC_TreeSet *set);
 
-enum cc_stat  treeset_get_first        (TreeSet *set, void **out);
-enum cc_stat  treeset_get_last         (TreeSet *set, void **out);
-enum cc_stat  treeset_get_greater_than (TreeSet *set, void *element, void **out);
-enum cc_stat  treeset_get_lesser_than  (TreeSet *set, void *element, void **out);
+enum cc_stat  cc_treeset_get_first        (CC_TreeSet *set, void **out);
+enum cc_stat  cc_treeset_get_last         (CC_TreeSet *set, void **out);
+enum cc_stat  cc_treeset_get_greater_than (CC_TreeSet *set, void *element, void **out);
+enum cc_stat  cc_treeset_get_lesser_than  (CC_TreeSet *set, void *element, void **out);
 
-bool          treeset_contains         (TreeSet *set, void *element);
-size_t        treeset_size             (TreeSet *set);
+bool          cc_treeset_contains         (CC_TreeSet *set, void *element);
+size_t        cc_treeset_size             (CC_TreeSet *set);
 
-void          treeset_foreach          (TreeSet *set, void (*op) (const void*));
+void          cc_treeset_foreach          (CC_TreeSet *set, void (*op) (const void*));
 
-void          treeset_iter_init        (TreeSetIter *iter, TreeSet *set);
-enum cc_stat  treeset_iter_next        (TreeSetIter *iter, void **element);
-enum cc_stat  treeset_iter_remove      (TreeSetIter *iter, void **out);
+void          cc_treeset_iter_init        (CC_TreeSetIter *iter, CC_TreeSet *set);
+enum cc_stat  cc_treeset_iter_next        (CC_TreeSetIter *iter, void **element);
+enum cc_stat  cc_treeset_iter_remove      (CC_TreeSetIter *iter, void **out);
 
 
-#define TREESET_FOREACH(val, treeset, body)                             \
+#define CC_TREESET_FOREACH(val, treeset, body)                          \
     {                                                                   \
-        TreeSetIter treeset_iter_53d46d2a04458e7b;                      \
-        treeset_iter_init(&treeset_iter_53d46d2a04458e7b, treeset);     \
+        CC_TreeSetIter cc_treeset_iter_53d46d2a04458e7b;                \
+        cc_treeset_iter_init(&cc_treeset_iter_53d46d2a04458e7b, treeset); \
         void *val;                                                      \
-        while (treeset_iter_next(&treeset_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+        while (cc_treeset_iter_next(&cc_treeset_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
             body                                                        \
                 }
 
-#endif /* COLLECTIONS_C_TREESET_H */
+#endif /* COLLECTIONS_C_CC_TREESET_H */

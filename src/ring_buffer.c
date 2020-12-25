@@ -30,17 +30,17 @@ struct ring_buffer {
 };
 
 
-enum cc_stat rbuf_new(Rbuf **rbuf)
+enum cc_stat cc_rbuf_new(CC_Rbuf **rbuf)
 {
-    RbufConf conf;
-    rbuf_conf_init(&conf);
-    return rbuf_conf_new(&conf, rbuf);
+    CC_RbufConf conf;
+    cc_rbuf_conf_init(&conf);
+    return cc_rbuf_conf_new(&conf, rbuf);
 }
 
 
-enum cc_stat rbuf_conf_new(RbufConf *rconf, Rbuf **rbuf)
+enum cc_stat cc_rbuf_conf_new(CC_RbufConf *rconf, CC_Rbuf **rbuf)
 {
-    Rbuf *ringbuf = rconf->mem_calloc(1, sizeof(Rbuf));
+    CC_Rbuf *ringbuf = rconf->mem_calloc(1, sizeof(CC_Rbuf));
 
     if (!ringbuf)
         return CC_ERR_ALLOC;
@@ -63,35 +63,35 @@ enum cc_stat rbuf_conf_new(RbufConf *rconf, Rbuf **rbuf)
 }
 
 
-void rbuf_conf_init(RbufConf *rconf)
+void cc_rbuf_conf_init(CC_RbufConf *rconf)
 {
-    rconf->capacity = DEFAULT_RBUF_CAPACITY;
+    rconf->capacity = DEFAULT_CC_RBUF_CAPACITY;
     rconf->mem_alloc = malloc;
     rconf->mem_calloc = calloc;
     rconf->mem_free = free;
 }
 
 
-void rbuf_destroy(Rbuf *rbuf)
+void cc_rbuf_destroy(CC_Rbuf *rbuf)
 {
     rbuf->mem_free(rbuf->buf);
     rbuf->mem_free(rbuf);
 }
 
 
-bool rbuf_is_empty(Rbuf *rbuf)
+bool cc_rbuf_is_empty(CC_Rbuf *rbuf)
 {
     return (rbuf->size == 0);
 }
 
 
-size_t rbuf_size(Rbuf *rbuf)
+size_t cc_rbuf_size(CC_Rbuf *rbuf)
 {
     return rbuf->size;
 }
 
 
-void rbuf_enqueue(Rbuf *rbuf, uint64_t item)
+void cc_rbuf_enqueue(CC_Rbuf *rbuf, uint64_t item)
 {
     if (rbuf->head == rbuf->tail)
         rbuf->tail = (rbuf->tail + 1) % rbuf->capacity;
@@ -105,9 +105,9 @@ void rbuf_enqueue(Rbuf *rbuf, uint64_t item)
 }
 
 
-enum cc_stat rbuf_dequeue(Rbuf *rbuf, uint64_t *out)
+enum cc_stat cc_rbuf_dequeue(CC_Rbuf *rbuf, uint64_t *out)
 {
-    if (rbuf_is_empty(rbuf))
+    if (cc_rbuf_is_empty(rbuf))
         return CC_ERR_OUT_OF_RANGE;
 
     *out = rbuf->buf[rbuf->tail];
@@ -118,7 +118,7 @@ enum cc_stat rbuf_dequeue(Rbuf *rbuf, uint64_t *out)
 }
 
 
-uint64_t rbuf_peek(Rbuf *rbuf, int index)
+uint64_t cc_rbuf_peek(CC_Rbuf *rbuf, int index)
 {
     return rbuf->buf[index];
 }

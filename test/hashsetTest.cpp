@@ -1,24 +1,24 @@
 #include "CppUTest/TestHarness_c.h"
 #include "CppUTest/CommandLineTestRunner.h"
 
-TEST_GROUP_C_WRAPPER(HashSetTests)
+TEST_GROUP_C_WRAPPER(CC_HashSetTests)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashSetTests);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashSetTests);
+  TEST_GROUP_C_SETUP_WRAPPER(CC_HashSetTests);
+  TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashSetTests);
 };
 
-TEST_GROUP_C_WRAPPER(HashSetTestsConf)
+TEST_GROUP_C_WRAPPER(CC_HashSetTestsConf)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashSetTestsConf);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashSetTestsConf);
+  TEST_GROUP_C_SETUP_WRAPPER(CC_HashSetTestsConf);
+  TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashSetTestsConf);
 };
 
-TEST_C_WRAPPER(HashSetTestsConf, HashSetNew);
-TEST_C_WRAPPER(HashSetTests, HashSetAdd);
-TEST_C_WRAPPER(HashSetTests, HashSetRemove);
-TEST_C_WRAPPER(HashSetTests, HashSetRemoveAll);
-TEST_C_WRAPPER(HashSetTests, HashSetIterNext);
-TEST_C_WRAPPER(HashSetTests, HashSetIterRemove);
+TEST_C_WRAPPER(CC_HashSetTestsConf, CC_HashSetNew);
+TEST_C_WRAPPER(CC_HashSetTests, CC_HashSetAdd);
+TEST_C_WRAPPER(CC_HashSetTests, CC_HashSetRemove);
+TEST_C_WRAPPER(CC_HashSetTests, CC_HashSetRemoveAll);
+TEST_C_WRAPPER(CC_HashSetTests, CC_HashSetIterNext);
+TEST_C_WRAPPER(CC_HashSetTests, CC_HashSetIterRemove);
 
 int main(int argc, char **argv) {
   return RUN_ALL_TESTS(argc, argv);

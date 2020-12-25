@@ -29,13 +29,13 @@
  * and removal of elements at the end of the array, as well as
  * constant time access.
  */
-typedef struct array_s Array;
+typedef struct cc_array_s CC_Array;
 
 /**
  * Array configuration structure. Used to initialize a new Array
  * with specific values.
  */
-typedef struct array_conf_s {
+typedef struct cc_array_conf_s {
     /**
      * The initial capacity of the array */
     size_t capacity;
@@ -50,7 +50,7 @@ typedef struct array_conf_s {
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
-} ArrayConf;
+} CC_ArrayConf;
 
 /**
  * Array iterator structure. Used to iterate over the elements of
@@ -58,10 +58,10 @@ typedef struct array_conf_s {
  * operations for safely adding and removing elements during
  * iteration.
  */
-typedef struct array_iter_s {
+typedef struct cc_array_iter_s {
     /**
      * The array associated with this iterator */
-    Array  *ar;
+    CC_Array  *ar;
 
     /**
      * The current position of the iterator.*/
@@ -70,7 +70,7 @@ typedef struct array_iter_s {
     /**
      * Set to true if the last returned element was removed. */
     bool last_removed;
-} ArrayIter;
+} CC_ArrayIter;
 
 /**
  * Array zip iterator structure. Used to iterate over the elements of two
@@ -79,90 +79,90 @@ typedef struct array_iter_s {
  * and removing elements during iteration.
  */
 typedef struct array_zip_iter_s {
-    Array *ar1;
-    Array *ar2;
-    size_t index;
-    bool last_removed;
-} ArrayZipIter;
+    CC_Array *ar1;
+    CC_Array *ar2;
+    size_t    index;
+    bool      last_removed;
+} CC_ArrayZipIter;
 
 
-enum cc_stat  array_new             (Array **out);
-enum cc_stat  array_new_conf        (ArrayConf const * const conf, Array **out);
-void          array_conf_init       (ArrayConf *conf);
+enum cc_stat  cc_array_new             (CC_Array **out);
+enum cc_stat  cc_array_new_conf        (CC_ArrayConf const * const conf, CC_Array **out);
+void          cc_array_conf_init       (CC_ArrayConf *conf);
 
-void          array_destroy         (Array *ar);
-void          array_destroy_cb      (Array *ar, void (*cb) (void*));
+void          cc_array_destroy         (CC_Array *ar);
+void          cc_array_destroy_cb      (CC_Array *ar, void (*cb) (void*));
 
-enum cc_stat  array_add             (Array *ar, void *element);
-enum cc_stat  array_add_at          (Array *ar, void *element, size_t index);
-enum cc_stat  array_replace_at      (Array *ar, void *element, size_t index, void **out);
-enum cc_stat  array_swap_at         (Array *ar, size_t index1, size_t index2);
+enum cc_stat  cc_array_add             (CC_Array *ar, void *element);
+enum cc_stat  cc_array_add_at          (CC_Array *ar, void *element, size_t index);
+enum cc_stat  cc_array_replace_at      (CC_Array *ar, void *element, size_t index, void **out);
+enum cc_stat  cc_array_swap_at         (CC_Array *ar, size_t index1, size_t index2);
 
-enum cc_stat  array_remove          (Array *ar, void *element, void **out);
-enum cc_stat  array_remove_at       (Array *ar, size_t index, void **out);
-enum cc_stat  array_remove_last     (Array *ar, void **out);
-void          array_remove_all      (Array *ar);
-void          array_remove_all_free (Array *ar);
+enum cc_stat  cc_array_remove          (CC_Array *ar, void *element, void **out);
+enum cc_stat  cc_array_remove_at       (CC_Array *ar, size_t index, void **out);
+enum cc_stat  cc_array_remove_last     (CC_Array *ar, void **out);
+void          cc_array_remove_all      (CC_Array *ar);
+void          cc_array_remove_all_free (CC_Array *ar);
 
-enum cc_stat  array_get_at          (Array *ar, size_t index, void **out);
-enum cc_stat  array_get_last        (Array *ar, void **out);
+enum cc_stat  cc_array_get_at          (CC_Array *ar, size_t index, void **out);
+enum cc_stat  cc_array_get_last        (CC_Array *ar, void **out);
 
-enum cc_stat  array_subarray        (Array *ar, size_t from, size_t to, Array **out);
-enum cc_stat  array_copy_shallow    (Array *ar, Array **out);
-enum cc_stat  array_copy_deep       (Array *ar, void *(*cp) (void*), Array **out);
+enum cc_stat  cc_array_subarray        (CC_Array *ar, size_t from, size_t to, CC_Array **out);
+enum cc_stat  cc_array_copy_shallow    (CC_Array *ar, CC_Array **out);
+enum cc_stat  cc_array_copy_deep       (CC_Array *ar, void *(*cp) (void*), CC_Array **out);
 
-void          array_reverse         (Array *ar);
-enum cc_stat  array_trim_capacity   (Array *ar);
+void          cc_array_reverse         (CC_Array *ar);
+enum cc_stat  cc_array_trim_capacity   (CC_Array *ar);
 
-size_t        array_contains        (Array *ar, void *element);
-size_t        array_contains_value  (Array *ar, void *element, int (*cmp) (const void*, const void*));
-size_t        array_size            (Array *ar);
-size_t        array_capacity        (Array *ar);
+size_t        cc_array_contains        (CC_Array *ar, void *element);
+size_t        cc_array_contains_value  (CC_Array *ar, void *element, int (*cmp) (const void*, const void*));
+size_t        cc_array_size            (CC_Array *ar);
+size_t        cc_array_capacity        (CC_Array *ar);
 
-enum cc_stat  array_index_of        (Array *ar, void *element, size_t *index);
-void          array_sort            (Array *ar, int (*cmp) (const void*, const void*));
+enum cc_stat  cc_array_index_of        (CC_Array *ar, void *element, size_t *index);
+void          cc_array_sort            (CC_Array *ar, int (*cmp) (const void*, const void*));
 
-void          array_map             (Array *ar, void (*fn) (void*));
-void          array_reduce          (Array *ar, void (*fn) (void*, void*, void*), void *result);
+void          cc_array_map             (CC_Array *ar, void (*fn) (void*));
+void          cc_array_reduce          (CC_Array *ar, void (*fn) (void*, void*, void*), void *result);
 
-enum cc_stat  array_filter_mut      (Array *ar, bool (*predicate) (const void*));
-enum cc_stat  array_filter          (Array *ar, bool (*predicate) (const void*), Array **out);
+enum cc_stat  cc_array_filter_mut      (CC_Array *ar, bool (*predicate) (const void*));
+enum cc_stat  cc_array_filter          (CC_Array *ar, bool (*predicate) (const void*), CC_Array **out);
 
-void          array_iter_init       (ArrayIter *iter, Array *ar);
-enum cc_stat  array_iter_next       (ArrayIter *iter, void **out);
-enum cc_stat  array_iter_remove     (ArrayIter *iter, void **out);
-enum cc_stat  array_iter_add        (ArrayIter *iter, void *element);
-enum cc_stat  array_iter_replace    (ArrayIter *iter, void *element, void **out);
-size_t        array_iter_index      (ArrayIter *iter);
-
-
-void          array_zip_iter_init   (ArrayZipIter *iter, Array *a1, Array *a2);
-enum cc_stat  array_zip_iter_next   (ArrayZipIter *iter, void **out1, void **out2);
-enum cc_stat  array_zip_iter_add    (ArrayZipIter *iter, void *e1, void *e2);
-enum cc_stat  array_zip_iter_remove (ArrayZipIter *iter, void **out1, void **out2);
-enum cc_stat  array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2);
-size_t        array_zip_iter_index  (ArrayZipIter *iter);
-
-const void* const* array_get_buffer(Array *ar);
+void          cc_array_iter_init       (CC_ArrayIter *iter, CC_Array *ar);
+enum cc_stat  cc_array_iter_next       (CC_ArrayIter *iter, void **out);
+enum cc_stat  cc_array_iter_remove     (CC_ArrayIter *iter, void **out);
+enum cc_stat  cc_array_iter_add        (CC_ArrayIter *iter, void *element);
+enum cc_stat  cc_array_iter_replace    (CC_ArrayIter *iter, void *element, void **out);
+size_t        cc_array_iter_index      (CC_ArrayIter *iter);
 
 
-#define ARRAY_FOREACH(val, array, body)         \
-    {                                           \
-        ArrayIter array_iter_53d46d2a04458e7b;  \
-        array_iter_init(&array_iter_53d46d2a04458e7b, array);   \
-        void *val;                                              \
-        while (array_iter_next(&array_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+void          cc_array_zip_iter_init   (CC_ArrayZipIter *iter, CC_Array *a1, CC_Array *a2);
+enum cc_stat  cc_array_zip_iter_next   (CC_ArrayZipIter *iter, void **out1, void **out2);
+enum cc_stat  cc_array_zip_iter_add    (CC_ArrayZipIter *iter, void *e1, void *e2);
+enum cc_stat  cc_array_zip_iter_remove (CC_ArrayZipIter *iter, void **out1, void **out2);
+enum cc_stat  cc_array_zip_iter_replace(CC_ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+size_t        cc_array_zip_iter_index  (CC_ArrayZipIter *iter);
+
+const void* const* cc_array_get_buffer(CC_Array *ar);
+
+
+#define CC_ARRAY_FOREACH(val, array, body)                      \
+    {                                                           \
+        CC_ArrayIter array_iter_53d46d2a04458e7b;               \
+        cc_array_iter_init(&cc_array_iter_53d46d2a04458e7b, array);     \
+        void *val;                                                      \
+        while (cc_array_iter_next(&cc_array_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
             body                                                        \
                 }
 
 
-#define ARRAY_FOREACH_ZIP(val1, val2, array1, array2, body)     \
-    {                                                           \
-        ArrayZipIter array_zip_iter_ea08d3e52f25883b3;                 \
-        array_zip_iter_init(&array_zip_iter_ea08d3e52f25883b, array1, array2); \
+#define CC_ARRAY_FOREACH_ZIP(val1, val2, array1, array2, body)         \
+    {                                                                  \
+        CC_ArrayZipIter cc_array_zip_iter_ea08d3e52f25883b3;            \
+        cc_array_zip_iter_init(&cc_array_zip_iter_ea08d3e52f25883b, array1, array2); \
         void *val1;                                                     \
         void *val2;                                                     \
-        while (array_zip_iter_next(&array_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+        while (cc_array_zip_iter_next(&cc_array_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
             body                                                        \
                 }
 

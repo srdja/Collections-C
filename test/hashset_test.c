@@ -2,21 +2,21 @@
 #include "hashset.h"
 #include "CppUTest/TestHarness_c.h"
 
-static HashSetConf conf;
-static HashSet *set;
+static CC_HashSetConf conf;
+static CC_HashSet *set;
 int stat;
 
-TEST_GROUP_C_SETUP(HashSetTests)
+TEST_GROUP_C_SETUP(CC_HashSetTests)
 {
-    stat = hashset_new(&set);
+    stat = cc_hashset_new(&set);
 };
 
-TEST_GROUP_C_TEARDOWN(HashSetTests)
+TEST_GROUP_C_TEARDOWN(CC_HashSetTests)
 {
-    hashset_destroy(set);
+    cc_hashset_destroy(set);
 };
 
-TEST_C(HashSetTests, HashSetAdd)
+TEST_C(CC_HashSetTests, CC_HashSetAdd)
 {
     CHECK_EQUAL_C_INT(CC_OK, stat);
     char *a = "foo";
@@ -24,74 +24,74 @@ TEST_C(HashSetTests, HashSetAdd)
     char *c = "baz";
     char *d = "foo";
 
-    hashset_add(set, a);
-    hashset_add(set, b);
-    hashset_add(set, c);
-    hashset_add(set, d);
+    cc_hashset_add(set, a);
+    cc_hashset_add(set, b);
+    cc_hashset_add(set, c);
+    cc_hashset_add(set, d);
 
-    CHECK_EQUAL_C_INT(3, hashset_size(set));
-    CHECK_EQUAL_C_INT(1, hashset_contains(set, a));
-    CHECK_EQUAL_C_INT(1, hashset_contains(set, d));
+    CHECK_EQUAL_C_INT(3, cc_hashset_size(set));
+    CHECK_EQUAL_C_INT(1, cc_hashset_contains(set, a));
+    CHECK_EQUAL_C_INT(1, cc_hashset_contains(set, d));
 };
 
 
-TEST_C(HashSetTests, HashSetRemove)
+TEST_C(CC_HashSetTests, CC_HashSetRemove)
 {
     char *a = "foo";
     char *b = "bar";
     char *c = "baz";
     char *d = "foo";
 
-    hashset_add(set, a);
-    hashset_add(set, b);
-    hashset_add(set, c);
-    hashset_add(set, d);
+    cc_hashset_add(set, a);
+    cc_hashset_add(set, b);
+    cc_hashset_add(set, c);
+    cc_hashset_add(set, d);
 
-    hashset_remove(set, "bar", NULL);
+    cc_hashset_remove(set, "bar", NULL);
 
-    CHECK_EQUAL_C_INT(2, hashset_size(set));
-    CHECK_EQUAL_C_INT(0, hashset_contains(set, "bar"));
+    CHECK_EQUAL_C_INT(2, cc_hashset_size(set));
+    CHECK_EQUAL_C_INT(0, cc_hashset_contains(set, "bar"));
 };
 
 
-TEST_C(HashSetTests, HashSetRemoveAll)
+TEST_C(CC_HashSetTests, CC_HashSetRemoveAll)
 {
     char *a = "foo";
     char *b = "bar";
     char *c = "baz";
     char *d = "foo";
 
-    hashset_add(set, a);
-    hashset_add(set, b);
-    hashset_add(set, c);
-    hashset_add(set, d);
+    cc_hashset_add(set, a);
+    cc_hashset_add(set, b);
+    cc_hashset_add(set, c);
+    cc_hashset_add(set, d);
 
-    hashset_remove_all(set);
+    cc_hashset_remove_all(set);
 
-    CHECK_EQUAL_C_INT(0, hashset_size(set));
-    CHECK_C(!hashset_contains(set, "bar"));
-    CHECK_C(!hashset_contains(set, "c"));
+    CHECK_EQUAL_C_INT(0, cc_hashset_size(set));
+    CHECK_C(!cc_hashset_contains(set, "bar"));
+    CHECK_C(!cc_hashset_contains(set, "c"));
 };
 
-TEST_C(HashSetTests, HashSetIterNext)
+TEST_C(CC_HashSetTests, CC_HashSetIterNext)
 {
     char *a = "foo";
     char *b = "bar";
     char *c = "baz";
 
-    hashset_add(set, a);
-    hashset_add(set, b);
-    hashset_add(set, c);
+    cc_hashset_add(set, a);
+    cc_hashset_add(set, b);
+    cc_hashset_add(set, c);
 
     size_t x = 0;
     size_t y = 0;
     size_t z = 0;
 
-    HashSetIter iter;
-    hashset_iter_init(&iter, set);
+    CC_HashSetIter iter;
+    cc_hashset_iter_init(&iter, set);
 
     char *e;
-    while (hashset_iter_next(&iter, (void*)&e) != CC_ITER_END) {
+    while (cc_hashset_iter_next(&iter, (void*)&e) != CC_ITER_END) {
         if (!strcmp(e, "foo"))
             x++;
 
@@ -107,43 +107,43 @@ TEST_C(HashSetTests, HashSetIterNext)
     CHECK_EQUAL_C_INT(1, z);
 };
 
-TEST_C(HashSetTests, HashSetIterRemove)
+TEST_C(CC_HashSetTests, CC_HashSetIterRemove)
 {
     char *a = "foo";
     char *b = "bar";
     char *c = "baz";
 
-    hashset_add(set, a);
-    hashset_add(set, b);
-    hashset_add(set, c);
+    cc_hashset_add(set, a);
+    cc_hashset_add(set, b);
+    cc_hashset_add(set, c);
 
-    HashSetIter iter;
-    hashset_iter_init(&iter, set);
+    CC_HashSetIter iter;
+    cc_hashset_iter_init(&iter, set);
 
     char *e;
-    while (hashset_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+    while (cc_hashset_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (!strcmp(e, "bar"))
-            hashset_iter_remove(&iter, NULL);
+            cc_hashset_iter_remove(&iter, NULL);
     }
 
-    CHECK_EQUAL_C_INT(2, hashset_size(set));
-    CHECK_C(!hashset_contains(set, "bar"));
+    CHECK_EQUAL_C_INT(2, cc_hashset_size(set));
+    CHECK_C(!cc_hashset_contains(set, "bar"));
 };
 
-TEST_GROUP_C_SETUP(HashSetTestsConf)
+TEST_GROUP_C_SETUP(CC_HashSetTestsConf)
 {
-    hashset_conf_init(&conf);
+    cc_hashset_conf_init(&conf);
     conf.initial_capacity = 7;
-    hashset_new_conf(&conf, &set);
+    cc_hashset_new_conf(&conf, &set);
 };
 
-TEST_GROUP_C_TEARDOWN(HashSetTestsConf)
+TEST_GROUP_C_TEARDOWN(CC_HashSetTestsConf)
 {
-    hashset_destroy(set);
+    cc_hashset_destroy(set);
 };
 
-TEST_C(HashSetTestsConf, HashSetNew)
+TEST_C(CC_HashSetTestsConf, CC_HashSetNew)
 {
-    CHECK_EQUAL_C_INT(0, hashset_size(set));
-    CHECK_EQUAL_C_INT(8, hashset_capacity(set));
+    CHECK_EQUAL_C_INT(0, cc_hashset_size(set));
+    CHECK_EQUAL_C_INT(8, cc_hashset_capacity(set));
 };

@@ -6,8 +6,8 @@
 #include "slist.h"
 #include "CppUTest/TestHarness_c.h"
 
-static SList *list;
-static SList *list2;
+static CC_SList *list;
+static CC_SList *list2;
 static int stat;
 
 void *copy(void *e1)
@@ -52,34 +52,34 @@ int cmp(void const *e1, void const *e2)
 
 TEST_GROUP_C_SETUP(SlistTestsWithDefaults)
 {
-    stat = slist_new(&list);
-    slist_new(&list2);
+    stat = cc_slist_new(&list);
+    cc_slist_new(&list2);
 };
 
 TEST_GROUP_C_TEARDOWN(SlistTestsWithDefaults)
 {
-    slist_destroy(list);
-    slist_destroy(list2);
+    cc_slist_destroy(list);
+    cc_slist_destroy(list2);
 };
 
-TEST_C(SlistTestsWithDefaults, SListNew)
+TEST_C(SlistTestsWithDefaults, CC_SListNew)
 {
-    SList *list2 = NULL;
-    slist_new(&list2);
+    CC_SList *list2 = NULL;
+    cc_slist_new(&list2);
     CHECK_C(list != NULL);
     CHECK_C(list2 != NULL);
 
     void *e = NULL;
-    slist_get_first(list, &e);
+    cc_slist_get_first(list, &e);
     CHECK_C(NULL == e);
 
-    slist_get_last(list, &e);
+    cc_slist_get_last(list, &e);
     CHECK_C(NULL == e);
-    CHECK_EQUAL_C_INT(0, slist_size(list));
+    CHECK_EQUAL_C_INT(0, cc_slist_size(list));
     CHECK_C(list != list2);
 };
 
-TEST_C(SlistTestsWithDefaults, SListAddLast)
+TEST_C(SlistTestsWithDefaults, CC_SListAddLast)
 {
     int a = 8;
     int b = 3;
@@ -88,26 +88,26 @@ TEST_C(SlistTestsWithDefaults, SListAddLast)
 
     int append = 90;
 
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
+    cc_slist_add(list, &a);
+    cc_slist_add(list, &b);
+    cc_slist_add(list, &c);
+    cc_slist_add(list, &d);
 
-    slist_size(list);
-    CHECK_EQUAL_C_INT(4, slist_size(list));
+    cc_slist_size(list);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
 
     int *last;
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_INT(d, *last);
 
-    slist_add_last(list, &append);
-    CHECK_EQUAL_C_INT(5, slist_size(list));
+    cc_slist_add_last(list, &append);
+    CHECK_EQUAL_C_INT(5, cc_slist_size(list));
 
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_INT(append, *last);
 };
 
-TEST_C(SlistTestsWithDefaults, SListAddFirst)
+TEST_C(SlistTestsWithDefaults, CC_SListAddFirst)
 {
     int a = 8;
     int b = 3;
@@ -116,49 +116,49 @@ TEST_C(SlistTestsWithDefaults, SListAddFirst)
 
     int prepend = 90;
 
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
+    cc_slist_add(list, &a);
+    cc_slist_add(list, &b);
+    cc_slist_add(list, &c);
+    cc_slist_add(list, &d);
 
-    CHECK_EQUAL_C_INT(4, slist_size(list));
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
 
     int *first;
-    slist_get_first(list, (void*) &first);
+    cc_slist_get_first(list, (void*) &first);
     CHECK_EQUAL_C_INT(a, *first);
 
-    slist_add_first(list, &prepend);
+    cc_slist_add_first(list, &prepend);
 
-    CHECK_EQUAL_C_INT(5, slist_size(list));
-    slist_get_first(list, (void*) &first);
+    CHECK_EQUAL_C_INT(5, cc_slist_size(list));
+    cc_slist_get_first(list, (void*) &first);
     CHECK_EQUAL_C_INT(prepend, *first);
 };
 
-TEST_C(SlistTestsWithDefaults, SListAdd)
+TEST_C(SlistTestsWithDefaults, CC_SListAdd)
 {
     char *s1 = "e1", *s2 = "e2", *s3 = "e3", *s4 = "e4";
 
-    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s1));
-    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s2));
-    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s3));
-    CHECK_EQUAL_C_INT(CC_OK, slist_add(list, s4));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_add(list, s1));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_add(list, s2));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_add(list, s3));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_add(list, s4));
 
     void *e;
-    slist_get_first(list, &e);
+    cc_slist_get_first(list, &e);
     CHECK_C(e != NULL);
 
-    slist_get_last(list, &e);
+    cc_slist_get_last(list, &e);
     CHECK_C(e != NULL);
 };
 
 TEST_GROUP_C_SETUP(SlistTestsSlistPrepopulated)
 {
-    slist_new(&list);
+    cc_slist_new(&list);
 
     for(int i = 1; i < 5; i++) {
         int *p = (int*)malloc(sizeof(int));
         *p = i;
-        slist_add(list, p);
+        cc_slist_add(list, p);
     }
 
     int *a = (int*) malloc(sizeof(int));
@@ -171,193 +171,193 @@ TEST_GROUP_C_SETUP(SlistTestsSlistPrepopulated)
     *c = 7;
     *d = 7;
 
-    slist_new(&list2);
+    cc_slist_new(&list2);
 
-    slist_add(list2, a);
-    slist_add(list2, b);
-    slist_add(list2, c);
-    slist_add(list2, d);
+    cc_slist_add(list2, a);
+    cc_slist_add(list2, b);
+    cc_slist_add(list2, c);
+    cc_slist_add(list2, d);
 
 };
 
 TEST_GROUP_C_TEARDOWN(SlistTestsSlistPrepopulated)
 {
-    slist_destroy(list);
-    slist_destroy(list2);
+    cc_slist_destroy(list);
+    cc_slist_destroy(list2);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListAddAt)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListAddAt)
 {
     int *ins = (int*)malloc(sizeof(int));
     *ins = 90;
 
-    slist_add_at(list, ins, 2);
-    CHECK_EQUAL_C_INT(5, slist_size(list));
+    cc_slist_add_at(list, ins, 2);
+    CHECK_EQUAL_C_INT(5, cc_slist_size(list));
 
     int *new;
-    slist_get_at(list, 2, (void*)&new);
+    cc_slist_get_at(list, 2, (void*)&new);
     CHECK_EQUAL_C_INT(*ins, *new);
-    CHECK_EQUAL_C_INT(CC_OK, slist_add_at(list, ins, 4));
-    CHECK_EQUAL_C_INT(CC_OK, slist_add_at(list, ins, 0));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_add_at(list, ins, 4));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_add_at(list, ins, 0));
 
     void *el;
-    slist_get_first(list, &el);
+    cc_slist_get_first(list, &el);
     CHECK_EQUAL_C_INT(*ins, *((int*)el));
 
-    slist_get_first(list, &el);
+    cc_slist_get_first(list, &el);
     CHECK_EQUAL_C_INT(*ins, *((int*)el));
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListAddAll)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListAddAll)
 {
-    slist_add_all(list2, list);
+    cc_slist_add_all(list2, list);
 
-    CHECK_EQUAL_C_INT(8, slist_size(list2));
+    CHECK_EQUAL_C_INT(8, cc_slist_size(list2));
 
     int *l1last;
-    slist_get_last(list, (void*) &l1last);
+    cc_slist_get_last(list, (void*) &l1last);
 
     int *l2last;
-    slist_get_last(list2, (void*) &l2last);
+    cc_slist_get_last(list2, (void*) &l2last);
     CHECK_EQUAL_C_INT(*l1last, *l2last);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListAddAllAt)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListAddAllAt)
 {
-    slist_add_all_at(list, list2, 2);
-    CHECK_EQUAL_C_INT(4, slist_size(list2));
-    CHECK_EQUAL_C_INT(8, slist_size(list));
+    cc_slist_add_all_at(list, list2, 2);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list2));
+    CHECK_EQUAL_C_INT(8, cc_slist_size(list));
 
     int *last;
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_INT(4, *last);
 
     int *l1i5;
-    slist_get_at(list, 5, (void*) &l1i5);
+    cc_slist_get_at(list, 5, (void*) &l1i5);
 
     int *l2i2;
-    slist_get_at(list2, 2, (void*) &l2i2);
+    cc_slist_get_at(list2, 2, (void*) &l2i2);
     CHECK_EQUAL_C_INT(*l1i5, *l2i2);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListRemove)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListRemove)
 {
     int *e;
-    CHECK_EQUAL_C_INT(CC_OK, slist_get_at(list, 1, (void*) &e));
+    CHECK_EQUAL_C_INT(CC_OK, cc_slist_get_at(list, 1, (void*) &e));
 
-    slist_remove(list, e, NULL);
-    CHECK_EQUAL_C_INT(3, slist_size(list));
-    CHECK_EQUAL_C_INT(0, slist_contains(list, e));
+    cc_slist_remove(list, e, NULL);
+    CHECK_EQUAL_C_INT(3, cc_slist_size(list));
+    CHECK_EQUAL_C_INT(0, cc_slist_contains(list, e));
     free(e);
 };
 
 
-TEST_C(SlistTestsSlistPrepopulated, SListRemoveFirst)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListRemoveFirst)
 {
     int *first;
-    slist_remove_first(list, (void*) &first);
+    cc_slist_remove_first(list, (void*) &first);
     free(first);
-    CHECK_EQUAL_C_INT(3, slist_size(list));
+    CHECK_EQUAL_C_INT(3, cc_slist_size(list));
 
-    slist_get_first(list, (void*) &first);
+    cc_slist_get_first(list, (void*) &first);
     CHECK_EQUAL_C_INT(2, *first);
 };
 
 
-TEST_C(SlistTestsSlistPrepopulated, SListRemoveLast)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListRemoveLast)
 {
     int *last;
-    slist_remove_last(list, (void*) &last);
+    cc_slist_remove_last(list, (void*) &last);
     free(last);
 
-    CHECK_EQUAL_C_INT(3, slist_size(list));
+    CHECK_EQUAL_C_INT(3, cc_slist_size(list));
 
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_INT(3, *last);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListRemoveAt)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListRemoveAt)
 {
     int *e;
-    slist_remove_at(list, 2, (void*) &e);
+    cc_slist_remove_at(list, 2, (void*) &e);
     free(e);
 
-    slist_get_at(list, 2, (void*) &e);
+    cc_slist_get_at(list, 2, (void*) &e);
     CHECK_EQUAL_C_INT(4, *e);
-    CHECK_EQUAL_C_INT(3, slist_size(list));
+    CHECK_EQUAL_C_INT(3, cc_slist_size(list));
 
-    slist_remove_at(list, 0, (void*) &e);
+    cc_slist_remove_at(list, 0, (void*) &e);
     free(e);
 
-    slist_get_at(list, 0, (void*) &e);
+    cc_slist_get_at(list, 0, (void*) &e);
     CHECK_EQUAL_C_INT(2, *e);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListRemoveAll)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListRemoveAll)
 {
-    slist_remove_all_cb(list, free);
-    CHECK_EQUAL_C_INT(0, slist_size(list));
+    cc_slist_remove_all_cb(list, free);
+    CHECK_EQUAL_C_INT(0, cc_slist_size(list));
 
     void *e = NULL;
-    slist_get_first(list, &e);
+    cc_slist_get_first(list, &e);
     CHECK_C(e == NULL);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListGetFirst)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListGetFirst)
 {
     int *first;
-    slist_get_first(list, (void*) &first);
+    cc_slist_get_first(list, (void*) &first);
     CHECK_EQUAL_C_INT(1, *first);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListGetLast)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListGetLast)
 {
     int *last;
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_INT(4, *last);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListGet)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListGet)
 {
     int *e;
-    slist_get_at(list, 1, (void*) &e);
+    cc_slist_get_at(list, 1, (void*) &e);
     CHECK_EQUAL_C_INT(2, *e);
 };
 
-TEST_C(SlistTestsWithDefaults, SListIndexOf)
+TEST_C(SlistTestsWithDefaults, CC_SListIndexOf)
 {
     int a = 8;
     int b = 3;
     int c = 20;
     int d = 1;
 
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
+    cc_slist_add(list, &a);
+    cc_slist_add(list, &b);
+    cc_slist_add(list, &c);
+    cc_slist_add(list, &d);
 
     size_t idx;
-    slist_index_of(list, &a, &idx);
+    cc_slist_index_of(list, &a, &idx);
     CHECK_EQUAL_C_INT(0, idx);
 
-    slist_index_of(list, &c, &idx);
+    cc_slist_index_of(list, &c, &idx);
     CHECK_EQUAL_C_INT(2, idx);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListReplaceAt)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListReplaceAt)
 {
     int *replacement = (int*) malloc(sizeof(int));
     *replacement = 32;
 
     int *e;
-    slist_replace_at(list, replacement, 2, (void*) &e);
+    cc_slist_replace_at(list, replacement, 2, (void*) &e);
     free(e);
 
-    slist_get_at(list, 2, (void*) &e);
+    cc_slist_get_at(list, 2, (void*) &e);
     CHECK_EQUAL_C_POINTER(replacement, e);
 };
 
-TEST_C(SlistTestsWithDefaults, SListContains)
+TEST_C(SlistTestsWithDefaults, CC_SListContains)
 {
     int a = 8;
     int b = 3;
@@ -365,204 +365,204 @@ TEST_C(SlistTestsWithDefaults, SListContains)
     int d = 7;
     int e = 32;
 
-    slist_add(list, &a);
-    slist_add(list, &b);
-    slist_add(list, &b);
-    slist_add(list, &c);
-    slist_add(list, &d);
+    cc_slist_add(list, &a);
+    cc_slist_add(list, &b);
+    cc_slist_add(list, &b);
+    cc_slist_add(list, &c);
+    cc_slist_add(list, &d);
 
-    CHECK_EQUAL_C_INT(2, slist_contains(list, &b));
-    CHECK_EQUAL_C_INT(1, slist_contains(list, &d));
-    CHECK_EQUAL_C_INT(0, slist_contains(list, &e));
+    CHECK_EQUAL_C_INT(2, cc_slist_contains(list, &b));
+    CHECK_EQUAL_C_INT(1, cc_slist_contains(list, &d));
+    CHECK_EQUAL_C_INT(0, cc_slist_contains(list, &e));
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListCopyShallow)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListCopyShallow)
 {
-    SList *cp;
-    slist_copy_shallow(list, &cp);
-    CHECK_EQUAL_C_INT(4, slist_size(cp));
+    CC_SList *cp;
+    cc_slist_copy_shallow(list, &cp);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(cp));
 
     void *e1;
     void *e2;
 
-    slist_get_first(cp, &e1);
-    slist_get_first(list, &e2);
+    cc_slist_get_first(cp, &e1);
+    cc_slist_get_first(list, &e2);
     CHECK_EQUAL_C_POINTER(e1, e2);
 
-    slist_get_last(cp, &e1);
-    slist_get_last(list, &e2);
+    cc_slist_get_last(cp, &e1);
+    cc_slist_get_last(list, &e2);
     CHECK_EQUAL_C_POINTER(e1, e2);
 
-    slist_get_at(cp, 3, &e1);
-    slist_get_at(list, 3, &e2);
+    cc_slist_get_at(cp, 3, &e1);
+    cc_slist_get_at(list, 3, &e2);
     CHECK_EQUAL_C_POINTER(e1, e2);
 
-    slist_destroy(cp);
+    cc_slist_destroy(cp);
 };
 
 TEST_C(SlistTestsSlistPrepopulated, SlistCopyDeep)
 {
-    SList *cp;
-    slist_copy_deep(list, copy, &cp);
-    CHECK_EQUAL_C_INT(4, slist_size(cp));
+    CC_SList *cp;
+    cc_slist_copy_deep(list, copy, &cp);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(cp));
 
     int *e;
-    slist_get_at(cp, 2, (void*) &e);
+    cc_slist_get_at(cp, 2, (void*) &e);
 
     void *e2;
-    slist_get_at(list, 2, &e2);
+    cc_slist_get_at(list, 2, &e2);
     CHECK_EQUAL_C_INT(*e, *(int*)e2);
 
-    slist_get_at(list, 2, &e2);
-    slist_get_at(cp, 2, (void*) &e);
+    cc_slist_get_at(list, 2, &e2);
+    cc_slist_get_at(cp, 2, (void*) &e);
     CHECK_C(e != e2);
 
-    slist_destroy_cb(cp, free);
+    cc_slist_destroy_cb(cp, free);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListSublist)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListSublist)
 {
-    SList *sub;
-    slist_sublist(list, 1, 2, &sub);
-    CHECK_EQUAL_C_INT(2, slist_size(sub));
+    CC_SList *sub;
+    cc_slist_sublist(list, 1, 2, &sub);
+    CHECK_EQUAL_C_INT(2, cc_slist_size(sub));
 
     int *s1;
-    slist_get_at(sub, 1, (void*) &s1);
+    cc_slist_get_at(sub, 1, (void*) &s1);
 
     int *l2;
-    slist_get_at(list, 2, (void*) &l2);
+    cc_slist_get_at(list, 2, (void*) &l2);
     CHECK_EQUAL_C_INT(*s1, *l2);
 
-    slist_destroy(sub);
+    cc_slist_destroy(sub);
 };
 
 
-TEST_C(SlistTestsSlistPrepopulated, SListSplice)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListSplice)
 {
-    slist_splice(list, list2);
-    CHECK_EQUAL_C_INT(8, slist_size(list));
-    CHECK_EQUAL_C_INT(0, slist_size(list2));
+    cc_slist_splice(list, list2);
+    CHECK_EQUAL_C_INT(8, cc_slist_size(list));
+    CHECK_EQUAL_C_INT(0, cc_slist_size(list2));
 
     int *e;
-    slist_get_last(list, (void*) &e);
+    cc_slist_get_last(list, (void*) &e);
     CHECK_EQUAL_C_INT(7, *e);
 
-    slist_get_first(list, (void*) &e);
+    cc_slist_get_first(list, (void*) &e);
     CHECK_EQUAL_C_INT(1, *e);
 
-    slist_get_at(list, 4, (void*) &e);
+    cc_slist_get_at(list, 4, (void*) &e);
     CHECK_EQUAL_C_INT(5, *e);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListSpliceAt)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListSpliceAt)
 {
-    slist_splice_at(list, list2, 2);
-    CHECK_EQUAL_C_INT(8, slist_size(list));
-    CHECK_EQUAL_C_INT(0, slist_size(list2));
+    cc_slist_splice_at(list, list2, 2);
+    CHECK_EQUAL_C_INT(8, cc_slist_size(list));
+    CHECK_EQUAL_C_INT(0, cc_slist_size(list2));
 
     int *e;
-    slist_get_first(list, (void*) &e);
+    cc_slist_get_first(list, (void*) &e);
     CHECK_EQUAL_C_INT(1, *e);
 
-    slist_get_last(list, (void*) &e);
+    cc_slist_get_last(list, (void*) &e);
     CHECK_EQUAL_C_INT(4, *e);
 
-    slist_get_at(list, 2, (void*) &e);
+    cc_slist_get_at(list, 2, (void*) &e);
     CHECK_EQUAL_C_INT(5, *e);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListToArray)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListToArray)
 {
     int **array;
-    slist_to_array(list, (void*) &array);
+    cc_slist_to_array(list, (void*) &array);
 
     void *e;
-    slist_get_at(list, 0, &e);
+    cc_slist_get_at(list, 0, &e);
     CHECK_EQUAL_C_POINTER(e, array[0]);
 
-    slist_get_at(list, 2, &e);
+    cc_slist_get_at(list, 2, &e);
     CHECK_EQUAL_C_POINTER(e, array[2]);
 
-    slist_get_at(list, 3, &e);
+    cc_slist_get_at(list, 3, &e);
     CHECK_EQUAL_C_POINTER(e, array[3]);
     free(array);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListIterAdd)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListIterAdd)
 {
     int *ins = (int*) malloc(sizeof(int));
     *ins = 32;
 
-    SListIter iter;
-    slist_iter_init(&iter, list);
+    CC_SListIter iter;
+    cc_slist_iter_init(&iter, list);
 
     int *el;
-    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    while (cc_slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         if (*el == 3)
-            slist_iter_add(&iter, ins);
+            cc_slist_iter_add(&iter, ins);
     }
-    CHECK_EQUAL_C_INT(5, slist_size(list));
+    CHECK_EQUAL_C_INT(5, cc_slist_size(list));
 
     int *li3;
-    slist_get_at(list, 3, (void*) &li3);
+    cc_slist_get_at(list, 3, (void*) &li3);
     CHECK_EQUAL_C_INT(*li3, *ins);
 
     int *li4;
-    slist_get_at(list, 4, (void*) &li4);
+    cc_slist_get_at(list, 4, (void*) &li4);
     CHECK_EQUAL_C_INT(4, *li4);
 
     ins = (int*) malloc(sizeof(int));
     *ins = 32;
 
-    slist_iter_init(&iter, list);
-    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    cc_slist_iter_init(&iter, list);
+    while (cc_slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         if (*el == 4)
-            slist_iter_add(&iter, ins);
+            cc_slist_iter_add(&iter, ins);
     }
 
     void *e;
-    slist_get_last(list, &e);
+    cc_slist_get_last(list, &e);
     CHECK_EQUAL_C_INT(*ins, *(int*)e);
-    CHECK_EQUAL_C_INT(6, slist_size(list));
+    CHECK_EQUAL_C_INT(6, cc_slist_size(list));
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListIterRemove)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListIterRemove)
 {
     int  *rm;
-    slist_get_at(list, 2, (void*) &rm);
+    cc_slist_get_at(list, 2, (void*) &rm);
 
-    SListIter iter;
-    slist_iter_init(&iter, list);
+    CC_SListIter iter;
+    cc_slist_iter_init(&iter, list);
 
     int *e;
-    while (slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
+    while (cc_slist_iter_next(&iter, (void*) &e) != CC_ITER_END) {
         if (*e == 3) {
-            slist_iter_remove(&iter, NULL);
+            cc_slist_iter_remove(&iter, NULL);
             free(e);
         }
     }
-    CHECK_EQUAL_C_INT(3, slist_size(list));
-    CHECK_EQUAL_C_INT(0, slist_contains(list, rm));
+    CHECK_EQUAL_C_INT(3, cc_slist_size(list));
+    CHECK_EQUAL_C_INT(0, cc_slist_contains(list, rm));
 };
 
-TEST_C(SlistTestsWithDefaults, SListZipIterNext)
+TEST_C(SlistTestsWithDefaults, CC_SListZipIterNext)
 {
-    slist_add(list, "a");
-    slist_add(list, "b");
-    slist_add(list, "c");
-    slist_add(list, "d");
+    cc_slist_add(list, "a");
+    cc_slist_add(list, "b");
+    cc_slist_add(list, "c");
+    cc_slist_add(list, "d");
 
-    slist_add(list2, "e");
-    slist_add(list2, "f");
-    slist_add(list2, "g");
+    cc_slist_add(list2, "e");
+    cc_slist_add(list2, "f");
+    cc_slist_add(list2, "g");
 
-    SListZipIter zip;
-    slist_zip_iter_init(&zip, list, list2);
+    CC_SListZipIter zip;
+    cc_slist_zip_iter_init(&zip, list, list2);
 
     size_t i = 0;
 
     void *e1, *e2;
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (i == 0) {
             CHECK_EQUAL_C_STRING("a", (char*)e1);
             CHECK_EQUAL_C_STRING("e", (char*)e2);
@@ -576,164 +576,164 @@ TEST_C(SlistTestsWithDefaults, SListZipIterNext)
     CHECK_EQUAL_C_INT(3, i);
 };
 
-TEST_C(SlistTestsWithDefaults, SListZipIterAdd)
+TEST_C(SlistTestsWithDefaults, CC_SListZipIterAdd)
 {
-    slist_add(list, "a");
-    slist_add(list, "b");
-    slist_add(list, "c");
-    slist_add(list, "d");
+    cc_slist_add(list, "a");
+    cc_slist_add(list, "b");
+    cc_slist_add(list, "c");
+    cc_slist_add(list, "d");
 
-    slist_add(list2, "e");
-    slist_add(list2, "f");
-    slist_add(list2, "g");
+    cc_slist_add(list2, "e");
+    cc_slist_add(list2, "f");
+    cc_slist_add(list2, "g");
 
     char *h = "h";
     char *i = "i";
 
-    SListZipIter zip;
-    slist_zip_iter_init(&zip, list, list2);
+    CC_SListZipIter zip;
+    cc_slist_zip_iter_init(&zip, list, list2);
 
     void *e1, *e2;
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            slist_zip_iter_add(&zip, h, i);
+            cc_slist_zip_iter_add(&zip, h, i);
     }
 
     size_t index;
-    slist_index_of(list, "h", &index);
+    cc_slist_index_of(list, "h", &index);
     CHECK_EQUAL_C_INT(2, index);
 
-    slist_index_of(list, "i", &index);
+    cc_slist_index_of(list, "i", &index);
     CHECK_EQUAL_C_INT(2, index);
 
-    slist_index_of(list, "c", &index);
+    cc_slist_index_of(list, "c", &index);
     CHECK_EQUAL_C_INT(3, index);
 
-    CHECK_EQUAL_C_INT(1, slist_contains(list, "h"));
-    CHECK_EQUAL_C_INT(1, slist_contains(list2, "i"));
-    CHECK_EQUAL_C_INT(5, slist_size(list));
-    CHECK_EQUAL_C_INT(4, slist_size(list2));
+    CHECK_EQUAL_C_INT(1, cc_slist_contains(list, "h"));
+    CHECK_EQUAL_C_INT(1, cc_slist_contains(list2, "i"));
+    CHECK_EQUAL_C_INT(5, cc_slist_size(list));
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list2));
 
-    slist_zip_iter_init(&zip, list, list2);
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    cc_slist_zip_iter_init(&zip, list, list2);
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e2, "g") == 0)
-            slist_zip_iter_add(&zip, "x", "y");
+            cc_slist_zip_iter_add(&zip, "x", "y");
     }
 
     char *last;
-    slist_get_last(list2, (void*) &last);
+    cc_slist_get_last(list2, (void*) &last);
     CHECK_EQUAL_C_STRING("y", last);
 
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_STRING("d", last);
 };
 
-TEST_C(SlistTestsWithDefaults, SListZipIterRemove)
+TEST_C(SlistTestsWithDefaults, CC_SListZipIterRemove)
 {
-    slist_add(list, "a");
-    slist_add(list, "b");
-    slist_add(list, "c");
-    slist_add(list, "d");
+    cc_slist_add(list, "a");
+    cc_slist_add(list, "b");
+    cc_slist_add(list, "c");
+    cc_slist_add(list, "d");
 
-    slist_add(list2, "e");
-    slist_add(list2, "f");
-    slist_add(list2, "g");
+    cc_slist_add(list2, "e");
+    cc_slist_add(list2, "f");
+    cc_slist_add(list2, "g");
 
-    SListZipIter zip;
-    slist_zip_iter_init(&zip, list, list2);
+    CC_SListZipIter zip;
+    cc_slist_zip_iter_init(&zip, list, list2);
 
     void *e1, *e2;
     void *r1, *r2;
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            slist_zip_iter_remove(&zip, &r1, &r2);
+            cc_slist_zip_iter_remove(&zip, &r1, &r2);
     }
 
     CHECK_EQUAL_C_STRING("b", (char*)r1);
     CHECK_EQUAL_C_STRING("f", (char*)r2);
-    CHECK_EQUAL_C_INT(0, slist_contains(list, "b"));
-    CHECK_EQUAL_C_INT(0, slist_contains(list2, "f"));
-    CHECK_EQUAL_C_INT(3, slist_size(list));
-    CHECK_EQUAL_C_INT(2, slist_size(list2));
+    CHECK_EQUAL_C_INT(0, cc_slist_contains(list, "b"));
+    CHECK_EQUAL_C_INT(0, cc_slist_contains(list2, "f"));
+    CHECK_EQUAL_C_INT(3, cc_slist_size(list));
+    CHECK_EQUAL_C_INT(2, cc_slist_size(list2));
 
-    slist_zip_iter_init(&zip, list, list2);
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    cc_slist_zip_iter_init(&zip, list, list2);
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e2, "e") == 0)
-            slist_zip_iter_remove(&zip, &r1, &r2);
+            cc_slist_zip_iter_remove(&zip, &r1, &r2);
 
         if (strcmp((char*) e2, "g") == 0)
-            slist_zip_iter_remove(&zip, &r1, &r2);
+            cc_slist_zip_iter_remove(&zip, &r1, &r2);
     }
 
     char *first = "";
     char *last  = "";
 
-    CHECK_EQUAL_C_INT(CC_ERR_VALUE_NOT_FOUND, slist_get_first(list2, (void*) &first));
-    CHECK_EQUAL_C_INT(CC_ERR_VALUE_NOT_FOUND, slist_get_last(list2, (void*) &last));
+    CHECK_EQUAL_C_INT(CC_ERR_VALUE_NOT_FOUND, cc_slist_get_first(list2, (void*) &first));
+    CHECK_EQUAL_C_INT(CC_ERR_VALUE_NOT_FOUND, cc_slist_get_last(list2, (void*) &last));
 
-    slist_get_first(list, (void*) &first);
+    cc_slist_get_first(list, (void*) &first);
     CHECK_EQUAL_C_STRING("d", first);
 
-    slist_get_last(list, (void*) &last);
+    cc_slist_get_last(list, (void*) &last);
     CHECK_EQUAL_C_STRING("d", last);
 
     // consecutive removes
-    slist_add(list, "a");
-    slist_add(list, "b");
-    slist_add(list, "c");
-    slist_add(list, "d");
+    cc_slist_add(list, "a");
+    cc_slist_add(list, "b");
+    cc_slist_add(list, "c");
+    cc_slist_add(list, "d");
 
-    slist_add(list2, "a");
-    slist_add(list2, "b");
-    slist_add(list2, "c");
-    slist_add(list2, "d");
+    cc_slist_add(list2, "a");
+    cc_slist_add(list2, "b");
+    cc_slist_add(list2, "c");
+    cc_slist_add(list2, "d");
 
-    slist_zip_iter_init(&zip, list, list2);
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    cc_slist_zip_iter_init(&zip, list, list2);
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            slist_zip_iter_remove(&zip, &r1, &r2);
+            cc_slist_zip_iter_remove(&zip, &r1, &r2);
 
         if (strcmp((char*) e1, "c") == 0)
-            slist_zip_iter_remove(&zip, &r1, &r2);
+            cc_slist_zip_iter_remove(&zip, &r1, &r2);
     }
     // test something here
 };
 
-TEST_C(SlistTestsWithDefaults, SListZipIterReplace)
+TEST_C(SlistTestsWithDefaults, CC_SListZipIterReplace)
 {
-    slist_add(list, "a");
-    slist_add(list, "b");
-    slist_add(list, "c");
-    slist_add(list, "d");
+    cc_slist_add(list, "a");
+    cc_slist_add(list, "b");
+    cc_slist_add(list, "c");
+    cc_slist_add(list, "d");
 
-    slist_add(list2, "e");
-    slist_add(list2, "f");
-    slist_add(list2, "g");
+    cc_slist_add(list2, "e");
+    cc_slist_add(list2, "f");
+    cc_slist_add(list2, "g");
 
     char *h = "h";
     char *i = "i";
 
-    SListZipIter zip;
-    slist_zip_iter_init(&zip, list, list2);
+    CC_SListZipIter zip;
+    cc_slist_zip_iter_init(&zip, list, list2);
 
     void *e1, *e2;
     void *r1, *r2;
-    while (slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_slist_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            slist_zip_iter_replace(&zip, h, i, &r1, &r2);
+            cc_slist_zip_iter_replace(&zip, h, i, &r1, &r2);
     }
 
     size_t index;
-    slist_index_of(list, "h", &index);
+    cc_slist_index_of(list, "h", &index);
     CHECK_EQUAL_C_INT(1, index);
 
-    slist_index_of(list, "i", &index);
+    cc_slist_index_of(list, "i", &index);
     CHECK_EQUAL_C_INT(1, index);
-    CHECK_EQUAL_C_INT(1, slist_contains(list, "h"));
-    CHECK_EQUAL_C_INT(1, slist_contains(list2, "i"));
+    CHECK_EQUAL_C_INT(1, cc_slist_contains(list, "h"));
+    CHECK_EQUAL_C_INT(1, cc_slist_contains(list2, "i"));
 };
 
-TEST_C(SlistTestsWithDefaults, SListSort)
+TEST_C(SlistTestsWithDefaults, CC_SListSort)
 {
     srand(time(NULL));
 
@@ -742,129 +742,129 @@ TEST_C(SlistTestsWithDefaults, SListSort)
     for (i = 0; i < size; i++) {
         int *e = malloc(sizeof(int));
         *e = rand() % 100000;
-        slist_add(list, e);
+        cc_slist_add(list, e);
     }
-    slist_sort(list, cmp);
+    cc_slist_sort(list, cmp);
 
-    SListIter iter;
-    slist_iter_init(&iter, list);
+    CC_SListIter iter;
+    cc_slist_iter_init(&iter, list);
 
     void *prev    = 0;
     void *e;
 
-    slist_iter_next(&iter, &prev);
-    while (slist_iter_next(&iter, &e) != CC_ITER_END) {
+    cc_slist_iter_next(&iter, &prev);
+    while (cc_slist_iter_next(&iter, &e) != CC_ITER_END) {
         CHECK_C(*(int*)prev <= *(int*)e);
         prev = e;
     }
 };
 
-TEST_C(SlistTestsWithDefaults, SListReverse)
+TEST_C(SlistTestsWithDefaults, CC_SListReverse)
 {
     int *e;
     for(int i=0;i<10;i++) {
         e = (int*)malloc(sizeof(int));
         *e = i;
-        slist_add(list, e);
+        cc_slist_add(list, e);
     }
-    slist_reverse(list);
+    cc_slist_reverse(list);
 
-    SListIter i;
-    slist_iter_init(&i, list);
+    CC_SListIter i;
+    cc_slist_iter_init(&i, list);
 
     void *el;
     int next = 9;
-    while (slist_iter_next(&i, &el) != CC_ITER_END) {
+    while (cc_slist_iter_next(&i, &el) != CC_ITER_END) {
         CHECK_EQUAL_C_INT(next, *(int*)el);
         next--;
     }
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListFilter1)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListFilter1)
 {
-    SList *filter = NULL;
-    CHECK_EQUAL_C_INT(4, slist_size(list));
-    slist_filter(list, pred1, &filter);
+    CC_SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
+    cc_slist_filter(list, pred1, &filter);
 
-    CHECK_EQUAL_C_INT(0, slist_size(filter));
+    CHECK_EQUAL_C_INT(0, cc_slist_size(filter));
 
     void *e = NULL;
-    slist_get_first(filter, &e);
+    cc_slist_get_first(filter, &e);
     CHECK_C(e == NULL);
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListFilter2)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListFilter2)
 {
-    SList *filter = NULL;
-    CHECK_EQUAL_C_INT(4, slist_size(list));
-    slist_filter(list, pred2, &filter);
-    CHECK_EQUAL_C_INT(2, slist_size(filter));
+    CC_SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
+    cc_slist_filter(list, pred2, &filter);
+    CHECK_EQUAL_C_INT(2, cc_slist_size(filter));
 
-    SListIter iter;
+    CC_SListIter iter;
     int *el = NULL;
     int i = 3;
-    slist_iter_init(&iter, filter);
-    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    cc_slist_iter_init(&iter, filter);
+    while (cc_slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         CHECK_EQUAL_C_INT(i++, *el);
     }
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListFilter3)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListFilter3)
 {
-    SList *filter = NULL;
-    CHECK_EQUAL_C_INT(4, slist_size(list));
-    slist_filter(list, pred3, &filter);
-    CHECK_EQUAL_C_INT(4, slist_size(filter));
+    CC_SList *filter = NULL;
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
+    cc_slist_filter(list, pred3, &filter);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(filter));
 
-    SListIter iter;
+    CC_SListIter iter;
     int *el = NULL;
     int i = 1;
-    slist_iter_init(&iter, filter);
-    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    cc_slist_iter_init(&iter, filter);
+    while (cc_slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         CHECK_EQUAL_C_INT(i++, *el);
     }
 
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListFilterMut1)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListFilterMut1)
 {
-    CHECK_EQUAL_C_INT(4, slist_size(list));
-    slist_filter_mut(list, pred1);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
+    cc_slist_filter_mut(list, pred1);
 
-    CHECK_EQUAL_C_INT(0, slist_size(list));
+    CHECK_EQUAL_C_INT(0, cc_slist_size(list));
     void *e = NULL;
-    slist_get_first(list, &e);
+    cc_slist_get_first(list, &e);
     CHECK_C(e == NULL);
 
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListFilterMut2)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListFilterMut2)
 {
-    CHECK_EQUAL_C_INT(4, slist_size(list));
-    slist_filter_mut(list, pred2);
-    CHECK_EQUAL_C_INT(2, slist_size(list));
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
+    cc_slist_filter_mut(list, pred2);
+    CHECK_EQUAL_C_INT(2, cc_slist_size(list));
 
-    SListIter iter;
+    CC_SListIter iter;
     int *el = NULL;
     int i = 3;
-    slist_iter_init(&iter, list);
-    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    cc_slist_iter_init(&iter, list);
+    while (cc_slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         CHECK_EQUAL_C_INT(i++, *el);
     }
 
 };
 
-TEST_C(SlistTestsSlistPrepopulated, SListFilterMut3)
+TEST_C(SlistTestsSlistPrepopulated, CC_SListFilterMut3)
 {
-    CHECK_EQUAL_C_INT(4, slist_size(list));
-    slist_filter_mut(list, pred3);
-    CHECK_EQUAL_C_INT(4, slist_size(list));
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
+    cc_slist_filter_mut(list, pred3);
+    CHECK_EQUAL_C_INT(4, cc_slist_size(list));
 
-    SListIter iter;
+    CC_SListIter iter;
     int *el = NULL;
     int i = 1;
-    slist_iter_init(&iter, list);
-    while (slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    cc_slist_iter_init(&iter, list);
+    while (cc_slist_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         CHECK_EQUAL_C_INT(i++, *el);
     }
 

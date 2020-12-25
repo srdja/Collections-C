@@ -28,12 +28,12 @@ int main(int argc, char **argv)
 {
     /* Define the config structure (for more details check the
        configuration example) */
-    HashTableConf config;
+    CC_HashTableConf config;
 
     /* While it's not necessary, it's always a good idea to initialize the
        config structure to default values and then override whichever
        value we need. */
-    hashtable_conf_init(&config);
+    cc_hashtable_conf_init(&config);
 
     /* First we need to set the key length to match the length of
        our Point structure. */
@@ -47,19 +47,19 @@ int main(int argc, char **argv)
     config.key_compare = point_compare;
 
     /* We can define a new table */
-    HashTable *table;
+    CC_HashTable *table;
 
     /* Create a new hashtable that Point structures as keys and assign to
        *table*. The return value indicates the success or failure of the
        operation. */
-    enum cc_stat status = hashtable_new_conf(&config, &table);
+    enum cc_stat status = cc_hashtable_new_conf(&config, &table);
 
     /* It's always a good idea to check whether the allocation of a new
        structure was successful or not. */
     if (status != CC_OK) {
         /* Do some error handling */
         if (status == CC_ERR_ALLOC) {
-            /* This is the only kind of error hashtable_new can return.
+            /* This is the only kind of error cc_hashtable_new can return.
                It means that the allocation has failed. */
         }
     }
@@ -73,9 +73,9 @@ int main(int argc, char **argv)
     point.y = 10;
 
     /* Add a new key value pair. */
-    hashtable_add(table, (void*) &point, "foo");
+    cc_hashtable_add(table, (void*) &point, "foo");
 
     /* Destroy the table structure */
-    hashtable_destroy(table);
+    cc_hashtable_destroy(table);
     return 0;
 }

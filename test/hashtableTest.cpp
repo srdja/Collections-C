@@ -1,63 +1,63 @@
 #include "CppUTest/TestHarness_c.h"
 #include "CppUTest/CommandLineTestRunner.h"
 
-TEST_GROUP_C_WRAPPER(HashTableTestsConf)
+TEST_GROUP_C_WRAPPER(CC_HashTableTestsConf)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashTableTestsConf);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashTableTestsConf);
+    TEST_GROUP_C_SETUP_WRAPPER(CC_HashTableTestsConf);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashTableTestsConf);
 };
 
-TEST_C_WRAPPER(HashTableTestsConf, HashTableNew);
+TEST_C_WRAPPER(CC_HashTableTestsConf, CC_HashTableNew);
 
-TEST_GROUP_C_WRAPPER(HashTableTests)
+TEST_GROUP_C_WRAPPER(CC_HashTableTests)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashTableTests);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashTableTests);
+    TEST_GROUP_C_SETUP_WRAPPER(CC_HashTableTests);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashTableTests);
 };
 
-TEST_C_WRAPPER(HashTableTests, HashTableAdd);
-TEST_C_WRAPPER(HashTableTests, HashTableRemove);
-TEST_C_WRAPPER(HashTableTests, HashTableRemoveAll);
-TEST_C_WRAPPER(HashTableTests, HashTableGet);
-TEST_C_WRAPPER(HashTableTests, HashTableSize);
-TEST_C_WRAPPER(HashTableTests, HashTableContainsKey);
-TEST_C_WRAPPER(HashTableTests, HashTableIterNext);
-TEST_C_WRAPPER(HashTableTests, HashTableIterRemove);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableAdd);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableRemove);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableRemoveAll);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableGet);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableSize);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableContainsKey);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableIterNext);
+TEST_C_WRAPPER(CC_HashTableTests, CC_HashTableIterRemove);
 
-TEST_GROUP_C_WRAPPER(HashTableTestsCollision)
+TEST_GROUP_C_WRAPPER(CC_HashTableTestsCollision)
 {
-    TEST_GROUP_C_SETUP_WRAPPER(HashTableTestsCollision);
-    TEST_GROUP_C_TEARDOWN_WRAPPER(HashTableTestsCollision);
+    TEST_GROUP_C_SETUP_WRAPPER(CC_HashTableTestsCollision);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashTableTestsCollision);
 };
 
-TEST_C_WRAPPER(HashTableTestsCollision, HashTableCollisionGet);
-TEST_C_WRAPPER(HashTableTestsCollision, HashTableCollisionRemove);
+TEST_C_WRAPPER(CC_HashTableTestsCollision, CC_HashTableCollisionGet);
+TEST_C_WRAPPER(CC_HashTableTestsCollision, CC_HashTableCollisionRemove);
 
-TEST_GROUP_C_WRAPPER(HashTableTestsZeroHash)
+TEST_GROUP_C_WRAPPER(CC_HashTableTestsZeroHash)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashTableTestsZeroHash);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashTableTestsZeroHash);
+    TEST_GROUP_C_SETUP_WRAPPER(CC_HashTableTestsZeroHash);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashTableTestsZeroHash);
 };
 
-TEST_C_WRAPPER(HashTableTestsZeroHash, HashTableAddStringWithNullKey);
-TEST_C_WRAPPER(HashTableTestsZeroHash, HashTableRemoveStringWithNullKey);
-TEST_C_WRAPPER(HashTableTestsZeroHash, HashTableGetStringWithNullKey);
+TEST_C_WRAPPER(CC_HashTableTestsZeroHash, CC_HashTableAddStringWithNullKey);
+TEST_C_WRAPPER(CC_HashTableTestsZeroHash, CC_HashTableRemoveStringWithNullKey);
+TEST_C_WRAPPER(CC_HashTableTestsZeroHash, CC_HashTableGetStringWithNullKey);
 
-TEST_GROUP_C_WRAPPER(HashTableTestsCapacity)
+TEST_GROUP_C_WRAPPER(CC_HashTableTestsCapacity)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashTableTestsCapacity);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashTableTestsCapacity);
+    TEST_GROUP_C_SETUP_WRAPPER(CC_HashTableTestsCapacity);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashTableTestsCapacity);
 };
 
-TEST_C_WRAPPER(HashTableTestsCapacity, HashTableCapacity);
+TEST_C_WRAPPER(CC_HashTableTestsCapacity, CC_HashTableCapacity);
 
-TEST_GROUP_C_WRAPPER(HashTableTestsCompare)
+TEST_GROUP_C_WRAPPER(CC_HashTableTestsCompare)
 {
-  TEST_GROUP_C_SETUP_WRAPPER(HashTableTestsCompare);
-  TEST_GROUP_C_TEARDOWN_WRAPPER(HashTableTestsCompare);
+    TEST_GROUP_C_SETUP_WRAPPER(CC_HashTableTestsCompare);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_HashTableTestsCompare);
 };
 
-TEST_C_WRAPPER(HashTableTestsCompare, HashTableTestsMemoryChunksAsKeys);
+TEST_C_WRAPPER(CC_HashTableTestsCompare, CC_HashTableTestsMemoryChunksAsKeys);
 
 int main(int argc, char **argv) {
   return RUN_ALL_TESTS(argc, argv);

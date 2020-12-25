@@ -9,16 +9,16 @@
  #include "CppUTest/TestHarness_c.h"
  #include "CppUTest/CommandLineTestRunner.h"
 
- TEST_GROUP_C_WRAPPER(RbufTest)
- {
-     TEST_GROUP_C_SETUP_WRAPPER(RbufTest);
-     TEST_GROUP_C_TEARDOWN_WRAPPER(RbufTest);
- };
+TEST_GROUP_C_WRAPPER(CC_RbufTest)
+{
+    TEST_GROUP_C_SETUP_WRAPPER(CC_RbufTest);
+    TEST_GROUP_C_TEARDOWN_WRAPPER(CC_RbufTest);
+};
 
- TEST_C_WRAPPER(RbufTest, RbufEnqueue);
- TEST_C_WRAPPER(RbufTest, RbufDequeue);
- TEST_C_WRAPPER(RbufTest, RbufEnqueuePastCapacity);
+TEST_C_WRAPPER(CC_RbufTest, CC_RbufEnqueue);
+TEST_C_WRAPPER(CC_RbufTest, CC_RbufDequeue);
+TEST_C_WRAPPER(CC_RbufTest, CC_RbufEnqueuePastCapacity);
 
- int main(int argc, char **argv) {
-     return RUN_ALL_TESTS(argc, argv);
- }
+int main(int argc, char **argv) {
+    return RUN_ALL_TESTS(argc, argv);
+}

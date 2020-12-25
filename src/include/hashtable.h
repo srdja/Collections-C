@@ -18,8 +18,8 @@
  * along with Collections-C. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C_HASHTABLE_H
-#define COLLECTIONS_C_HASHTABLE_H
+#ifndef COLLECTIONS_C_CC_HASHTABLE_H
+#define COLLECTIONS_C_CC_HASHTABLE_H
 
 #include "array.h"
 #include "common.h"
@@ -28,16 +28,16 @@
 #define KEY_LENGTH_POINTER   sizeof(void*)
 
 /**
- * An unordered key-value map. HashTable supports best case amortized
+ * An unordered key-value map. CC_HashTable supports best case amortized
  * constant time insertion, removal, and lookup of values. The worst
  * case complexity for these operations is amortized linear time.
  * The performance of the table depends greatly on the quality of the
  * hash function being used.
  */
-typedef struct hashtable_s HashTable;
+typedef struct cc_hashtable_s CC_HashTable;
 
 /**
- * A HashTable table entry.
+ * A CC_HashTable table entry.
  *
  * @note modifying this structure may invalidate the table.
  */
@@ -60,24 +60,24 @@ typedef struct table_entry_s {
 } TableEntry;
 
 /**
- * HashTable iterator object. Used to iterate over the entries of
+ * CC_HashTable iterator object. Used to iterate over the entries of
  * the table in an undefined order. The iterator also supports operations
  * for safely removing elements during iteration.
  *
  * @note This structure should only be modified through the iterator functions.
  */
-typedef struct hashtable_iter {
-    HashTable  *table;
-    size_t      bucket_index;
-    TableEntry *prev_entry;
-    TableEntry *next_entry;
-} HashTableIter;
+typedef struct cc_hashtable_iter {
+    CC_HashTable  *table;
+    size_t         bucket_index;
+    TableEntry    *prev_entry;
+    TableEntry    *next_entry;
+} CC_HashTableIter;
 
 /**
- * HashTable configuration object. Used to initialize a new HashTable
+ * CC_HashTable configuration object. Used to initialize a new CC_HashTable
  * with specific values.
  */
-typedef struct hashtable_conf_s {
+typedef struct cc_hashtable_conf_s {
     /**
      * The load factor determines how the underlying
      * table array grows. For example if the load factor
@@ -108,49 +108,49 @@ typedef struct hashtable_conf_s {
     int    (*key_compare) (const void *key1, const void *key2);
 
     /**
-     * Memory allocators used to allocate the HashTable structure
+     * Memory allocators used to allocate the CC_HashTable structure
      * and for all internal memory allocations. */
     void  *(*mem_alloc)   (size_t size);
     void  *(*mem_calloc)  (size_t blocks, size_t size);
     void   (*mem_free)    (void *block);
-} HashTableConf;
+} CC_HashTableConf;
 
 
-void          hashtable_conf_init       (HashTableConf *conf);
-enum cc_stat  hashtable_new             (HashTable **out);
-enum cc_stat  hashtable_new_conf        (HashTableConf const * const conf, HashTable **out);
+void          cc_hashtable_conf_init       (CC_HashTableConf *conf);
+enum cc_stat  cc_hashtable_new             (CC_HashTable **out);
+enum cc_stat  cc_hashtable_new_conf        (CC_HashTableConf const * const conf, CC_HashTable **out);
 
-void          hashtable_destroy         (HashTable *table);
-enum cc_stat  hashtable_add             (HashTable *table, void *key, void *val);
-enum cc_stat  hashtable_get             (HashTable *table, void *key, void **out);
-enum cc_stat  hashtable_remove          (HashTable *table, void *key, void **out);
-void          hashtable_remove_all      (HashTable *table);
-bool          hashtable_contains_key    (HashTable *table, void *key);
+void          cc_hashtable_destroy         (CC_HashTable *table);
+enum cc_stat  cc_hashtable_add             (CC_HashTable *table, void *key, void *val);
+enum cc_stat  cc_hashtable_get             (CC_HashTable *table, void *key, void **out);
+enum cc_stat  cc_hashtable_remove          (CC_HashTable *table, void *key, void **out);
+void          cc_hashtable_remove_all      (CC_HashTable *table);
+bool          cc_hashtable_contains_key    (CC_HashTable *table, void *key);
 
-size_t        hashtable_size            (HashTable *table);
-size_t        hashtable_capacity        (HashTable *table);
+size_t        cc_hashtable_size            (CC_HashTable *table);
+size_t        cc_hashtable_capacity        (CC_HashTable *table);
 
-enum cc_stat  hashtable_get_keys        (HashTable *table, Array **out);
-enum cc_stat  hashtable_get_values      (HashTable *table, Array **out);
+enum cc_stat  cc_hashtable_get_keys        (CC_HashTable *table, CC_Array **out);
+enum cc_stat  cc_hashtable_get_values      (CC_HashTable *table, CC_Array **out);
 
-size_t        hashtable_hash_string     (const void *key, int len, uint32_t seed);
-size_t        hashtable_hash            (const void *key, int len, uint32_t seed);
-size_t        hashtable_hash_ptr        (const void *key, int len, uint32_t seed);
+size_t        cc_hashtable_hash_string     (const void *key, int len, uint32_t seed);
+size_t        cc_hashtable_hash            (const void *key, int len, uint32_t seed);
+size_t        cc_hashtable_hash_ptr        (const void *key, int len, uint32_t seed);
 
-void          hashtable_foreach_key     (HashTable *table, void (*op) (const void *));
-void          hashtable_foreach_value   (HashTable *table, void (*op) (void *));
+void          cc_hashtable_foreach_key     (CC_HashTable *table, void (*op) (const void *));
+void          cc_hashtable_foreach_value   (CC_HashTable *table, void (*op) (void *));
 
-void          hashtable_iter_init       (HashTableIter *iter, HashTable *table);
-enum cc_stat  hashtable_iter_next       (HashTableIter *iter, TableEntry **out);
-enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
+void          cc_hashtable_iter_init       (CC_HashTableIter *iter, CC_HashTable *table);
+enum cc_stat  cc_hashtable_iter_next       (CC_HashTableIter *iter, TableEntry **out);
+enum cc_stat  cc_hashtable_iter_remove     (CC_HashTableIter *iter, void **out);
 
 
-#define HASHTABLE_FOREACH(hashtable, key_53d46d2a04458e7b, value_53d46d2a04458e7b, body) \
+#define CC_HASHTABLE_FOREACH(hashtable, key_53d46d2a04458e7b, value_53d46d2a04458e7b, body) \
     {                                                                   \
-        HashTableIter hashtable_iter_53d46d2a04458e7b;                  \
-        hashtable_iter_init(&hashtable_iter_53d46d2a04458e7b, hashtable); \
+        CC_HashTableIter cc_hashtable_iter_53d46d2a04458e7b;            \
+        cc_hashtable_iter_init(&cc_hashtable_iter_53d46d2a04458e7b, hashtable); \
         TableEntry *entry_53d46d2a04458e7b;                             \
-        while (hashtable_iter_next(&hashtable_iter_53d46d2a04458e7b, &entry_53d46d2a04458e7b) != CC_ITER_END) \
+        while (cc_hashtable_iter_next(&cc_hashtable_iter_53d46d2a04458e7b, &entry_53d46d2a04458e7b) != CC_ITER_END) \
         {                                                               \
             key_53d46d2a04458e7b = entry_53d46d2a04458e7b->key;         \
             value_53d46d2a04458e7b = entry_53d46d2a04458e7b->value;     \
@@ -159,9 +159,9 @@ enum cc_stat  hashtable_iter_remove     (HashTableIter *iter, void **out);
     }
 
 
-#define GENERAL_HASH hashtable_hash
-#define STRING_HASH  hashtable_hash_string
-#define POINTER_HASH hashtable_hash_ptr
+#define GENERAL_HASH cc_hashtable_hash
+#define STRING_HASH  cc_hashtable_hash_string
+#define POINTER_HASH cc_hashtable_hash_ptr
 
 
-#endif /* COLLECTIONS_C_HASHTABLE_H */
+#endif /* COLLECTIONS_C_CC_HASHTABLE_H */

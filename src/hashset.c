@@ -20,8 +20,8 @@
 
 #include "hashset.h"
 
-struct hashset_s {
-    HashTable *table;
+struct cc_hashset_s {
+    CC_HashTable *table;
     int       *dummy;
 
     void *(*mem_alloc)  (size_t size);
@@ -30,52 +30,52 @@ struct hashset_s {
 };
 
 /**
- * Initializes the fields of the HashSetConf struct to default values.
+ * Initializes the fields of the CC_HashSetConf struct to default values.
  *
  * @param[in, out] conf the configuration struct that is being initialized
  */
-void hashset_conf_init(HashSetConf *conf)
+void cc_hashset_conf_init(CC_HashSetConf *conf)
 {
-    hashtable_conf_init(conf);
+    cc_hashtable_conf_init(conf);
 }
 
 /**
- * Creates a new HashSet and returns a status code.
+ * Creates a new CC_HashSet and returns a status code.
  *
- * @note The newly created HashSet will be a set of strings.
+ * @note The newly created CC_HashSet will be a set of strings.
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new HashSet failed.
+ * allocation for the new CC_HashSet failed.
  */
-enum cc_stat hashset_new(HashSet **hs)
+enum cc_stat cc_hashset_new(CC_HashSet **hs)
 {
-    HashSetConf hsc;
-    hashset_conf_init(&hsc);
-    return hashset_new_conf(&hsc, hs);
+    CC_HashSetConf hsc;
+    cc_hashset_conf_init(&hsc);
+    return cc_hashset_new_conf(&hsc, hs);
 }
 
 /**
- * Creates a new empty HashSet based on the specified HashSetConf struct and
+ * Creates a new empty CC_HashSet based on the specified CC_HashSetConf struct and
  * returns a status code.
  *
- * The HashSet is allocated using the allocators specified in the HashSetConf
+ * The CC_HashSet is allocated using the allocators specified in the CC_HashSetConf
  * object. The allocation may fail if the underlying allocator fails.
  *
  * @param[in] conf The hashset configuration object. All fields must be initialized.
- * @param[out] out Pointer to where the newly created HashSet is stored
+ * @param[out] out Pointer to where the newly created CC_HashSet is stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new HashSet structure failed.
+ * allocation for the new CC_HashSet structure failed.
  */
-enum cc_stat hashset_new_conf(HashSetConf const * const conf, HashSet **hs)
+enum cc_stat cc_hashset_new_conf(CC_HashSetConf const * const conf, CC_HashSet **hs)
 {
-    HashSet *set = conf->mem_calloc(1, sizeof(HashSet));
+    CC_HashSet *set = conf->mem_calloc(1, sizeof(CC_HashSet));
 
     if (!set)
         return CC_ERR_ALLOC;
 
-    HashTable *table;
-    enum cc_stat stat = hashtable_new_conf(conf, &table);
+    CC_HashTable *table;
+    enum cc_stat stat = cc_hashtable_new_conf(conf, &table);
 
     if (stat != CC_OK) {
         conf->mem_free(set);
@@ -95,19 +95,19 @@ enum cc_stat hashset_new_conf(HashSetConf const * const conf, HashSet **hs)
 }
 
 /**
- * Destroys the specified HashSet structure without destroying the data
+ * Destroys the specified CC_HashSet structure without destroying the data
  * it holds.
  *
- * @param[in] table HashSet to be destroyed.
+ * @param[in] table CC_HashSet to be destroyed.
  */
-void hashset_destroy(HashSet *set)
+void cc_hashset_destroy(CC_HashSet *set)
 {
-    hashtable_destroy(set->table);
+    cc_hashtable_destroy(set->table);
     set->mem_free(set);
 }
 
 /**
- * Adds a new element to the HashSet.
+ * Adds a new element to the CC_HashSet.
  *
  * @param[in] set the set to which the element is being added
  * @param[in] element the element being added
@@ -115,13 +115,13 @@ void hashset_destroy(HashSet *set)
  * @return CC_OK if the element was successfully added, or CC_ERR_ALLOC
  * if the memory allocation failed.
  */
-enum cc_stat hashset_add(HashSet *set, void *element)
+enum cc_stat cc_hashset_add(CC_HashSet *set, void *element)
 {
-    return hashtable_add(set->table, element, set->dummy);
+    return cc_hashtable_add(set->table, element, set->dummy);
 }
 
 /**
- * Removes the specified element from the HashSet and sets the out
+ * Removes the specified element from the CC_HashSet and sets the out
  * parameter to its value.
  *
  * @param[in] set the set from which the element is being removed
@@ -132,9 +132,9 @@ enum cc_stat hashset_add(HashSet *set, void *element)
  * @return CC_OK if the element was successfully removed, or CC_ERR_VALUE_NOT_FOUND
  * if the value was not found.
  */
-enum cc_stat hashset_remove(HashSet *set, void *element, void **out)
+enum cc_stat cc_hashset_remove(CC_HashSet *set, void *element, void **out)
 {
-    return hashtable_remove(set->table, element, out);
+    return cc_hashtable_remove(set->table, element, out);
 }
 
 /**
@@ -142,9 +142,9 @@ enum cc_stat hashset_remove(HashSet *set, void *element, void **out)
  *
  * @param set the set from which all elements are being removed
  */
-void hashset_remove_all(HashSet *set)
+void cc_hashset_remove_all(CC_HashSet *set)
 {
-    hashtable_remove_all(set->table);
+    cc_hashtable_remove_all(set->table);
 }
 
 /**
@@ -155,9 +155,9 @@ void hashset_remove_all(HashSet *set)
  *
  * @return true if the specified element is an element of the set
  */
-bool hashset_contains(HashSet *set, void *element)
+bool cc_hashset_contains(CC_HashSet *set, void *element)
 {
-    return hashtable_contains_key(set->table, element);
+    return cc_hashtable_contains_key(set->table, element);
 }
 
 /**
@@ -167,9 +167,9 @@ bool hashset_contains(HashSet *set, void *element)
  *
  * @return the size of the set
  */
-size_t hashset_size(HashSet *set)
+size_t cc_hashset_size(CC_HashSet *set)
 {
-    return hashtable_size(set->table);
+    return cc_hashtable_size(set->table);
 }
 
 /**
@@ -179,21 +179,21 @@ size_t hashset_size(HashSet *set)
  *
  * @return the capacity of the set
  */
-size_t hashset_capacity(HashSet *set)
+size_t cc_hashset_capacity(CC_HashSet *set)
 {
-    return hashtable_capacity(set->table);
+    return cc_hashtable_capacity(set->table);
 }
 
 /**
- * Applies the function fn to each element of the HashSet.
+ * Applies the function fn to each element of the CC_HashSet.
  *
  * @param[in] set the set on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each element of the
  *               set
  */
-void hashset_foreach(HashSet *set, void (*fn) (const void *e))
+void cc_hashset_foreach(CC_HashSet *set, void (*fn) (const void *e))
 {
-    hashtable_foreach_key(set->table, fn);
+    cc_hashtable_foreach_key(set->table, fn);
 }
 
 /**
@@ -202,9 +202,9 @@ void hashset_foreach(HashSet *set, void (*fn) (const void *e))
  * @param[in] iter the iterator that is being initialized
  * @param[in] set the set on which this iterator will operate
  */
-void hashset_iter_init(HashSetIter *iter, HashSet *set)
+void cc_hashset_iter_init(CC_HashSetIter *iter, CC_HashSet *set)
 {
-    hashtable_iter_init(&(iter->iter), set->table);
+    cc_hashtable_iter_init(&(iter->iter), set->table);
 }
 
 /**
@@ -215,12 +215,12 @@ void hashset_iter_init(HashSetIter *iter, HashSet *set)
  * @param[out] out Pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the HashSet has been reached.
+ * end of the CC_HashSet has been reached.
  */
-enum cc_stat hashset_iter_next(HashSetIter *iter, void **out)
+enum cc_stat cc_hashset_iter_next(CC_HashSetIter *iter, void **out)
 {
     TableEntry *entry;
-    enum cc_stat status = hashtable_iter_next(&(iter->iter), &entry);
+    enum cc_stat status = cc_hashtable_iter_next(&(iter->iter), &entry);
 
     if (status != CC_OK)
         return status;
@@ -232,12 +232,12 @@ enum cc_stat hashset_iter_next(HashSetIter *iter, void **out)
 }
 
 /**
- * Removes the last returned entry by <code>hashset_iter_next()</code>
+ * Removes the last returned entry by <code>cc_hashset_iter_next()</code>
  * function without invalidating the iterator and optionally sets the
  * out parameter to the value of the removed element.
  *
  * @note This Function should only ever be called after a call to <code>
- * hashset_iter_next()</code>.
+ * cc_hashset_iter_next()</code>.
  *
  * @param[in] iter The iterator on which this operation is performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
@@ -246,7 +246,7 @@ enum cc_stat hashset_iter_next(HashSetIter *iter, void **out)
  * @return CC_OK if the entry was successfully removed, or
  * CC_ERR_VALUE_NOT_FOUND.
  */
-enum cc_stat hashset_iter_remove(HashSetIter *iter, void **out)
+enum cc_stat cc_hashset_iter_remove(CC_HashSetIter *iter, void **out)
 {
-    return hashtable_iter_remove(&(iter->iter), out);
+    return cc_hashtable_iter_remove(&(iter->iter), out);
 }

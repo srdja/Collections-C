@@ -27,7 +27,7 @@
 #define RB_RED   0
 
 
-struct treetable_s {
+struct cc_treetable_s {
     RBNode *root;
     RBNode *sentinel;
     size_t  size;
@@ -39,20 +39,20 @@ struct treetable_s {
 };
 
 
-static void rotate_left            (TreeTable *table, RBNode *n);
-static void rotate_right           (TreeTable *table, RBNode *n);
-static void rebalance_after_insert (TreeTable *table, RBNode *n);
-static void rebalance_after_delete (TreeTable *table, RBNode *n);
-static void remove_node            (TreeTable *table, RBNode *z);
-static void tree_destroy           (TreeTable *table, RBNode *s);
+static void rotate_left            (CC_TreeTable *table, RBNode *n);
+static void rotate_right           (CC_TreeTable *table, RBNode *n);
+static void rebalance_after_insert (CC_TreeTable *table, RBNode *n);
+static void rebalance_after_delete (CC_TreeTable *table, RBNode *n);
+static void remove_node            (CC_TreeTable *table, RBNode *z);
+static void tree_destroy           (CC_TreeTable *table, RBNode *s);
 
-static INLINE void  transplant     (TreeTable *table, RBNode *u, RBNode *v);
-static INLINE RBNode *tree_min     (TreeTable const * const table, RBNode *n);
-static INLINE RBNode *tree_max     (TreeTable const * const table, RBNode *n);
+static INLINE void  transplant     (CC_TreeTable *table, RBNode *u, RBNode *v);
+static INLINE RBNode *tree_min     (CC_TreeTable const * const table, RBNode *n);
+static INLINE RBNode *tree_max     (CC_TreeTable const * const table, RBNode *n);
 
-static RBNode *get_tree_node_by_key(TreeTable const * const table, const void *key);
-static RBNode *get_successor_node  (TreeTable const * const table, RBNode *x);
-static RBNode *get_predecessor_node(TreeTable const * const table, RBNode *x);
+static RBNode *get_tree_node_by_key(CC_TreeTable const * const table, const void *key);
+static RBNode *get_successor_node  (CC_TreeTable const * const table, RBNode *x);
+static RBNode *get_predecessor_node(CC_TreeTable const * const table, RBNode *x);
 
 
 /**
@@ -60,7 +60,7 @@ static RBNode *get_predecessor_node(TreeTable const * const table, RBNode *x);
  *
  * @param[in] conf the struct that is being initialized
  */
-void treetable_conf_init(TreeTableConf *conf)
+void cc_treetable_conf_init(CC_TreeTableConf *conf)
 {
     conf->mem_alloc  = malloc;
     conf->mem_calloc = calloc;
@@ -69,38 +69,38 @@ void treetable_conf_init(TreeTableConf *conf)
 }
 
 /**
- * Creates a new TreeTable and returns a status code.
+ * Creates a new CC_TreeTable and returns a status code.
  *
  * @param[in] cmp the comparator used to order keys within the table
- * @param[out] out Pointer to where the newly created TreeTable is to be stored
+ * @param[out] out Pointer to where the newly created CC_TreeTable is to be stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new TreeTable failed.
+ * allocation for the new CC_TreeTable failed.
  */
-enum cc_stat treetable_new(int (*cmp) (const void*, const void*), TreeTable **tt)
+enum cc_stat cc_treetable_new(int (*cmp) (const void*, const void*), CC_TreeTable **tt)
 {
-    TreeTableConf conf;
-    treetable_conf_init(&conf);
+    CC_TreeTableConf conf;
+    cc_treetable_conf_init(&conf);
     conf.cmp = cmp;
-    return treetable_new_conf(&conf, tt);
+    return cc_treetable_new_conf(&conf, tt);
 }
 
 /**
- * Creates a new TreeTable based on the specified TreeTableConf struct and returns
+ * Creates a new CC_TreeTable based on the specified CC_TreeTableConf struct and returns
  * a status code.
  *
- * The table is allocated using the memory allocators specified in the TreeTableConf
+ * The table is allocated using the memory allocators specified in the CC_TreeTableConf
  * struct.
  *
- * @param[in] conf the TreeTableConf struct used to configure this new TreeTable
- * @param[out] out Pointer to where the newly created TreeTable is stored
+ * @param[in] conf the CC_TreeTableConf struct used to configure this new CC_TreeTable
+ * @param[out] out Pointer to where the newly created CC_TreeTable is stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new TreeTable structure failed.
+ * allocation for the new CC_TreeTable structure failed.
  */
-enum cc_stat treetable_new_conf(TreeTableConf const * const conf, TreeTable **tt)
+enum cc_stat cc_treetable_new_conf(CC_TreeTableConf const * const conf, CC_TreeTable **tt)
 {
-    TreeTable *table = conf->mem_calloc(1, sizeof(TreeTable));
+    CC_TreeTable *table = conf->mem_calloc(1, sizeof(CC_TreeTable));
 
     if (!table)
         return CC_ERR_ALLOC;
@@ -129,10 +129,10 @@ enum cc_stat treetable_new_conf(TreeTableConf const * const conf, TreeTable **tt
 /**
  * Destroys the sub-tree specified by the root node n.
  *
- * @param[in] table TreeTable to be destroyed.
+ * @param[in] table CC_TreeTable to be destroyed.
  * @param[in] n root node of the sub tree that is being destroyed
  */
-static void tree_destroy(TreeTable *table, RBNode *n)
+static void tree_destroy(CC_TreeTable *table, RBNode *n)
 {
     if (n == table->sentinel)
         return;
@@ -144,13 +144,13 @@ static void tree_destroy(TreeTable *table, RBNode *n)
 }
 
 /**
- * Destroys the specified TreeTable structure without destroying the the data
+ * Destroys the specified CC_TreeTable structure without destroying the the data
  * it holds. In other words the keys and the values are not freed, only the
  * table structure is.
  *
- * @param[in] table TreeTable to be destroyed.
+ * @param[in] table CC_TreeTable to be destroyed.
  */
-void treetable_destroy(TreeTable *table)
+void cc_treetable_destroy(CC_TreeTable *table)
 {
     tree_destroy(table, table->root);
 
@@ -168,7 +168,7 @@ void treetable_destroy(TreeTable *table)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get(TreeTable const * const table, const void *key, void **out)
+enum cc_stat cc_treetable_get(CC_TreeTable const * const table, const void *key, void **out)
 {
     RBNode *node = get_tree_node_by_key(table, key);
 
@@ -188,7 +188,7 @@ enum cc_stat treetable_get(TreeTable const * const table, const void *key, void 
  *
  * @return CC_OK if the key was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_first_value(TreeTable const * const table, void **out)
+enum cc_stat cc_treetable_get_first_value(CC_TreeTable const * const table, void **out)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -208,7 +208,7 @@ enum cc_stat treetable_get_first_value(TreeTable const * const table, void **out
  *
  * @return CC_OK if the key was found, or CC_ERR_VALUE_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_last_value(TreeTable const * const table, void **out)
+enum cc_stat cc_treetable_get_last_value(CC_TreeTable const * const table, void **out)
 {
     RBNode *node = tree_max(table, table->root);
 
@@ -228,7 +228,7 @@ enum cc_stat treetable_get_last_value(TreeTable const * const table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_first_key(TreeTable const * const table, void **out)
+enum cc_stat cc_treetable_get_first_key(CC_TreeTable const * const table, void **out)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -248,7 +248,7 @@ enum cc_stat treetable_get_first_key(TreeTable const * const table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_last_key(TreeTable const * const table, void **out)
+enum cc_stat cc_treetable_get_last_key(CC_TreeTable const * const table, void **out)
 {
     RBNode *node = tree_max(table, table->root);
 
@@ -270,7 +270,7 @@ enum cc_stat treetable_get_last_key(TreeTable const * const table, void **out)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_greater_than(TreeTable const * const table, const void *key, void **out)
+enum cc_stat cc_treetable_get_greater_than(CC_TreeTable const * const table, const void *key, void **out)
 {
     RBNode *n = get_tree_node_by_key(table, key);
     RBNode *s = get_successor_node(table, n);
@@ -292,7 +292,7 @@ enum cc_stat treetable_get_greater_than(TreeTable const * const table, const voi
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat treetable_get_lesser_than(TreeTable const * const table, const void *key, void **out)
+enum cc_stat cc_treetable_get_lesser_than(CC_TreeTable const * const table, const void *key, void **out)
 {
     RBNode *n = get_tree_node_by_key(table, key);
     RBNode *s = get_predecessor_node(table, n);
@@ -305,27 +305,27 @@ enum cc_stat treetable_get_lesser_than(TreeTable const * const table, const void
 }
 
 /**
- * Returns the size of the specified TreeTable. Size of a TreeTable represents
+ * Returns the size of the specified CC_TreeTable. Size of a CC_TreeTable represents
  * the number of key-value mappings within the table.
  *
  * @param[in] table the table whose size is being returned
  *
  * @return the size of the table
  */
-size_t treetable_size(TreeTable const * const table)
+size_t cc_treetable_size(CC_TreeTable const * const table)
 {
     return table->size;
 }
 
 /**
- * Checks whether or not the TreeTable contains the specified key.
+ * Checks whether or not the CC_TreeTable contains the specified key.
  *
  * @param[in] table the table into which the lookup is performed
  * @param[in] key the key that is being looked up
  *
  * @return true if the table contains the key.
  */
-bool treetable_contains_key(TreeTable const * const table, const void *key)
+bool cc_treetable_contains_key(CC_TreeTable const * const table, const void *key)
 {
     RBNode *node = get_tree_node_by_key(table, key);
 
@@ -336,14 +336,14 @@ bool treetable_contains_key(TreeTable const * const table, const void *key)
 }
 
 /**
- * Checks whether or not the TreeTable contains the specified value.
+ * Checks whether or not the CC_TreeTable contains the specified value.
  *
  * @param[in] table the table into which the lookup is performed
  * @param[in] value the value that is being looked up
  *
  * @return number of occurrences of the specified value.
  */
-size_t treetable_contains_value(TreeTable const * const table, const void *value)
+size_t cc_treetable_contains_value(CC_TreeTable const * const table, const void *value)
 {
     RBNode *node = tree_min(table, table->root);
 
@@ -357,7 +357,7 @@ size_t treetable_contains_value(TreeTable const * const table, const void *value
 }
 
 /**
- * Creates a new key-value mapping in the specified TreeTable. If the unique key
+ * Creates a new key-value mapping in the specified CC_TreeTable. If the unique key
  * is already mapped to a value in this table, that value is replaced with the
  * new value. This operation may fail if the space allocation for the new entry
  * fails.
@@ -369,7 +369,7 @@ size_t treetable_contains_value(TreeTable const * const table, const void *value
  * @return CC_OK if the operation was successful, or CC_ERR_ALLOC if the memory
  * allocation for the new element failed.
  */
-enum cc_stat treetable_add(TreeTable *table, void *key, void *val)
+enum cc_stat cc_treetable_add(CC_TreeTable *table, void *key, void *val)
 {
     RBNode *y = table->sentinel;
     RBNode *x = table->root;
@@ -419,10 +419,10 @@ enum cc_stat treetable_add(TreeTable *table, void *key, void *val)
 /**
  * Rebalances the tale after an insert.
  *
- * @param[in] table TreeTable that is being rebalanced
+ * @param[in] table CC_TreeTable that is being rebalanced
  * @param[in] z Node that was inserted
  */
-static void rebalance_after_insert(TreeTable *table, RBNode *z)
+static void rebalance_after_insert(CC_TreeTable *table, RBNode *z)
 {
     RBNode *y;
 
@@ -468,10 +468,10 @@ static void rebalance_after_insert(TreeTable *table, RBNode *z)
 /**
  * Rebalances the tale after a delete.
  *
- * @param[in] table TreeTable that is being rebalanced
+ * @param[in] table CC_TreeTable that is being rebalanced
  * @param[in] z Node that comes after the deleted node
  */
-static void rebalance_after_delete(TreeTable *table, RBNode *x)
+static void rebalance_after_delete(CC_TreeTable *table, RBNode *x)
 {
     RBNode *w;
 
@@ -529,7 +529,7 @@ static void rebalance_after_delete(TreeTable *table, RBNode *x)
     x->color = RB_BLACK;
 }
 
-static INLINE void transplant(TreeTable *table, RBNode *u, RBNode *v)
+static INLINE void transplant(CC_TreeTable *table, RBNode *u, RBNode *v)
 {
     if (u->parent == table->sentinel)
         table->root = v;
@@ -541,7 +541,7 @@ static INLINE void transplant(TreeTable *table, RBNode *u, RBNode *v)
     v->parent = u->parent;
 }
 
-static INLINE RBNode *tree_min(TreeTable const * const table, RBNode *n)
+static INLINE RBNode *tree_min(CC_TreeTable const * const table, RBNode *n)
 {
     RBNode *s = table->sentinel;
 
@@ -550,7 +550,7 @@ static INLINE RBNode *tree_min(TreeTable const * const table, RBNode *n)
     return n;
 }
 
-static INLINE RBNode *tree_max(TreeTable const * const table, RBNode *n)
+static INLINE RBNode *tree_max(CC_TreeTable const * const table, RBNode *n)
 {
     RBNode *s = table->sentinel;
 
@@ -565,7 +565,7 @@ static INLINE RBNode *tree_max(TreeTable const * const table, RBNode *n)
  * @param[in] table the table on which this operation is performed
  * @param[in] z the node that is being removed
  */
-static void remove_node(TreeTable *table, RBNode *z)
+static void remove_node(CC_TreeTable *table, RBNode *z)
 {
     RBNode *x;
     RBNode *y = z;
@@ -602,7 +602,7 @@ static void remove_node(TreeTable *table, RBNode *z)
 }
 
 /**
- * Removes a key-value mapping from the specified TreeTable and sets the out
+ * Removes a key-value mapping from the specified CC_TreeTable and sets the out
  * parameter to value.
  *
  * @param[in] table the table from which the key-value pair is being removed
@@ -613,7 +613,7 @@ static void remove_node(TreeTable *table, RBNode *z)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat treetable_remove(TreeTable *table, void *key, void **out)
+enum cc_stat cc_treetable_remove(CC_TreeTable *table, void *key, void **out)
 {
     RBNode *node = get_tree_node_by_key(table, key);
 
@@ -638,7 +638,7 @@ enum cc_stat treetable_remove(TreeTable *table, void *key, void **out)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat treetable_remove_first(TreeTable *table, void **out)
+enum cc_stat cc_treetable_remove_first(CC_TreeTable *table, void **out)
 {
     if (table->size == 0)
         return CC_ERR_KEY_NOT_FOUND;
@@ -663,7 +663,7 @@ enum cc_stat treetable_remove_first(TreeTable *table, void **out)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat treetable_remove_last(TreeTable *table, void **out)
+enum cc_stat cc_treetable_remove_last(CC_TreeTable *table, void **out)
 {
     RBNode *node = tree_max(table, table->root);
 
@@ -682,7 +682,7 @@ enum cc_stat treetable_remove_last(TreeTable *table, void **out)
  *
  * @param[in] table the table from which all entries are to be removed
  */
-void treetable_remove_all(TreeTable *table)
+void cc_treetable_remove_all(CC_TreeTable *table)
 {
     tree_destroy(table, table->root);
     table->size = 0;
@@ -696,7 +696,7 @@ void treetable_remove_all(TreeTable *table)
  * @param[in] table the table on which this operation is performed
  * @param[in] x the node around which this operation is performed
  */
-static void rotate_right(TreeTable *table, RBNode *x)
+static void rotate_right(CC_TreeTable *table, RBNode *x)
 {
     RBNode *y = x->left;
 
@@ -725,7 +725,7 @@ static void rotate_right(TreeTable *table, RBNode *x)
  * @param[in] table the table on which this operation is performed
  * @param[in] x the node around which this operation is performed
  */
-static void rotate_left(TreeTable *table, RBNode *x)
+static void rotate_left(CC_TreeTable *table, RBNode *x)
 {
     RBNode *y = x->right;
 
@@ -755,7 +755,7 @@ static void rotate_left(TreeTable *table, RBNode *x)
  *
  * @return tree node associated with the key
  */
-static RBNode *get_tree_node_by_key(TreeTable const * const table, const void *key)
+static RBNode *get_tree_node_by_key(CC_TreeTable const * const table, const void *key)
 {
     if (table->size == 0)
         return NULL;
@@ -786,7 +786,7 @@ static RBNode *get_tree_node_by_key(TreeTable const * const table, const void *k
  *
  * @return successor node of x
  */
-static RBNode *get_successor_node(TreeTable const * const table, RBNode *x)
+static RBNode *get_successor_node(CC_TreeTable const * const table, RBNode *x)
 {
     if (x == NULL)
         return NULL;
@@ -811,7 +811,7 @@ static RBNode *get_successor_node(TreeTable const * const table, RBNode *x)
  *
  * @return predecessor node of x
  */
-static RBNode *get_predecessor_node(TreeTable const * const table, RBNode *x)
+static RBNode *get_predecessor_node(CC_TreeTable const * const table, RBNode *x)
 {
     if (x == NULL)
         return NULL;
@@ -829,15 +829,15 @@ static RBNode *get_predecessor_node(TreeTable const * const table, RBNode *x)
 }
 
 /**
- * Applies the function fn to each key of the TreeTable.
+ * Applies the function fn to each key of the CC_TreeTable.
  *
  * @note The operation function should not modify the key. Any modification
- * of the key will invalidate the TreeTable.
+ * of the key will invalidate the CC_TreeTable.
  *
  * @param[in] table the table on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each key of the table
  */
-void treetable_foreach_key(TreeTable *table, void (*fn) (const void *k))
+void cc_treetable_foreach_key(CC_TreeTable *table, void (*fn) (const void *k))
 {
     RBNode *n = tree_min(table, table->root);
 
@@ -848,13 +848,13 @@ void treetable_foreach_key(TreeTable *table, void (*fn) (const void *k))
 }
 
 /**
- * Applies the function fn to each value of the TreeTable.
+ * Applies the function fn to each value of the CC_TreeTable.
  *
  * @param[in] table the table on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each value of the
  *               table
  */
-void treetable_foreach_value(TreeTable *table, void (*fn) (void *k))
+void cc_treetable_foreach_value(CC_TreeTable *table, void (*fn) (void *k))
 {
     RBNode *n = tree_min(table, table->root);
 
@@ -865,12 +865,12 @@ void treetable_foreach_value(TreeTable *table, void (*fn) (void *k))
 }
 
 /**
- * Initializes the TreeTableIter structure.
+ * Initializes the CC_TreeTableIter structure.
  *
  * @param[in] iter the iterator that is being initialized
  * @param[in] table the table over whose entries the iterator is going to iterate
  */
-void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
+void cc_treetable_iter_init(CC_TreeTableIter *iter, CC_TreeTable *table)
 {
     iter->table   = table;
     iter->current = table->sentinel;
@@ -879,15 +879,15 @@ void treetable_iter_init(TreeTableIter *iter, TreeTable *table)
 
 /**
  * Advances the iterator and sets the out parameter to the value of the
- * next TreeTableEntry.
+ * next CC_TreeTableEntry.
  *
  * @param[in] iter the iterator that is being advanced
  * @param[out] out Pointer to where the next entry is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the TreeTable has been reached.
+ * end of the CC_TreeTable has been reached.
  */
-enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
+enum cc_stat cc_treetable_iter_next(CC_TreeTableIter *iter, CC_TreeTableEntry *entry)
 {
     if (iter->next == iter->table->sentinel)
         return CC_ITER_END;
@@ -902,12 +902,12 @@ enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
 }
 
 /**
- * Removes the last returned entry by <code>treetable_iter_next()</code>
+ * Removes the last returned entry by <code>cc_treetable_iter_next()</code>
  * function without invalidating the iterator and optionally sets the
  * out parameter to the value of the removed entry.
  *
  * @note This Function should only ever be called after a call to <code>
- * treetable_iter_next()</code>
+ * cc_treetable_iter_next()</code>
  *
  * @param[in] iter The iterator on which this operation is performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
@@ -916,7 +916,7 @@ enum cc_stat treetable_iter_next(TreeTableIter *iter, TreeTableEntry *entry)
  * @return CC_OK if the entry was successfully removed, or
  * CC_ERR_KEY_NOT_FOUND if the entry was already removed.
  */
-enum cc_stat treetable_iter_remove(TreeTableIter *iter, void **out)
+enum cc_stat cc_treetable_iter_remove(CC_TreeTableIter *iter, void **out)
 {
     if (!iter->current)
         return CC_ERR_KEY_NOT_FOUND;
@@ -932,7 +932,7 @@ enum cc_stat treetable_iter_remove(TreeTableIter *iter, void **out)
 
 
 #ifdef DEBUG
-static int treetable_test(TreeTable *table, RBNode *node, int *nb)
+static int cc_treetable_test(CC_TreeTable *table, RBNode *node, int *nb)
 {
     if (node == table->sentinel) {
         *nb = 1;
@@ -958,13 +958,13 @@ static int treetable_test(TreeTable *table, RBNode *node, int *nb)
     int nb_left;
     int nb_right;
 
-    int left_err = treetable_test(table, node->left, &nb_left);
+    int left_err = cc_treetable_test(table, node->left, &nb_left);
 
     /* propagate the descendant errors all the way up */
     if (left_err != RB_ERROR_OK)
         return left_err;
 
-    int right_err = treetable_test(table, node->right, &nb_right);
+    int right_err = cc_treetable_test(table, node->right, &nb_right);
 
     if (right_err != RB_ERROR_OK)
         return right_err;
@@ -981,10 +981,10 @@ static int treetable_test(TreeTable *table, RBNode *node, int *nb)
     return RB_ERROR_OK;
 }
 
-int treetable_assert_rb_rules(TreeTable *table)
+int cc_treetable_assert_rb_rules(CC_TreeTable *table)
 {
     int x;
-    int status = treetable_test(table, table->root, &x);
+    int status = cc_treetable_test(table, table->root, &x);
     return status;
 }
 #endif

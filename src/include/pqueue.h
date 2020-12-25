@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTIONS_C_PQUEUE_H
-#define COLLECTIONS_C_PQUEUE_H
+#ifndef COLLECTIONS_C_CC_PQUEUE_H
+#define COLLECTIONS_C_CC_PQUEUE_H
 
 #include "common.h"
 #include "array.h"
@@ -30,14 +30,14 @@
  * can be retrieved in a specific order
  **/
 
-typedef struct pqueue_s PQueue;
+typedef struct cc_pqueue_s CC_PQueue;
 
 /**
  * The pqueue initialization configuration structure. Used to initialize the
- * PQueue with the specified attributes
+ * CC_PQueue with the specified attributes
  **/
 
-typedef struct pqueue_conf_s {
+typedef struct cc_pqueue_conf_s {
     /**
      * The initial capacity of the array */
     size_t capacity;
@@ -48,7 +48,7 @@ typedef struct pqueue_conf_s {
 
     /**
      * comparator, used to hold the address of the function which will
-     * be used to compare the elements of the PQueue
+     * be used to compare the elements of the CC_PQueue
      */
     int (*cmp) (const void *a, const void *b);
 
@@ -58,17 +58,17 @@ typedef struct pqueue_conf_s {
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
     void  (*mem_free)   (void *block);
-} PQueueConf;
+} CC_PQueueConf;
 
-void          pqueue_conf_init       (PQueueConf *conf, int (*)(const void *, const void *));
-enum cc_stat  pqueue_new             (PQueue **out, int (*)(const void *, const void *));
-enum cc_stat  pqueue_new_conf        (PQueueConf const * const conf, PQueue **out);
-void          pqueue_destroy         (PQueue *pqueue);
-void          pqueue_destroy_cb      (PQueue *pqueue, void (*cb) (void*));
+void          cc_pqueue_conf_init       (CC_PQueueConf *conf, int (*)(const void *, const void *));
+enum cc_stat  cc_pqueue_new             (CC_PQueue **out, int (*)(const void *, const void *));
+enum cc_stat  cc_pqueue_new_conf        (CC_PQueueConf const * const conf, CC_PQueue **out);
+void          cc_pqueue_destroy         (CC_PQueue *pqueue);
+void          cc_pqueue_destroy_cb      (CC_PQueue *pqueue, void (*cb) (void*));
 
-enum cc_stat  pqueue_push            (PQueue *pqueue, void *element);
-enum cc_stat  pqueue_top             (PQueue *pqueue, void **out);
-enum cc_stat  pqueue_pop             (PQueue *pqueue, void **out);
+enum cc_stat  cc_pqueue_push            (CC_PQueue *pqueue, void *element);
+enum cc_stat  cc_pqueue_top             (CC_PQueue *pqueue, void **out);
+enum cc_stat  cc_pqueue_pop             (CC_PQueue *pqueue, void **out);
 
 
 #endif

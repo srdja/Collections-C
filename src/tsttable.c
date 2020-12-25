@@ -3,25 +3,25 @@
 /**
  * A Ternary Search Tree Table Node.
  */
-typedef struct tsttable_node_s {
+typedef struct cc_tsttable_node_s {
     char c;
     union {
         const void * eow;
-        TSTTableEntry * data;
+        CC_TSTTableEntry * data;
     };
-    struct tsttable_node_s *parent;
-    struct tsttable_node_s *left;
-    struct tsttable_node_s *mid;
-    struct tsttable_node_s *right;
-} TSTTableNode;
+    struct cc_tsttable_node_s *parent;
+    struct cc_tsttable_node_s *left;
+    struct cc_tsttable_node_s *mid;
+    struct cc_tsttable_node_s *right;
+} CC_TSTTableNode;
 
 
 /**
  * A Ternary Search Tree Table. Supports insertion, search, and deletion.
  */
-struct tsttable_s {
+struct cc_tsttable_s {
     size_t         size;
-    TSTTableNode  *root;
+    CC_TSTTableNode  *root;
 
     int   (*char_cmp)   (char c1, char c2);
     void *(*mem_alloc)  (size_t size);
@@ -40,11 +40,11 @@ static int char_cmp(char c1, char c2)
 
 
 /**
- * Initializes the TSTTableConf structs fields to default values.
+ * Initializes the CC_TSTTableConf structs fields to default values.
  *
  * @param[in] conf the struct that is being initialized
  */
-void tsttable_conf_init (TSTTableConf *conf)
+void cc_tsttable_conf_init (CC_TSTTableConf *conf)
 {
     conf->char_cmp   = char_cmp;
     conf->mem_alloc  = malloc;
@@ -54,39 +54,39 @@ void tsttable_conf_init (TSTTableConf *conf)
 
 
 /**
- * Creates a new TSTTable and returns a status code.
+ * Creates a new CC_TSTTable and returns a status code.
  *
- * @note The newly created TSTTable will work with string keys.
+ * @note The newly created CC_TSTTable will work with string keys.
  *
- * @param[out] out Pointer to where the newly created TSTTable is to be stored
+ * @param[out] out Pointer to where the newly created CC_TSTTable is to be stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new TSTTable failed.
+ * allocation for the new CC_TSTTable failed.
  */
-enum cc_stat tsttable_new (TSTTable **out)
+enum cc_stat cc_tsttable_new (CC_TSTTable **out)
 {
-    TSTTableConf conf;
-    tsttable_conf_init(&conf);
-    return tsttable_new_conf(&conf, out);
+    CC_TSTTableConf conf;
+    cc_tsttable_conf_init(&conf);
+    return cc_tsttable_new_conf(&conf, out);
 }
 
 
 /**
- * Creates a new TSTTable based on the specified TSTTableConf struct and returns
+ * Creates a new CC_TSTTable based on the specified CC_TSTTableConf struct and returns
  * a status code.
  *
- * The table is allocated using the memory allocators specified in the TSTTableConf
+ * The table is allocated using the memory allocators specified in the CC_TSTTableConf
  * struct.
  *
- * @param[in] conf the TSTTable conf structure
- * @param[out] out Pointer to where the newly created TSTTable is stored
+ * @param[in] conf the CC_TSTTable conf structure
+ * @param[out] out Pointer to where the newly created CC_TSTTable is stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new TSTTable structure failed.
+ * allocation for the new CC_TSTTable structure failed.
  */
-enum cc_stat tsttable_new_conf (TSTTableConf const * const conf, TSTTable **out)
+enum cc_stat cc_tsttable_new_conf (CC_TSTTableConf const * const conf, CC_TSTTable **out)
 {
-    TSTTable * table = conf->mem_alloc(sizeof(TSTTable));
+    CC_TSTTable * table = conf->mem_alloc(sizeof(CC_TSTTable));
 
     if (!table)
         return CC_ERR_ALLOC;
@@ -104,15 +104,15 @@ enum cc_stat tsttable_new_conf (TSTTableConf const * const conf, TSTTable **out)
 
 
 /**
- * Destroys the specified TSTTable structure without destroying the data
+ * Destroys the specified CC_TSTTable structure without destroying the data
  * contained within it. In other words, the keys and the values are not freed,
  * but only the table structure.
  *
- * @param[in] table TSTTable to be destroyed
+ * @param[in] table CC_TSTTable to be destroyed
  */
-void tsttable_destroy (TSTTable *table)
+void cc_tsttable_destroy (CC_TSTTable *table)
 {
-    tsttable_remove_all(table);
+    cc_tsttable_remove_all(table);
     table->mem_free(table);
 }
 
@@ -123,9 +123,9 @@ void tsttable_destroy (TSTTable *table)
  * the next char is stored in last_node.
  */
 static void get_last_node(
-    TSTTable       *table,
-    TSTTableNode ***last_node,
-    TSTTableNode ** last_parent,
+    CC_TSTTable       *table,
+    CC_TSTTableNode ***last_node,
+    CC_TSTTableNode ** last_parent,
     int            *last_index,
     char           *key,
     size_t          key_len)
@@ -164,22 +164,22 @@ static void get_last_node(
  * and starts at **begin and ends at **end.
  * */
 static enum cc_stat make_mid_subtree(
-    TSTTable      *table,
-    TSTTableNode **begin,
-    TSTTableNode **end,
+    CC_TSTTable      *table,
+    CC_TSTTableNode **begin,
+    CC_TSTTableNode **end,
     char          *key,
     size_t         key_len)
 {
-    *begin = table->mem_calloc(1, sizeof(TSTTableNode));
+    *begin = table->mem_calloc(1, sizeof(CC_TSTTableNode));
 
     if (!*begin)
         return CC_ERR_ALLOC;
 
     (*begin)->c = key[0];
-    TSTTableNode *node = *begin;
+    CC_TSTTableNode *node = *begin;
 
     for (size_t i = 1; i < key_len; i++) {
-        node->mid = table->mem_calloc(1, sizeof(TSTTableNode));
+        node->mid = table->mem_calloc(1, sizeof(CC_TSTTableNode));
 
         if (!node->mid)
             return CC_ERR_ALLOC;
@@ -195,7 +195,7 @@ static enum cc_stat make_mid_subtree(
 
 
 /**
- * Creates a new key-value mapping in the specified TSTTable. If the unique key
+ * Creates a new key-value mapping in the specified CC_TSTTable. If the unique key
  * is already mapped to a value in this table, that value is replaced with the
  * new value. This operation may fail if the space allocation for the new entry
  * fails.
@@ -207,12 +207,12 @@ static enum cc_stat make_mid_subtree(
  * @return CC_OK if the mapping was successfully added, or CC_ERR_ALLOC if the
  * memory allocation failed.
  */
-enum cc_stat tsttable_add(TSTTable *table, char *key, void *val)
+enum cc_stat cc_tsttable_add(CC_TSTTable *table, char *key, void *val)
 {
     size_t key_len = strlen(key);
 
-    TSTTableNode **last_node;
-    TSTTableNode  *last_parent;
+    CC_TSTTableNode **last_node;
+    CC_TSTTableNode  *last_parent;
     int            last_index;
 
     get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
@@ -222,7 +222,7 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val)
 
     if (*last_node) {
         if (!(*last_node)->eow) {
-            (*last_node)->data = table->mem_alloc(sizeof(TSTTableEntry));
+            (*last_node)->data = table->mem_alloc(sizeof(CC_TSTTableEntry));
 
             if (!(*last_node)->data)
                 return CC_ERR_ALLOC;
@@ -234,8 +234,8 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val)
         return CC_OK;
     }
 
-    TSTTableNode *begin;
-    TSTTableNode *end;
+    CC_TSTTableNode *begin;
+    CC_TSTTableNode *end;
 
     enum cc_stat status = make_mid_subtree(table, &begin, &end, postfix, postfix_len);
 
@@ -243,7 +243,7 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val)
         return CC_ERR_ALLOC;
 
     begin->parent = last_parent;
-    end->data     = table->mem_alloc(sizeof(TSTTableEntry));
+    end->data     = table->mem_alloc(sizeof(CC_TSTTableEntry));
 
     if (!end->data)
         return CC_ERR_ALLOC;
@@ -267,12 +267,12 @@ enum cc_stat tsttable_add(TSTTable *table, char *key, void *val)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat tsttable_get (TSTTable *table, char *key, void **out)
+enum cc_stat cc_tsttable_get (CC_TSTTable *table, char *key, void **out)
 {
     size_t key_len = strlen(key);
 
-    TSTTableNode  *last_parent;
-    TSTTableNode **last_node;
+    CC_TSTTableNode  *last_parent;
+    CC_TSTTableNode **last_node;
 
     int last_index;
 
@@ -291,12 +291,12 @@ enum cc_stat tsttable_get (TSTTable *table, char *key, void **out)
  *
  * @param[in] table the table from which all mappings are being removed
  */
-void tsttable_remove_all (TSTTable *table)
+void cc_tsttable_remove_all (CC_TSTTable *table)
 {
-    TSTTableNode * node = table->root;
+    CC_TSTTableNode * node = table->root;
 
     while (node) {
-        TSTTableNode * parent = node->parent;
+        CC_TSTTableNode * parent = node->parent;
         if (!node->left && !node->right && !node->mid) {
             if (parent) {
                 if (parent->left == node)
@@ -335,13 +335,13 @@ void tsttable_remove_all (TSTTable *table)
  * if the node is the end of a word, remove it and all the related
  * nodes containing the key without invalidating other keys.
  */
-static void remove_eow_node(TSTTable *table, TSTTableNode *node)
+static void remove_eow_node(CC_TSTTable *table, CC_TSTTableNode *node)
 {
     if (!node->eow)
         return;
 
     node->data            = NULL;
-    TSTTableNode * parent = node->parent;
+    CC_TSTTableNode * parent = node->parent;
 
     while (node) {
         if (!node->left && !node->mid && !node->right && !node->eow) {
@@ -370,7 +370,7 @@ static void remove_eow_node(TSTTable *table, TSTTableNode *node)
 
 
 /**
- * Removes a key-value mapping from the specified TSTTable and sets the out
+ * Removes a key-value mapping from the specified CC_TSTTable and sets the out
  * parameter to value.
  *
  * @param[in] table the table from which the key-value pair is being removed
@@ -381,12 +381,12 @@ static void remove_eow_node(TSTTable *table, TSTTableNode *node)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out)
+enum cc_stat cc_tsttable_remove (CC_TSTTable *table, char *key, void **out)
 {
     size_t key_len = strlen(key);
 
-    TSTTableNode **last_node;
-    TSTTableNode  *last_parent;
+    CC_TSTTableNode **last_node;
+    CC_TSTTableNode  *last_parent;
 
     int last_index;
     get_last_node(table, &last_node, &last_parent, &last_index, key, key_len);
@@ -405,79 +405,79 @@ enum cc_stat tsttable_remove (TSTTable *table, char *key, void **out)
 
 
 /**
- * Checks whether or not the TSTTable contains the specified key.
+ * Checks whether or not the CC_TSTTable contains the specified key.
  *
  * @param[in] table the table on which the search is being performed
  * @param[in] key the key that is being searched for
  *
  * @return true if the table contains the key.
  */
-bool tsttable_contains_key (TSTTable *table, char *key)
+bool cc_tsttable_contains_key (CC_TSTTable *table, char *key)
 {
     void *out;
-    enum cc_stat res = tsttable_get(table, key, &out);
+    enum cc_stat res = cc_tsttable_get(table, key, &out);
     return (res == CC_OK);
 }
 
 
 /**
- * Returns the size of the specified TSTTable. Size of a TSTTable represents
+ * Returns the size of the specified CC_TSTTable. Size of a CC_TSTTable represents
  * the number of key-value mappings within the table.
  *
  * @param[in] table the table whose size is being returned
  *
  * @return the size of the table.
  */
-size_t tsttable_size (TSTTable *table)
+size_t cc_tsttable_size (CC_TSTTable *table)
 {
     return table->size;
 }
 
 
 /**
- * Applies the function fn to each key of the TSTTable.
+ * Applies the function fn to each key of the CC_TSTTable.
  *
  * @note The operation function should not modify the key. Any modification
- * of the key will invalidate the TSTTable.
+ * of the key will invalidate the CC_TSTTable.
  *
  * @param[in] table the table on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each key of the table
  */
-void tsttable_foreach_key (TSTTable *table, void (*fn) (const void *))
+void cc_tsttable_foreach_key (CC_TSTTable *table, void (*fn) (const void *))
 {
-    TSTTableIter iter;
-    tsttable_iter_init(&iter, table);
-    TSTTableEntry * data;
+    CC_TSTTableIter iter;
+    cc_tsttable_iter_init(&iter, table);
+    CC_TSTTableEntry * data;
 
-    while (tsttable_iter_next(&iter, &data) != CC_ITER_END)
+    while (cc_tsttable_iter_next(&iter, &data) != CC_ITER_END)
         fn(data->key);
 }
 
 
 /**
- * Applies the function fn to each value of the TSTTable.
+ * Applies the function fn to each value of the CC_TSTTable.
  *
  * @param[in] table the table on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each value of the table
  */
-void tsttable_foreach_value (TSTTable *table, void (*fn) (void*))
+void cc_tsttable_foreach_value (CC_TSTTable *table, void (*fn) (void*))
 {
-    TSTTableIter iter;
-    tsttable_iter_init(&iter, table);
-    TSTTableEntry *data;
+    CC_TSTTableIter iter;
+    cc_tsttable_iter_init(&iter, table);
+    CC_TSTTableEntry *data;
 
-    while (tsttable_iter_next(&iter, &data) != CC_ITER_END)
+    while (cc_tsttable_iter_next(&iter, &data) != CC_ITER_END)
         fn(data->value);
 }
 
 
 /**
- * Initializes the TSTTableIter structure.
+ * Initializes the CC_TSTTableIter structure.
  *
  * @param[in] iter the iterator that is being initialized
  * @param[in] table the table over whose entries the iterator is going to iterate
  */
-void tsttable_iter_init (TSTTableIter *iter, TSTTable *table)
+void cc_tsttable_iter_init (CC_TSTTableIter *iter, CC_TSTTable *table)
 {
     iter->table              = table;
     iter->current_node       = NULL;
@@ -489,19 +489,19 @@ void tsttable_iter_init (TSTTableIter *iter, TSTTable *table)
 
 /**
  * Advances the iterator and sets the out parameter to the value of the
- * next TSTTableEntry.
+ * next CC_TSTTableEntry.
  *
  * @param[in] iter the iterator that is being advanced
  * @param[out] out Pointer to where the next entry is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the TSTTable has been reached.
+ * end of the CC_TSTTable has been reached.
  */
-enum cc_stat tsttable_iter_next (TSTTableIter *iter, TSTTableEntry **out)
+enum cc_stat cc_tsttable_iter_next (CC_TSTTableIter *iter, CC_TSTTableEntry **out)
 {
-    TSTTableNode *node          = iter->next_node;
-    TSTTableNode *previous_node = iter->current_node;
-    TSTTableNode *next_node     = NULL;
+    CC_TSTTableNode *node          = iter->next_node;
+    CC_TSTTableNode *previous_node = iter->current_node;
+    CC_TSTTableNode *next_node     = NULL;
 
     if (iter->advanced_on_remove) {
         iter->advanced_on_remove = 0;
@@ -578,12 +578,12 @@ enum cc_stat tsttable_iter_next (TSTTableIter *iter, TSTTableEntry **out)
 
 
 /**
- * Removes the last returned entry by <code>tsttable_iter_next()</code>
+ * Removes the last returned entry by <code>cc_tsttable_iter_next()</code>
  * function without invalidating the iterator and optionally sets the
  * out parameter to the value of the removed entry.
  *
  * @note This Function should only ever be called after a call to <code>
- * tsttable_iter_next()</code>
+ * cc_tsttable_iter_next()</code>
  *
  * @param[in] iter The iterator on which this operation is performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
@@ -592,20 +592,20 @@ enum cc_stat tsttable_iter_next (TSTTableIter *iter, TSTTableEntry **out)
  * @return CC_OK if the entry was successfully removed, or
  * CC_ERR_KEY_NOT_FOUND if the entry was already removed.
  */
-enum cc_stat tsttable_iter_remove (TSTTableIter *iter, void **out)
+enum cc_stat cc_tsttable_iter_remove (CC_TSTTableIter *iter, void **out)
 {
     if (!iter->current_node)
         return CC_ERR_KEY_NOT_FOUND;
 
     if (out) {
-        TSTTableNode *node = iter->current_node;
+        CC_TSTTableNode *node = iter->current_node;
         *out = node->data->value;
     }
 
-    TSTTableNode *to_remove_eow = iter->current_node;
+    CC_TSTTableNode *to_remove_eow = iter->current_node;
 
-    TSTTableEntry *entry;
-    enum cc_stat next_stat = tsttable_iter_next(iter, &entry);
+    CC_TSTTableEntry *entry;
+    enum cc_stat next_stat = cc_tsttable_iter_next(iter, &entry);
 
     iter->advanced_on_remove = 1;
     iter->next_stat          = next_stat;

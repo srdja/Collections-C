@@ -1,8 +1,8 @@
 #include "CppUTest/TestHarness_c.h"
 #include "deque.h"
 
-static Deque *deque;
-static DequeConf conf;
+static CC_Deque *deque;
+static CC_DequeConf conf;
 int stat;
 
 void *cpy(void *e)
@@ -28,30 +28,30 @@ bool pred3(const void *e)
     return *(int*)e > 5;
 }
 
-TEST_GROUP_C_SETUP(DequeTests)
+TEST_GROUP_C_SETUP(CC_DequeTests)
 {
-  stat = deque_new(&deque);
+  stat = cc_deque_new(&deque);
 };
 
-TEST_GROUP_C_TEARDOWN(DequeTests)
+TEST_GROUP_C_TEARDOWN(CC_DequeTests)
 {
-  deque_destroy(deque);
+  cc_deque_destroy(deque);
 };
 
-TEST_C(DequeTests, DequeAddFirst)
+TEST_C(CC_DequeTests, CC_DequeAddFirst)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add_first(deque, &a);
-    deque_add_first(deque, &b);
-    deque_add_first(deque, &c);
+    cc_deque_add_first(deque, &a);
+    cc_deque_add_first(deque, &b);
+    cc_deque_add_first(deque, &c);
 
-    CHECK_EQUAL_C_INT(3, deque_size(deque));
+    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
 
-    size_t m = deque_capacity(deque);
-    const void * const* u = deque_get_buffer(deque);
+    size_t m = cc_deque_capacity(deque);
+    const void * const* u = cc_deque_get_buffer(deque);
     const void *e = u[m - 1];
 
     CHECK_EQUAL_C_POINTER(e, &a);
@@ -63,19 +63,19 @@ TEST_C(DequeTests, DequeAddFirst)
     CHECK_EQUAL_C_POINTER(e, &c);
 };
 
-TEST_C(DequeTests, DequeAddLast)
+TEST_C(CC_DequeTests, CC_DequeAddLast)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
 
-    CHECK_EQUAL_C_INT(3, deque_size(deque));
+    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
 
-    const void * const* u= deque_get_buffer(deque);
+    const void * const* u= cc_deque_get_buffer(deque);
     const void *e = u[0];
 
     CHECK_EQUAL_C_POINTER(e, &a);
@@ -88,7 +88,7 @@ TEST_C(DequeTests, DequeAddLast)
 };
 
 
-TEST_C(DequeTests, DequeAddAt1)
+TEST_C(CC_DequeTests, CC_DequeAddAt1)
 {
     /* index < (size / 2) && index_raw > first_raw */
 
@@ -100,16 +100,16 @@ TEST_C(DequeTests, DequeAddAt1)
     int f = 6;
     int g = 999;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
 
-    deque_add_at(deque, &g, 4);
+    cc_deque_add_at(deque, &g, 4);
 
-    const void * const* buff = deque_get_buffer(deque);
+    const void * const* buff = cc_deque_get_buffer(deque);
 
     CHECK_EQUAL_C_POINTER(buff[4], &g);
 
@@ -119,7 +119,7 @@ TEST_C(DequeTests, DequeAddAt1)
     CHECK_EQUAL_C_POINTER(elem, &f);
 };
 
-TEST_C(DequeTests, DequeAddAt2)
+TEST_C(CC_DequeTests, CC_DequeAddAt2)
 {
     /* index < deque->size / 2 && index_raw > first_raw */
 
@@ -131,16 +131,16 @@ TEST_C(DequeTests, DequeAddAt2)
     int f = 6;
     int g = 999;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_first(deque, &c);
-    deque_add_first(deque, &d);
-    deque_add_first(deque, &e);
-    deque_add_first(deque, &f);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_first(deque, &c);
+    cc_deque_add_first(deque, &d);
+    cc_deque_add_first(deque, &e);
+    cc_deque_add_first(deque, &f);
 
-    deque_add_at(deque, &g, 1);
+    cc_deque_add_at(deque, &g, 1);
 
-    const void * const *buff = deque_get_buffer(deque);
+    const void * const *buff = cc_deque_get_buffer(deque);
     const void *elem = buff[5];
 
     CHECK_EQUAL_C_POINTER(elem, &g);
@@ -155,7 +155,7 @@ TEST_C(DequeTests, DequeAddAt2)
     CHECK_EQUAL_C_POINTER(elem3, &f);
 };
 
-TEST_C(DequeTests, DequeAddAt3)
+TEST_C(CC_DequeTests, CC_DequeAddAt3)
 {
     /* index >= size / 2 && index_raw > last_raw */
 
@@ -167,16 +167,16 @@ TEST_C(DequeTests, DequeAddAt3)
     int f = 6;
     int g = 999;
 
-    deque_add_last(deque, &a);
-    deque_add_first(deque, &b);
-    deque_add_first(deque, &c);
-    deque_add_first(deque, &d);
-    deque_add_first(deque, &e);
-    deque_add_first(deque, &f);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_first(deque, &b);
+    cc_deque_add_first(deque, &c);
+    cc_deque_add_first(deque, &d);
+    cc_deque_add_first(deque, &e);
+    cc_deque_add_first(deque, &f);
 
-    deque_add_at(deque, &g, 3);
+    cc_deque_add_at(deque, &g, 3);
 
-    const void * const* buff = deque_get_buffer(deque);
+    const void * const* buff = cc_deque_get_buffer(deque);
 
     const void *elem = buff[6];
     CHECK_EQUAL_C_POINTER(elem, &g);
@@ -191,7 +191,7 @@ TEST_C(DequeTests, DequeAddAt3)
     CHECK_EQUAL_C_POINTER(elem3, &a);
 };
 
-TEST_C(DequeTests, DequeAddAt4)
+TEST_C(CC_DequeTests, CC_DequeAddAt4)
 {
     /* index < size / 2 && index_raw < last_raw*/
 
@@ -203,16 +203,16 @@ TEST_C(DequeTests, DequeAddAt4)
     int f = 6;
     int g = 999;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_first(deque, &f);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_first(deque, &f);
 
-    deque_add_at(deque, &g, 1);
+    cc_deque_add_at(deque, &g, 1);
 
-    const void * const*buff = deque_get_buffer(deque);
+    const void * const*buff = cc_deque_get_buffer(deque);
     const int elem = *((int*) buff[0]);
 
     CHECK_EQUAL_C_INT(elem, g);
@@ -227,7 +227,7 @@ TEST_C(DequeTests, DequeAddAt4)
     CHECK_EQUAL_C_INT(elem3, a);
 };
 
-TEST_C(DequeTests, DequeAddAt5)
+TEST_C(CC_DequeTests, CC_DequeAddAt5)
 {
     /* f == 0*/
 
@@ -239,16 +239,16 @@ TEST_C(DequeTests, DequeAddAt5)
     int f = 6;
     int g = 7;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
 
-    deque_add_at(deque, &g, 1);
+    cc_deque_add_at(deque, &g, 1);
 
-    const void * const* buff = deque_get_buffer(deque);
+    const void * const* buff = cc_deque_get_buffer(deque);
     const int elem = *((int*) buff[7]);
 
     CHECK_EQUAL_C_INT(elem, a);
@@ -263,160 +263,160 @@ TEST_C(DequeTests, DequeAddAt5)
     CHECK_EQUAL_C_INT(elem3, g);
 };
 
-TEST_C(DequeTests, DequeRemoveFirst)
+TEST_C(CC_DequeTests, CC_DequeRemoveFirst)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    deque_add_first(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
+    cc_deque_add_first(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
 
     int *first;
-    deque_get_first(deque, (void*) &first);
+    cc_deque_get_first(deque, (void*) &first);
     CHECK_EQUAL_C_INT(a, *first);
 
     int *removed;
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(a, *removed);
 
-    deque_get_first(deque, (void*) &first);
+    cc_deque_get_first(deque, (void*) &first);
     CHECK_EQUAL_C_INT(b, *first);
 };
 
-TEST_C(DequeTests, DequeRemoveLast)
+TEST_C(CC_DequeTests, CC_DequeRemoveLast)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    deque_add_first(deque, &a);
-    deque_add_first(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
+    cc_deque_add_first(deque, &a);
+    cc_deque_add_first(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
 
     int *last;
-    deque_get_last(deque, (void*) &last);
+    cc_deque_get_last(deque, (void*) &last);
     CHECK_EQUAL_C_INT(d, *last);
 
     int *removed;
-    deque_remove_last(deque, (void*) &removed);
+    cc_deque_remove_last(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(d, *removed);
 
-    deque_get_last(deque, (void*) &last);
+    cc_deque_get_last(deque, (void*) &last);
     CHECK_EQUAL_C_INT(c, *last);
 };
 
-TEST_C(DequeTests, DequeRemoveAll)
+TEST_C(CC_DequeTests, CC_DequeRemoveAll)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
 
-    deque_remove_all(deque);
+    cc_deque_remove_all(deque);
 
     void *first;
-    int stat1 = deque_get_first(deque, &first);
+    int stat1 = cc_deque_get_first(deque, &first);
     void *last;
-    int stat2 = deque_get_last(deque, &last);
+    int stat2 = cc_deque_get_last(deque, &last);
 
     CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, stat1);
     CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, stat2);
 
-    CHECK_EQUAL_C_INT(0, deque_size(deque));
+    CHECK_EQUAL_C_INT(0, cc_deque_size(deque));
 };
 
-TEST_C(DequeTests, DequeGetAt)
+TEST_C(CC_DequeTests, CC_DequeGetAt)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
 
     void *e;
-    deque_get_at(deque, 1, &e);
+    cc_deque_get_at(deque, 1, &e);
     void *n;
-    int status = deque_get_at(deque, 42, &n);
+    int status = cc_deque_get_at(deque, 42, &n);
 
     CHECK_EQUAL_C_INT(b, *(int*)e);
     CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, status);
 };
 
-TEST_C(DequeTests, DequeGetFirst)
+TEST_C(CC_DequeTests, CC_DequeGetFirst)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add_first(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_first(deque, &c);
+    cc_deque_add_first(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_first(deque, &c);
 
     int *first;
-    deque_get_first(deque, (void*) &first);
+    cc_deque_get_first(deque, (void*) &first);
 
     CHECK_EQUAL_C_INT(c, *first);
 };
 
-TEST_C(DequeTests, DequeGetLast)
+TEST_C(CC_DequeTests, CC_DequeGetLast)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add_first(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_first(deque, &c);
+    cc_deque_add_first(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_first(deque, &c);
 
     int *last;
-    deque_get_last(deque, (void*) &last);
+    cc_deque_get_last(deque, (void*) &last);
 
     CHECK_EQUAL_C_INT(b, *last);
 };
 
-TEST_C(DequeTests, DequeCopyShallow)
+TEST_C(CC_DequeTests, CC_DequeCopyShallow)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
 
-    Deque *copy;
-    deque_copy_shallow(deque, &copy);
+    CC_Deque *copy;
+    cc_deque_copy_shallow(deque, &copy);
 
-    int size = deque_size(copy);
+    int size = cc_deque_size(copy);
     CHECK_EQUAL_C_INT(3, size);
 
     int *ca;
-    deque_get_at(copy, 0, (void*)&ca);
+    cc_deque_get_at(copy, 0, (void*)&ca);
 
     int *cb;
-    deque_get_at(copy, 1, (void*)&cb);
+    cc_deque_get_at(copy, 1, (void*)&cb);
 
     int *cc;
-    deque_get_at(copy, 2, (void*)&cc);
+    cc_deque_get_at(copy, 2, (void*)&cc);
 
     CHECK_EQUAL_C_INT(a, *ca);
     CHECK_EQUAL_C_INT(b, *cb);
     CHECK_EQUAL_C_INT(c, *cc);
-    deque_destroy(copy);
+    cc_deque_destroy(copy);
 };
 
-TEST_C(DequeTests, DequeCopyDeep)
+TEST_C(CC_DequeTests, CC_DequeCopyDeep)
 {
     int *a = malloc(sizeof(int));
     int *b = malloc(sizeof(int));
@@ -426,34 +426,34 @@ TEST_C(DequeTests, DequeCopyDeep)
     *b = 2;
     *c = 3;
 
-    deque_add_last(deque, a);
-    deque_add_last(deque, b);
-    deque_add_last(deque, c);
+    cc_deque_add_last(deque, a);
+    cc_deque_add_last(deque, b);
+    cc_deque_add_last(deque, c);
 
-    Deque *copy;
-    deque_copy_deep(deque, cpy, &copy);
+    CC_Deque *copy;
+    cc_deque_copy_deep(deque, cpy, &copy);
 
-    int size = deque_size(copy);
+    int size = cc_deque_size(copy);
     CHECK_EQUAL_C_INT(3, size);
 
     int *ca;
-    deque_get_at(copy, 0, (void*)&ca);
+    cc_deque_get_at(copy, 0, (void*)&ca);
     int *cb;
-    deque_get_at(copy, 1, (void*)&cb);
+    cc_deque_get_at(copy, 1, (void*)&cb);
     int *cc;
-    deque_get_at(copy, 2, (void*)&cc);
+    cc_deque_get_at(copy, 2, (void*)&cc);
 
     CHECK_EQUAL_C_INT(1, *ca);
     CHECK_EQUAL_C_INT(2, *cb);
     CHECK_EQUAL_C_INT(3, *cc);
-    deque_destroy_cb(copy, free);
+    cc_deque_destroy_cb(copy, free);
     free(a);
     free(b);
     free(c);
 }
 
 
-TEST_C(DequeTests, DequeContains)
+TEST_C(CC_DequeTests, CC_DequeContains)
 {
     int a = 1;
     int b = 2;
@@ -463,101 +463,101 @@ TEST_C(DequeTests, DequeContains)
     int f = 6;
     int g = 7;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
-    deque_add(deque, &d);
-    deque_add(deque, &e);
-    deque_add(deque, &f);
-    deque_add(deque, &a);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
+    cc_deque_add(deque, &d);
+    cc_deque_add(deque, &e);
+    cc_deque_add(deque, &f);
+    cc_deque_add(deque, &a);
 
-    CHECK_EQUAL_C_INT(2, deque_contains(deque, &a));
-    CHECK_EQUAL_C_INT(0, deque_contains(deque, &g));
-    CHECK_EQUAL_C_INT(1, deque_contains(deque, &e));
+    CHECK_EQUAL_C_INT(2, cc_deque_contains(deque, &a));
+    CHECK_EQUAL_C_INT(0, cc_deque_contains(deque, &g));
+    CHECK_EQUAL_C_INT(1, cc_deque_contains(deque, &e));
 };
 
-TEST_C(DequeTests, DequeSize)
+TEST_C(CC_DequeTests, CC_DequeSize)
 {
     int a = 1;
     int b = 2;
     int c = 3;
     int d = 4;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
-    deque_add(deque, &d);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
+    cc_deque_add(deque, &d);
 
-    size_t size = deque_size(deque);
+    size_t size = cc_deque_size(deque);
     CHECK_EQUAL_C_INT(4, size);
 };
 
-TEST_C(DequeTests, DequeCapacity)
+TEST_C(CC_DequeTests, CC_DequeCapacity)
 {
-    DequeConf conf;
-    deque_conf_init(&conf);
+    CC_DequeConf conf;
+    cc_deque_conf_init(&conf);
 
     conf.capacity = 2;
 
-    Deque *deque;
-    deque_new_conf(&conf, &deque);
+    CC_Deque *deque;
+    cc_deque_new_conf(&conf, &deque);
 
-    CHECK_EQUAL_C_INT(2, deque_capacity(deque));
+    CHECK_EQUAL_C_INT(2, cc_deque_capacity(deque));
 
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
 
-    CHECK_EQUAL_C_INT(4, deque_capacity(deque));
+    CHECK_EQUAL_C_INT(4, cc_deque_capacity(deque));
 }
 
 
-TEST_C(DequeTests, DequeTrimCapacity)
+TEST_C(CC_DequeTests, CC_DequeTrimCapacity)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
 
-    CHECK_EQUAL_C_INT(8, deque_capacity(deque));
+    CHECK_EQUAL_C_INT(8, cc_deque_capacity(deque));
 
-    deque_trim_capacity(deque);
+    cc_deque_trim_capacity(deque);
 
-    CHECK_EQUAL_C_INT(4, deque_capacity(deque));
+    CHECK_EQUAL_C_INT(4, cc_deque_capacity(deque));
 };
 
-TEST_C(DequeTests, DequeReverse)
+TEST_C(CC_DequeTests, CC_DequeReverse)
 {
     int a = 1;
     int b = 2;
     int c = 3;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
 
-    deque_reverse(deque);
+    cc_deque_reverse(deque);
 
     int *ra;
-    deque_get_at(deque, 0, (void*)&ra);
+    cc_deque_get_at(deque, 0, (void*)&ra);
     int *rb;
-    deque_get_at(deque, 1, (void*)&rb);
+    cc_deque_get_at(deque, 1, (void*)&rb);
     int *rc;
-    deque_get_at(deque, 2, (void*)&rc);
+    cc_deque_get_at(deque, 2, (void*)&rc);
 
     CHECK_EQUAL_C_INT(c, *ra);
     CHECK_EQUAL_C_INT(b, *rb);
     CHECK_EQUAL_C_INT(a, *rc);
 };
 
-TEST_C(DequeTests, DequeIteratorAdd)
+TEST_C(CC_DequeTests, CC_DequeIteratorAdd)
 {
     int a = 1;
     int b = 2;
@@ -568,38 +568,38 @@ TEST_C(DequeTests, DequeIteratorAdd)
 
     int g = 7;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
-    deque_add(deque, &d);
-    deque_add(deque, &e);
-    deque_add(deque, &f);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
+    cc_deque_add(deque, &d);
+    cc_deque_add(deque, &e);
+    cc_deque_add(deque, &f);
 
-    DequeIter iter;
-    deque_iter_init(&iter, deque);
+    CC_DequeIter iter;
+    cc_deque_iter_init(&iter, deque);
 
     size_t i = 0;
 
     int *el;
 
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    while (deque_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    while (cc_deque_iter_next(&iter, (void*) &el) != CC_ITER_END) {
         if (*el == d)
-            deque_iter_add(&iter, &g);
+            cc_deque_iter_add(&iter, &g);
         if (i >= 3) {
-          CHECK_EQUAL_C_INT(i, deque_iter_index(&iter) - 1);
+          CHECK_EQUAL_C_INT(i, cc_deque_iter_index(&iter) - 1);
         }
         i++;
     }
-    CHECK_EQUAL_C_INT(7, deque_size(deque));
+    CHECK_EQUAL_C_INT(7, cc_deque_size(deque));
 
     void *ret;
-    deque_get_at(deque, 4, &ret);
+    cc_deque_get_at(deque, 4, &ret);
     CHECK_EQUAL_C_INT(g, *(int*)ret);
 };
 
-TEST_C(DequeTests, DequeIteratorRemove)
+TEST_C(CC_DequeTests, CC_DequeIteratorRemove)
 {
     int a = 1;
     int b = 2;
@@ -608,35 +608,35 @@ TEST_C(DequeTests, DequeIteratorRemove)
     int e = 5;
     int f = 6;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
-    deque_add(deque, &d);
-    deque_add(deque, &e);
-    deque_add(deque, &f);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
+    cc_deque_add(deque, &d);
+    cc_deque_add(deque, &e);
+    cc_deque_add(deque, &f);
 
-    DequeIter iter;
-    deque_iter_init(&iter, deque);
+    CC_DequeIter iter;
+    cc_deque_iter_init(&iter, deque);
 
     size_t i = 0;
     void *el;
-    while (deque_iter_next(&iter, &el) != CC_ITER_END) {
+    while (cc_deque_iter_next(&iter, &el) != CC_ITER_END) {
         if (i == 3)
-            deque_iter_remove(&iter, NULL);
+            cc_deque_iter_remove(&iter, NULL);
 
         if (i > 2) {
-          CHECK_EQUAL_C_INT(5, deque_size(deque));
+          CHECK_EQUAL_C_INT(5, cc_deque_size(deque));
         } else {
-          CHECK_EQUAL_C_INT(6, deque_size(deque));
+          CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
         }
         if (i >= 3) {
-          CHECK_EQUAL_C_INT(i-1, deque_iter_index(&iter));
+          CHECK_EQUAL_C_INT(i-1, cc_deque_iter_index(&iter));
         }
         i++;
     }
 };
 
-TEST_C(DequeTests, DequeIteratorNext)
+TEST_C(CC_DequeTests, CC_DequeIteratorNext)
 {
     int a = 1;
     int b = 2;
@@ -645,22 +645,22 @@ TEST_C(DequeTests, DequeIteratorNext)
     int e = 5;
     int f = 6;
 
-    deque_add(deque, &a);
-    deque_add(deque, &b);
-    deque_add(deque, &c);
-    deque_add(deque, &d);
-    deque_add(deque, &e);
-    deque_add(deque, &f);
+    cc_deque_add(deque, &a);
+    cc_deque_add(deque, &b);
+    cc_deque_add(deque, &c);
+    cc_deque_add(deque, &d);
+    cc_deque_add(deque, &e);
+    cc_deque_add(deque, &f);
 
-    DequeIter iter;
-    deque_iter_init(&iter, deque);
+    CC_DequeIter iter;
+    cc_deque_iter_init(&iter, deque);
 
     size_t i = 0;
 
     void *el;
-    while (deque_iter_next(&iter, &el) != CC_ITER_END) {
+    while (cc_deque_iter_next(&iter, &el) != CC_ITER_END) {
         void *k;
-        deque_get_at(deque, i, &k);
+        cc_deque_get_at(deque, i, &k);
         CHECK_EQUAL_C_POINTER(k, el);
         i++;
 
@@ -668,103 +668,103 @@ TEST_C(DequeTests, DequeIteratorNext)
     }
 };
 
-TEST_C(DequeTests, DequeZipIterRemove)
+TEST_C(CC_DequeTests, CC_DequeZipIterRemove)
 {
-    deque_add(deque, "a");
-    deque_add(deque, "b");
-    deque_add(deque, "c");
-    deque_add(deque, "d");
+    cc_deque_add(deque, "a");
+    cc_deque_add(deque, "b");
+    cc_deque_add(deque, "c");
+    cc_deque_add(deque, "d");
 
-    Deque *d2;
-    deque_new(&d2);
+    CC_Deque *d2;
+    cc_deque_new(&d2);
 
-    deque_add(d2, "e");
-    deque_add(d2, "f");
-    deque_add(d2, "g");
+    cc_deque_add(d2, "e");
+    cc_deque_add(d2, "f");
+    cc_deque_add(d2, "g");
 
-    DequeZipIter zip;
-    deque_zip_iter_init(&zip, deque, d2);
+    CC_DequeZipIter zip;
+    cc_deque_zip_iter_init(&zip, deque, d2);
 
     void *e1, *e2;
     void *r1, *r2;
-    while (deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            deque_zip_iter_remove(&zip, &r1, &r2);
+            cc_deque_zip_iter_remove(&zip, &r1, &r2);
     }
     CHECK_EQUAL_C_STRING("b", (char*)r1);
     CHECK_EQUAL_C_STRING("f", (char*)r2);
-    CHECK_EQUAL_C_INT(0, deque_contains(deque, "b"));
-    CHECK_EQUAL_C_INT(0, deque_contains(deque, "f"));
-    CHECK_EQUAL_C_INT(3, deque_size(deque));
-    CHECK_EQUAL_C_INT(2, deque_size(d2));
-    deque_destroy(d2);
+    CHECK_EQUAL_C_INT(0, cc_deque_contains(deque, "b"));
+    CHECK_EQUAL_C_INT(0, cc_deque_contains(deque, "f"));
+    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
+    CHECK_EQUAL_C_INT(2, cc_deque_size(d2));
+    cc_deque_destroy(d2);
 };
 
-TEST_C(DequeTests, DequeZipIterAdd)
+TEST_C(CC_DequeTests, CC_DequeZipIterAdd)
 {
-    deque_add(deque, "a");
-    deque_add(deque, "b");
-    deque_add(deque, "c");
-    deque_add(deque, "d");
+    cc_deque_add(deque, "a");
+    cc_deque_add(deque, "b");
+    cc_deque_add(deque, "c");
+    cc_deque_add(deque, "d");
 
-    Deque *d2;
-    deque_new(&d2);
+    CC_Deque *d2;
+    cc_deque_new(&d2);
 
-    deque_add(d2, "e");
-    deque_add(d2, "f");
-    deque_add(d2, "g");
+    cc_deque_add(d2, "e");
+    cc_deque_add(d2, "f");
+    cc_deque_add(d2, "g");
 
     char *h = "h";
     char *i = "i";
 
-    DequeZipIter zip;
-    deque_zip_iter_init(&zip, deque, d2);
+    CC_DequeZipIter zip;
+    cc_deque_zip_iter_init(&zip, deque, d2);
 
     void *e1, *e2;
-    while (deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            deque_zip_iter_add(&zip, h, i);
+            cc_deque_zip_iter_add(&zip, h, i);
     }
 
     size_t index;
-    deque_index_of(deque, "h", &index);
+    cc_deque_index_of(deque, "h", &index);
 
     CHECK_EQUAL_C_INT(2, index);
 
-    deque_index_of(deque, "i", &index);
+    cc_deque_index_of(deque, "i", &index);
     CHECK_EQUAL_C_INT(2, index);
 
-    deque_index_of(deque, "c", &index);
+    cc_deque_index_of(deque, "c", &index);
     CHECK_EQUAL_C_INT(3, index);
-    CHECK_EQUAL_C_INT(1, deque_contains(deque, "h"));
-    CHECK_EQUAL_C_INT(1, deque_contains(d2, "i"));
-    CHECK_EQUAL_C_INT(5, deque_size(deque));
-    CHECK_EQUAL_C_INT(4, deque_size(d2));
-    deque_destroy(d2);
+    CHECK_EQUAL_C_INT(1, cc_deque_contains(deque, "h"));
+    CHECK_EQUAL_C_INT(1, cc_deque_contains(d2, "i"));
+    CHECK_EQUAL_C_INT(5, cc_deque_size(deque));
+    CHECK_EQUAL_C_INT(4, cc_deque_size(d2));
+    cc_deque_destroy(d2);
 };
 
 
-TEST_C(DequeTests, DequeZipIterNext)
+TEST_C(CC_DequeTests, CC_DequeZipIterNext)
 {
-    deque_add(deque, "a");
-    deque_add(deque, "b");
-    deque_add(deque, "c");
-    deque_add(deque, "d");
+    cc_deque_add(deque, "a");
+    cc_deque_add(deque, "b");
+    cc_deque_add(deque, "c");
+    cc_deque_add(deque, "d");
 
-    Deque *d2;
-    deque_new(&d2);
+    CC_Deque *d2;
+    cc_deque_new(&d2);
 
-    deque_add(d2, "e");
-    deque_add(d2, "f");
-    deque_add(d2, "g");
+    cc_deque_add(d2, "e");
+    cc_deque_add(d2, "f");
+    cc_deque_add(d2, "g");
 
-    DequeZipIter zip;
-    deque_zip_iter_init(&zip, deque, d2);
+    CC_DequeZipIter zip;
+    cc_deque_zip_iter_init(&zip, deque, d2);
 
     size_t i = 0;
 
     void *e1, *e2;
-    while (deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (i == 0) {
           CHECK_EQUAL_C_STRING("a", (char*)e1);
           CHECK_EQUAL_C_STRING("e", (char*)e2);
@@ -776,61 +776,61 @@ TEST_C(DequeTests, DequeZipIterNext)
         i++;
     }
     CHECK_EQUAL_C_INT(3, i);
-    deque_destroy(d2);
+    cc_deque_destroy(d2);
 };
 
-TEST_C(DequeTests, DequeZipIterReplace)
+TEST_C(CC_DequeTests, CC_DequeZipIterReplace)
 {
-    deque_add(deque, "a");
-    deque_add(deque, "b");
-    deque_add(deque, "c");
-    deque_add(deque, "d");
+    cc_deque_add(deque, "a");
+    cc_deque_add(deque, "b");
+    cc_deque_add(deque, "c");
+    cc_deque_add(deque, "d");
 
-    Deque *d2;
-    deque_new(&d2);
+    CC_Deque *d2;
+    cc_deque_new(&d2);
 
-    deque_add(d2, "e");
-    deque_add(d2, "f");
-    deque_add(d2, "g");
+    cc_deque_add(d2, "e");
+    cc_deque_add(d2, "f");
+    cc_deque_add(d2, "g");
 
     char *h = "h";
     char *i = "i";
 
-    DequeZipIter zip;
-    deque_zip_iter_init(&zip, deque, d2);
+    CC_DequeZipIter zip;
+    cc_deque_zip_iter_init(&zip, deque, d2);
 
     void *e1, *e2;
     void *r1, *r2;
-    while (deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*) e1, "b") == 0)
-            deque_zip_iter_replace(&zip, h, i, &r1, &r2);
+            cc_deque_zip_iter_replace(&zip, h, i, &r1, &r2);
     }
 
     size_t index;
-    deque_index_of(deque, "h", &index);
+    cc_deque_index_of(deque, "h", &index);
 
     CHECK_EQUAL_C_INT(1, index);
 
-    deque_index_of(deque, "i", &index);
+    cc_deque_index_of(deque, "i", &index);
     CHECK_EQUAL_C_INT(1, index);
-    CHECK_EQUAL_C_INT(1, deque_contains(deque, "h"));
-    CHECK_EQUAL_C_INT(1, deque_contains(d2, "i"));
-    deque_destroy(d2);
+    CHECK_EQUAL_C_INT(1, cc_deque_contains(deque, "h"));
+    CHECK_EQUAL_C_INT(1, cc_deque_contains(d2, "i"));
+    cc_deque_destroy(d2);
 };
 
-TEST_GROUP_C_SETUP(DequeTestsConf)
+TEST_GROUP_C_SETUP(CC_DequeTestsConf)
 {
-  deque_conf_init(&conf);
+  cc_deque_conf_init(&conf);
   conf.capacity = 4;
-  deque_new_conf(&conf, &deque);
+  cc_deque_new_conf(&conf, &deque);
 };
 
-TEST_GROUP_C_TEARDOWN(DequeTestsConf)
+TEST_GROUP_C_TEARDOWN(CC_DequeTestsConf)
 {
-  deque_destroy(deque);
+  cc_deque_destroy(deque);
 };
 
-TEST_C(DequeTestsConf, DequeBufferExpansion)
+TEST_C(CC_DequeTestsConf, CC_DequeBufferExpansion)
 {
     int a = 1;
     int b = 2;
@@ -839,12 +839,12 @@ TEST_C(DequeTestsConf, DequeBufferExpansion)
     int e = 5;
     int f = 6;
 
-    deque_add_first(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_first(deque, &c);
-    deque_add_last(deque, &d);
+    cc_deque_add_first(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_first(deque, &c);
+    cc_deque_add_last(deque, &d);
 
-    size_t capacity = deque_capacity(deque);
+    size_t capacity = cc_deque_capacity(deque);
 
     CHECK_EQUAL_C_INT(4, capacity);
 
@@ -855,13 +855,13 @@ TEST_C(DequeTestsConf, DequeBufferExpansion)
              L   F
      */
     /* This line should trigger the buffer expansion */
-    deque_add_first(deque, &e);
+    cc_deque_add_first(deque, &e);
 
-    capacity = deque_capacity(deque);
+    capacity = cc_deque_capacity(deque);
     CHECK_EQUAL_C_INT(8, capacity);
 
     /* The expansion should align the elements.*/
-    const void * const* buff = deque_get_buffer(deque);
+    const void * const* buff = cc_deque_get_buffer(deque);
     const int elem = *((int*) buff[0]);
 
     CHECK_EQUAL_C_INT(elem, c);
@@ -878,13 +878,13 @@ TEST_C(DequeTestsConf, DequeBufferExpansion)
     const int elem4 = *((int*) buff[7]);
     CHECK_EQUAL_C_INT(elem4, e);
 
-    deque_add_last(deque, &f);
+    cc_deque_add_last(deque, &f);
 
     const int elem5 = *((int*) buff[4]);
     CHECK_EQUAL_C_INT(elem5, f);
 };
 
-TEST_C(DequeTests, DequeFilter1)
+TEST_C(CC_DequeTests, CC_DequeFilter1)
 {
     int a = 1;
     int b = 2;
@@ -893,18 +893,18 @@ TEST_C(DequeTests, DequeFilter1)
     int e = 5;
     int f = 6;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    Deque *filter = NULL;
-    deque_filter(deque, pred1, &filter);
-    CHECK_EQUAL_C_INT(3, deque_size(filter));
-    const void * const* buff = deque_get_buffer(filter);
+    CC_Deque *filter = NULL;
+    cc_deque_filter(deque, pred1, &filter);
+    CHECK_EQUAL_C_INT(3, cc_deque_size(filter));
+    const void * const* buff = cc_deque_get_buffer(filter);
 
     CHECK_EQUAL_C_POINTER(buff[0], &a);
     CHECK_EQUAL_C_POINTER(buff[1], &b);
@@ -914,7 +914,7 @@ TEST_C(DequeTests, DequeFilter1)
     free(filter);
 };
 
-TEST_C(DequeTests, DequeFilter2)
+TEST_C(CC_DequeTests, CC_DequeFilter2)
 {
     int a = 1;
     int b = 2;
@@ -923,19 +923,19 @@ TEST_C(DequeTests, DequeFilter2)
     int e = 5;
     int f = 6;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    Deque *filter = NULL;
-    deque_filter(deque, pred2, &filter);
-    const void * const* buff = deque_get_buffer(filter);
+    CC_Deque *filter = NULL;
+    cc_deque_filter(deque, pred2, &filter);
+    const void * const* buff = cc_deque_get_buffer(filter);
 
-    CHECK_EQUAL_C_INT(3, deque_size(filter));
+    CHECK_EQUAL_C_INT(3, cc_deque_size(filter));
     CHECK_EQUAL_C_POINTER(buff[0], &d);
     CHECK_EQUAL_C_POINTER(buff[1], &e);
     CHECK_EQUAL_C_POINTER(buff[2], &f);
@@ -943,7 +943,7 @@ TEST_C(DequeTests, DequeFilter2)
     free(filter);
 };
 
-TEST_C(DequeTests, DequeFilter3)
+TEST_C(CC_DequeTests, CC_DequeFilter3)
 {
     int a = 1;
     int b = 2;
@@ -952,25 +952,25 @@ TEST_C(DequeTests, DequeFilter3)
     int e = 5;
     int f = 6;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    Deque *filter = NULL;
-    deque_filter(deque, pred3, &filter);
-    const void * const* buff = deque_get_buffer(filter);
+    CC_Deque *filter = NULL;
+    cc_deque_filter(deque, pred3, &filter);
+    const void * const* buff = cc_deque_get_buffer(filter);
 
-    CHECK_EQUAL_C_INT(1, deque_size(filter));
+    CHECK_EQUAL_C_INT(1, cc_deque_size(filter));
     CHECK_EQUAL_C_POINTER(buff[0], &f);
 
     free(filter);
 };
 
-TEST_C(DequeTests, DequeFilterMut1)
+TEST_C(CC_DequeTests, CC_DequeFilterMut1)
 {
     int a = 1;
     int b = 2;
@@ -979,29 +979,29 @@ TEST_C(DequeTests, DequeFilterMut1)
     int e = 5;
     int f = 6;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    deque_filter_mut(deque, pred1);
-    CHECK_EQUAL_C_INT(3, deque_size(deque));
+    cc_deque_filter_mut(deque, pred1);
+    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
 
     int *removed = NULL;
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(a, *removed);
 
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(b, *removed);
 
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(c, *removed);
 };
 
-TEST_C(DequeTests, DequeFilterMut2)
+TEST_C(CC_DequeTests, CC_DequeFilterMut2)
 {
     int a = 1;
     int b = 2;
@@ -1010,30 +1010,30 @@ TEST_C(DequeTests, DequeFilterMut2)
     int e = 5;
     int f = 6;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    deque_filter_mut(deque, pred2);
-    CHECK_EQUAL_C_INT(3, deque_size(deque));
+    cc_deque_filter_mut(deque, pred2);
+    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
 
     int *removed = NULL;
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(d, *removed);
 
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(e, *removed);
 
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(f, *removed);
 };
 
 
-TEST_C(DequeTests, DequeFilterMut3)
+TEST_C(CC_DequeTests, CC_DequeFilterMut3)
 {
     int a = 1;
     int b = 2;
@@ -1042,18 +1042,18 @@ TEST_C(DequeTests, DequeFilterMut3)
     int e = 5;
     int f = 6;
 
-    deque_add_last(deque, &a);
-    deque_add_last(deque, &b);
-    deque_add_last(deque, &c);
-    deque_add_last(deque, &d);
-    deque_add_last(deque, &e);
-    deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, deque_size(deque));
+    cc_deque_add_last(deque, &a);
+    cc_deque_add_last(deque, &b);
+    cc_deque_add_last(deque, &c);
+    cc_deque_add_last(deque, &d);
+    cc_deque_add_last(deque, &e);
+    cc_deque_add_last(deque, &f);
+    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
 
-    deque_filter_mut(deque, pred3);
-    CHECK_EQUAL_C_INT(1, deque_size(deque));
+    cc_deque_filter_mut(deque, pred3);
+    CHECK_EQUAL_C_INT(1, cc_deque_size(deque));
 
     int *removed = NULL;
-    deque_remove_first(deque, (void*) &removed);
+    cc_deque_remove_first(deque, (void*) &removed);
     CHECK_EQUAL_C_INT(f, *removed);
 };

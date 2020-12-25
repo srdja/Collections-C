@@ -11,34 +11,34 @@
 #include <time.h>
 
 static int stat;
-static Rbuf *rbuf;
+static CC_Rbuf *rbuf;
 unsigned long long range = 100;
 
-TEST_GROUP_C_SETUP(RbufTest)
+TEST_GROUP_C_SETUP(CC_RbufTest)
 {
-    stat = rbuf_new(&rbuf);
+    stat = cc_rbuf_new(&rbuf);
 }
 
-TEST_GROUP_C_TEARDOWN(RbufTest)
+TEST_GROUP_C_TEARDOWN(CC_RbufTest)
 {
-    rbuf_destroy(rbuf);
+    cc_rbuf_destroy(rbuf);
 }
 
-TEST_C(RbufTest, RbufEnqueue)
+TEST_C(CC_RbufTest, CC_RbufEnqueue)
 {
     uint64_t items[10];
     memset(items, 0, sizeof(uint64_t)*10);
     srand((unsigned int) time(NULL));
     for (int i = 0; i < 10; i++) {
       uint64_t item = rand() % range;
-      rbuf_enqueue(rbuf, item);
+      cc_rbuf_enqueue(rbuf, item);
       items[i] = item;
     }
     for (int i = 0; i < 10; i++)
-        CHECK_EQUAL_C_INT(rbuf_peek(rbuf, i), items[i]);
+        CHECK_EQUAL_C_INT(cc_rbuf_peek(rbuf, i), items[i]);
 }
 
-TEST_C(RbufTest, RbufDequeue)
+TEST_C(CC_RbufTest, CC_RbufDequeue)
 {
      uint64_t items[10];
      memset(items, 0, sizeof(uint64_t)*10);
@@ -46,18 +46,18 @@ TEST_C(RbufTest, RbufDequeue)
      for (int i = 0; i < 10; i++) {
        uint64_t item = rand() % range + 1;
        items[i] = item;
-       rbuf_enqueue(rbuf, item);
+       cc_rbuf_enqueue(rbuf, item);
      }
 
      uint64_t out;
      for (int i = 0; i < 10; i++) {
-       rbuf_dequeue(rbuf, &out);
-       CHECK_EQUAL_C_INT(items[i], out);
+         cc_rbuf_dequeue(rbuf, &out);
+         CHECK_EQUAL_C_INT(items[i], out);
        memset(&out, 0, sizeof(uint64_t));
      }
 }
 
-TEST_C(RbufTest, RbufEnqueuePastCapacity)
+TEST_C(CC_RbufTest, CC_RbufEnqueuePastCapacity)
 {
     uint64_t items[10];
     memset(items, 0, sizeof(uint64_t)*10);
@@ -65,19 +65,19 @@ TEST_C(RbufTest, RbufEnqueuePastCapacity)
     for (int i = 0; i < 10; i++) {
       uint64_t item = rand() % range + 1;
       items[i] = item;
-      rbuf_enqueue(rbuf, item);
+      cc_rbuf_enqueue(rbuf, item);
     }
 
-    CHECK_EQUAL_C_INT(items[0], rbuf_peek(rbuf, 0));
-    CHECK_EQUAL_C_INT(items[1], rbuf_peek(rbuf, 1));
+    CHECK_EQUAL_C_INT(items[0], cc_rbuf_peek(rbuf, 0));
+    CHECK_EQUAL_C_INT(items[1], cc_rbuf_peek(rbuf, 1));
 
     uint64_t a = rand() % range + 1, b = rand() % range + 1;
-    rbuf_enqueue(rbuf, a);
-    rbuf_enqueue(rbuf, b);
+    cc_rbuf_enqueue(rbuf, a);
+    cc_rbuf_enqueue(rbuf, b);
 
-    CHECK_EQUAL_C_INT(rbuf_peek(rbuf, 0), a);
-    CHECK_EQUAL_C_INT(rbuf_peek(rbuf, 1), b);
+    CHECK_EQUAL_C_INT(cc_rbuf_peek(rbuf, 0), a);
+    CHECK_EQUAL_C_INT(cc_rbuf_peek(rbuf, 1), b);
     uint64_t out;
-    rbuf_dequeue(rbuf, &out);
+    cc_rbuf_dequeue(rbuf, &out);
     CHECK_EQUAL_C_INT(items[2], out);
 }

@@ -19,35 +19,35 @@ The source of the documentation can be found [here](https://github.com/srdja/cc-
 ```c
 
 // Crate a new table
-HashTable *table;
-if (hashtable_new(&table) != CC_OK) {
+CC_HashTable *table;
+if (cc_hashtable_new(&table) != CC_OK) {
     // something went wrong
     ...
 }
 // Add key-value pair
-if (hashtable_add(table, "some_key", "some_value") != CC_OK) {
+if (cc_hashtable_add(table, "some_key", "some_value") != CC_OK) {
     // something went wrong
     ...
 }
 // Retrieve a value associated with a key
 char *value;
-if (hashtable_get(table, "some_key", (void*) &value) == CC_OK)
+if (cc_hashtable_get(table, "some_key", (void*) &value) == CC_OK)
     printf("%s", value);
 
 // Remove a key
-hashtable_remove(table, "foo", NULL);
-hashtable_destroy(table);
+cc_hashtable_remove(table, "foo", NULL);
+cc_hashtable_destroy(table);
 ```
 #### Array (dynamic array)
 ```c
 // Create a new array
-Array *ar;
-if (array_new(&ar) != CC_OK) {
+CC_Array *ar;
+if (cc_array_new(&ar) != CC_OK) {
     // something went wrong
     ...
 }
 // Add an element
-enum cc_stat status = array_add(ar, "foo");
+enum cc_stat status = cc_array_add(ar, "foo");
 if (status == CC_OK) {
     ...
 } else if (status == CC_ERR_ALLOC) {
@@ -57,13 +57,13 @@ if (status == CC_OK) {
 }
 // Retrieve a value
 char *foo;
-array_get_at(ar, 0, (void*) &foo);
+cc_array_get_at(ar, 0, (void*) &foo);
 
 // Remove a value
 char *removed;
-array_remove_at(ar, 0, (void*) &removed);
+cc_array_remove_at(ar, 0, (void*) &removed);
 
-array_destroy(ar);
+cc_array_destroy(ar);
 ```
 ## Building and Installation
 
@@ -138,15 +138,15 @@ If we already built and installed the library, we can write a simple hello world
 
 int main(int argc, char **argv) {
     // Create a new array
-    Array *ar;
-    array_new(&ar);
+    CC_Array *ar;
+    cc_array_new(&ar);
 
     // Add a string to the array
-    array_add(ar, "Hello World!\n");
+    cc_array_add(ar, "Hello World!\n");
 
     // Retreive the string and print it
     char *str;
-    array_get_at(ar, 0, (void*) &str);
+    cc_array_get_at(ar, 0, (void*) &str);
     printf("%s", str);
 
     return 0;

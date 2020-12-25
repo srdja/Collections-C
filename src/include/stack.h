@@ -34,7 +34,7 @@ typedef struct stack_s Stack;
  * Stack configuration structure. Used to initialize a new Stack
  * with specific attributes.
  */
-typedef ArrayConf StackConf;
+typedef CC_ArrayConf StackConf;
 
 /**
  * Stack iterator structure. Used to iterate over the elements of
@@ -43,7 +43,7 @@ typedef ArrayConf StackConf;
  * iteration.
  */
 typedef struct stack_iter_s {
-    ArrayIter i;
+    CC_ArrayIter i;
 } StackIter;
 
 /**
@@ -53,7 +53,7 @@ typedef struct stack_iter_s {
  * safely adding and removing elements during iteration.
  */
 typedef struct stack_zip_iter_s {
-    ArrayZipIter i;
+    CC_ArrayZipIter i;
 } StackZipIter;
 
 

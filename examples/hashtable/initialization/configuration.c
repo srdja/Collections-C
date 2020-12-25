@@ -7,8 +7,8 @@
 
 int main(int argc, char **argv)
 {
-    HashTableConf config;
-    hashtable_conf_init(&config);
+    CC_HashTableConf config;
+    cc_hashtable_conf_init(&config);
 
     /* As explained in the string_key example if we don't specifically set
      the key options they'll default to string.
@@ -59,8 +59,8 @@ int main(int argc, char **argv)
     config.load_factor      = 0.5;
 
 
-    HashTable *table;
-    hashtable_new_conf(&config, &table);
-    hashtable_destroy(table);
+    CC_HashTable *table;
+    cc_hashtable_new_conf(&config, &table);
+    cc_hashtable_destroy(table);
     return 0;
 }

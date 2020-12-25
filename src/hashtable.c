@@ -23,7 +23,7 @@
 #define DEFAULT_CAPACITY 16
 #define DEFAULT_LOAD_FACTOR 0.75f
 
-struct hashtable_s {
+struct cc_hashtable_s {
     size_t       capacity;
     size_t       size;
     size_t       threshold;
@@ -39,49 +39,49 @@ struct hashtable_s {
     void    (*mem_free)   (void *block);
 };
 
-static enum cc_stat resize          (HashTable *t, size_t new_capacity);
-static enum cc_stat get_null_key    (HashTable *table, void **out);
-static enum cc_stat add_null_key    (HashTable *table, void *val);
-static enum cc_stat remove_null_key (HashTable *table, void **out);
+static enum cc_stat resize          (CC_HashTable *t, size_t new_capacity);
+static enum cc_stat get_null_key    (CC_HashTable *table, void **out);
+static enum cc_stat add_null_key    (CC_HashTable *table, void *val);
+static enum cc_stat remove_null_key (CC_HashTable *table, void **out);
 
-static size_t get_table_index  (HashTable *table, void *key);
+static size_t get_table_index  (CC_HashTable *table, void *key);
 static size_t round_pow_two    (size_t n);
 static void   move_entries     (TableEntry **src_bucket, TableEntry **dest_bucket,
                                  size_t src_size, size_t dest_size);
 
 /**
- * Creates a new HashTable and returns a status code.
+ * Creates a new CC_HashTable and returns a status code.
  *
- * @note The newly created HashTable will work with string keys.
+ * @note The newly created CC_HashTable will work with string keys.
  *
- * @param[out] out Pointer to where the newly created HashTable is to be stored
+ * @param[out] out Pointer to where the newly created CC_HashTable is to be stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new HashTable failed.
+ * allocation for the new CC_HashTable failed.
  */
-enum cc_stat hashtable_new(HashTable **out)
+enum cc_stat cc_hashtable_new(CC_HashTable **out)
 {
-    HashTableConf htc;
-    hashtable_conf_init(&htc);
-    return hashtable_new_conf(&htc, out);
+    CC_HashTableConf htc;
+    cc_hashtable_conf_init(&htc);
+    return cc_hashtable_new_conf(&htc, out);
 }
 
 /**
- * Creates a new HashTable based on the specified HashTableConf struct and returns
+ * Creates a new CC_HashTable based on the specified CC_HashTableConf struct and returns
  * a status code.
  *
- * The table is allocated using the memory allocators specified in the HashTableConf
+ * The table is allocated using the memory allocators specified in the CC_HashTableConf
  * struct.
  *
- * @param[in] conf the HashTable conf structure
- * @param[out] out Pointer to where the newly created HashTable is stored
+ * @param[in] conf the CC_HashTable conf structure
+ * @param[out] out Pointer to where the newly created CC_HashTable is stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the memory
- * allocation for the new HashTable structure failed.
+ * allocation for the new CC_HashTable structure failed.
  */
-enum cc_stat hashtable_new_conf(HashTableConf const * const conf, HashTable **out)
+enum cc_stat cc_hashtable_new_conf(CC_HashTableConf const * const conf, CC_HashTable **out)
 {
-    HashTable *table = conf->mem_calloc(1, sizeof(HashTable));
+    CC_HashTable *table = conf->mem_calloc(1, sizeof(CC_HashTable));
 
     if (!table)
         return CC_ERR_ALLOC;
@@ -110,11 +110,11 @@ enum cc_stat hashtable_new_conf(HashTableConf const * const conf, HashTable **ou
 }
 
 /**
- * Initializes the HashTableConf structs fields to default values.
+ * Initializes the CC_HashTableConf structs fields to default values.
  *
  * @param[in] conf the struct that is being initialized
  */
-void hashtable_conf_init(HashTableConf *conf)
+void cc_hashtable_conf_init(CC_HashTableConf *conf)
 {
     conf->hash             = STRING_HASH;
     conf->key_compare      = cc_common_cmp_str;
@@ -128,13 +128,13 @@ void hashtable_conf_init(HashTableConf *conf)
 }
 
 /**
- * Destroys the specified HashTable structure without destroying the data
+ * Destroys the specified CC_HashTable structure without destroying the data
  * contained within it. In other words, the keys and the values are not freed,
  * but only the table structure.
  *
- * @param[in] table HashTable to be destroyed
+ * @param[in] table CC_HashTable to be destroyed
  */
-void hashtable_destroy(HashTable *table)
+void cc_hashtable_destroy(CC_HashTable *table)
 {
     size_t i;
     for (i = 0; i < table->capacity; i++) {
@@ -151,7 +151,7 @@ void hashtable_destroy(HashTable *table)
 }
 
 /**
- * Creates a new key-value mapping in the specified HashTable. If the unique key
+ * Creates a new key-value mapping in the specified CC_HashTable. If the unique key
  * is already mapped to a value in this table, that value is replaced with the
  * new value. This operation may fail if the space allocation for the new entry
  * fails.
@@ -163,7 +163,7 @@ void hashtable_destroy(HashTable *table)
  * @return CC_OK if the mapping was successfully added, or CC_ERR_ALLOC if the
  * memory allocation failed.
  */
-enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
+enum cc_stat cc_hashtable_add(CC_HashTable *table, void *key, void *val)
 {
     enum cc_stat stat;
     if (table->size >= table->threshold) {
@@ -214,7 +214,7 @@ enum cc_stat hashtable_add(HashTable *table, void *key, void *val)
  * @return CC_OK if the mapping was successfully added, or CC_ERR_ALLOC if the
  * memory allocation failed.
  */
-static enum cc_stat add_null_key(HashTable *table, void *val)
+static enum cc_stat add_null_key(CC_HashTable *table, void *val)
 {
     TableEntry *replace = table->buckets[0];
 
@@ -252,7 +252,7 @@ static enum cc_stat add_null_key(HashTable *table, void *val)
  *
  * @return CC_OK if the key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-enum cc_stat hashtable_get(HashTable *table, void *key, void **out)
+enum cc_stat cc_hashtable_get(CC_HashTable *table, void *key, void **out)
 {
     if (!key)
         return get_null_key(table, out);
@@ -280,7 +280,7 @@ enum cc_stat hashtable_get(HashTable *table, void *key, void **out)
  *
  * @return CC_OK if a NULL key was found, or CC_ERR_KEY_NOT_FOUND if not.
  */
-static enum cc_stat get_null_key(HashTable *table, void **out)
+static enum cc_stat get_null_key(CC_HashTable *table, void **out)
 {
     TableEntry *bucket = table->buckets[0];
 
@@ -306,7 +306,7 @@ static enum cc_stat get_null_key(HashTable *table, void **out)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat hashtable_remove(HashTable *table, void *key, void **out)
+enum cc_stat cc_hashtable_remove(CC_HashTable *table, void *key, void **out)
 {
     if (!key)
         return remove_null_key(table, out);
@@ -351,7 +351,7 @@ enum cc_stat hashtable_remove(HashTable *table, void *key, void **out)
  * @return CC_OK if the mapping was successfully removed, or CC_ERR_KEY_NOT_FOUND
  * if the key was not found.
  */
-enum cc_stat remove_null_key(HashTable *table, void **out)
+enum cc_stat remove_null_key(CC_HashTable *table, void **out)
 {
     TableEntry *e = table->buckets[0];
 
@@ -386,7 +386,7 @@ enum cc_stat remove_null_key(HashTable *table, void **out)
  *
  * @param[in] table the table from which all mappings are being removed
  */
-void hashtable_remove_all(HashTable *table)
+void cc_hashtable_remove_all(CC_HashTable *table)
 {
     size_t i;
     for (i = 0; i < table->capacity; i++) {
@@ -412,7 +412,7 @@ void hashtable_remove_all(HashTable *table)
  * capacity has been reached, or CC_ERR_ALLOC if the memory allocation for the
  * new buffer failed.
  */
-static enum cc_stat resize(HashTable *t, size_t new_capacity)
+static enum cc_stat resize(CC_HashTable *t, size_t new_capacity)
 {
     if (t->capacity == MAX_POW_TWO)
         return CC_ERR_MAX_CAPACITY;
@@ -495,14 +495,14 @@ move_entries(TableEntry **src_bucket, TableEntry **dest_bucket,
 }
 
 /**
- * Returns the size of the specified HashTable. Size of a HashTable represents
+ * Returns the size of the specified CC_HashTable. Size of a CC_HashTable represents
  * the number of key-value mappings within the table.
  *
  * @param[in] table the table whose size is being returned
  *
  * @return the size of the table.
  */
-size_t hashtable_size(HashTable *table)
+size_t cc_hashtable_size(CC_HashTable *table)
 {
     return table->size;
 }
@@ -515,20 +515,20 @@ size_t hashtable_size(HashTable *table)
  *
  * @return the current capacity of the specified table.
  */
-size_t hashtable_capacity(HashTable *table)
+size_t cc_hashtable_capacity(CC_HashTable *table)
 {
     return table->capacity;
 }
 
 /**
- * Checks whether or not the HashTable contains the specified key.
+ * Checks whether or not the CC_HashTable contains the specified key.
  *
  * @param[in] table the table on which the search is being performed
  * @param[in] key the key that is being searched for
  *
  * @return true if the table contains the key.
  */
-bool hashtable_contains_key(HashTable *table, void *key)
+bool cc_hashtable_contains_key(CC_HashTable *table, void *key)
 {
     TableEntry *entry = table->buckets[get_table_index(table, key)];
 
@@ -542,27 +542,27 @@ bool hashtable_contains_key(HashTable *table, void *key)
 }
 
 /**
- * Returns an Array of hashtable values. The returned Array is allocated
- * using the same memory allocators used by the HashTable.
+ * Returns an CC_Array of hashtable values. The returned CC_Array is allocated
+ * using the same memory allocators used by the CC_HashTable.
  *
  * @param[in] table the table whose values are being returned
  * @param[out] out pointer to where the array is stored
  *
- * @return CC_OK if the Array was successfully created, or CC_ERR_ALLOC
- * if the memory allocation for the Array failed.
+ * @return CC_OK if the CC_Array was successfully created, or CC_ERR_ALLOC
+ * if the memory allocation for the CC_Array failed.
  */
-enum cc_stat hashtable_get_values(HashTable *table, Array **out)
+enum cc_stat cc_hashtable_get_values(CC_HashTable *table, CC_Array **out)
 {
-    ArrayConf ac;
-    array_conf_init(&ac);
+    CC_ArrayConf ac;
+    cc_array_conf_init(&ac);
 
     ac.capacity   = table->size;
     ac.mem_alloc  = table->mem_alloc;
     ac.mem_calloc = table->mem_calloc;
     ac.mem_free   = table->mem_free;
 
-    Array *values;
-    enum cc_stat stat = array_new_conf(&ac, &values);
+    CC_Array *values;
+    enum cc_stat stat = cc_array_new_conf(&ac, &values);
     if (stat != CC_OK)
         return stat;
 
@@ -571,10 +571,10 @@ enum cc_stat hashtable_get_values(HashTable *table, Array **out)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            if ((stat = array_add(values, entry->value)) == CC_OK) {
+            if ((stat = cc_array_add(values, entry->value)) == CC_OK) {
                 entry = entry->next;
             } else {
-                array_destroy(values);
+                cc_array_destroy(values);
                 return stat;
             }
         }
@@ -584,27 +584,27 @@ enum cc_stat hashtable_get_values(HashTable *table, Array **out)
 }
 
 /**
- * Returns an Array of hashtable keys. The returned Array is allocated
- * using the same memory allocators used by the HashTable.
+ * Returns an CC_Array of hashtable keys. The returned CC_Array is allocated
+ * using the same memory allocators used by the CC_HashTable.
  *
  * @param[in] table the table whose keys are being returned
  * @param[out] out pointer to where the array is stored
  *
- * @return CC_OK if the Array was successfully created, or CC_ERR_ALLOC
- * if the memory allocation for the Array failed.
+ * @return CC_OK if the CC_Array was successfully created, or CC_ERR_ALLOC
+ * if the memory allocation for the CC_Array failed.
  */
-enum cc_stat hashtable_get_keys(HashTable *table, Array **out)
+enum cc_stat cc_hashtable_get_keys(CC_HashTable *table, CC_Array **out)
 {
-    ArrayConf vc;
-    array_conf_init(&vc);
+    CC_ArrayConf vc;
+    cc_array_conf_init(&vc);
 
     vc.capacity   = table->size;
     vc.mem_alloc  = table->mem_alloc;
     vc.mem_calloc = table->mem_calloc;
     vc.mem_free   = table->mem_free;
 
-    Array *keys;
-    enum cc_stat stat = array_new_conf(&vc, &keys);
+    CC_Array *keys;
+    enum cc_stat stat = cc_array_new_conf(&vc, &keys);
     if (stat != CC_OK)
         return stat;
 
@@ -613,10 +613,10 @@ enum cc_stat hashtable_get_keys(HashTable *table, Array **out)
         TableEntry *entry = table->buckets[i];
 
         while (entry) {
-            if ((stat = array_add(keys, entry->key)) == CC_OK) {
+            if ((stat = cc_array_add(keys, entry->key)) == CC_OK) {
                 entry = entry->next;
             } else {
-                array_destroy(keys);
+                cc_array_destroy(keys);
                 return stat;
             }
         }
@@ -628,22 +628,22 @@ enum cc_stat hashtable_get_keys(HashTable *table, Array **out)
 /**
  * Returns the bucket index that maps to the specified key.
  */
-static INLINE size_t get_table_index(HashTable *table, void *key)
+static INLINE size_t get_table_index(CC_HashTable *table, void *key)
 {
     size_t hash = table->hash(key, table->key_len, table->hash_seed);
     return hash & (table->capacity - 1);
 }
 
 /**
- * Applies the function fn to each key of the HashTable.
+ * Applies the function fn to each key of the CC_HashTable.
  *
  * @note The operation function should not modify the key. Any modification
- * of the key will invalidate the HashTable.
+ * of the key will invalidate the CC_HashTable.
  *
  * @param[in] table the table on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each key of the table
  */
-void hashtable_foreach_key(HashTable *table, void (*fn) (const void *key))
+void cc_hashtable_foreach_key(CC_HashTable *table, void (*fn) (const void *key))
 {
     size_t i;
     for (i = 0; i <table->capacity; i++) {
@@ -657,13 +657,13 @@ void hashtable_foreach_key(HashTable *table, void (*fn) (const void *key))
 }
 
 /**
- * Applies the function fn to each value of the HashTable.
+ * Applies the function fn to each value of the CC_HashTable.
  *
  * @param[in] table the table on which this operation is being performed
  * @param[in] fn the operation function that is invoked on each value of the
  *               table
  */
-void hashtable_foreach_value(HashTable *table, void (*fn) (void *val))
+void cc_hashtable_foreach_value(CC_HashTable *table, void (*fn) (void *val))
 {
     size_t i;
     for (i = 0; i <table->capacity; i++) {
@@ -677,16 +677,16 @@ void hashtable_foreach_value(HashTable *table, void (*fn) (void *val))
 }
 
 /**
- * Initializes the HashTableIter structure.
+ * Initializes the CC_HashTableIter structure.
  *
  * @note The order at which the entries are returned is unspecified.
  *
  * @param[in] iter the iterator that is being initialized
  * @param[in] table the table over whose entries the iterator is going to iterate
  */
-void hashtable_iter_init(HashTableIter *iter, HashTable *table)
+void cc_hashtable_iter_init(CC_HashTableIter *iter, CC_HashTable *table)
 {
-    memset(iter, 0, sizeof(HashTableIter));
+    memset(iter, 0, sizeof(CC_HashTableIter));
     iter->table = table;
 
     size_t i;
@@ -709,9 +709,9 @@ void hashtable_iter_init(HashTableIter *iter, HashTable *table)
  * @param[out] out pointer to where the next entry is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the HashTable has been reached.
+ * end of the CC_HashTable has been reached.
  */
-enum cc_stat hashtable_iter_next(HashTableIter *iter, TableEntry **te)
+enum cc_stat cc_hashtable_iter_next(CC_HashTableIter *iter, TableEntry **te)
 {
     if (!iter->next_entry)
         return CC_ITER_END;
@@ -741,12 +741,12 @@ enum cc_stat hashtable_iter_next(HashTableIter *iter, TableEntry **te)
 }
 
 /**
- * Removes the last returned entry by <code>hashtable_iter_next()</code>
+ * Removes the last returned entry by <code>cc_hashtable_iter_next()</code>
  * function without invalidating the iterator and optionally sets the
  * out parameter to the value of the removed entry.
  *
  * @note This Function should only ever be called after a call to <code>
- * hashtable_iter_next()</code>.
+ * cc_hashtable_iter_next()</code>.
  *
  * @param[in] iter The iterator on which this operation is performed
  * @param[out] out Pointer to where the removed element is stored, or NULL
@@ -755,9 +755,9 @@ enum cc_stat hashtable_iter_next(HashTableIter *iter, TableEntry **te)
  * @return CC_OK if the entry was successfully removed, or
  * CC_ERR_KEY_NOT_FOUND.
  */
-enum cc_stat hashtable_iter_remove(HashTableIter *iter, void **out)
+enum cc_stat cc_hashtable_iter_remove(CC_HashTableIter *iter, void **out)
 {
-    return hashtable_remove(iter->table, iter->prev_entry->key, out);
+    return cc_hashtable_remove(iter->table, iter->prev_entry->key, out);
 }
 
 
@@ -769,7 +769,7 @@ enum cc_stat hashtable_iter_remove(HashTableIter *iter, void **out)
  *
  ******************************************************************************/
 
-size_t hashtable_hash_string(const void *key, int len, uint32_t seed)
+size_t cc_hashtable_hash_string(const void *key, int len, uint32_t seed)
 {
     const    char   *str  = key;
     register size_t  hash = seed + 5381 + len + 1; /* Suppress the unused param warning */
@@ -833,7 +833,7 @@ FORCE_INLINE uint64_t fmix64(uint64_t k)
     return k;
 }
 
-uint64_t hashtable_hash(const void *key, int len, uint32_t seed)
+uint64_t cc_hashtable_hash(const void *key, int len, uint32_t seed)
 {
     const uint8_t  *data    = (const uint8_t*) key;
     const int       nblocks = len / 16;
@@ -917,7 +917,7 @@ uint64_t hashtable_hash(const void *key, int len, uint32_t seed)
 /*
  * MurmurHash3 the 64bit variant that hashes the pointer itself
  */
-uint64_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
+uint64_t cc_hashtable_hash_ptr(const void *key, int len, uint32_t seed)
 {
     uint32_t h1 = seed;
     uint32_t h2 = seed;
@@ -982,7 +982,7 @@ FORCE_INLINE uint32_t fmix32(uint32_t h)
 /**
  * MurmurHash3 the 32bit variant.
  */
-size_t hashtable_hash(const void *key, int len, uint32_t seed)
+size_t cc_hashtable_hash(const void *key, int len, uint32_t seed)
 {
     const uint8_t *data    = (const uint8_t*)key;
     const int      nblocks = len / 4;
@@ -1030,7 +1030,7 @@ size_t hashtable_hash(const void *key, int len, uint32_t seed)
 /*
  * MurmurHash3 the 32bit variant that hashes the pointer itself
  */
-size_t hashtable_hash_ptr(const void *key, int len, uint32_t seed)
+size_t cc_hashtable_hash_ptr(const void *key, int len, uint32_t seed)
 {
     uint32_t h1 = seed;
 

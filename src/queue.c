@@ -21,7 +21,7 @@
 #include "queue.h"
 
 struct queue_s {
-    Deque *d;
+    CC_Deque *d;
 
     void *(*mem_alloc)  (size_t size);
     void *(*mem_calloc) (size_t blocks, size_t size);
@@ -35,7 +35,7 @@ struct queue_s {
  */
 void queue_conf_init(QueueConf *conf)
 {
-    deque_conf_init(conf);
+    cc_deque_conf_init(conf);
 }
 
 /**
@@ -74,8 +74,8 @@ enum cc_stat queue_new_conf(QueueConf const * const conf, Queue **q)
     if (!queue)
         return CC_ERR_ALLOC;
 
-    Deque *deque;
-    deque_new_conf(conf, &deque);
+    CC_Deque *deque;
+    cc_deque_new_conf(conf, &deque);
 
     if (!deque) {
         conf->mem_free(queue);
@@ -99,7 +99,7 @@ enum cc_stat queue_new_conf(QueueConf const * const conf, Queue **q)
  */
 void queue_destroy(Queue *queue)
 {
-    deque_destroy(queue->d);
+    cc_deque_destroy(queue->d);
     queue->mem_free(queue);
 }
 
@@ -113,7 +113,7 @@ void queue_destroy(Queue *queue)
  */
 void queue_destroy_cb(Queue *queue, void (*cb) (void*))
 {
-    deque_destroy_cb(queue->d, cb);
+    cc_deque_destroy_cb(queue->d, cb);
     free(queue);
 }
 
@@ -129,7 +129,7 @@ void queue_destroy_cb(Queue *queue, void (*cb) (void*))
  */
 enum cc_stat queue_peek(Queue const * const queue, void **out)
 {
-    return deque_get_last(queue->d, out);
+    return cc_deque_get_last(queue->d, out);
 }
 
 /**
@@ -144,7 +144,7 @@ enum cc_stat queue_peek(Queue const * const queue, void **out)
  */
 enum cc_stat queue_poll(Queue *queue, void **out)
 {
-    return deque_remove_last(queue->d, out);
+    return cc_deque_remove_last(queue->d, out);
 }
 
 /**
@@ -159,7 +159,7 @@ enum cc_stat queue_poll(Queue *queue, void **out)
  */
 enum cc_stat queue_enqueue(Queue *queue, void *element)
 {
-    return deque_add_first(queue->d, element);
+    return cc_deque_add_first(queue->d, element);
 }
 
 /**
@@ -172,7 +172,7 @@ enum cc_stat queue_enqueue(Queue *queue, void *element)
  */
 size_t queue_size(Queue const * const queue)
 {
-    return deque_size(queue->d);
+    return cc_deque_size(queue->d);
 }
 
 /**
@@ -183,7 +183,7 @@ size_t queue_size(Queue const * const queue)
  */
 void queue_foreach(Queue *queue, void (*fn) (void*))
 {
-    deque_foreach(queue->d, fn);
+    cc_deque_foreach(queue->d, fn);
 }
 
 /**
@@ -194,7 +194,7 @@ void queue_foreach(Queue *queue, void (*fn) (void*))
  */
 void queue_iter_init(QueueIter *iter, Queue *queue)
 {
-    deque_iter_init(&(iter->i), queue->d);
+    cc_deque_iter_init(&(iter->i), queue->d);
 }
 
 /**
@@ -209,7 +209,7 @@ void queue_iter_init(QueueIter *iter, Queue *queue)
  */
 enum cc_stat queue_iter_next(QueueIter *iter, void **out)
 {
-    return deque_iter_next(&(iter->i), out);
+    return cc_deque_iter_next(&(iter->i), out);
 }
 
 /**
@@ -230,7 +230,7 @@ enum cc_stat queue_iter_next(QueueIter *iter, void **out)
  */
 enum cc_stat queue_iter_replace(QueueIter *iter, void *replacement, void **out)
 {
-    return deque_iter_replace(&(iter->i), replacement, out);
+    return cc_deque_iter_replace(&(iter->i), replacement, out);
 }
 
 /**
@@ -242,7 +242,7 @@ enum cc_stat queue_iter_replace(QueueIter *iter, void *replacement, void **out)
  */
 void queue_zip_iter_init(QueueZipIter *iter, Queue *q1, Queue *q2)
 {
-    deque_zip_iter_init(&(iter->i), q1->d, q2->d);
+    cc_deque_zip_iter_init(&(iter->i), q1->d, q2->d);
 }
 
 /**
@@ -257,7 +257,7 @@ void queue_zip_iter_init(QueueZipIter *iter, Queue *q1, Queue *q2)
  */
 enum cc_stat queue_zip_iter_next(QueueZipIter *iter, void **out1, void **out2)
 {
-    return deque_zip_iter_next(&(iter->i), out1, out2);
+    return cc_deque_zip_iter_next(&(iter->i), out1, out2);
 }
 
 /**
@@ -274,5 +274,5 @@ enum cc_stat queue_zip_iter_next(QueueZipIter *iter, void **out1, void **out2)
  */
 enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
-    return deque_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
+    return cc_deque_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
 }

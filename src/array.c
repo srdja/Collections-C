@@ -23,7 +23,7 @@
 #define DEFAULT_CAPACITY 8
 #define DEFAULT_EXPANSION_FACTOR 2
 
-struct array_s {
+struct cc_array_s {
     size_t   size;
     size_t   capacity;
     float    exp_factor;
@@ -34,41 +34,41 @@ struct array_s {
     void  (*mem_free)   (void *block);
 };
 
-static enum cc_stat expand_capacity(Array *ar);
+static enum cc_stat expand_capacity(CC_Array *ar);
 
 
 /**
  * Creates a new empty array and returns a status code.
  *
- * @param[out] out pointer to where the newly created Array is to be stored
+ * @param[out] out pointer to where the newly created CC_Array is to be stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
- * memory allocation for the new Array structure failed.
+ * memory allocation for the new CC_Array structure failed.
  */
-enum cc_stat array_new(Array **out)
+enum cc_stat cc_array_new(CC_Array **out)
 {
-    ArrayConf c;
-    array_conf_init(&c);
-    return array_new_conf(&c, out);
+    CC_ArrayConf c;
+    cc_array_conf_init(&c);
+    return cc_array_new_conf(&c, out);
 }
 
 /**
- * Creates a new empty Array based on the specified ArrayConf struct and
+ * Creates a new empty CC_Array based on the specified CC_ArrayConf struct and
  * returns a status code.
  *
- * The Array is allocated using the allocators specified in the ArrayConf
+ * The CC_Array is allocated using the allocators specified in the CC_ArrayConf
  * struct. The allocation may fail if underlying allocator fails. It may also
- * fail if the values of exp_factor and capacity in the ArrayConf do not meet
+ * fail if the values of exp_factor and capacity in the CC_ArrayConf do not meet
  * the following condition: <code>exp_factor < (CC_MAX_ELEMENTS / capacity)</code>.
  *
  * @param[in] conf array configuration structure
- * @param[out] out pointer to where the newly created Array is to be stored
+ * @param[out] out pointer to where the newly created CC_Array is to be stored
  *
  * @return CC_OK if the creation was successful, CC_ERR_INVALID_CAPACITY if
  * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
- * allocation for the new Array structure failed.
+ * allocation for the new CC_Array structure failed.
  */
-enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
+enum cc_stat cc_array_new_conf(CC_ArrayConf const * const conf, CC_Array **out)
 {
     float ex;
 
@@ -84,7 +84,7 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
     if (!conf->capacity || ex >= CC_MAX_ELEMENTS / conf->capacity)
         return CC_ERR_INVALID_CAPACITY;
 
-    Array *ar = conf->mem_calloc(1, sizeof(Array));
+    CC_Array *ar = conf->mem_calloc(1, sizeof(CC_Array));
 
     if (!ar)
         return CC_ERR_ALLOC;
@@ -108,11 +108,11 @@ enum cc_stat array_new_conf(ArrayConf const * const conf, Array **out)
 }
 
 /**
- * Initializes the fields of the ArrayConf struct to default values.
+ * Initializes the fields of the CC_ArrayConf struct to default values.
  *
- * @param[in, out] conf ArrayConf structure that is being initialized
+ * @param[in, out] conf CC_ArrayConf structure that is being initialized
  */
-void array_conf_init(ArrayConf *conf)
+void cc_array_conf_init(CC_ArrayConf *conf)
 {
     conf->exp_factor = DEFAULT_EXPANSION_FACTOR;
     conf->capacity   = DEFAULT_CAPACITY;
@@ -122,18 +122,18 @@ void array_conf_init(ArrayConf *conf)
 }
 
 /**
- * Destroys the Array structure, but leaves the data it used to hold intact.
+ * Destroys the CC_Array structure, but leaves the data it used to hold intact.
  *
  * @param[in] ar the array that is to be destroyed
  */
-void array_destroy(Array *ar)
+void cc_array_destroy(CC_Array *ar)
 {
     ar->mem_free(ar->buffer);
     ar->mem_free(ar);
 }
 
 /**
- * Destroys the Array structure along with all the data it holds.
+ * Destroys the CC_Array structure along with all the data it holds.
  *
  * @note
  * This function should not be called on a array that has some of its elements
@@ -141,18 +141,18 @@ void array_destroy(Array *ar)
  *
  * @param[in] ar the array that is being destroyed
  */
-void array_destroy_cb(Array *ar, void (*cb) (void*))
+void cc_array_destroy_cb(CC_Array *ar, void (*cb) (void*))
 {
     size_t i;
     for (i = 0; i < ar->size; i++)
         cb(ar->buffer[i]);
 
-    array_destroy(ar);
+    cc_array_destroy(ar);
 }
 
 /**
- * Adds a new element to the Array. The element is appended to the array making
- * it the last element (the one with the highest index) of the Array.
+ * Adds a new element to the CC_Array. The element is appended to the array making
+ * it the last element (the one with the highest index) of the CC_Array.
  *
  * @param[in] ar the array to which the element is being added
  * @param[in] element the element that is being added
@@ -161,7 +161,7 @@ void array_destroy_cb(Array *ar, void (*cb) (void*))
  * memory allocation for the new element failed, or CC_ERR_MAX_CAPACITY if the
  * array is already at maximum capacity.
  */
-enum cc_stat array_add(Array *ar, void *element)
+enum cc_stat cc_array_add(CC_Array *ar, void *element)
 {
     if (ar->size >= ar->capacity) {
         enum cc_stat status = expand_capacity(ar);
@@ -191,10 +191,10 @@ enum cc_stat array_add(Array *ar, void *element)
  * allocation for the new element failed, or CC_ERR_MAX_CAPACITY if the
  * array is already at maximum capacity.
  */
-enum cc_stat array_add_at(Array *ar, void *element, size_t index)
+enum cc_stat cc_array_add_at(CC_Array *ar, void *element, size_t index)
 {
     if (index == ar->size)
-        return array_add(ar, element);
+        return cc_array_add(ar, element);
 
     if ((ar->size == 0 && index != 0) || index > (ar->size - 1))
         return CC_ERR_OUT_OF_RANGE;
@@ -220,7 +220,7 @@ enum cc_stat array_add_at(Array *ar, void *element, size_t index)
 /**
  * Replaces an array element at the specified index and optionally sets the out
  * parameter to the value of the replaced element. The specified index must be
- * within the bounds of the Array.
+ * within the bounds of the CC_Array.
  *
  * @param[in]  ar      array whose element is being replaced
  * @param[in]  element replacement element
@@ -231,7 +231,7 @@ enum cc_stat array_add_at(Array *ar, void *element, size_t index)
  * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE
  *         if the index was out of range.
  */
-enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out)
+enum cc_stat cc_array_replace_at(CC_Array *ar, void *element, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_OUT_OF_RANGE;
@@ -244,7 +244,7 @@ enum cc_stat array_replace_at(Array *ar, void *element, size_t index, void **out
     return CC_OK;
 }
 
-enum cc_stat array_swap_at(Array *ar, size_t index1, size_t index2)
+enum cc_stat cc_array_swap_at(CC_Array *ar, size_t index1, size_t index2)
 {
     void *tmp;
 
@@ -259,7 +259,7 @@ enum cc_stat array_swap_at(Array *ar, size_t index1, size_t index2)
 }
 
 /**
- * Removes the specified element from the Array if such element exists and
+ * Removes the specified element from the CC_Array if such element exists and
  * optionally sets the out parameter to the value of the removed element.
  *
  * @param[in] ar array from which the element is being removed
@@ -270,10 +270,10 @@ enum cc_stat array_swap_at(Array *ar, size_t index1, size_t index2)
  * @return CC_OK if the element was successfully removed, or
  * CC_ERR_VALUE_NOT_FOUND if the element was not found.
  */
-enum cc_stat array_remove(Array *ar, void *element, void **out)
+enum cc_stat cc_array_remove(CC_Array *ar, void *element, void **out)
 {
     size_t index;
-    enum cc_stat status = array_index_of(ar, element, &index);
+    enum cc_stat status = cc_array_index_of(ar, element, &index);
 
     if (status == CC_ERR_OUT_OF_RANGE)
         return CC_ERR_VALUE_NOT_FOUND;
@@ -294,7 +294,7 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
 }
 
 /**
- * Removes an Array element from the specified index and optionally sets the
+ * Removes an CC_Array element from the specified index and optionally sets the
  * out parameter to the value of the removed element. The index must be within
  * the bounds of the array.
  *
@@ -306,7 +306,7 @@ enum cc_stat array_remove(Array *ar, void *element, void **out)
  * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
  * if the index was out of range.
  */
-enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
+enum cc_stat cc_array_remove_at(CC_Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_OUT_OF_RANGE;
@@ -327,7 +327,7 @@ enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
 }
 
 /**
- * Removes an Array element from the end of the array and optionally sets the
+ * Removes an CC_Array element from the end of the array and optionally sets the
  * out parameter to the value of the removed element.
  *
  * @param[in] ar the array whose last element is being removed
@@ -335,11 +335,11 @@ enum cc_stat array_remove_at(Array *ar, size_t index, void **out)
  *                 to be ignored
  *
  * @return CC_OK if the element was successfully removed, or CC_ERR_OUT_OF_RANGE
- * if the Array is already empty.
+ * if the CC_Array is already empty.
  */
-enum cc_stat array_remove_last(Array *ar, void **out)
+enum cc_stat cc_array_remove_last(CC_Array *ar, void **out)
 {
-    return array_remove_at(ar, ar->size - 1, out);
+    return cc_array_remove_at(ar, ar->size - 1, out);
 }
 
 /**
@@ -348,7 +348,7 @@ enum cc_stat array_remove_last(Array *ar, void **out)
  *
  * @param[in] ar array from which all elements are to be removed
  */
-void array_remove_all(Array *ar)
+void cc_array_remove_all(CC_Array *ar)
 {
     ar->size = 0;
 }
@@ -359,17 +359,17 @@ void array_remove_all(Array *ar)
  *
  * @param[in] ar array from which all elements are to be removed
  */
-void array_remove_all_free(Array *ar)
+void cc_array_remove_all_free(CC_Array *ar)
 {
     size_t i;
     for (i = 0; i < ar->size; i++)
         free(ar->buffer[i]);
 
-    array_remove_all(ar);
+    cc_array_remove_all(ar);
 }
 
 /**
- * Gets an Array element from the specified index and sets the out parameter to
+ * Gets an CC_Array element from the specified index and sets the out parameter to
  * its value. The specified index must be within the bounds of the array.
  *
  * @param[in] ar the array from which the element is being retrieved
@@ -379,7 +379,7 @@ void array_remove_all_free(Array *ar)
  * @return CC_OK if the element was found, or CC_ERR_OUT_OF_RANGE if the index
  * was out of range.
  */
-enum cc_stat array_get_at(Array *ar, size_t index, void **out)
+enum cc_stat cc_array_get_at(CC_Array *ar, size_t index, void **out)
 {
     if (index >= ar->size)
         return CC_ERR_OUT_OF_RANGE;
@@ -396,26 +396,26 @@ enum cc_stat array_get_at(Array *ar, size_t index, void **out)
  * @param[out] out pointer to where the element is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if the
- * Array is empty.
+ * CC_Array is empty.
  */
-enum cc_stat array_get_last(Array *ar, void **out)
+enum cc_stat cc_array_get_last(CC_Array *ar, void **out)
 {
     if (ar->size == 0)
         return CC_ERR_VALUE_NOT_FOUND;
 
-    return array_get_at(ar, ar->size - 1, out);
+    return cc_array_get_at(ar, ar->size - 1, out);
 }
 
 /**
  * Returns the underlying array buffer.
  *
- * @note Any direct modification of the buffer may invalidate the Array.
+ * @note Any direct modification of the buffer may invalidate the CC_Array.
  *
  * @param[in] ar array whose underlying buffer is being returned
  *
  * @return array's internal buffer.
  */
-const void * const* array_get_buffer(Array *ar)
+const void * const* cc_array_get_buffer(CC_Array *ar)
 {
     return (const void* const*) ar->buffer;
 }
@@ -423,7 +423,7 @@ const void * const* array_get_buffer(Array *ar)
 /**
  * Gets the index of the specified element. The returned index is the index
  * of the first occurrence of the element starting from the beginning of the
- * Array.
+ * CC_Array.
  *
  * @param[in] ar array being searched
  * @param[in] element the element whose index is being looked up
@@ -431,7 +431,7 @@ const void * const* array_get_buffer(Array *ar)
  *
  * @return CC_OK if the index was found, or CC_OUT_OF_RANGE if not.
  */
-enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
+enum cc_stat cc_array_index_of(CC_Array *ar, void *element, size_t *index)
 {
     size_t i;
     for (i = 0; i < ar->size; i++) {
@@ -444,13 +444,13 @@ enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
 }
 
 /**
- * Creates a subarray of the specified Array, ranging from <code>b</code>
+ * Creates a subarray of the specified CC_Array, ranging from <code>b</code>
  * index (inclusive) to <code>e</code> index (inclusive). The range indices
- * must be within the bounds of the Array, while the <code>e</code> index
+ * must be within the bounds of the CC_Array, while the <code>e</code> index
  * must be greater or equal to the <code>b</code> index.
  *
- * @note The new Array is allocated using the original Array's allocators
- *       and it also inherits the configuration of the original Array.
+ * @note The new CC_Array is allocated using the original CC_Array's allocators
+ *       and it also inherits the configuration of the original CC_Array.
  *
  * @param[in] ar array from which the subarray is being created
  * @param[in] b the beginning index (inclusive) of the subarray that must be
@@ -465,12 +465,12 @@ enum cc_stat array_index_of(Array *ar, void *element, size_t *index)
  * if the specified index range is invalid, or CC_ERR_ALLOC if the memory allocation
  * for the new subarray failed.
  */
-enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
+enum cc_stat cc_array_subarray(CC_Array *ar, size_t b, size_t e, CC_Array **out)
 {
     if (b > e || e >= ar->size)
         return CC_ERR_INVALID_RANGE;
 
-    Array *sub_ar = ar->mem_calloc(1, sizeof(Array));
+    CC_Array *sub_ar = ar->mem_calloc(1, sizeof(CC_Array));
 
     if (!sub_ar)
         return CC_ERR_ALLOC;
@@ -496,10 +496,10 @@ enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
 }
 
 /**
- * Creates a shallow copy of the specified Array. A shallow copy is a copy of
- * the Array structure, but not the elements it holds.
+ * Creates a shallow copy of the specified CC_Array. A shallow copy is a copy of
+ * the CC_Array structure, but not the elements it holds.
  *
- * @note The new Array is allocated using the original Array's allocators
+ * @note The new CC_Array is allocated using the original CC_Array's allocators
  *       and it also inherits the configuration of the original array.
  *
  * @param[in] ar the array to be copied
@@ -508,9 +508,9 @@ enum cc_stat array_subarray(Array *ar, size_t b, size_t e, Array **out)
  * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
  */
-enum cc_stat array_copy_shallow(Array *ar, Array **out)
+enum cc_stat cc_array_copy_shallow(CC_Array *ar, CC_Array **out)
 {
-    Array *copy = ar->mem_alloc(sizeof(Array));
+    CC_Array *copy = ar->mem_alloc(sizeof(CC_Array));
 
     if (!copy)
         return CC_ERR_ALLOC;
@@ -535,11 +535,11 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
 }
 
 /**
- * Creates a deep copy of the specified Array. A deep copy is a copy of
- * both the Array structure and the data it holds.
+ * Creates a deep copy of the specified CC_Array. A deep copy is a copy of
+ * both the CC_Array structure and the data it holds.
  *
- * @note The new Array is allocated using the original Array's allocators
- *       and it also inherits the configuration of the original Array.
+ * @note The new CC_Array is allocated using the original CC_Array's allocators
+ *       and it also inherits the configuration of the original CC_Array.
  *
  * @param[in] ar   array to be copied
  * @param[in] cp   the copy function that should return a pointer to the copy of
@@ -549,9 +549,9 @@ enum cc_stat array_copy_shallow(Array *ar, Array **out)
  * @return CC_OK if the copy was successfully created, or CC_ERR_ALLOC if the
  * memory allocation for the copy failed.
  */
-enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
+enum cc_stat cc_array_copy_deep(CC_Array *ar, void *(*cp) (void *), CC_Array **out)
 {
-    Array *copy = ar->mem_alloc(sizeof(Array));
+    CC_Array *copy = ar->mem_alloc(sizeof(CC_Array));
 
     if (!copy)
         return CC_ERR_ALLOC;
@@ -578,17 +578,17 @@ enum cc_stat array_copy_deep(Array *ar, void *(*cp) (void *), Array **out)
 }
 
 /**
- * Filters the Array by modifying it. It removes all elements that don't
+ * Filters the CC_Array by modifying it. It removes all elements that don't
  * return true on pred(element).
  *
  * @param[in] ar   array that is to be filtered
  * @param[in] pred predicate function which returns true if the element should
- *                 be kept in the Array
+ *                 be kept in the CC_Array
  *
- * @return CC_OK if the Array was filtered successfully, or CC_ERR_OUT_OF_RANGE
- * if the Array is empty.
+ * @return CC_OK if the CC_Array was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ * if the CC_Array is empty.
  */
-enum cc_stat array_filter_mut(Array *ar, bool (*pred) (const void*))
+enum cc_stat cc_array_filter_mut(CC_Array *ar, bool (*pred) (const void*))
 {
     if (ar->size == 0)
         return CC_ERR_OUT_OF_RANGE;
@@ -628,25 +628,25 @@ enum cc_stat array_filter_mut(Array *ar, bool (*pred) (const void*))
 }
 
 /**
- * Filters the Array by creating a new Array that contains all elements from the
- * original Array that return true on pred(element) without modifying the original
- * Array.
+ * Filters the CC_Array by creating a new CC_Array that contains all elements from the
+ * original CC_Array that return true on pred(element) without modifying the original
+ * CC_Array.
  *
  * @param[in] ar   array that is to be filtered
  * @param[in] pred predicate function which returns true if the element should
  *                 be kept in the filtered array
- * @param[out] out pointer to where the new filtered Array is to be stored
+ * @param[out] out pointer to where the new filtered CC_Array is to be stored
  *
- * @return CC_OK if the Array was filtered successfully, CC_ERR_OUT_OF_RANGE
- * if the Array is empty, or CC_ERR_ALLOC if the memory allocation for the
- * new Array failed.
+ * @return CC_OK if the CC_Array was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the CC_Array is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new CC_Array failed.
  */
-enum cc_stat array_filter(Array *ar, bool (*pred) (const void*), Array **out)
+enum cc_stat cc_array_filter(CC_Array *ar, bool (*pred) (const void*), CC_Array **out)
 {
     if (ar->size == 0)
         return CC_ERR_OUT_OF_RANGE;
 
-    Array *filtered = ar->mem_alloc(sizeof(Array));
+    CC_Array *filtered = ar->mem_alloc(sizeof(CC_Array));
 
     if (!filtered)
         return CC_ERR_ALLOC;
@@ -680,7 +680,7 @@ enum cc_stat array_filter(Array *ar, bool (*pred) (const void*), Array **out)
  *
  * @param[in] ar array that is being reversed
  */
-void array_reverse(Array *ar)
+void cc_array_reverse(CC_Array *ar)
 {
     if (ar->size == 0)
         return;
@@ -696,7 +696,7 @@ void array_reverse(Array *ar)
 
 /**
  * Trims the array's capacity, in other words, it shrinks the capacity to match
- * the number of elements in the Array, however the capacity will never shrink
+ * the number of elements in the CC_Array, however the capacity will never shrink
  * below 1.
  *
  * @param[in] ar array whose capacity is being trimmed
@@ -704,7 +704,7 @@ void array_reverse(Array *ar)
  * @return CC_OK if the capacity was trimmed successfully, or CC_ERR_ALLOC if
  * the reallocation failed.
  */
-enum cc_stat array_trim_capacity(Array *ar)
+enum cc_stat cc_array_trim_capacity(CC_Array *ar)
 {
     if (ar->size == ar->capacity)
         return CC_OK;
@@ -726,14 +726,14 @@ enum cc_stat array_trim_capacity(Array *ar)
 }
 
 /**
- * Returns the number of occurrences of the element within the specified Array.
+ * Returns the number of occurrences of the element within the specified CC_Array.
  *
  * @param[in] ar array that is being searched
  * @param[in] element the element that is being searched for
  *
  * @return the number of occurrences of the element.
  */
-size_t array_contains(Array *ar, void *element)
+size_t cc_array_contains(CC_Array *ar, void *element)
 {
     size_t o = 0;
     size_t i;
@@ -746,7 +746,7 @@ size_t array_contains(Array *ar, void *element)
 
 /**
  * Returns the number of occurrences of the value pointed to by <code>e</code>
- * within the specified Array.
+ * within the specified CC_Array.
  *
  * @param[in] ar array that is being searched
  * @param[in] element the element that is being searched for
@@ -754,7 +754,7 @@ size_t array_contains(Array *ar, void *element)
  *
  * @return the number of occurrences of the value.
  */
-size_t array_contains_value(Array *ar, void *element, int (*cmp) (const void*, const void*))
+size_t cc_array_contains_value(CC_Array *ar, void *element, int (*cmp) (const void*, const void*))
 {
     size_t o = 0;
     size_t i;
@@ -766,27 +766,27 @@ size_t array_contains_value(Array *ar, void *element, int (*cmp) (const void*, c
 }
 
 /**
- * Returns the size of the specified Array. The size of the array is the
- * number of elements contained within the Array.
+ * Returns the size of the specified CC_Array. The size of the array is the
+ * number of elements contained within the CC_Array.
  *
  * @param[in] ar array whose size is being returned
  *
- * @return the the number of element within the Array.
+ * @return the the number of element within the CC_Array.
  */
-size_t array_size(Array *ar)
+size_t cc_array_size(CC_Array *ar)
 {
     return ar->size;
 }
 
 /**
- * Returns the capacity of the specified Array. The capacity of the Array is
- * the maximum number of elements an Array can hold before it has to be resized.
+ * Returns the capacity of the specified CC_Array. The capacity of the CC_Array is
+ * the maximum number of elements an CC_Array can hold before it has to be resized.
  *
  * @param[in] ar array whose capacity is being returned
  *
- * @return the capacity of the Array.
+ * @return the capacity of the CC_Array.
  */
-size_t array_capacity(Array *ar)
+size_t cc_array_capacity(CC_Array *ar)
 {
     return ar->capacity;
 }
@@ -812,7 +812,7 @@ size_t array_capacity(Array *ar)
  *
  * ...
  *
- * array_sort(array, mycmp);
+ * cc_array_sort(array, mycmp);
  * @endcode
  *
  * @param[in] ar  array to be sorted
@@ -822,13 +822,13 @@ size_t array_capacity(Array *ar)
  *                0 if the elements are equal and > 0 if the second goes
  *                before the first
  */
-void array_sort(Array *ar, int (*cmp) (const void*, const void*))
+void cc_array_sort(CC_Array *ar, int (*cmp) (const void*, const void*))
 {
     qsort(ar->buffer, ar->size, sizeof(void*), cmp);
 }
 
 /**
- * Expands the Array capacity. This might fail if the the new buffer
+ * Expands the CC_Array capacity. This might fail if the the new buffer
  * cannot be allocated. In case the expansion would overflow the index
  * range, a maximum capacity buffer is allocated instead. If the capacity
  * is already at the maximum capacity, no new buffer is allocated.
@@ -839,7 +839,7 @@ void array_sort(Array *ar, int (*cmp) (const void*, const void*))
  * the memory allocation for the new buffer failed, or CC_ERR_MAX_CAPACITY
  * if the array is already at maximum capacity.
  */
-static enum cc_stat expand_capacity(Array *ar)
+static enum cc_stat expand_capacity(CC_Array *ar)
 {
     if (ar->capacity == CC_MAX_ELEMENTS)
         return CC_ERR_MAX_CAPACITY;
@@ -867,13 +867,13 @@ static enum cc_stat expand_capacity(Array *ar)
 }
 
 /**
- * Applies the function fn to each element of the Array.
+ * Applies the function fn to each element of the CC_Array.
  *
  * @param[in] ar array on which this operation is performed
- * @param[in] fn operation function that is to be invoked on each Array
+ * @param[in] fn operation function that is to be invoked on each CC_Array
  *               element
  */
-void array_map(Array *ar, void (*fn) (void *e))
+void cc_array_map(CC_Array *ar, void (*fn) (void *e))
 {
     size_t i;
     for (i = 0; i < ar->size; i++)
@@ -890,7 +890,7 @@ void array_map(Array *ar, void (*fn) (void *e))
  *               element
  * @param[in] result the pointer which will collect the end result
  */
-void array_reduce(Array *ar, void (*fn) (void*, void*, void*), void *result)
+void cc_array_reduce(CC_Array *ar, void (*fn) (void*, void*, void*), void *result)
 {
     if (ar->size == 1) {
         fn(ar->buffer[0], NULL, result);
@@ -909,7 +909,7 @@ void array_reduce(Array *ar, void (*fn) (void*, void*, void*), void *result)
  * @param[in] iter the iterator that is being initialized
  * @param[in] ar the array to iterate over
  */
-void array_iter_init(ArrayIter *iter, Array *ar)
+void cc_array_iter_init(CC_ArrayIter *iter, CC_Array *ar)
 {
     iter->ar    = ar;
     iter->index = 0;
@@ -924,9 +924,9 @@ void array_iter_init(ArrayIter *iter, Array *ar)
  * @param[out] out pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the Array has been reached.
+ * end of the CC_Array has been reached.
  */
-enum cc_stat array_iter_next(ArrayIter *iter, void **out)
+enum cc_stat cc_array_iter_next(CC_ArrayIter *iter, void **out)
 {
     if (iter->index >= iter->ar->size)
         return CC_ITER_END;
@@ -940,12 +940,12 @@ enum cc_stat array_iter_next(ArrayIter *iter, void **out)
 }
 
 /**
- * Removes the last returned element by <code>array_iter_next()</code>
+ * Removes the last returned element by <code>cc_array_iter_next()</code>
  * function without invalidating the iterator and optionally sets the out
  * parameter to the value of the removed element.
  *
  * @note This function should only ever be called after a call to <code>
- * array_iter_next()</code>.
+ * cc_array_iter_next()</code>.
 
  * @param[in] iter the iterator on which this operation is being performed
  * @param[out] out pointer to where the removed element is stored, or NULL
@@ -954,12 +954,12 @@ enum cc_stat array_iter_next(ArrayIter *iter, void **out)
  * @return CC_OK if the element was successfully removed, or
  * CC_ERR_VALUE_NOT_FOUND.
  */
-enum cc_stat array_iter_remove(ArrayIter *iter, void **out)
+enum cc_stat cc_array_iter_remove(CC_ArrayIter *iter, void **out)
 {
     enum cc_stat status = CC_ERR_VALUE_NOT_FOUND;
 
     if (!iter->last_removed) {
-        status = array_remove_at(iter->ar, iter->index - 1, out);
+        status = cc_array_remove_at(iter->ar, iter->index - 1, out);
         if (status == CC_OK)
             iter->last_removed = true;
     }
@@ -967,12 +967,12 @@ enum cc_stat array_iter_remove(ArrayIter *iter, void **out)
 }
 
 /**
- * Adds a new element to the Array after the last returned element by
- * <code>array_iter_next()</code> function without invalidating the
+ * Adds a new element to the CC_Array after the last returned element by
+ * <code>cc_array_iter_next()</code> function without invalidating the
  * iterator.
  *
  * @note This function should only ever be called after a call to <code>
- * array_iter_next()</code>.
+ * cc_array_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the element being added
@@ -981,18 +981,18 @@ enum cc_stat array_iter_remove(ArrayIter *iter, void **out)
  * memory allocation for the new element failed, or CC_ERR_MAX_CAPACITY if
  * the array is already at maximum capacity.
  */
-enum cc_stat array_iter_add(ArrayIter *iter, void *element)
+enum cc_stat cc_array_iter_add(CC_ArrayIter *iter, void *element)
 {
-    return array_add_at(iter->ar, element, iter->index++);
+    return cc_array_add_at(iter->ar, element, iter->index++);
 }
 
 /**
- * Replaces the last returned element by <code>array_iter_next()</code>
+ * Replaces the last returned element by <code>cc_array_iter_next()</code>
  * with the specified element and optionally sets the out parameter to
  * the value of the replaced element.
  *
  * @note This function should only ever be called after a call to <code>
- * array_iter_next()</code>.
+ * cc_array_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
@@ -1002,24 +1002,24 @@ enum cc_stat array_iter_add(ArrayIter *iter, void *element)
  * @return CC_OK if the element was replaced successfully, or
  * CC_ERR_OUT_OF_RANGE.
  */
-enum cc_stat array_iter_replace(ArrayIter *iter, void *element, void **out)
+enum cc_stat cc_array_iter_replace(CC_ArrayIter *iter, void *element, void **out)
 {
-    return array_replace_at(iter->ar, element, iter->index - 1, out);
+    return cc_array_replace_at(iter->ar, element, iter->index - 1, out);
 }
 
 /**
- * Returns the index of the last returned element by <code>array_iter_next()
+ * Returns the index of the last returned element by <code>cc_array_iter_next()
  * </code>.
  *
  * @note
- * This function should not be called before a call to <code>array_iter_next()
+ * This function should not be called before a call to <code>cc_array_iter_next()
  * </code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  *
  * @return the index.
  */
-size_t array_iter_index(ArrayIter *iter)
+size_t cc_array_iter_index(CC_ArrayIter *iter)
 {
     return iter->index - 1;
 }
@@ -1031,7 +1031,7 @@ size_t array_iter_index(ArrayIter *iter)
  * @param[in] ar1  first array
  * @param[in] ar2  second array
  */
-void array_zip_iter_init(ArrayZipIter *iter, Array *ar1, Array *ar2)
+void cc_array_zip_iter_init(CC_ArrayZipIter *iter, CC_Array *ar1, CC_Array *ar2)
 {
     iter->ar1 = ar1;
     iter->ar2 = ar2;
@@ -1049,7 +1049,7 @@ void array_zip_iter_init(ArrayZipIter *iter, Array *ar1, Array *ar2)
  * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end of one
  * of the arrays has been reached.
  */
-enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
+enum cc_stat cc_array_zip_iter_next(CC_ArrayZipIter *iter, void **out1, void **out2)
 {
     if (iter->index >= iter->ar1->size || iter->index >= iter->ar2->size)
         return CC_ITER_END;
@@ -1064,7 +1064,7 @@ enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
 }
 
 /**
- * Removes and outputs the last returned element pair by <code>array_zip_iter_next()
+ * Removes and outputs the last returned element pair by <code>cc_array_zip_iter_next()
  * </code> without invalidating the iterator.
  *
  * @param[in]  iter iterator on which this operation is being performed
@@ -1075,14 +1075,14 @@ enum cc_stat array_zip_iter_next(ArrayZipIter *iter, void **out1, void **out2)
  * state of the iterator is invalid, or CC_ERR_VALUE_NOT_FOUND if the element was
  * already removed.
  */
-enum cc_stat array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
+enum cc_stat cc_array_zip_iter_remove(CC_ArrayZipIter *iter, void **out1, void **out2)
 {
     if ((iter->index - 1) >= iter->ar1->size || (iter->index - 1) >= iter->ar2->size)
         return CC_ERR_OUT_OF_RANGE;
 
     if (!iter->last_removed) {
-        array_remove_at(iter->ar1, iter->index - 1, out1);
-        array_remove_at(iter->ar2, iter->index - 1, out2);
+        cc_array_remove_at(iter->ar1, iter->index - 1, out1);
+        cc_array_remove_at(iter->ar2, iter->index - 1, out2);
         iter->last_removed = true;
         return CC_OK;
     }
@@ -1091,8 +1091,8 @@ enum cc_stat array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
 
 /**
  * Adds a new element pair to the arrays after the last returned element pair by
- * <code>array_zip_iter_next()</code> and immediately before an element pair
- * that would be returned by a subsequent call to <code>array_zip_iter_next()</code>
+ * <code>cc_array_zip_iter_next()</code> and immediately before an element pair
+ * that would be returned by a subsequent call to <code>cc_array_zip_iter_next()</code>
  * without invalidating the iterator.
  *
  * @param[in] iter iterator on which this operation is being performed
@@ -1102,25 +1102,25 @@ enum cc_stat array_zip_iter_remove(ArrayZipIter *iter, void **out1, void **out2)
  * @return CC_OK if the element pair was successfully added to the arrays, or
  * CC_ERR_ALLOC if the memory allocation for the new elements failed.
  */
-enum cc_stat array_zip_iter_add(ArrayZipIter *iter, void *e1, void *e2)
+enum cc_stat cc_array_zip_iter_add(CC_ArrayZipIter *iter, void *e1, void *e2)
 {
     size_t index = iter->index++;
-    Array  *ar1  = iter->ar1;
-    Array  *ar2  = iter->ar2;
+    CC_Array  *ar1  = iter->ar1;
+    CC_Array  *ar2  = iter->ar2;
 
     /* Make sure both array buffers have room */
     if ((ar1->size == ar1->capacity && (expand_capacity(ar1) != CC_OK)) ||
             (ar2->size == ar2->capacity && (expand_capacity(ar2) != CC_OK)))
         return CC_ERR_ALLOC;
 
-    array_add_at(ar1, e1, index);
-    array_add_at(ar2, e2, index);
+    cc_array_add_at(ar1, e1, index);
+    cc_array_add_at(ar2, e2, index);
 
     return CC_OK;
 }
 
 /**
- * Replaces the last returned element pair by <code>array_zip_iter_next()</code>
+ * Replaces the last returned element pair by <code>cc_array_zip_iter_next()</code>
  * with the specified replacement element pair.
  *
  * @param[in] iter  iterator on which this operation is being performed
@@ -1131,25 +1131,25 @@ enum cc_stat array_zip_iter_add(ArrayZipIter *iter, void *e1, void *e2)
  *
  * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE.
  */
-enum cc_stat array_zip_iter_replace(ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+enum cc_stat cc_array_zip_iter_replace(CC_ArrayZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
     if ((iter->index - 1) >= iter->ar1->size || (iter->index - 1) >= iter->ar2->size)
         return CC_ERR_OUT_OF_RANGE;
 
-    array_replace_at(iter->ar1, e1, iter->index - 1, out1);
-    array_replace_at(iter->ar2, e2, iter->index - 1, out2);
+    cc_array_replace_at(iter->ar1, e1, iter->index - 1, out1);
+    cc_array_replace_at(iter->ar2, e2, iter->index - 1, out2);
 
     return CC_OK;
 }
 
 /**
- * Returns the index of the last returned element pair by <code>array_zip_iter_next()</code>.
+ * Returns the index of the last returned element pair by <code>cc_array_zip_iter_next()</code>.
  *
  * @param[in] iter iterator on which this operation is being performed
  *
  * @return current iterator index.
  */
-size_t array_zip_iter_index(ArrayZipIter *iter)
+size_t cc_array_zip_iter_index(CC_ArrayZipIter *iter)
 {
     return iter->index - 1;
 }
