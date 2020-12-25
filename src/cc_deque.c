@@ -18,7 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "deque.h"
+#include "cc_deque.h"
 
 #define DEFAULT_CAPACITY 8
 #define DEFAULT_EXPANSION_FACTOR 2

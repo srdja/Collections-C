@@ -1,4 +1,4 @@
-#include "treeset.h"
+#include "cc_treeset.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_TreeSet *set;

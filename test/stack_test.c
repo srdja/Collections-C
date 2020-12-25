@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "stack.h"
+#include "cc_stack.h"
 #include "CppUTest/TestHarness_c.h"
 
 static Stack *s;

@@ -1,7 +1,7 @@
 #ifndef COLLECTIONS_C_CC_TSTTABLE_H
 #define COLLECTIONS_C_CC_TSTTABLE_H
 
-#include "common.h"
+#include "cc_common.h"
 
 /**
  * A Ternary Search Tree Table. Supports insertion, search, iteration, and deletion.

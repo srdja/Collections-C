@@ -18,7 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "treeset.h"
+#include "cc_treeset.h"
 
 struct cc_treeset_s {
     CC_TreeTable *t;

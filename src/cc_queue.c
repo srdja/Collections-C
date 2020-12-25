@@ -18,7 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "queue.h"
+#include "cc_queue.h"
 
 struct queue_s {
     CC_Deque *d;

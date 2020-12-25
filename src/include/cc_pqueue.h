@@ -21,8 +21,8 @@
 #ifndef COLLECTIONS_C_CC_PQUEUE_H
 #define COLLECTIONS_C_CC_PQUEUE_H
 
-#include "common.h"
-#include "array.h"
+#include "cc_common.h"
+#include "cc_array.h"
 
 /**
  * A Priority Queue data structure. Stores the elements and according to

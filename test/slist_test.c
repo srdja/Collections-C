@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "slist.h"
+#include "cc_slist.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_SList *list;

@@ -21,8 +21,8 @@
 #ifndef COLLECTIONS_C_CC_HASHTABLE_H
 #define COLLECTIONS_C_CC_HASHTABLE_H
 
-#include "array.h"
-#include "common.h"
+#include "cc_array.h"
+#include "cc_common.h"
 
 #define KEY_LENGTH_VARIABLE  -1
 #define KEY_LENGTH_POINTER   sizeof(void*)

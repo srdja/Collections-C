@@ -1,4 +1,4 @@
-#include "tsttable.h"
+#include "cc_tsttable.h"
 
 /**
  * A Ternary Search Tree Table Node.

@@ -21,8 +21,8 @@
 #ifndef COLLECTIONS_C_CC_HASHSET_H
 #define COLLECTIONS_C_CC_HASHSET_H
 
-#include "common.h"
-#include "hashtable.h"
+#include "cc_common.h"
+#include "cc_hashtable.h"
 
 /**
  * An unordered set. The lookup, deletion, and insertion are

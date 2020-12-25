@@ -1,5 +1,5 @@
 #include "CppUTest/TestHarness_c.h"
-#include "deque.h"
+#include "cc_deque.h"
 
 static CC_Deque *deque;
 static CC_DequeConf conf;

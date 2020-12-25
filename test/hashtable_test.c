@@ -1,7 +1,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "hashtable.h"
+#include "cc_hashtable.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_HashTableConf conf;

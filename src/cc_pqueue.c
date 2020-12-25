@@ -18,7 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pqueue.h"
+#include "cc_pqueue.h"
 
 
 #define CC_PARENT(x) (x - 1) / 2

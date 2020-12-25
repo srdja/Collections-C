@@ -20,7 +20,7 @@
 
 /* Tree operations are based on CLRS RB Tree. */
 
-#include "treetable.h"
+#include "cc_treetable.h"
 
 
 #define RB_BLACK 1

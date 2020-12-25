@@ -6,7 +6,7 @@
  * @Last modified time: 2019-03-09T15:24:03-06:00
  */
 
-#include "ring_buffer.h"
+#include "cc_ring_buffer.h"
 #include "CppUTest/TestHarness_c.h"
 #include <time.h>
 

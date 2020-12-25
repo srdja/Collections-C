@@ -18,7 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "list.h"
+#include "cc_list.h"
 
 
 struct cc_list_s {

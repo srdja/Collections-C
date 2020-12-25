@@ -21,7 +21,7 @@
 #ifndef COLLECTIONS_C_CC_LIST_H
 #define COLLECTIONS_C_CC_LIST_H
 
-#include "common.h"
+#include "cc_common.h"
 
 /**
  * A doubly linked list. CC_List is a sequential structure that

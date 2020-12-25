@@ -21,8 +21,8 @@
 #ifndef COLLECTIONS_C_QUEUE_H
 #define COLLECTIONS_C_QUEUE_H
 
-#include "common.h"
-#include "deque.h"
+#include "cc_common.h"
+#include "cc_deque.h"
 
 /**
  * A FIFO (first in first out) structure. Supports constant time

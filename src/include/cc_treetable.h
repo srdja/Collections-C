@@ -21,7 +21,7 @@
 #ifndef COLLECTIONS_C_CC_TREETABLE_H
 #define COLLECTIONS_C_CC_TREETABLE_H
 
-#include "common.h"
+#include "cc_common.h"
 
 /**
  * An ordered key-value map. CC_TreeTable supports logarithmic time

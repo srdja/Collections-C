@@ -21,7 +21,7 @@
 #ifndef COLLECTIONS_C_ARRAY_H
 #define COLLECTIONS_C_ARRAY_H
 
-#include "common.h"
+#include "cc_common.h"
 
 /**
  * A dynamic array that expands automatically as elements are

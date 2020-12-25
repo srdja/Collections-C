@@ -1,4 +1,4 @@
-#include "queue.h"
+#include "cc_queue.h"
 #include "CppUTest/TestHarness_c.h"
 
 static Queue *q;

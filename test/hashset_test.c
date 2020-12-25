@@ -1,5 +1,5 @@
 #include <string.h>
-#include "hashset.h"
+#include "cc_hashset.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_HashSetConf conf;

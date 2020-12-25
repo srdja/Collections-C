@@ -1,7 +1,7 @@
 /* An example of directly using pointers as keys. */
 
 
-#include <hashtable.h>
+#include <cc_hashtable.h>
 #include <stdlib.h>
 #include <stdio.h>
 

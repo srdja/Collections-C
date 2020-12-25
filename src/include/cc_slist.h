@@ -21,7 +21,7 @@
 #ifndef COLLECTIONS_C_CC_SLIST_H
 #define COLLECTIONS_C_CC_SLIST_H
 
-#include "common.h"
+#include "cc_common.h"
 
 /**
  * A singly linked list. List is a sequential structure that

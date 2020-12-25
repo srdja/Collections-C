@@ -1,4 +1,4 @@
-#include "pqueue.h"
+#include "cc_pqueue.h"
 #include "CppUTest/TestHarness_c.h"
 
 static struct Pair

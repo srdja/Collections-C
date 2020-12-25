@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "list.h"
+#include "cc_list.h"
 
 #include "CppUTest/TestHarness_c.h"
 

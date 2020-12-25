@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "array.h"
+#include "cc_array.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_Array *v1;

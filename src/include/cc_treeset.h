@@ -21,8 +21,8 @@
 #ifndef COLLECTIONS_C_CC_TREESET_H
 #define COLLECTIONS_C_CC_TREESET_H
 
-#include "common.h"
-#include "treetable.h"
+#include "cc_common.h"
+#include "cc_treetable.h"
 
 /**
  * An ordered set. The lookup, deletion, and insertion are

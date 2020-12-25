@@ -134,7 +134,7 @@ If we already built and installed the library, we can write a simple hello world
 
 ```c
 #include <stdio.h>
-#include <collectc/array.h>
+#include <collectc/cc_array.h>
 
 int main(int argc, char **argv) {
     // Create a new array

@@ -2,7 +2,7 @@
 
    (check the pointer key example for direct pointer keys) */
 
-#include <hashtable.h>
+#include <cc_hashtable.h>
 #include <stdio.h>
 
 

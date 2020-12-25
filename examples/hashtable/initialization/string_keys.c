@@ -1,6 +1,6 @@
 /* An example of creating a hash table that works with string keys. */
 
-#include <hashtable.h>
+#include <cc_hashtable.h>
 
 
 int main(int argc, char **argv)

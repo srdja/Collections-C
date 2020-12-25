@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "treetable.h"
-#include "deque.h"
+#include "cc_treetable.h"
+#include "cc_deque.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_TreeTable *table;

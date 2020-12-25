@@ -18,7 +18,7 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "hashset.h"
+#include "cc_hashset.h"
 
 struct cc_hashset_s {
     CC_HashTable *table;

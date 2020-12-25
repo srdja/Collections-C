@@ -18,8 +18,8 @@
  * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "array.h"
-#include "stack.h"
+#include "cc_array.h"
+#include "cc_stack.h"
 
 
 struct stack_s {

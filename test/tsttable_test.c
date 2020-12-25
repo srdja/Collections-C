@@ -1,7 +1,7 @@
 #include <time.h>
 #include <string.h>
 
-#include "tsttable.h"
+#include "cc_tsttable.h"
 #include "CppUTest/TestHarness_c.h"
 
 static CC_TSTTableConf conf;

@@ -21,7 +21,7 @@
 #ifndef COLLECTIONS_C_CC_DEQUE_H
 #define COLLECTIONS_C_CC_DEQUE_H
 
-#include "common.h"
+#include "cc_common.h"
 
 /**
  * A dynamic array that supports amortized constant time insertion

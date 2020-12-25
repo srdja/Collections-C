@@ -21,8 +21,8 @@
 #ifndef COLLECTIONS_C_STACK_H
 #define COLLECTIONS_C_STACK_H
 
-#include "common.h"
-#include "array.h"
+#include "cc_common.h"
+#include "cc_array.h"
 
 /**
  * A LIFO (last in first out) structure. Supports constant time
