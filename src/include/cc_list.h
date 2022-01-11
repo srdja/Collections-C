@@ -139,6 +139,8 @@ size_t        cc_list_size            (CC_List *list);
 
 void          cc_list_foreach         (CC_List *list, void (*op) (void *));
 
+enum cc_stat cc_list_reduce(CC_List *list, void (*fn)(void *, void *, void *), void *result);
+
 enum cc_stat  cc_list_filter_mut      (CC_List *list, bool (*predicate) (const void*));
 enum cc_stat  cc_list_filter          (CC_List *list, bool (*predicate) (const void*), CC_List **out);
 
