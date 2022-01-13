@@ -50,6 +50,22 @@ bool pred2(const void *e)
     return *(int*)e > 3;
 }
 
+void sum_reduce(void *e1, void *e2, void *res)
+{
+    int i = *(int *)e1;
+    int j = *(int *)e2;
+
+    *(int *)res = i + j;
+}
+
+void bool_and(void *e1, void *e2, void *res)
+{
+    bool p = *(bool *)e1;
+    bool q = *(bool *)e2;
+
+    *(bool *)res = p && q;
+}
+
 TEST_GROUP_C_SETUP(CC_ListTestsWithDefaults)
 {
     cc_list_new(&list1);
@@ -859,3 +875,22 @@ TEST_C(CC_ListTestsCC_ListPrefilled, CC_ListFilter2)
 
     free(filter);
 };
+
+
+TEST_C(CC_ListTestsCC_ListPrefilled, CC_ListReduce1)
+{
+    int *res;
+
+    cc_list_reduce(list1, sum_reduce, &res);
+
+    CHECK_EQUAL_C_INT(10, *res);
+};
+
+TEST_C(CC_ListTestsCC_ListPrefilled, CC_ListReduce2)
+{
+    bool *res;
+
+    cc_list_reduce(list1, bool_and, &res);
+
+    CHECK_EQUAL_C_BOOL(true, *res);
+}
