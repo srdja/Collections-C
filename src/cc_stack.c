@@ -191,6 +191,23 @@ void stack_map(Stack *stack, void (*fn) (void *))
 }
 
 /**
+ * Filters the Stack by modifying it. It removes all elements that don't
+ * return true on pred(element)..
+ *
+ * @param[in] stack the Stack on which this operation being performed
+ * @param[in] predicate predicate function which returns true if the element should
+ *                 be kept in the Stack
+ *
+ * @return CC_OK if the Stack was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ *  if the Stack is empty.
+ */
+
+enum cc_stat stack_filter_mut(Stack *stack, bool (*predicate)(const void *))
+{
+    return cc_array_filter_mut(stack->v, predicate);
+}
+
+/**
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized

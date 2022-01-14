@@ -69,6 +69,7 @@ enum cc_stat  stack_pop             (Stack *stack, void **out);
 
 size_t        stack_size            (Stack *stack);
 void          stack_map             (Stack *stack, void (*fn) (void *));
+enum cc_stat  stack_filter_mut      (Stack *stack, bool (*predicate) (const void*));
 
 void          stack_iter_init       (StackIter *iter, Stack *s);
 enum cc_stat  stack_iter_next       (StackIter *iter, void **out);
