@@ -1225,6 +1225,46 @@ void cc_list_foreach(CC_List *list, void (*op) (void *e))
     }
 }
 
+/**
+ * A fold/reduce function that collects all of the elements in the list
+ * together.
+ *
+ * @param[in] list the list on which this operation is performed
+ * @param[in] fn the operation function that is to be invoked on list array
+ *               element
+ * @param[in] result the pointer which will collect the end result
+ */
+
+enum cc_stat cc_list_reduce(CC_List *list, void (*fn)(void *, void *, void *), void *result)
+{
+    size_t list_size = cc_list_size(list);
+
+    if (list_size == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    if (list_size == 1)
+    {
+        fn(list->head->data, NULL, result);
+        return CC_OK;
+    }
+
+    fn(list->head->data, list->head->next->data, result);
+
+    // the current start will be the second element of list
+    Node *curr = list->head->next->next;
+    Node *next = NULL;
+
+    while (curr)
+    {
+        next = curr->next;
+
+        fn(result, curr->data, result);
+
+        curr = next;
+    }
+
+    return CC_OK;
+}
 
 /**
  * Filters the CC_List by modifying it. It removes all elements that don't
