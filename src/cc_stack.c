@@ -208,6 +208,41 @@ enum cc_stat stack_filter_mut(Stack *stack, bool (*predicate)(const void *))
 }
 
 /**
+ * Filters the Stack by creating a new Stack that contains all elements from the
+ * original Stack that return true on pred(element) without modifying the original
+ * Stack.
+ *
+ * @param[in] stack   Stack that is to be filtered
+ * @param[in] predicate predicate function which returns true if the element should
+ *                 be kept in the filtered stack
+ * @param[out] out pointer to where the new filtered Stack is to be stored
+ *
+ * @return CC_OK if the Stack was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the Stack is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new Stack failed.
+ */
+
+enum cc_stat stack_filter(Stack *stack, bool (*predicate)(const void *), Stack **out)
+{
+    if (stack_size(stack) == 0)
+        return CC_ERR_OUT_OF_RANGE;
+
+    StackIter iter;
+    stack_iter_init(&iter, stack);
+
+    stack_new(out);
+
+    void *e;
+    while (stack_iter_next(&iter, &e) != CC_ITER_END)
+    {
+        if (predicate(e))
+            stack_push(*out, e);
+    }
+
+    return CC_OK;
+}
+
+/**
  * Initializes the iterator.
  *
  * @param[in] iter the iterator that is being initialized
