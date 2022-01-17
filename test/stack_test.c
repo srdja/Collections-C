@@ -2,7 +2,6 @@
 
 #include "cc_stack.h"
 #include "CppUTest/TestHarness_c.h"
-#include <stdbool.h>
 
 static Stack *s;
 static Stack *s2;
