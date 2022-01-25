@@ -64,6 +64,6 @@ enum cc_stat {
 
 int cc_common_cmp_str(const void *key1, const void *key2);
 
-#define CC_CMP_STRING  cc_common_cmp_str
+#define CC_CMP_STRING cc_common_cmp_str
 
 #endif /* COLLECTIONS_C_COMMON_H */
