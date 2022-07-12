@@ -148,7 +148,7 @@ const void* const* cc_array_get_buffer(CC_Array *ar);
 
 #define CC_ARRAY_FOREACH(val, array, body)                      \
     {                                                           \
-        CC_ArrayIter array_iter_53d46d2a04458e7b;               \
+        CC_ArrayIter cc_array_iter_53d46d2a04458e7b;            \
         cc_array_iter_init(&cc_array_iter_53d46d2a04458e7b, array);     \
         void *val;                                                      \
         while (cc_array_iter_next(&cc_array_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
@@ -159,7 +159,7 @@ const void* const* cc_array_get_buffer(CC_Array *ar);
 #define CC_ARRAY_FOREACH_ZIP(val1, val2, array1, array2, body)         \
     {                                                                  \
         CC_ArrayZipIter cc_array_zip_iter_ea08d3e52f25883b3;            \
-        cc_array_zip_iter_init(&cc_array_zip_iter_ea08d3e52f25883b, array1, array2); \
+        cc_array_zip_iter_init(&cc_array_zip_iter_ea08d3e52f25883b3, array1, array2); \
         void *val1;                                                     \
         void *val2;                                                     \
         while (cc_array_zip_iter_next(&cc_array_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
