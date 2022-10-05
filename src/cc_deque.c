@@ -689,7 +689,7 @@ void cc_deque_reverse(CC_Deque *deque)
 
     size_t first = deque->first;
 
-    for (i = 0, j = s - 1; i < (s - 1) / 2; i++, j--) {
+    for (i = 0, j = s - 1; i < s / 2; i++, j--) {
         size_t f = (first + i) & c;
         size_t l = (first + j) & c;
 
