@@ -10,7 +10,6 @@
 #define COLLECTIONS_C_CC_RBUF_H
 
 #include "cc_common.h"
-#include <stdio.h>
 
 #define DEFAULT_CC_RBUF_CAPACITY 10
 
