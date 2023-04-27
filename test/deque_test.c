@@ -620,9 +620,10 @@ TEST_C(CC_DequeTests, CC_DequeIteratorRemove)
 
     size_t i = 0;
     void *el;
+    int  *removed;
     while (cc_deque_iter_next(&iter, &el) != CC_ITER_END) {
         if (i == 3)
-            cc_deque_iter_remove(&iter, NULL);
+            cc_deque_iter_remove(&iter, (void**) &removed);
 
         if (i > 2) {
           CHECK_EQUAL_C_INT(5, cc_deque_size(deque));
@@ -634,6 +635,7 @@ TEST_C(CC_DequeTests, CC_DequeIteratorRemove)
         }
         i++;
     }
+    CHECK_EQUAL_C_INT(d, *removed);
 };
 
 TEST_C(CC_DequeTests, CC_DequeIteratorNext)
