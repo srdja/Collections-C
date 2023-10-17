@@ -363,7 +363,7 @@ enum cc_stat cc_deque_remove_at(CC_Deque *deque, size_t index, void **out)
     const size_t f = deque->first & c;
     const size_t p = (deque->first + index) & c;
 
-    void *removed  = deque->buffer[index];
+    void *removed  = deque->buffer[p];
 
     if (index == 0)
         return cc_deque_remove_first(deque, out);
