@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_CC_LIST_H
 #define COLLECTIONS_C_CC_LIST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 
 /**
@@ -186,5 +190,8 @@ size_t        cc_list_zip_iter_index  (CC_ListZipIter *iter);
             body                                                        \
                 }
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_CC_LIST_H */

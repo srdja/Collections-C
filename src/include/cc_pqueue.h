@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_CC_PQUEUE_H
 #define COLLECTIONS_C_CC_PQUEUE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 #include "cc_array.h"
 
@@ -70,5 +74,8 @@ enum cc_stat  cc_pqueue_push            (CC_PQueue *pqueue, void *element);
 enum cc_stat  cc_pqueue_top             (CC_PQueue *pqueue, void **out);
 enum cc_stat  cc_pqueue_pop             (CC_PQueue *pqueue, void **out);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

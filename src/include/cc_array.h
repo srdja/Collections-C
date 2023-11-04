@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_ARRAY_H
 #define COLLECTIONS_C_ARRAY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 
 /**
@@ -165,5 +169,9 @@ const void* const* cc_array_get_buffer(CC_Array *ar);
         while (cc_array_zip_iter_next(&cc_array_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
             body                                                        \
                 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_ARRAY_H */

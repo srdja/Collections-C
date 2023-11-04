@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_CC_DEQUE_H
 #define COLLECTIONS_C_CC_DEQUE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 
 /**
@@ -159,5 +163,8 @@ const void* const* cc_deque_get_buffer (CC_Deque const * const deque);
             body                                                        \
                 }
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_CC_DEQUE_H */
