@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_CC_TREETABLE_H
 #define COLLECTIONS_C_CC_TREETABLE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 
 /**
@@ -144,5 +148,9 @@ enum cc_stat  cc_treetable_iter_remove      (CC_TreeTableIter *iter, void **out)
 
 int cc_treetable_assert_rb_rules(CC_TreeTable *table);
 #endif /* DEBUG */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_CC_TREETABLE_H */

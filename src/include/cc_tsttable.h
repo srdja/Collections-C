@@ -1,6 +1,10 @@
 #ifndef COLLECTIONS_C_CC_TSTTABLE_H
 #define COLLECTIONS_C_CC_TSTTABLE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 
 /**
@@ -79,5 +83,9 @@ enum cc_stat  cc_tsttable_iter_remove     (CC_TSTTableIter *iter, void **out);
             body                                                                    \
         }                                                                           \
     }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_CC_TSTTABLE_H */

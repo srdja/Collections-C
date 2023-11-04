@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_STACK_H
 #define COLLECTIONS_C_STACK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 #include "cc_array.h"
 
@@ -100,5 +104,9 @@ enum cc_stat  stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, voi
         while (stack_zip_iter_next(&stack_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
             body                                                        \
                 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_STACK_H */

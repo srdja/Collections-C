@@ -21,6 +21,10 @@
 #ifndef COLLECTIONS_C_QUEUE_H
 #define COLLECTIONS_C_QUEUE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 #include "cc_deque.h"
 
@@ -95,5 +99,9 @@ enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void
         while (queue_zip_iter_next(&queue_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
             body                                                        \
                 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COLLECTIONS_C_QUEUE_H */

@@ -9,6 +9,10 @@
 #ifndef COLLECTIONS_C_CC_RBUF_H
 #define COLLECTIONS_C_CC_RBUF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "cc_common.h"
 
 #define DEFAULT_CC_RBUF_CAPACITY 10
@@ -26,5 +30,8 @@ size_t        cc_rbuf_size          (CC_Rbuf *rbuf);
 void          cc_rbuf_destroy       (CC_Rbuf *rbuf);
 uint64_t      cc_rbuf_peek          (CC_Rbuf *rbuf, int index);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
