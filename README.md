@@ -18,7 +18,7 @@ The source of the documentation can be found [here](https://github.com/srdja/cc-
 #### HashTable
 ```c
 
-// Crate a new table
+// Create a new table
 CC_HashTable *table;
 if (cc_hashtable_new(&table) != CC_OK) {
     // something went wrong
@@ -86,7 +86,7 @@ To build the project, we first need to create a separate build directory:
 mkdir build
 ```
 
-Now that we've created our build directory (assuming it's created in the projct root), we can `cd` into it and run `cmake` and pass the parent directory path to it, which is where the `CMakeLists.txt` file is located:
+Now that we've created our build directory (assuming it's created in the project root), we can `cd` into it and run `cmake` and pass the parent directory path to it, which is where the `CMakeLists.txt` file is located:
 
 ```
 cd build
@@ -175,7 +175,7 @@ This will link the library by copying it into the executable. We can use this op
 
 ### Linking dynamically
 
-We can also choose to link with the library dynamically at runtime. This is the default behaviour if ommit the `-static` compiler flag:
+We can also choose to link with the library dynamically at runtime. This is the default behaviour if omit the `-static` compiler flag:
 
 ```
 gcc hello.c -lcollectc -o hello
