@@ -3,16 +3,16 @@
 #include <stdlib.h>
 
 struct queues {
-    Queue* q1;
-    Queue* q2;
+    CC_Queue* q1;
+    CC_Queue* q2;
 };
 
 static void* default_queue(const MunitParameter params[], void* user_data)
 {
     struct queues* q = malloc(sizeof(struct queues));
 
-    queue_new(&q->q1);
-    queue_new(&q->q2);
+    cc_queue_new(&q->q1);
+    cc_queue_new(&q->q2);
 
     return (void*)q;
 }
@@ -20,8 +20,8 @@ static void* default_queue(const MunitParameter params[], void* user_data)
 static void default_queue_teardown(void* fixture)
 {
     struct queues* q = (struct queues*)fixture;
-    queue_destroy(q->q1);
-    queue_destroy(q->q2);
+    cc_queue_destroy(q->q1);
+    cc_queue_destroy(q->q2);
 }
 
 static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
@@ -31,18 +31,18 @@ static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
     int b = 2;
     int c = 3;
 
-    queue_enqueue(q->q1, &a);
-    queue_enqueue(q->q1, &b);
+    cc_queue_enqueue(q->q1, &a);
+    cc_queue_enqueue(q->q1, &b);
 
-    munit_assert_size(2, == , queue_size(q->q1));
+    munit_assert_size(2, == , cc_queue_size(q->q1));
 
     void* p;
-    queue_peek(q->q1, &p);
+    cc_queue_peek(q->q1, &p);
     munit_assert_ptr_equal(&a, p);
 
-    queue_enqueue(q->q1, &c);
+    cc_queue_enqueue(q->q1, &c);
 
-    queue_peek(q->q1, &p);
+    cc_queue_peek(q->q1, &p);
     munit_assert_ptr_equal(&a, p);
     return MUNIT_OK;
 }
@@ -55,22 +55,22 @@ static MunitResult test_poll(const MunitParameter params[], void* fixture)
     int b = 2;
     int c = 3;
 
-    queue_enqueue(q->q1, &a);
-    queue_enqueue(q->q1, &b);
-    queue_enqueue(q->q1, &c);
+    cc_queue_enqueue(q->q1, &a);
+    cc_queue_enqueue(q->q1, &b);
+    cc_queue_enqueue(q->q1, &c);
 
     void* p;
 
-    queue_poll(q->q1, &p);
+    cc_queue_poll(q->q1, &p);
     munit_assert_ptr_equal(&a, p);
 
-    queue_peek(q->q1, &p);
+    cc_queue_peek(q->q1, &p);
     munit_assert_ptr_equal(&b, p);
 
-    queue_poll(q->q1, &p);
+    cc_queue_poll(q->q1, &p);
     munit_assert_ptr_equal(&b, p);
 
-    queue_peek(q->q1, &p);
+    cc_queue_peek(q->q1, &p);
     munit_assert_ptr_equal(&c, p);
 
     return MUNIT_OK;
@@ -84,19 +84,19 @@ static MunitResult test_iter(const MunitParameter params[], void* fixture)
     int b = 2;
     int c = 3;
 
-    queue_enqueue(q->q1, &a);
-    queue_enqueue(q->q1, &b);
-    queue_enqueue(q->q1, &c);
+    cc_queue_enqueue(q->q1, &a);
+    cc_queue_enqueue(q->q1, &b);
+    cc_queue_enqueue(q->q1, &c);
 
     size_t x = 0;
     size_t y = 0;
     size_t z = 0;
 
-    QueueIter iter;
-    queue_iter_init(&iter, q->q1);
+    CC_QueueIter iter;
+    cc_queue_iter_init(&iter, q->q1);
 
     int* e;
-    while (queue_iter_next(&iter, (void*)&e) != CC_ITER_END) {
+    while (cc_queue_iter_next(&iter, (void*)&e) != CC_ITER_END) {
         if (e == &a) {
             x++;
         }
@@ -118,22 +118,22 @@ static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixtu
 {
     struct queues* q = (struct queues*)fixture;
 
-    queue_enqueue(q->q1, "a");
-    queue_enqueue(q->q1, "b");
-    queue_enqueue(q->q1, "c");
-    queue_enqueue(q->q1, "d");
+    cc_queue_enqueue(q->q1, "a");
+    cc_queue_enqueue(q->q1, "b");
+    cc_queue_enqueue(q->q1, "c");
+    cc_queue_enqueue(q->q1, "d");
 
-    queue_enqueue(q->q2, "e");
-    queue_enqueue(q->q2, "f");
-    queue_enqueue(q->q2, "g");
+    cc_queue_enqueue(q->q2, "e");
+    cc_queue_enqueue(q->q2, "f");
+    cc_queue_enqueue(q->q2, "g");
 
     QueueZipIter zip;
-    queue_zip_iter_init(&zip, q->q1, q->q2);
+    cc_queue_zip_iter_init(&zip, q->q1, q->q2);
 
     size_t i = 0;
 
     void* e1, * e2;
-    while (queue_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
+    while (cc_queue_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (i == 0) {
             munit_assert_string_equal("d", (char*)e1);
             munit_assert_string_equal("g", (char*)e2);

@@ -22,7 +22,7 @@
 #include "cc_stack.h"
 
 
-struct stack_s {
+struct cc_stack_s {
     CC_Array *v;
 
     void *(*mem_alloc)  (size_t size);
@@ -32,11 +32,11 @@ struct stack_s {
 
 
 /**
- * Initializes the fields of the StackConf struct to default values.
+ * Initializes the fields of the CC_StackConf struct to default values.
  *
- * @param[in, out] conf StackConf structure that is being initialized
+ * @param[in, out] conf CC_StackConf structure that is being initialized
  */
-void stack_conf_init(StackConf *conf)
+void cc_stack_conf_init(CC_StackConf *conf)
 {
     cc_array_conf_init(conf);
 }
@@ -44,37 +44,37 @@ void stack_conf_init(StackConf *conf)
 /**
  * Creates a new empty stack and returns a status code.
  *
- * @param[out] out pointer to where the newly created Stack is to be stored
+ * @param[out] out pointer to where the newly created CC_Stack is to be stored
  *
  * @return CC_OK if the creation was successful, or CC_ERR_ALLOC if the
- * memory allocation for the new Stack structure failed.
+ * memory allocation for the new CC_Stack structure failed.
  */
-enum cc_stat stack_new(Stack **out)
+enum cc_stat cc_stack_new(CC_Stack **out)
 {
-    StackConf conf;
-    stack_conf_init(&conf);
-    return stack_new_conf(&conf, out);
+    CC_StackConf conf;
+    cc_stack_conf_init(&conf);
+    return cc_stack_new_conf(&conf, out);
 }
 
 /**
- * Creates a new empty Stack based on the StackConf struct and returns a
+ * Creates a new empty CC_Stack based on the CC_StackConf struct and returns a
  * status code.
  *
- * The stack is allocated using the allocators specified in the StackConf
+ * The stack is allocated using the allocators specified in the CC_StackConf
  * struct. The allocation may fail if the underlying allocator fails. It may also
- * fail if the values of exp_factor and capacity in the StackConf do not meet
+ * fail if the values of exp_factor and capacity in the CC_StackConf do not meet
  * the following condition: <code>exp_factor < (CC_MAX_ELEMENTS / capacity)</code>.
  *
  * @param[in] conf stack configuration structure
- * @param[out] out pointer to where the newly created Stack is to be stored
+ * @param[out] out pointer to where the newly created CC_Stack is to be stored
  *
  * @return CC_OK if the creation was successful, CC_ERR_INVALID_CAPACITY if
  * the above mentioned condition is not met, or CC_ERR_ALLOC if the memory
- * allocation for the new Stack structure failed.
+ * allocation for the new CC_Stack structure failed.
  */
-enum cc_stat stack_new_conf(StackConf const * const conf, Stack **out)
+enum cc_stat cc_stack_new_conf(CC_StackConf const * const conf, CC_Stack **out)
 {
-    Stack *stack = conf->mem_calloc(1, sizeof(Stack));
+    CC_Stack *stack = conf->mem_calloc(1, sizeof(CC_Stack));
 
     if (!stack)
         return CC_ERR_ALLOC;
@@ -99,9 +99,9 @@ enum cc_stat stack_new_conf(StackConf const * const conf, Stack **out)
  * Destroys the specified stack structure, while leaving the data it holds
  * intact.
  *
- * @param[in] stack the Stack to be destroyed
+ * @param[in] stack the CC_Stack to be destroyed
  */
-void stack_destroy(Stack *stack)
+void cc_stack_destroy(CC_Stack *stack)
 {
     cc_array_destroy(stack->v);
     stack->mem_free(stack);
@@ -110,12 +110,12 @@ void stack_destroy(Stack *stack)
 /**
  * Destroys the specified stack structure along with all the data it holds.
  *
- * @note This function should not be called on a Stack that has some of its
+ * @note This function should not be called on a CC_Stack that has some of its
  * elements allocated on the stack (stack memory).
  *
  * @param[in] stack the stack to be destroyed
  */
-void stack_destroy_cb(Stack *stack, void (*cb) (void*))
+void cc_stack_destroy_cb(CC_Stack *stack, void (*cb) (void*))
 {
     cc_array_destroy_cb(stack->v, cb);
     free(stack);
@@ -130,22 +130,22 @@ void stack_destroy_cb(Stack *stack, void (*cb) (void*))
  * @return CC_OK if the element was successfully pushed, or CC_ERR_ALLOC
  * if the memory allocation for the new element failed.
  */
-enum cc_stat stack_push(Stack *stack, void *element)
+enum cc_stat cc_stack_push(CC_Stack *stack, void *element)
 {
     return cc_array_add(stack->v, element);
 }
 
 /**
- * Gets the top element of the Stack without removing it and sets the out
+ * Gets the top element of the CC_Stack without removing it and sets the out
  * parameter to its value.
  *
  * @param[in] stack the stack whose top element is being returned
  * @param[out] out pointer to where the returned value is stored
  *
  * @return CC_OK if the element was found, or CC_ERR_VALUE_NOT_FOUND if the
- * Stack is empty.
+ * CC_Stack is empty.
  */
-enum cc_stat stack_peek(Stack *stack, void **out)
+enum cc_stat cc_stack_peek(CC_Stack *stack, void **out)
 {
     return cc_array_get_last(stack->v, out);
 }
@@ -159,84 +159,84 @@ enum cc_stat stack_peek(Stack *stack, void **out)
  *                 to be ignored
  *
  * @return CC_OK if the element was successfully popped, or CC_ERR_OUT_OF_RANGE
- * if the Stack is already empty.
+ * if the CC_Stack is already empty.
  */
-enum cc_stat stack_pop(Stack *stack, void **out)
+enum cc_stat cc_stack_pop(CC_Stack *stack, void **out)
 {
     return cc_array_remove_last(stack->v, out);
 }
 
 /**
- * Returns the number of Stack elements.
+ * Returns the number of CC_Stack elements.
  *
- * @param[in] stack the Stack whose number of elements is being returned
+ * @param[in] stack the CC_Stack whose number of elements is being returned
  *
- * @return the number of Stack elements.
+ * @return the number of CC_Stack elements.
  */
-size_t stack_size(Stack *stack)
+size_t cc_stack_size(CC_Stack *stack)
 {
     return cc_array_size(stack->v);
 }
 
 /**
- * Applies the function fn to each element of the Stack.
+ * Applies the function fn to each element of the CC_Stack.
  *
- * @param[in] stack the Stack on which this operation being performed
+ * @param[in] stack the CC_Stack on which this operation being performed
  * @param[in] fn the operation function that is to be invoked on each
- *               element of the Stack
+ *               element of the CC_Stack
  */
-void stack_map(Stack *stack, void (*fn) (void *))
+void cc_stack_map(CC_Stack *stack, void (*fn) (void *))
 {
     cc_array_map(stack->v, fn);
 }
 
 /**
- * Filters the Stack by modifying it. It removes all elements that don't
+ * Filters the CC_Stack by modifying it. It removes all elements that don't
  * return true on pred(element)..
  *
- * @param[in] stack the Stack on which this operation being performed
+ * @param[in] stack the CC_Stack on which this operation being performed
  * @param[in] predicate predicate function which returns true if the element should
- *                 be kept in the Stack
+ *                 be kept in the CC_Stack
  *
- * @return CC_OK if the Stack was filtered successfully, or CC_ERR_OUT_OF_RANGE
- *  if the Stack is empty.
+ * @return CC_OK if the CC_Stack was filtered successfully, or CC_ERR_OUT_OF_RANGE
+ *  if the CC_Stack is empty.
  */
 
-enum cc_stat stack_filter_mut(Stack *stack, bool (*predicate)(const void *))
+enum cc_stat cc_stack_filter_mut(CC_Stack *stack, bool (*predicate)(const void *))
 {
     return cc_array_filter_mut(stack->v, predicate);
 }
 
 /**
- * Filters the Stack by creating a new Stack that contains all elements from the
- * original Stack that return true on pred(element) without modifying the original
- * Stack.
+ * Filters the CC_Stack by creating a new CC_Stack that contains all elements from the
+ * original CC_Stack that return true on pred(element) without modifying the original
+ * CC_Stack.
  *
- * @param[in] stack   Stack that is to be filtered
+ * @param[in] stack   CC_Stack that is to be filtered
  * @param[in] predicate predicate function which returns true if the element should
  *                 be kept in the filtered stack
- * @param[out] out pointer to where the new filtered Stack is to be stored
+ * @param[out] out pointer to where the new filtered CC_Stack is to be stored
  *
- * @return CC_OK if the Stack was filtered successfully, CC_ERR_OUT_OF_RANGE
- * if the Stack is empty, or CC_ERR_ALLOC if the memory allocation for the
- * new Stack failed.
+ * @return CC_OK if the CC_Stack was filtered successfully, CC_ERR_OUT_OF_RANGE
+ * if the CC_Stack is empty, or CC_ERR_ALLOC if the memory allocation for the
+ * new CC_Stack failed.
  */
 
-enum cc_stat stack_filter(Stack *stack, bool (*predicate)(const void *), Stack **out)
+enum cc_stat cc_stack_filter(CC_Stack *stack, bool (*predicate)(const void *), CC_Stack **out)
 {
-    if (stack_size(stack) == 0)
+    if (cc_stack_size(stack) == 0)
         return CC_ERR_OUT_OF_RANGE;
 
-    StackIter iter;
-    stack_iter_init(&iter, stack);
+    CC_StackIter iter;
+    cc_stack_iter_init(&iter, stack);
 
-    stack_new(out);
+    cc_stack_new(out);
 
     void *e;
-    while (stack_iter_next(&iter, &e) != CC_ITER_END)
+    while (cc_stack_iter_next(&iter, &e) != CC_ITER_END)
     {
         if (predicate(e))
-            stack_push(*out, e);
+            cc_stack_push(*out, e);
     }
 
     return CC_OK;
@@ -248,7 +248,7 @@ enum cc_stat stack_filter(Stack *stack, bool (*predicate)(const void *), Stack *
  * @param[in] iter the iterator that is being initialized
  * @param[in] s the stack to iterate over
  */
-void stack_iter_init(StackIter *iter, Stack *s)
+void cc_stack_iter_init(CC_StackIter *iter, CC_Stack *s)
 {
     cc_array_iter_init(&(iter->i), s->v);
 }
@@ -261,20 +261,20 @@ void stack_iter_init(StackIter *iter, Stack *s)
  * @param[out] out pointer to where the next element is set
  *
  * @return CC_OK if the iterator was advanced, or CC_ITER_END if the
- * end of the Stack has been reached.
+ * end of the CC_Stack has been reached.
  */
-enum cc_stat stack_iter_next(StackIter *iter, void **out)
+enum cc_stat cc_stack_iter_next(CC_StackIter *iter, void **out)
 {
     return cc_array_iter_next(&(iter->i), out);
 }
 
 /**
- * Replaces the last returned element by <code>stack_iter_next()</code>
+ * Replaces the last returned element by <code>cc_stack_iter_next()</code>
  * with the specified element and optionally sets the out parameter to
  * the value of the replaced element.
  *
  * @note This function should only ever be called after a call to <code>
- * stack_iter_next()</code>.
+ * cc_stack_iter_next()</code>.
  *
  * @param[in] iter the iterator on which this operation is being performed
  * @param[in] element the replacement element
@@ -284,7 +284,7 @@ enum cc_stat stack_iter_next(StackIter *iter, void **out)
  * @return  CC_OK if the element was replaced successfully, or
  * CC_ERR_OUT_OF_RANGE.
  */
-enum cc_stat stack_iter_replace(StackIter *iter, void *element, void **out)
+enum cc_stat cc_stack_iter_replace(CC_StackIter *iter, void *element, void **out)
 {
     return cc_array_iter_replace(&(iter->i), element, out);
 }
@@ -293,10 +293,10 @@ enum cc_stat stack_iter_replace(StackIter *iter, void *element, void **out)
  * Initializes the zip iterator.
  *
  * @param[in] iter iterator that is being initialized
- * @param[in] s1   first Stack
- * @param[in] s2   second Stack
+ * @param[in] s1   first CC_Stack
+ * @param[in] s2   second CC_Stack
  */
-void stack_zip_iter_init(StackZipIter *iter, Stack *s1, Stack *s2)
+void cc_stack_zip_iter_init(CC_StackZipIter *iter, CC_Stack *s1, CC_Stack *s2)
 {
     cc_array_zip_iter_init(&(iter->i), s1->v, s2->v);
 }
@@ -311,13 +311,13 @@ void stack_zip_iter_init(StackZipIter *iter, Stack *s1, Stack *s2)
  * @return CC_OK if a next element pair is returned, or CC_ITER_END if the end
  * of one of the stacks has been reached.
  */
-enum cc_stat stack_zip_iter_next(StackZipIter *iter, void **out1, void **out2)
+enum cc_stat cc_stack_zip_iter_next(CC_StackZipIter *iter, void **out1, void **out2)
 {
     return cc_array_zip_iter_next(&(iter->i), out1, out2);
 }
 
 /**
- * Replaces the last returned element pair by <code>stack_zip_iter_next()</code>
+ * Replaces the last returned element pair by <code>cc_stack_zip_iter_next()</code>
  * with the specified replacement element pair.
  *
  * @param[in] iter  iterator on which this operation is being performed
@@ -328,7 +328,7 @@ enum cc_stat stack_zip_iter_next(StackZipIter *iter, void **out1, void **out2)
  *
  * @return CC_OK if the element was successfully replaced, or CC_ERR_OUT_OF_RANGE.
  */
-enum cc_stat stack_zip_iter_replace(StackZipIter *iter, void *e1, void *e2, void **out1, void **out2)
+enum cc_stat cc_stack_zip_iter_replace(CC_StackZipIter *iter, void *e1, void *e2, void **out1, void **out2)
 {
     return cc_array_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
 }

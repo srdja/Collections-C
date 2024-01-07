@@ -32,23 +32,23 @@ extern "C" {
  * A FIFO (first in first out) structure. Supports constant time
  * insertion, removal and lookup.
  */
-typedef struct queue_s Queue;
+typedef struct cc_queue_s CC_Queue;
 
 /**
- * Queue configuration object.
+ * CC_Queue configuration object.
  */
-typedef CC_DequeConf QueueConf;
+typedef CC_DequeConf CC_QueueConf;
 
 /**
- * Queue iterator object. Used to iterate over the elements of a
+ * CC_Queue iterator object. Used to iterate over the elements of a
  * queue in an ascending order.
  */
-typedef struct queue_iter_s {
+typedef struct cc_queue_iter_s {
     CC_DequeIter i;
-} QueueIter;
+} CC_QueueIter;
 
 /**
- * Queue zip iterator structure. Used to iterate over the elements of two
+ * CC_Queue zip iterator structure. Used to iterate over the elements of two
  * queues in lockstep in an ascending order until one of the queues is
  * exhausted. The iterator also supports operations for safely adding
  * and removing elements during iteration.
@@ -58,45 +58,45 @@ typedef struct queue_zip_iter_s {
 } QueueZipIter;
 
 
-void         queue_conf_init       (QueueConf *conf);
-enum cc_stat queue_new             (Queue **q);
-enum cc_stat queue_new_conf        (QueueConf const * const conf, Queue **q);
-void         queue_destroy         (Queue *queue);
-void         queue_destroy_cb      (Queue *queue, void (*cb) (void*));
+void         cc_queue_conf_init       (CC_QueueConf *conf);
+enum cc_stat cc_queue_new             (CC_Queue **q);
+enum cc_stat cc_queue_new_conf        (CC_QueueConf const * const conf, CC_Queue **q);
+void         cc_queue_destroy         (CC_Queue *queue);
+void         cc_queue_destroy_cb      (CC_Queue *queue, void (*cb) (void*));
 
-enum cc_stat queue_peek            (Queue const * const queue, void **out);
-enum cc_stat queue_poll            (Queue *queue, void **out);
-enum cc_stat queue_enqueue         (Queue *queue, void *element);
+enum cc_stat cc_queue_peek            (CC_Queue const * const queue, void **out);
+enum cc_stat cc_queue_poll            (CC_Queue *queue, void **out);
+enum cc_stat cc_queue_enqueue         (CC_Queue *queue, void *element);
 
-size_t       queue_size            (Queue const * const queue);
-void         queue_foreach         (Queue *queue, void (*op) (void*));
+size_t       cc_queue_size            (CC_Queue const * const queue);
+void         cc_queue_foreach         (CC_Queue *queue, void (*op) (void*));
 
-void         queue_iter_init       (QueueIter *iter, Queue *queue);
-enum cc_stat queue_iter_next       (QueueIter *iter, void **out);
-enum cc_stat queue_iter_replace    (QueueIter *iter, void *replacement, void **out);
+void         cc_queue_iter_init       (CC_QueueIter *iter, CC_Queue *queue);
+enum cc_stat cc_queue_iter_next       (CC_QueueIter *iter, void **out);
+enum cc_stat cc_queue_iter_replace    (CC_QueueIter *iter, void *replacement, void **out);
 
-void         queue_zip_iter_init   (QueueZipIter *iter, Queue *q1, Queue *q2);
-enum cc_stat queue_zip_iter_next   (QueueZipIter *iter, void **out1, void **out2);
-enum cc_stat queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2);
+void         cc_queue_zip_iter_init   (QueueZipIter *iter, CC_Queue *q1, CC_Queue *q2);
+enum cc_stat cc_queue_zip_iter_next   (QueueZipIter *iter, void **out1, void **out2);
+enum cc_stat cc_queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, void **out1, void **out2);
 
 
-#define QUEUE_FOREACH(val, queue, body)                                 \
+#define CC_QUEUE_FOREACH(val, queue, body)                                 \
     {                                                                   \
-        QueueIter queue_iter_53d46d2a04458e7b;                          \
-        queue_iter_init(&queue_iter_53d46d2a04458e7b, queue);           \
+        CC_QueueIter queue_iter_53d46d2a04458e7b;                          \
+        cc_queue_iter_init(&queue_iter_53d46d2a04458e7b, queue);           \
         void *val;                                                      \
-        while (queue_iter_next(&queue_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
+        while (cc_queue_iter_next(&queue_iter_53d46d2a04458e7b, &val) != CC_ITER_END) \
             body                                                        \
                 }
 
 
-#define QUEUE_FOREACH_ZIP(val1, val2, queue1, queue2, body)             \
+#define CC_QUEUE_FOREACH_ZIP(val1, val2, queue1, queue2, body)             \
     {                                                                   \
         QueueZipIter queue_zip_iter_ea08d3e52f25883b3;                  \
-        queue_zip_iter_init(&queue_zip_iter_ea08d3e52f25883b, queue1, queue2); \
+        cc_queue_zip_iter_init(&queue_zip_iter_ea08d3e52f25883b, queue1, queue2); \
         void *val1;                                                     \
         void *val2;                                                     \
-        while (queue_zip_iter_next(&queue_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
+        while (cc_queue_zip_iter_next(&queue_zip_iter_ea08d3e52f25883b3, &val1, &val2) != CC_ITER_END) \
             body                                                        \
                 }
 
