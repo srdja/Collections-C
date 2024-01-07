@@ -39,6 +39,7 @@ src/.*
 test-driver
 .DS_Store
 .vscode
+.vs
 
 test/treetable_test
 

@@ -1,130 +1,167 @@
+#include "munit.h"
 #include "cc_queue.h"
-#include "CppUTest/TestHarness_c.h"
+#include <stdlib.h>
 
-static Queue *q;
-static Queue *q2;
-static int stat;
-
-TEST_GROUP_C_SETUP(QueueTestsWithDefaults)
-{
-    stat = queue_new(&q);
-    queue_new(&q2);
+struct queues {
+    Queue* q1;
+    Queue* q2;
 };
 
-TEST_GROUP_C_TEARDOWN(QueueTestsWithDefaults)
+static void* default_queue(const MunitParameter params[], void* user_data)
 {
-    queue_destroy(q);
-    queue_destroy(q2);
-};
+    struct queues* q = malloc(sizeof(struct queues));
 
-TEST_C(QueueTestsWithDefaults, QueueEnqueue)
+    queue_new(&q->q1);
+    queue_new(&q->q2);
+
+    return (void*)q;
+}
+
+static void default_queue_teardown(void* fixture)
 {
+    struct queues* q = (struct queues*)fixture;
+    queue_destroy(q->q1);
+    queue_destroy(q->q2);
+}
+
+static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
+{
+    struct queues* q = (struct queues*)fixture;
     int a = 1;
     int b = 2;
     int c = 3;
 
-    queue_enqueue(q, &a);
-    queue_enqueue(q, &b);
+    queue_enqueue(q->q1, &a);
+    queue_enqueue(q->q1, &b);
 
-    CHECK_EQUAL_C_INT(2, queue_size(q));
+    munit_assert_size(2, == , queue_size(q->q1));
 
-    void *p;
-    queue_peek(q, &p);
-    CHECK_EQUAL_C_POINTER(&a, p);
+    void* p;
+    queue_peek(q->q1, &p);
+    munit_assert_ptr_equal(&a, p);
 
-    queue_enqueue(q, &c);
+    queue_enqueue(q->q1, &c);
 
-    queue_peek(q, &p);
-    CHECK_EQUAL_C_POINTER(&a, p);
-};
+    queue_peek(q->q1, &p);
+    munit_assert_ptr_equal(&a, p);
+    return MUNIT_OK;
+}
 
-TEST_C(QueueTestsWithDefaults, QueuePoll)
+static MunitResult test_poll(const MunitParameter params[], void* fixture)
 {
+    struct queues* q = (struct queues*)fixture;
+
     int a = 1;
     int b = 2;
     int c = 3;
 
-    queue_enqueue(q, &a);
-    queue_enqueue(q, &b);
-    queue_enqueue(q, &c);
+    queue_enqueue(q->q1, &a);
+    queue_enqueue(q->q1, &b);
+    queue_enqueue(q->q1, &c);
 
-    void *p;
+    void* p;
 
-    queue_poll(q, &p);
-    CHECK_EQUAL_C_POINTER(&a, p);
+    queue_poll(q->q1, &p);
+    munit_assert_ptr_equal(&a, p);
 
-    queue_peek(q, &p);
-    CHECK_EQUAL_C_POINTER(&b, p);
+    queue_peek(q->q1, &p);
+    munit_assert_ptr_equal(&b, p);
 
-    queue_poll(q, &p);
-    CHECK_EQUAL_C_POINTER(&b, p);
+    queue_poll(q->q1, &p);
+    munit_assert_ptr_equal(&b, p);
 
-    queue_peek(q, &p);
-    CHECK_EQUAL_C_POINTER(&c, p);
-};
+    queue_peek(q->q1, &p);
+    munit_assert_ptr_equal(&c, p);
 
-TEST_C(QueueTestsWithDefaults, QueueIter)
+    return MUNIT_OK;
+}
+
+static MunitResult test_iter(const MunitParameter params[], void* fixture)
 {
+    struct queues* q = (struct queues*)fixture;
+
     int a = 1;
     int b = 2;
     int c = 3;
 
-    queue_enqueue(q, &a);
-    queue_enqueue(q, &b);
-    queue_enqueue(q, &c);
+    queue_enqueue(q->q1, &a);
+    queue_enqueue(q->q1, &b);
+    queue_enqueue(q->q1, &c);
 
     size_t x = 0;
     size_t y = 0;
     size_t z = 0;
 
     QueueIter iter;
-    queue_iter_init(&iter, q);
+    queue_iter_init(&iter, q->q1);
 
-    int *e;
-    while (queue_iter_next(&iter, (void*) &e) != CC_ITER_END) {
-        if (e == &a)
+    int* e;
+    while (queue_iter_next(&iter, (void*)&e) != CC_ITER_END) {
+        if (e == &a) {
             x++;
-
-        if (e == &b)
+        }
+        if (e == &b) {
             y++;
-
-        if (e == &c)
+        }
+        if (e == &c) {
             z++;
+        }
     }
 
-    CHECK_EQUAL_C_INT(1, x);
-    CHECK_EQUAL_C_INT(1, y);
-    CHECK_EQUAL_C_INT(1, z);
-};
+    munit_assert_size(1, == , x);
+    munit_assert_size(1, == , y);
+    munit_assert_size(1, == , z);
+    return MUNIT_OK;
+}
 
-
-TEST_C(QueueTestsWithDefaults, QueueZipIterNext)
+static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixture)
 {
-    queue_enqueue(q, "a");
-    queue_enqueue(q, "b");
-    queue_enqueue(q, "c");
-    queue_enqueue(q, "d");
+    struct queues* q = (struct queues*)fixture;
 
-    queue_enqueue(q2, "e");
-    queue_enqueue(q2, "f");
-    queue_enqueue(q2, "g");
+    queue_enqueue(q->q1, "a");
+    queue_enqueue(q->q1, "b");
+    queue_enqueue(q->q1, "c");
+    queue_enqueue(q->q1, "d");
+
+    queue_enqueue(q->q2, "e");
+    queue_enqueue(q->q2, "f");
+    queue_enqueue(q->q2, "g");
 
     QueueZipIter zip;
-    queue_zip_iter_init(&zip, q, q2);
+    queue_zip_iter_init(&zip, q->q1, q->q2);
 
     size_t i = 0;
 
-    void *e1, *e2;
+    void* e1, * e2;
     while (queue_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (i == 0) {
-            CHECK_EQUAL_C_STRING("d", (char*)e1);
-            CHECK_EQUAL_C_STRING("g", (char*)e2);
+            munit_assert_string_equal("d", (char*)e1);
+            munit_assert_string_equal("g", (char*)e2);
         }
         if (i == 2) {
-            CHECK_EQUAL_C_STRING("b", (char*)e1);
-            CHECK_EQUAL_C_STRING("e", (char*)e2);
+            munit_assert_string_equal("b", (char*)e1);
+            munit_assert_string_equal("e", (char*)e2);
         }
         i++;
     }
-    CHECK_EQUAL_C_INT(3, i);
+    munit_assert_size(3, == , i);
+
+    return MUNIT_OK;
+}
+
+static MunitTest test_suite_tests[] = {
+    { (char*)"/queue/test_enqueue", test_enqueue, default_queue, default_queue_teardown, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/queue/test_poll", test_poll, default_queue, default_queue_teardown, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/queue/test_iter", test_iter, default_queue, default_queue_teardown, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/queue/test_zip_iter_next", test_zip_iter_next, default_queue, default_queue_teardown, MUNIT_TEST_OPTION_NONE, NULL},
+    { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
+};
+
+static const MunitSuite test_suite = {
+    (char*)"", test_suite_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
+};
+
+int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)])
+{
+    return munit_suite_main(&test_suite, (void*)"test", argc, argv);
 }

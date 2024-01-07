@@ -1,12 +1,11 @@
+#include "munit.h"
 #include "cc_treeset.h"
-#include "CppUTest/TestHarness_c.h"
+#include <stdlib.h>
 
-static CC_TreeSet *set;
-
-int cmp(const void *k1, const void *k2)
+int cmp(const void* k1, const void* k2)
 {
-    int a = *((int*) k1);
-    int b = *((int*) k2);
+    int a = *((int*)k1);
+    int b = *((int*)k2);
 
     if (a < b)
         return -1;
@@ -16,18 +15,11 @@ int cmp(const void *k1, const void *k2)
         return 0;
 }
 
-TEST_GROUP_C_SETUP(CC_TreeSetTestsWithDefaults)
+static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
-};
 
-TEST_GROUP_C_TEARDOWN(CC_TreeSetTestsWithDefaults)
-{
-
-};
-
-TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetAdd)
-{
     int a = 1;
     int b = 2;
     int c = 3;
@@ -37,13 +29,19 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetAdd)
     cc_treeset_add(set, &c);
     cc_treeset_add(set, &c);
 
-    CHECK_EQUAL_C_INT(3, cc_treeset_size(set));
-    CHECK_EQUAL_C_INT(1, cc_treeset_contains(set, &a));
-    CHECK_EQUAL_C_INT(1, cc_treeset_contains(set, &b));
-};
+    munit_assert_size(3, == , cc_treeset_size(set));
+    munit_assert_true(cc_treeset_contains(set, &a));
+    munit_assert_true(cc_treeset_contains(set, &b));
 
-TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetRemove)
+    cc_treeset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    CC_TreeSet* set;
+    cc_treeset_new(cmp, &set);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -54,12 +52,18 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetRemove)
 
     cc_treeset_remove(set, &a, NULL);
 
-    CHECK_EQUAL_C_INT(2, cc_treeset_size(set));
-    CHECK_EQUAL_C_INT(0, cc_treeset_contains(set, &a));
-};
+    munit_assert_size(2, == , cc_treeset_size(set));
+    munit_assert_false(cc_treeset_contains(set, &a));
 
-TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetRemoveAll)
+    cc_treeset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    CC_TreeSet* set;
+    cc_treeset_new(cmp, &set);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -70,13 +74,19 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetRemoveAll)
 
     cc_treeset_remove_all(set);
 
-    CHECK_EQUAL_C_INT(0, cc_treeset_size(set));
-    CHECK_EQUAL_C_INT(0, cc_treeset_contains(set, &a));
-    CHECK_EQUAL_C_INT(0, cc_treeset_contains(set, &c));
-};
+    munit_assert_size(0, == , cc_treeset_size(set));
+    munit_assert_false(cc_treeset_contains(set, &a));
+    munit_assert_false(cc_treeset_contains(set, &c));
 
-TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetSetSize)
+    cc_treeset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    CC_TreeSet* set;
+    cc_treeset_new(cmp, &set);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -85,11 +95,17 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetSetSize)
     cc_treeset_add(set, &b);
     cc_treeset_add(set, &c);
 
-    CHECK_EQUAL_C_INT(3, cc_treeset_size(set));
-};
+    munit_assert_size(3, == , cc_treeset_size(set));
 
-TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetIterNext)
+    cc_treeset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    CC_TreeSet* set;
+    cc_treeset_new(cmp, &set);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -100,15 +116,15 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetIterNext)
     cc_treeset_add(set, &c);
     cc_treeset_add(set, &d);
 
-    int one   = 0;
-    int two   = 0;
+    int one = 0;
+    int two = 0;
     int three = 0;
-    int four  = 0;
+    int four = 0;
 
     CC_TreeSetIter iter;
     cc_treeset_iter_init(&iter, set);
 
-    void *e;
+    void* e;
     while (cc_treeset_iter_next(&iter, &e) != CC_ITER_END) {
         if (*((int*)e) == a)
             one++;
@@ -123,14 +139,20 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetIterNext)
             four++;
     }
 
-    CHECK_EQUAL_C_INT(1, one);
-    CHECK_EQUAL_C_INT(1, two);
-    CHECK_EQUAL_C_INT(1, three);
-    CHECK_EQUAL_C_INT(1, four);
-};
+	munit_assert_int(1, == , one);
+	munit_assert_int(1, == , two);
+	munit_assert_int(1, == , three);
+	munit_assert_int(1, == , four);
 
-TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetIterRemove)
+    cc_treeset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    CC_TreeSet* set;
+    cc_treeset_new(cmp, &set);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -142,11 +164,33 @@ TEST_C(CC_TreeSetTestsWithDefaults, CC_TreeSetIterRemove)
     CC_TreeSetIter iter;
     cc_treeset_iter_init(&iter, set);
 
-    void *e;
+    void* e;
     while (cc_treeset_iter_next(&iter, &e) != CC_ITER_END) {
         if (*((int*)e) == b)
             cc_treeset_iter_remove(&iter, NULL);
     }
-    CHECK_EQUAL_C_INT(2, cc_treeset_size(set));
-    CHECK_EQUAL_C_INT(0, cc_treeset_contains(set, &b));
+    munit_assert_size(2, == , cc_treeset_size(set));
+    munit_assert_false(cc_treeset_contains(set, &b));
+
+    cc_treeset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitTest test_suite_tests[] = {
+    { (char*)"/treeset/test_add", test_add, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/treeset/test_remove", test_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/treeset/test_remove_all", test_remove_all, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/treeset/test_size", test_size, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/treeset/test_iter_next", test_iter_next, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/treeset/test_iter_remove", test_iter_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
+
+static const MunitSuite test_suite = {
+    (char*)"", test_suite_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
+};
+
+int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)])
+{
+    return munit_suite_main(&test_suite, (void*)"test", argc, argv);
+}

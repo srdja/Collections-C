@@ -1,45 +1,40 @@
-#include "CppUTest/TestHarness_c.h"
+#include "munit.h"
 #include "cc_deque.h"
+#include <stdlib.h>
 
-static CC_Deque *deque;
-static CC_DequeConf conf;
-int stat;
 
-void *cpy(void *e)
+void* cpy(void* e)
 {
-    int  o = *((int*) e);
-    int *c = malloc(sizeof(int));
+    int  o = *((int*)e);
+    int* c = malloc(sizeof(int));
     *c = o;
-    return (void*) c;
+    return (void*)c;
 }
 
-bool pred1(const void *e)
+bool pred1(const void* e)
 {
     return *(int*)e <= 3;
 }
 
-bool pred2(const void *e)
+bool pred2(const void* e)
 {
     return *(int*)e > 3;
 }
 
-bool pred3(const void *e)
+bool pred3(const void* e)
 {
     return *(int*)e > 5;
 }
 
-TEST_GROUP_C_SETUP(CC_DequeTests)
-{
-  stat = cc_deque_new(&deque);
-};
 
-TEST_GROUP_C_TEARDOWN(CC_DequeTests)
+/*****************************
+ * TESTS
+ *****************************/
+static MunitResult test_add_first(const MunitParameter params[], void* fixture)
 {
-  cc_deque_destroy(deque);
-};
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
-TEST_C(CC_DequeTests, CC_DequeAddFirst)
-{
     int a = 1;
     int b = 2;
     int c = 3;
@@ -48,23 +43,29 @@ TEST_C(CC_DequeTests, CC_DequeAddFirst)
     cc_deque_add_first(deque, &b);
     cc_deque_add_first(deque, &c);
 
-    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
+    munit_assert_size(3, == , cc_deque_size(deque));
 
     size_t m = cc_deque_capacity(deque);
-    const void * const* u = cc_deque_get_buffer(deque);
-    const void *e = u[m - 1];
+    const void* const* u = cc_deque_get_buffer(deque);
+    const void* e = u[m - 1];
 
-    CHECK_EQUAL_C_POINTER(e, &a);
+    munit_assert_ptr_equal(e, &a);
 
     e = u[m - 2];
-    CHECK_EQUAL_C_POINTER(e, &b);
+    munit_assert_ptr_equal(e, &b);
 
     e = u[m - 3];
-    CHECK_EQUAL_C_POINTER(e, &c);
-};
+    munit_assert_ptr_equal(e, &c);
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeAddLast)
+    return MUNIT_OK;
+}
+
+static MunitResult test_add_last(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -73,24 +74,28 @@ TEST_C(CC_DequeTests, CC_DequeAddLast)
     cc_deque_add_last(deque, &b);
     cc_deque_add_last(deque, &c);
 
-    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
+    munit_assert_size(3, == , cc_deque_size(deque));
 
-    const void * const* u= cc_deque_get_buffer(deque);
-    const void *e = u[0];
+    const void* const* u = cc_deque_get_buffer(deque);
+    const void* e = u[0];
 
-    CHECK_EQUAL_C_POINTER(e, &a);
+    munit_assert_ptr_equal(e, &a);
 
     e = u[1];
-    CHECK_EQUAL_C_POINTER(e, &b);
+    munit_assert_ptr_equal(e, &b);
 
     e = u[2];
-    CHECK_EQUAL_C_POINTER(e, &c);
-};
+    munit_assert_ptr_equal(e, &c);
 
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeAddAt1)
+    return MUNIT_OK;
+}
+
+static MunitResult test_add_at1(const MunitParameter params[], void* fixture)
 {
-    /* index < (size / 2) && index_raw > first_raw */
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
     int a = 1;
     int b = 2;
@@ -109,19 +114,24 @@ TEST_C(CC_DequeTests, CC_DequeAddAt1)
 
     cc_deque_add_at(deque, &g, 4);
 
-    const void * const* buff = cc_deque_get_buffer(deque);
+    const void* const* buff = cc_deque_get_buffer(deque);
 
-    CHECK_EQUAL_C_POINTER(buff[4], &g);
+    munit_assert_ptr_equal(buff[4], &g);
 
-    CHECK_EQUAL_C_POINTER(buff[5], &e);
+    munit_assert_ptr_equal(buff[5], &e);
 
-    const void *elem = buff[6];
-    CHECK_EQUAL_C_POINTER(elem, &f);
-};
+    const void* elem = buff[6];
+    munit_assert_ptr_equal(elem, &f);
 
-TEST_C(CC_DequeTests, CC_DequeAddAt2)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_add_at2(const MunitParameter params[], void* fixture)
 {
-    /* index < deque->size / 2 && index_raw > first_raw */
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
     int a = 1;
     int b = 2;
@@ -140,24 +150,29 @@ TEST_C(CC_DequeTests, CC_DequeAddAt2)
 
     cc_deque_add_at(deque, &g, 1);
 
-    const void * const *buff = cc_deque_get_buffer(deque);
-    const void *elem = buff[5];
+    const void* const* buff = cc_deque_get_buffer(deque);
+    const void* elem = buff[5];
 
-    CHECK_EQUAL_C_POINTER(elem, &g);
+    munit_assert_ptr_equal(elem, &g);
 
-    const void *elem1 = buff[0];
-    CHECK_EQUAL_C_POINTER(elem1, &a);
+    const void* elem1 = buff[0];
+    munit_assert_ptr_equal(elem1, &a);
 
-    const void *elem2 = buff[7];
-    CHECK_EQUAL_C_POINTER(elem2, &c);
+    const void* elem2 = buff[7];
+    munit_assert_ptr_equal(elem2, &c);
 
-    const void *elem3 = buff[3];
-    CHECK_EQUAL_C_POINTER(elem3, &f);
-};
+    const void* elem3 = buff[3];
+    munit_assert_ptr_equal(elem3, &f);
 
-TEST_C(CC_DequeTests, CC_DequeAddAt3)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_add_at3(const MunitParameter params[], void* fixture)
 {
-    /* index >= size / 2 && index_raw > last_raw */
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
     int a = 1;
     int b = 2;
@@ -176,24 +191,29 @@ TEST_C(CC_DequeTests, CC_DequeAddAt3)
 
     cc_deque_add_at(deque, &g, 3);
 
-    const void * const* buff = cc_deque_get_buffer(deque);
+    const void* const* buff = cc_deque_get_buffer(deque);
 
-    const void *elem = buff[6];
-    CHECK_EQUAL_C_POINTER(elem, &g);
+    const void* elem = buff[6];
+    munit_assert_ptr_equal(elem, &g);
 
-    const void *elem1 = buff[0];
-    CHECK_EQUAL_C_POINTER(elem1, &b);
+    const void* elem1 = buff[0];
+    munit_assert_ptr_equal(elem1, &b);
 
-    const void *elem2 = buff[7];
-    CHECK_EQUAL_C_POINTER(elem2, &c);
+    const void* elem2 = buff[7];
+    munit_assert_ptr_equal(elem2, &c);
 
-    const void *elem3 = buff[1];
-    CHECK_EQUAL_C_POINTER(elem3, &a);
-};
+    const void* elem3 = buff[1];
+    munit_assert_ptr_equal(elem3, &a);
 
-TEST_C(CC_DequeTests, CC_DequeAddAt4)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_add_at4(const MunitParameter params[], void* fixture)
 {
-    /* index < size / 2 && index_raw < last_raw*/
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
     int a = 1;
     int b = 2;
@@ -212,24 +232,28 @@ TEST_C(CC_DequeTests, CC_DequeAddAt4)
 
     cc_deque_add_at(deque, &g, 1);
 
-    const void * const*buff = cc_deque_get_buffer(deque);
-    const int elem = *((int*) buff[0]);
+    const void* const* buff = cc_deque_get_buffer(deque);
+    const int elem = *((int*)buff[0]);
 
-    CHECK_EQUAL_C_INT(elem, g);
+    munit_assert_int(elem, == , g);
 
-    const int elem1 = *((int*) buff[4]);
-    CHECK_EQUAL_C_INT(elem1, e);
+    const int elem1 = *((int*)buff[4]);
+    munit_assert_int(elem1, == , e);
 
-    const int elem2 = *((int*) buff[6]);
-    CHECK_EQUAL_C_INT(elem2, f);
+    const int elem2 = *((int*)buff[6]);
+    munit_assert_int(elem2, == , f);
 
-    const int elem3 = *((int*) buff[7]);
-    CHECK_EQUAL_C_INT(elem3, a);
-};
+    const int elem3 = *((int*)buff[7]);
+    munit_assert_int(elem3, ==, a);
 
-TEST_C(CC_DequeTests, CC_DequeAddAt5)
+    cc_deque_destroy(deque);
+    return MUNIT_OK;
+}
+
+static MunitResult test_add_at5(const MunitParameter params[], void* fixture)
 {
-    /* f == 0*/
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
     int a = 1;
     int b = 2;
@@ -248,23 +272,29 @@ TEST_C(CC_DequeTests, CC_DequeAddAt5)
 
     cc_deque_add_at(deque, &g, 1);
 
-    const void * const* buff = cc_deque_get_buffer(deque);
-    const int elem = *((int*) buff[7]);
+    const void* const* buff = cc_deque_get_buffer(deque);
+    const int elem = *((int*)buff[7]);
 
-    CHECK_EQUAL_C_INT(elem, a);
+    munit_assert_int(elem, ==, a);
 
-    const int elem1 = *((int*) buff[0]);
-    CHECK_EQUAL_C_INT(elem1, b);
+    const int elem1 = *((int*)buff[0]);
+    munit_assert_int(elem1, == , b);
 
-    const int elem2 = *((int*) buff[5]);
-    CHECK_EQUAL_C_INT(elem2, f);
+    const int elem2 = *((int*)buff[5]);
+    munit_assert_int(elem2, ==, f);
 
-    const int elem3 = *((int*) buff[1]);
-    CHECK_EQUAL_C_INT(elem3, g);
-};
+    const int elem3 = *((int*)buff[1]);
+    munit_assert_int(elem3, == , g);
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeRemoveFirst)
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_first(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -275,20 +305,27 @@ TEST_C(CC_DequeTests, CC_DequeRemoveFirst)
     cc_deque_add_last(deque, &c);
     cc_deque_add_last(deque, &d);
 
-    int *first;
-    cc_deque_get_first(deque, (void*) &first);
-    CHECK_EQUAL_C_INT(a, *first);
+    int* first;
+    cc_deque_get_first(deque, (void*)&first);
+    munit_assert_int(a, == , *first);
 
-    int *removed;
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(a, *removed);
+    int* removed;
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(a, ==, *removed);
 
-    cc_deque_get_first(deque, (void*) &first);
-    CHECK_EQUAL_C_INT(b, *first);
-};
+    cc_deque_get_first(deque, (void*)&first);
+    munit_assert_int(b, == , *first);
 
-TEST_C(CC_DequeTests, CC_DequeRemoveLast)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_last(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -299,20 +336,27 @@ TEST_C(CC_DequeTests, CC_DequeRemoveLast)
     cc_deque_add_last(deque, &c);
     cc_deque_add_last(deque, &d);
 
-    int *last;
-    cc_deque_get_last(deque, (void*) &last);
-    CHECK_EQUAL_C_INT(d, *last);
+    int* last;
+    cc_deque_get_last(deque, (void*)&last);
+    munit_assert_int(d, == , *last);
 
-    int *removed;
-    cc_deque_remove_last(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(d, *removed);
+    int* removed;
+    cc_deque_remove_last(deque, (void*)&removed);
+    munit_assert_int(d, == , *removed);
 
-    cc_deque_get_last(deque, (void*) &last);
-    CHECK_EQUAL_C_INT(c, *last);
-};
+    cc_deque_get_last(deque, (void*)&last);
+    munit_assert_int(c, == , *last);
 
-TEST_C(CC_DequeTests, CC_DequeRemoveAll)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -323,19 +367,26 @@ TEST_C(CC_DequeTests, CC_DequeRemoveAll)
 
     cc_deque_remove_all(deque);
 
-    void *first;
+    void* first;
     int stat1 = cc_deque_get_first(deque, &first);
-    void *last;
+    void* last;
     int stat2 = cc_deque_get_last(deque, &last);
 
-    CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, stat1);
-    CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, stat2);
+    munit_assert_int(CC_ERR_OUT_OF_RANGE, ==, stat1);
+    munit_assert_int(CC_ERR_OUT_OF_RANGE, == , stat2);
 
-    CHECK_EQUAL_C_INT(0, cc_deque_size(deque));
-};
+    munit_assert_size(0, == , cc_deque_size(deque));
 
-TEST_C(CC_DequeTests, CC_DequeGetAt)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_at(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -344,17 +395,24 @@ TEST_C(CC_DequeTests, CC_DequeGetAt)
     cc_deque_add(deque, &b);
     cc_deque_add(deque, &c);
 
-    void *e;
+    void* e;
     cc_deque_get_at(deque, 1, &e);
-    void *n;
+    void* n;
     int status = cc_deque_get_at(deque, 42, &n);
 
-    CHECK_EQUAL_C_INT(b, *(int*)e);
-    CHECK_EQUAL_C_INT(CC_ERR_OUT_OF_RANGE, status);
-};
+    munit_assert_int(b, == , *(int*)e);
+    munit_assert_int(CC_ERR_OUT_OF_RANGE, == , status);
 
-TEST_C(CC_DequeTests, CC_DequeGetFirst)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_first(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -363,14 +421,20 @@ TEST_C(CC_DequeTests, CC_DequeGetFirst)
     cc_deque_add_last(deque, &b);
     cc_deque_add_first(deque, &c);
 
-    int *first;
-    cc_deque_get_first(deque, (void*) &first);
+    int* first;
+    cc_deque_get_first(deque, (void*)&first);
 
-    CHECK_EQUAL_C_INT(c, *first);
-};
+    munit_assert_int(c, == , *first);
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeGetLast)
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -379,14 +443,21 @@ TEST_C(CC_DequeTests, CC_DequeGetLast)
     cc_deque_add_last(deque, &b);
     cc_deque_add_first(deque, &c);
 
-    int *last;
-    cc_deque_get_last(deque, (void*) &last);
+    int* last;
+    cc_deque_get_last(deque, (void*)&last);
 
-    CHECK_EQUAL_C_INT(b, *last);
-};
+    munit_assert_int(b, == , *last);
 
-TEST_C(CC_DequeTests, CC_DequeCopyShallow)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_copy_shallow(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -395,32 +466,39 @@ TEST_C(CC_DequeTests, CC_DequeCopyShallow)
     cc_deque_add_last(deque, &b);
     cc_deque_add_last(deque, &c);
 
-    CC_Deque *copy;
+    CC_Deque* copy;
     cc_deque_copy_shallow(deque, &copy);
 
-    int size = cc_deque_size(copy);
-    CHECK_EQUAL_C_INT(3, size);
+    size_t size = cc_deque_size(copy);
+    munit_assert_size(3, == , size);
 
-    int *ca;
+    int* ca;
     cc_deque_get_at(copy, 0, (void*)&ca);
 
-    int *cb;
+    int* cb;
     cc_deque_get_at(copy, 1, (void*)&cb);
 
-    int *cc;
+    int* cc;
     cc_deque_get_at(copy, 2, (void*)&cc);
 
-    CHECK_EQUAL_C_INT(a, *ca);
-    CHECK_EQUAL_C_INT(b, *cb);
-    CHECK_EQUAL_C_INT(c, *cc);
-    cc_deque_destroy(copy);
-};
+    munit_assert_int(a, == , *ca);
+    munit_assert_int(b, == , *cb);
+    munit_assert_int(c, == , *cc);
 
-TEST_C(CC_DequeTests, CC_DequeCopyDeep)
+    cc_deque_destroy(copy);
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_copy_deep(const MunitParameter params[], void* fixture)
 {
-    int *a = malloc(sizeof(int));
-    int *b = malloc(sizeof(int));
-    int *c = malloc(sizeof(int));
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
+    int* a = malloc(sizeof(int));
+    int* b = malloc(sizeof(int));
+    int* c = malloc(sizeof(int));
 
     *a = 1;
     *b = 2;
@@ -430,31 +508,36 @@ TEST_C(CC_DequeTests, CC_DequeCopyDeep)
     cc_deque_add_last(deque, b);
     cc_deque_add_last(deque, c);
 
-    CC_Deque *copy;
+    CC_Deque* copy;
     cc_deque_copy_deep(deque, cpy, &copy);
 
-    int size = cc_deque_size(copy);
-    CHECK_EQUAL_C_INT(3, size);
+    size_t size = cc_deque_size(copy);
+    munit_assert_size(size, == , 3);
 
-    int *ca;
+    int* ca;
     cc_deque_get_at(copy, 0, (void*)&ca);
-    int *cb;
+    int* cb;
     cc_deque_get_at(copy, 1, (void*)&cb);
-    int *cc;
+    int* cc;
     cc_deque_get_at(copy, 2, (void*)&cc);
 
-    CHECK_EQUAL_C_INT(1, *ca);
-    CHECK_EQUAL_C_INT(2, *cb);
-    CHECK_EQUAL_C_INT(3, *cc);
+    munit_assert_int(1, == , *ca);
+    munit_assert_int(2, == , *cb);
+    munit_assert_int(3, == , *cc);
+
+    cc_deque_destroy(deque);
     cc_deque_destroy_cb(copy, free);
     free(a);
     free(b);
     free(c);
+    return MUNIT_OK;
 }
 
-
-TEST_C(CC_DequeTests, CC_DequeContains)
+static MunitResult test_contains(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -471,13 +554,20 @@ TEST_C(CC_DequeTests, CC_DequeContains)
     cc_deque_add(deque, &f);
     cc_deque_add(deque, &a);
 
-    CHECK_EQUAL_C_INT(2, cc_deque_contains(deque, &a));
-    CHECK_EQUAL_C_INT(0, cc_deque_contains(deque, &g));
-    CHECK_EQUAL_C_INT(1, cc_deque_contains(deque, &e));
-};
+    munit_assert_size(2, == , cc_deque_contains(deque, &a));
+    munit_assert_size(0, == , cc_deque_contains(deque, &g));
+    munit_assert_size(1, == , cc_deque_contains(deque, &e));
 
-TEST_C(CC_DequeTests, CC_DequeSize)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -489,20 +579,23 @@ TEST_C(CC_DequeTests, CC_DequeSize)
     cc_deque_add(deque, &d);
 
     size_t size = cc_deque_size(deque);
-    CHECK_EQUAL_C_INT(4, size);
-};
+    munit_assert_size(4, == , size);
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeCapacity)
+    return MUNIT_OK;
+}
+
+static MunitResult test_capacity(const MunitParameter params[], void* fixture)
 {
     CC_DequeConf conf;
     cc_deque_conf_init(&conf);
 
     conf.capacity = 2;
 
-    CC_Deque *deque;
+    CC_Deque* deque;
     cc_deque_new_conf(&conf, &deque);
 
-    CHECK_EQUAL_C_INT(2, cc_deque_capacity(deque));
+    munit_assert_size(2, ==, cc_deque_capacity(deque));
 
     int a = 1;
     int b = 2;
@@ -512,12 +605,18 @@ TEST_C(CC_DequeTests, CC_DequeCapacity)
     cc_deque_add(deque, &b);
     cc_deque_add(deque, &c);
 
-    CHECK_EQUAL_C_INT(4, cc_deque_capacity(deque));
+    munit_assert_size(4, == , cc_deque_capacity(deque));
+
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
 }
 
-
-TEST_C(CC_DequeTests, CC_DequeTrimCapacity)
+static MunitResult test_trim_capacity(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -526,15 +625,22 @@ TEST_C(CC_DequeTests, CC_DequeTrimCapacity)
     cc_deque_add(deque, &b);
     cc_deque_add(deque, &c);
 
-    CHECK_EQUAL_C_INT(8, cc_deque_capacity(deque));
+    munit_assert_size(8, ==, cc_deque_capacity(deque));
 
     cc_deque_trim_capacity(deque);
 
-    CHECK_EQUAL_C_INT(4, cc_deque_capacity(deque));
-};
+    munit_assert_size(4, ==, cc_deque_capacity(deque));
 
-TEST_C(CC_DequeTests, CC_DequeReverse)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_reverse(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -545,20 +651,27 @@ TEST_C(CC_DequeTests, CC_DequeReverse)
 
     cc_deque_reverse(deque);
 
-    int *ra;
+    int* ra;
     cc_deque_get_at(deque, 0, (void*)&ra);
-    int *rb;
+    int* rb;
     cc_deque_get_at(deque, 1, (void*)&rb);
-    int *rc;
+    int* rc;
     cc_deque_get_at(deque, 2, (void*)&rc);
 
-    CHECK_EQUAL_C_INT(c, *ra);
-    CHECK_EQUAL_C_INT(b, *rb);
-    CHECK_EQUAL_C_INT(a, *rc);
-};
+    munit_assert_int(c, == , *ra);
+    munit_assert_int(b, == , *rb);
+    munit_assert_int(a, == , *rc);
 
-TEST_C(CC_DequeTests, CC_DequeIteratorAdd)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_iterator_add(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -580,27 +693,34 @@ TEST_C(CC_DequeTests, CC_DequeIteratorAdd)
 
     size_t i = 0;
 
-    int *el;
+    int* el;
 
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, == , cc_deque_size(deque));
 
-    while (cc_deque_iter_next(&iter, (void*) &el) != CC_ITER_END) {
+    while (cc_deque_iter_next(&iter, (void*)&el) != CC_ITER_END) {
         if (*el == d)
             cc_deque_iter_add(&iter, &g);
         if (i >= 3) {
-          CHECK_EQUAL_C_INT(i, cc_deque_iter_index(&iter) - 1);
+            munit_assert_size(i, == , cc_deque_iter_index(&iter) - 1);
         }
         i++;
     }
-    CHECK_EQUAL_C_INT(7, cc_deque_size(deque));
+    munit_assert_size(7, == , cc_deque_size(deque));
 
-    void *ret;
+    void* ret;
     cc_deque_get_at(deque, 4, &ret);
-    CHECK_EQUAL_C_INT(g, *(int*)ret);
-};
+    munit_assert_int(g, == , *(int*)ret);
 
-TEST_C(CC_DequeTests, CC_DequeIteratorRemove)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_iterator_remove(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -619,27 +739,34 @@ TEST_C(CC_DequeTests, CC_DequeIteratorRemove)
     cc_deque_iter_init(&iter, deque);
 
     size_t i = 0;
-    void *el;
-    int  *removed;
+    void* el;
+    int* removed;
     while (cc_deque_iter_next(&iter, &el) != CC_ITER_END) {
         if (i == 3)
-            cc_deque_iter_remove(&iter, (void**) &removed);
+            cc_deque_iter_remove(&iter, (void**)&removed);
 
         if (i > 2) {
-          CHECK_EQUAL_C_INT(5, cc_deque_size(deque));
-        } else {
-          CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+            munit_assert_size(5, == , cc_deque_size(deque));
+        }
+        else {
+            munit_assert_size(6, == , cc_deque_size(deque));
         }
         if (i >= 3) {
-          CHECK_EQUAL_C_INT(i-1, cc_deque_iter_index(&iter));
+            munit_assert_size(i - 1, ==, cc_deque_iter_index(&iter));
         }
         i++;
     }
-    CHECK_EQUAL_C_INT(d, *removed);
-};
+    munit_assert_int(d, == , *removed);
 
-TEST_C(CC_DequeTests, CC_DequeIteratorNext)
+    cc_deque_destroy(deque);
+    return MUNIT_OK;
+}
+
+static MunitResult test_iterator_next(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -659,25 +786,31 @@ TEST_C(CC_DequeTests, CC_DequeIteratorNext)
 
     size_t i = 0;
 
-    void *el;
+    void* el;
     while (cc_deque_iter_next(&iter, &el) != CC_ITER_END) {
-        void *k;
+        void* k;
         cc_deque_get_at(deque, i, &k);
-        CHECK_EQUAL_C_POINTER(k, el);
+        munit_assert_ptr_equal(k, el);
         i++;
 
-        CHECK_EQUAL_C_INT(i, iter.index);
+        munit_assert_size(i, == , iter.index);
     }
-};
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeZipIterRemove)
+    return MUNIT_OK;
+}
+
+static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     cc_deque_add(deque, "a");
     cc_deque_add(deque, "b");
     cc_deque_add(deque, "c");
     cc_deque_add(deque, "d");
 
-    CC_Deque *d2;
+    CC_Deque* d2;
     cc_deque_new(&d2);
 
     cc_deque_add(d2, "e");
@@ -687,73 +820,90 @@ TEST_C(CC_DequeTests, CC_DequeZipIterRemove)
     CC_DequeZipIter zip;
     cc_deque_zip_iter_init(&zip, deque, d2);
 
-    void *e1, *e2;
-    void *r1, *r2;
+    void* e1, * e2;
+    void* r1, * r2;
     while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
-        if (strcmp((char*) e1, "b") == 0)
+        if (strcmp((char*)e1, "b") == 0)
             cc_deque_zip_iter_remove(&zip, &r1, &r2);
     }
-    CHECK_EQUAL_C_STRING("b", (char*)r1);
-    CHECK_EQUAL_C_STRING("f", (char*)r2);
-    CHECK_EQUAL_C_INT(0, cc_deque_contains(deque, "b"));
-    CHECK_EQUAL_C_INT(0, cc_deque_contains(deque, "f"));
-    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
-    CHECK_EQUAL_C_INT(2, cc_deque_size(d2));
+    munit_assert_string_equal("b", (char*)r1);
+    munit_assert_string_equal("f", (char*)r2);
+    munit_assert_size(0, == , cc_deque_contains(deque, "b"));
+    munit_assert_size(0, == , cc_deque_contains(deque, "f"));
+    munit_assert_size(3, ==, cc_deque_size(deque));
+    munit_assert_size(2, == , cc_deque_size(d2));
+
     cc_deque_destroy(d2);
-};
+    cc_deque_destroy(deque);
+    return MUNIT_OK;
+}
 
-TEST_C(CC_DequeTests, CC_DequeZipIterAdd)
+static MunitResult test_zip_iter_add(const MunitParameter params[], void* fixture)
 {
-    cc_deque_add(deque, "a");
-    cc_deque_add(deque, "b");
-    cc_deque_add(deque, "c");
-    cc_deque_add(deque, "d");
+    CC_Deque* deque;
+    cc_deque_new(&deque);
 
-    CC_Deque *d2;
+    char* a = "a";
+    char* b = "b";
+    char* c = "c";
+    char* d = "d";
+
+    cc_deque_add(deque, a);
+    cc_deque_add(deque, b);
+    cc_deque_add(deque, c);
+    cc_deque_add(deque, d);
+
+    CC_Deque* d2;
     cc_deque_new(&d2);
 
     cc_deque_add(d2, "e");
     cc_deque_add(d2, "f");
     cc_deque_add(d2, "g");
 
-    char *h = "h";
-    char *i = "i";
+    char* h = "h";
+    char* i = "i";
 
     CC_DequeZipIter zip;
     cc_deque_zip_iter_init(&zip, deque, d2);
 
-    void *e1, *e2;
+    void* e1, * e2;
     while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
-        if (strcmp((char*) e1, "b") == 0)
+        if (strcmp((char*)e1, "b") == 0)
             cc_deque_zip_iter_add(&zip, h, i);
     }
 
     size_t index;
-    cc_deque_index_of(deque, "h", &index);
+    cc_deque_index_of(deque, h, &index);
 
-    CHECK_EQUAL_C_INT(2, index);
+    munit_assert_size(2, == , index);
 
-    cc_deque_index_of(deque, "i", &index);
-    CHECK_EQUAL_C_INT(2, index);
+    cc_deque_index_of(deque, i, &index);
+    munit_assert_size(2, == , index);
 
-    cc_deque_index_of(deque, "c", &index);
-    CHECK_EQUAL_C_INT(3, index);
-    CHECK_EQUAL_C_INT(1, cc_deque_contains(deque, "h"));
-    CHECK_EQUAL_C_INT(1, cc_deque_contains(d2, "i"));
-    CHECK_EQUAL_C_INT(5, cc_deque_size(deque));
-    CHECK_EQUAL_C_INT(4, cc_deque_size(d2));
+    cc_deque_index_of(deque, c, &index);
+    munit_assert_size(3, == , index);
+
+    munit_assert_size(1, == , cc_deque_contains(deque, h));
+    munit_assert_size(1, == , cc_deque_contains(d2, i));
+    munit_assert_size(5, == , cc_deque_size(deque));
+    munit_assert_size(4, == , cc_deque_size(d2));
+
     cc_deque_destroy(d2);
-};
+    cc_deque_destroy(deque);
+    return MUNIT_OK;
+}
 
-
-TEST_C(CC_DequeTests, CC_DequeZipIterNext)
+static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     cc_deque_add(deque, "a");
     cc_deque_add(deque, "b");
     cc_deque_add(deque, "c");
     cc_deque_add(deque, "d");
 
-    CC_Deque *d2;
+    CC_Deque* d2;
     cc_deque_new(&d2);
 
     cc_deque_add(d2, "e");
@@ -765,75 +915,80 @@ TEST_C(CC_DequeTests, CC_DequeZipIterNext)
 
     size_t i = 0;
 
-    void *e1, *e2;
+    void* e1, * e2;
     while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (i == 0) {
-          CHECK_EQUAL_C_STRING("a", (char*)e1);
-          CHECK_EQUAL_C_STRING("e", (char*)e2);
+            munit_assert_string_equal("a", (char*)e1);
+            munit_assert_string_equal("e", (char*)e2);
         }
         if (i == 2) {
-          CHECK_EQUAL_C_STRING("c", (char*)e1);
-          CHECK_EQUAL_C_STRING("g", (char*)e2);
+            munit_assert_string_equal("c", (char*)e1);
+            munit_assert_string_equal("g", (char*)e2);
         }
         i++;
     }
-    CHECK_EQUAL_C_INT(3, i);
-    cc_deque_destroy(d2);
-};
+    munit_assert_size(3, == , i);
 
-TEST_C(CC_DequeTests, CC_DequeZipIterReplace)
+    cc_deque_destroy(d2);
+    cc_deque_destroy(deque);
+    return MUNIT_OK;
+}
+
+static MunitResult test_zip_iter_replace(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     cc_deque_add(deque, "a");
     cc_deque_add(deque, "b");
     cc_deque_add(deque, "c");
     cc_deque_add(deque, "d");
 
-    CC_Deque *d2;
+    CC_Deque* d2;
     cc_deque_new(&d2);
 
     cc_deque_add(d2, "e");
     cc_deque_add(d2, "f");
     cc_deque_add(d2, "g");
 
-    char *h = "h";
-    char *i = "i";
+    char* h = "h";
+    char* i = "i";
 
     CC_DequeZipIter zip;
     cc_deque_zip_iter_init(&zip, deque, d2);
 
-    void *e1, *e2;
-    void *r1, *r2;
+    void* e1, * e2;
+    void* r1, * r2;
     while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
-        if (strcmp((char*) e1, "b") == 0)
+        if (strcmp((char*)e1, "b") == 0) {
             cc_deque_zip_iter_replace(&zip, h, i, &r1, &r2);
+        }
     }
-
     size_t index;
-    cc_deque_index_of(deque, "h", &index);
+    cc_deque_index_of(deque, h, &index);
+    munit_assert_size(1, == , index);
 
-    CHECK_EQUAL_C_INT(1, index);
+    cc_deque_index_of(d2, i, &index);
+    munit_assert_size(1, ==, index);
 
-    cc_deque_index_of(deque, "i", &index);
-    CHECK_EQUAL_C_INT(1, index);
-    CHECK_EQUAL_C_INT(1, cc_deque_contains(deque, "h"));
-    CHECK_EQUAL_C_INT(1, cc_deque_contains(d2, "i"));
+    munit_assert_size(1, == , cc_deque_contains(deque, h));
+    munit_assert_size(1, == , cc_deque_contains(d2, i));
+
     cc_deque_destroy(d2);
-};
+    cc_deque_destroy(deque);
 
-TEST_GROUP_C_SETUP(CC_DequeTestsConf)
-{
-  cc_deque_conf_init(&conf);
-  conf.capacity = 4;
-  cc_deque_new_conf(&conf, &deque);
-};
+    return MUNIT_OK;
+}
 
-TEST_GROUP_C_TEARDOWN(CC_DequeTestsConf)
+static MunitResult test_deque_buffer_expansion(const MunitParameter params[], void* fixture)
 {
-  cc_deque_destroy(deque);
-};
+    CC_DequeConf conf;
+    cc_deque_conf_init(&conf);
+    conf.capacity = 4;
 
-TEST_C(CC_DequeTestsConf, CC_DequeBufferExpansion)
-{
+    CC_Deque* deque;
+    cc_deque_new_conf(&conf, &deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -848,7 +1003,7 @@ TEST_C(CC_DequeTestsConf, CC_DequeBufferExpansion)
 
     size_t capacity = cc_deque_capacity(deque);
 
-    CHECK_EQUAL_C_INT(4, capacity);
+    munit_assert_size(4, == , capacity);
 
     /* Current layout:
        _________________
@@ -856,38 +1011,45 @@ TEST_C(CC_DequeTestsConf, CC_DequeBufferExpansion)
        -----------------
              L   F
      */
-    /* This line should trigger the buffer expansion */
+     /* This line should trigger the buffer expansion */
     cc_deque_add_first(deque, &e);
 
     capacity = cc_deque_capacity(deque);
-    CHECK_EQUAL_C_INT(8, capacity);
+    munit_assert_size(8, == , capacity);
 
     /* The expansion should align the elements.*/
-    const void * const* buff = cc_deque_get_buffer(deque);
-    const int elem = *((int*) buff[0]);
+    const void* const* buff = cc_deque_get_buffer(deque);
+    const int elem = *((int*)buff[0]);
 
-    CHECK_EQUAL_C_INT(elem, c);
+    munit_assert_int(elem, ==, c);
 
-    const int elem1 = *((int*) buff[1]);
-    CHECK_EQUAL_C_INT(elem1, a);
+    const int elem1 = *((int*)buff[1]);
+    munit_assert_int(elem1, == , a);
 
-    const int elem2 = *((int*) buff[2]);
-    CHECK_EQUAL_C_INT(elem2, b);
+    const int elem2 = *((int*)buff[2]);
+    munit_assert_int(elem2, == , b);
 
-    const int elem3 = *((int*) buff[3]);
-    CHECK_EQUAL_C_INT(elem3, d);
+    const int elem3 = *((int*)buff[3]);
+    munit_assert_int(elem3, == , d);
 
-    const int elem4 = *((int*) buff[7]);
-    CHECK_EQUAL_C_INT(elem4, e);
+    const int elem4 = *((int*)buff[7]);
+    munit_assert_int(elem4, == , e);
 
     cc_deque_add_last(deque, &f);
 
-    const int elem5 = *((int*) buff[4]);
-    CHECK_EQUAL_C_INT(elem5, f);
-};
+    const int elem5 = *((int*)buff[4]);
+    munit_assert_int(elem5, == , f);
 
-TEST_C(CC_DequeTests, CC_DequeFilter1)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_filter1(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -901,23 +1063,31 @@ TEST_C(CC_DequeTests, CC_DequeFilter1)
     cc_deque_add_last(deque, &d);
     cc_deque_add_last(deque, &e);
     cc_deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, == , cc_deque_size(deque));
 
-    CC_Deque *filter = NULL;
+    CC_Deque* filter = NULL;
     cc_deque_filter(deque, pred1, &filter);
-    CHECK_EQUAL_C_INT(3, cc_deque_size(filter));
-    const void * const* buff = cc_deque_get_buffer(filter);
+    munit_assert_size(3, == , cc_deque_size(filter));
 
-    CHECK_EQUAL_C_POINTER(buff[0], &a);
-    CHECK_EQUAL_C_POINTER(buff[1], &b);
+    const void* const* buff = cc_deque_get_buffer(filter);
 
-    const void *elem = buff[2];
-    CHECK_EQUAL_C_POINTER(elem, &c);
-    free(filter);
-};
+    munit_assert_ptr_equal(buff[0], &a);
+    munit_assert_ptr_equal(buff[1], &b);
 
-TEST_C(CC_DequeTests, CC_DequeFilter2)
+    const void* elem = buff[2];
+    munit_assert_ptr_equal(elem, &c);
+
+    cc_deque_destroy(filter);
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_filter2(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -931,22 +1101,29 @@ TEST_C(CC_DequeTests, CC_DequeFilter2)
     cc_deque_add_last(deque, &d);
     cc_deque_add_last(deque, &e);
     cc_deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, ==, cc_deque_size(deque));
 
-    CC_Deque *filter = NULL;
+    CC_Deque* filter = NULL;
     cc_deque_filter(deque, pred2, &filter);
-    const void * const* buff = cc_deque_get_buffer(filter);
+    const void* const* buff = cc_deque_get_buffer(filter);
 
-    CHECK_EQUAL_C_INT(3, cc_deque_size(filter));
-    CHECK_EQUAL_C_POINTER(buff[0], &d);
-    CHECK_EQUAL_C_POINTER(buff[1], &e);
-    CHECK_EQUAL_C_POINTER(buff[2], &f);
+    munit_assert_size(3, == , cc_deque_size(filter));
 
-    free(filter);
-};
+    munit_assert_ptr_equal(buff[0], &d);
+    munit_assert_ptr_equal(buff[1], &e);
+    munit_assert_ptr_equal(buff[2], &f);
 
-TEST_C(CC_DequeTests, CC_DequeFilter3)
+    cc_deque_destroy(filter);
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_filter3(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -960,20 +1137,26 @@ TEST_C(CC_DequeTests, CC_DequeFilter3)
     cc_deque_add_last(deque, &d);
     cc_deque_add_last(deque, &e);
     cc_deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, == , cc_deque_size(deque));
 
-    CC_Deque *filter = NULL;
+    CC_Deque* filter = NULL;
     cc_deque_filter(deque, pred3, &filter);
-    const void * const* buff = cc_deque_get_buffer(filter);
+    const void* const* buff = cc_deque_get_buffer(filter);
 
-    CHECK_EQUAL_C_INT(1, cc_deque_size(filter));
-    CHECK_EQUAL_C_POINTER(buff[0], &f);
+    munit_assert_size(1, == , cc_deque_size(filter));
+    munit_assert_ptr_equal(buff[0], &f);
 
-    free(filter);
-};
+    cc_deque_destroy(filter);
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeFilterMut1)
+    return MUNIT_OK;
+}
+
+static MunitResult test_filter_mut1(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -987,24 +1170,31 @@ TEST_C(CC_DequeTests, CC_DequeFilterMut1)
     cc_deque_add_last(deque, &d);
     cc_deque_add_last(deque, &e);
     cc_deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, == , cc_deque_size(deque));
 
     cc_deque_filter_mut(deque, pred1);
-    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
+    munit_assert_size(3, == , cc_deque_size(deque));
 
-    int *removed = NULL;
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(a, *removed);
+    int* removed = NULL;
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(a, == , *removed);
 
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(b, *removed);
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(b, == , *removed);
 
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(c, *removed);
-};
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(c, ==, *removed);
 
-TEST_C(CC_DequeTests, CC_DequeFilterMut2)
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_filter_mut2(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -1018,25 +1208,31 @@ TEST_C(CC_DequeTests, CC_DequeFilterMut2)
     cc_deque_add_last(deque, &d);
     cc_deque_add_last(deque, &e);
     cc_deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, == , cc_deque_size(deque));
 
     cc_deque_filter_mut(deque, pred2);
-    CHECK_EQUAL_C_INT(3, cc_deque_size(deque));
+    munit_assert_size(3, == , cc_deque_size(deque));
 
-    int *removed = NULL;
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(d, *removed);
+    int* removed = NULL;
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(d, == , *removed);
 
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(e, *removed);
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(e, == , *removed);
 
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(f, *removed);
-};
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(f, == , *removed);
 
+    cc_deque_destroy(deque);
 
-TEST_C(CC_DequeTests, CC_DequeFilterMut3)
+    return MUNIT_OK;
+}
+
+static MunitResult test_filter_mut3(const MunitParameter params[], void* fixture)
 {
+    CC_Deque* deque;
+    cc_deque_new(&deque);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -1050,12 +1246,63 @@ TEST_C(CC_DequeTests, CC_DequeFilterMut3)
     cc_deque_add_last(deque, &d);
     cc_deque_add_last(deque, &e);
     cc_deque_add_last(deque, &f);
-    CHECK_EQUAL_C_INT(6, cc_deque_size(deque));
+    munit_assert_size(6, == , cc_deque_size(deque));
 
     cc_deque_filter_mut(deque, pred3);
-    CHECK_EQUAL_C_INT(1, cc_deque_size(deque));
+    munit_assert_size(1, == , cc_deque_size(deque));
 
-    int *removed = NULL;
-    cc_deque_remove_first(deque, (void*) &removed);
-    CHECK_EQUAL_C_INT(f, *removed);
+    int* removed = NULL;
+    cc_deque_remove_first(deque, (void*)&removed);
+    munit_assert_int(f, == , *removed);
+
+    cc_deque_destroy(deque);
+
+    return MUNIT_OK;
+}
+
+static MunitTest test_suite_tests[] = {
+    {(char*)"/deque/test_add_first", test_add_first, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_add_last", test_add_last, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_add_at1", test_add_at1, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_add_at2", test_add_at2, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_add_at3", test_add_at3, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_add_at4", test_add_at4, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_add_at5", test_add_at5, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_remove_first", test_remove_first, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_remove_last", test_remove_last, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_remove_all", test_remove_all, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_get_at", test_get_at, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_get_first", test_get_first, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_get_last", test_get_last, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_copy_shallow", test_copy_shallow, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_copy_deep", test_copy_deep, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_contains", test_contains, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_size", test_size, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_capacity", test_capacity, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_trim_capacity", test_trim_capacity, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_reverse", test_reverse, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_iterator_add", test_iterator_add, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_iterator_remove", test_iterator_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_iterator_next", test_iterator_next, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_zip_iter_remove", test_zip_iter_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_zip_iter_add", test_zip_iter_add, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_zip_iter_next", test_zip_iter_next, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_zip_iter_replace", test_zip_iter_replace, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_deque_buffer_expansion", test_deque_buffer_expansion, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_filter1", test_filter1, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_filter2", test_filter2, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_filter3", test_filter3, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_filter_mut1", test_filter_mut1, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_filter_mut2", test_filter_mut2, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/deque/test_filter_mut3", test_filter_mut3, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
+
+static const MunitSuite test_suite = {
+    (char*)"", test_suite_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
+};
+
+int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)])
+{
+    return munit_suite_main(&test_suite, (void*)"test", argc, argv);
+}

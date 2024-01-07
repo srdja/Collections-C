@@ -1,46 +1,57 @@
-#include <string.h>
+#include "munit.h"
 #include "cc_hashset.h"
-#include "CppUTest/TestHarness_c.h"
+#include <stdlib.h>
 
-static CC_HashSetConf conf;
-static CC_HashSet *set;
-int stat;
-
-TEST_GROUP_C_SETUP(CC_HashSetTests)
+static MunitResult test_new(const MunitParameter params[], void* fixture)
 {
-    stat = cc_hashset_new(&set);
-};
+    CC_HashSet* set;
+    CC_HashSetConf conf;
 
-TEST_GROUP_C_TEARDOWN(CC_HashSetTests)
-{
+    cc_hashset_conf_init(&conf);
+    conf.initial_capacity = 7;
+    munit_assert_int(CC_OK, ==, cc_hashset_new_conf(&conf, &set));
+
+    munit_assert_size(0, == , cc_hashset_size(set));
+    munit_assert_size(8, == , cc_hashset_capacity(set));
+
     cc_hashset_destroy(set);
-};
 
-TEST_C(CC_HashSetTests, CC_HashSetAdd)
+    return MUNIT_OK;
+}
+
+static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
-    CHECK_EQUAL_C_INT(CC_OK, stat);
-    char *a = "foo";
-    char *b = "bar";
-    char *c = "baz";
-    char *d = "foo";
+    CC_HashSet* set;
+    munit_assert_int(CC_OK, == , cc_hashset_new(&set));
+
+    char* a = "foo";
+    char* b = "bar";
+    char* c = "baz";
+    char* d = "foo";
 
     cc_hashset_add(set, a);
     cc_hashset_add(set, b);
     cc_hashset_add(set, c);
     cc_hashset_add(set, d);
 
-    CHECK_EQUAL_C_INT(3, cc_hashset_size(set));
-    CHECK_EQUAL_C_INT(1, cc_hashset_contains(set, a));
-    CHECK_EQUAL_C_INT(1, cc_hashset_contains(set, d));
-};
+    munit_assert_size(3, == , cc_hashset_size(set));
+    munit_assert_true(cc_hashset_contains(set, a));
+    munit_assert_true(cc_hashset_contains(set, d));
 
+    cc_hashset_destroy(set);
 
-TEST_C(CC_HashSetTests, CC_HashSetRemove)
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
-    char *a = "foo";
-    char *b = "bar";
-    char *c = "baz";
-    char *d = "foo";
+    CC_HashSet* set;
+    cc_hashset_new(&set);
+
+    char* a = "foo";
+    char* b = "bar";
+    char* c = "baz";
+    char* d = "foo";
 
     cc_hashset_add(set, a);
     cc_hashset_add(set, b);
@@ -49,17 +60,22 @@ TEST_C(CC_HashSetTests, CC_HashSetRemove)
 
     cc_hashset_remove(set, "bar", NULL);
 
-    CHECK_EQUAL_C_INT(2, cc_hashset_size(set));
-    CHECK_EQUAL_C_INT(0, cc_hashset_contains(set, "bar"));
-};
+    munit_assert_size(2, == , cc_hashset_size(set));
+    munit_assert_false(cc_hashset_contains(set, "bar"));
 
+    cc_hashset_destroy(set);
+    return MUNIT_OK;
+}
 
-TEST_C(CC_HashSetTests, CC_HashSetRemoveAll)
+static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
-    char *a = "foo";
-    char *b = "bar";
-    char *c = "baz";
-    char *d = "foo";
+    CC_HashSet* set;
+    cc_hashset_new(&set);
+
+    char* a = "foo";
+    char* b = "bar";
+    char* c = "baz";
+    char* d = "foo";
 
     cc_hashset_add(set, a);
     cc_hashset_add(set, b);
@@ -68,16 +84,22 @@ TEST_C(CC_HashSetTests, CC_HashSetRemoveAll)
 
     cc_hashset_remove_all(set);
 
-    CHECK_EQUAL_C_INT(0, cc_hashset_size(set));
-    CHECK_C(!cc_hashset_contains(set, "bar"));
-    CHECK_C(!cc_hashset_contains(set, "c"));
-};
+    munit_assert_size(0, == , cc_hashset_size(set));
+    munit_assert_false(cc_hashset_contains(set, "bar"));
+    munit_assert_false(cc_hashset_contains(set, "c"));
 
-TEST_C(CC_HashSetTests, CC_HashSetIterNext)
+    cc_hashset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
-    char *a = "foo";
-    char *b = "bar";
-    char *c = "baz";
+    CC_HashSet* set;
+    cc_hashset_new(&set);
+
+    char* a = "foo";
+    char* b = "bar";
+    char* c = "baz";
 
     cc_hashset_add(set, a);
     cc_hashset_add(set, b);
@@ -90,7 +112,7 @@ TEST_C(CC_HashSetTests, CC_HashSetIterNext)
     CC_HashSetIter iter;
     cc_hashset_iter_init(&iter, set);
 
-    char *e;
+    char* e;
     while (cc_hashset_iter_next(&iter, (void*)&e) != CC_ITER_END) {
         if (!strcmp(e, "foo"))
             x++;
@@ -102,16 +124,22 @@ TEST_C(CC_HashSetTests, CC_HashSetIterNext)
             z++;
     }
 
-    CHECK_EQUAL_C_INT(1, x);
-    CHECK_EQUAL_C_INT(1, y);
-    CHECK_EQUAL_C_INT(1, z);
-};
+    munit_assert_size(1, == , x);
+    munit_assert_size(1, == , y);
+    munit_assert_size(1, == , z);
 
-TEST_C(CC_HashSetTests, CC_HashSetIterRemove)
+    cc_hashset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
-    char *a = "foo";
-    char *b = "bar";
-    char *c = "baz";
+    CC_HashSet* set;
+    cc_hashset_new(&set);
+
+    char* a = "foo";
+    char* b = "bar";
+    char* c = "baz";
 
     cc_hashset_add(set, a);
     cc_hashset_add(set, b);
@@ -120,30 +148,35 @@ TEST_C(CC_HashSetTests, CC_HashSetIterRemove)
     CC_HashSetIter iter;
     cc_hashset_iter_init(&iter, set);
 
-    char *e;
-    while (cc_hashset_iter_next(&iter, (void*) &e) != CC_ITER_END) {
-        if (!strcmp(e, "bar"))
+    char* e;
+    while (cc_hashset_iter_next(&iter, (void*)&e) != CC_ITER_END) {
+        if (!strcmp(e, "bar")) {
             cc_hashset_iter_remove(&iter, NULL);
+        }
     }
 
-    CHECK_EQUAL_C_INT(2, cc_hashset_size(set));
-    CHECK_C(!cc_hashset_contains(set, "bar"));
-};
+    munit_assert_size(2, == , cc_hashset_size(set));
+    munit_assert_false(cc_hashset_contains(set, "bar"));
 
-TEST_GROUP_C_SETUP(CC_HashSetTestsConf)
-{
-    cc_hashset_conf_init(&conf);
-    conf.initial_capacity = 7;
-    cc_hashset_new_conf(&conf, &set);
-};
-
-TEST_GROUP_C_TEARDOWN(CC_HashSetTestsConf)
-{
     cc_hashset_destroy(set);
+    return MUNIT_OK;
+}
+
+static MunitTest test_suite_tests[] = {
+    { (char*)"/hashset/test_new", test_new, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/hashset/test_add", test_add, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/hashset/test_remove", test_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/hashset/test_remove_all", test_remove_all, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/hashset/test_iter_next", test_iter_next, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { (char*)"/hashset/test_iter_remove", test_iter_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
-TEST_C(CC_HashSetTestsConf, CC_HashSetNew)
-{
-    CHECK_EQUAL_C_INT(0, cc_hashset_size(set));
-    CHECK_EQUAL_C_INT(8, cc_hashset_capacity(set));
+static const MunitSuite test_suite = {
+    (char*)"", test_suite_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
 };
+
+int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)])
+{
+    return munit_suite_main(&test_suite, (void*)"test", argc, argv);
+}

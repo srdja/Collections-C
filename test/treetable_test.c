@@ -1,17 +1,12 @@
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-
+#include "munit.h"
 #include "cc_treetable.h"
-#include "cc_deque.h"
-#include "CppUTest/TestHarness_c.h"
+#include <stdlib.h>
 
-static CC_TreeTable *table;
 
-int cmp(const void *k1, const void *k2)
+int cmp(const void* k1, const void* k2)
 {
-    int a = *((int*) k1);
-    int b = *((int*) k2);
+    int a = *((int*)k1);
+    int b = *((int*)k2);
 
     if (a < b)
         return -1;
@@ -21,18 +16,12 @@ int cmp(const void *k1, const void *k2)
         return 0;
 }
 
-TEST_GROUP_C_SETUP(CC_TreeTableTestsWithDefaults)
+
+static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
-};
 
-TEST_GROUP_C_TEARDOWN(CC_TreeTableTestsWithDefaults)
-{
-    cc_treetable_destroy(table);
-}
-
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableAdd)
-{
     int a = 1;
     int b = 2;
     int c = 3;
@@ -51,12 +40,19 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableAdd)
     cc_treetable_add(table, &g, "g");
     cc_treetable_add(table, &h, "h");
 
-    CHECK_EQUAL_C_INT(1, cc_treetable_contains_key(table, &a));
-    CHECK_EQUAL_C_INT(1, cc_treetable_contains_key(table, &e));
-};
+    munit_assert_size(1, ==, cc_treetable_contains_key(table, &a));
+    munit_assert_size(1, == , cc_treetable_contains_key(table, &e));
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemove)
+    cc_treetable_destroy(table);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -76,11 +72,18 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemove)
     cc_treetable_add(table, &h, "h");
 
     cc_treetable_remove(table, &f, NULL);
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &f));
-};
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &f));
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveAll)
+    cc_treetable_destroy(table);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -93,15 +96,21 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveAll)
 
     cc_treetable_remove_all(table);
 
-    CHECK_EQUAL_C_INT(0, cc_treetable_size(table));
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &a));
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &b));
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &c));
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &d));
-};
+    munit_assert_size(0, == , cc_treetable_size(table));
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &a));
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &b));
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &c));
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &d));
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGet)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_get(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -110,20 +119,27 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGet)
     cc_treetable_add(table, &b, "b");
     cc_treetable_add(table, &c, "c");
 
-    char *ra;
-    char *rb;
-    char *rc;
-    cc_treetable_get(table, &a, (void*) &ra);
-    cc_treetable_get(table, &b, (void*) &rb);
-    cc_treetable_get(table, &c, (void*) &rc);
+    char* ra;
+    char* rb;
+    char* rc;
+    cc_treetable_get(table, &a, (void*)&ra);
+    cc_treetable_get(table, &b, (void*)&rb);
+    cc_treetable_get(table, &c, (void*)&rc);
 
-    CHECK_EQUAL_C_STRING("a", ra);
-    CHECK_EQUAL_C_STRING("b", rb);
-    CHECK_EQUAL_C_STRING("c", rc);
-};
+    munit_assert_string_equal("a", ra);
+    munit_assert_string_equal("b", rb);
+    munit_assert_string_equal("c", rc);
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableSize)
+    cc_treetable_destroy(table);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -132,11 +148,17 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableSize)
     cc_treetable_add(table, &b, "b");
     cc_treetable_add(table, &c, "c");
 
-    CHECK_EQUAL_C_INT(3, cc_treetable_size(table));
-};
+    munit_assert_size(3, == , cc_treetable_size(table));
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetFirst)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_first(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -147,14 +169,20 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetFirst)
     cc_treetable_add(table, &b, "c");
     cc_treetable_add(table, &a, "d");
 
-    int *first;
-    cc_treetable_get_first_key(table, (void*) &first);
+    int* first;
+    cc_treetable_get_first_key(table, (void*)&first);
 
-    CHECK_EQUAL_C_INT(a, *first);
-};
+    munit_assert_int(a, == , *first);
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetLast)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -165,14 +193,20 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetLast)
     cc_treetable_add(table, &b, "c");
     cc_treetable_add(table, &a, "d");
 
-    int *last;
-    cc_treetable_get_last_key(table, (void*) &last);
+    int* last;
+    cc_treetable_get_last_key(table, (void*)&last);
 
-    CHECK_EQUAL_C_INT(d, *last);
-};
+    munit_assert_int(d, == , *last);
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveFirst)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_first(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -185,11 +219,18 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveFirst)
 
     cc_treetable_remove_first(table, NULL);
 
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &a));
-};
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &a));
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveLast)
+    cc_treetable_destroy(table);
+
+    return MUNIT_OK;
+}
+
+static MunitResult test_remove_last(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -202,11 +243,17 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableRemoveLast)
 
     cc_treetable_remove_last(table, NULL);
 
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &d));
-};
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &d));
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetGreaterThan)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_greater_than(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -217,14 +264,20 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetGreaterThan)
     cc_treetable_add(table, &b, "c");
     cc_treetable_add(table, &a, "d");
 
-    int *g;
-    cc_treetable_get_greater_than(table, &b, (void*) &g);
+    int* g;
+    cc_treetable_get_greater_than(table, &b, (void*)&g);
 
-    CHECK_EQUAL_C_INT(c, *g);
-};
+    munit_assert_int(c, == , *g);
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetLessThan)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_get_lesser_than(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -235,15 +288,20 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableGetLessThan)
     cc_treetable_add(table, &b, "c");
     cc_treetable_add(table, &a, "d");
 
-    int *g;
-    cc_treetable_get_lesser_than(table, &b, (void*) &g);
+    int* g;
+    cc_treetable_get_lesser_than(table, &b, (void*)&g);
 
-    CHECK_EQUAL_C_INT(a, *g);
-};
+    munit_assert_int(a, == , *g);
 
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterNext)
+static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -254,17 +312,17 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterNext)
     cc_treetable_add(table, &c, "3");
     cc_treetable_add(table, &d, "5");
 
-    int one   = 0;
-    int two   = 0;
+    int one = 0;
+    int two = 0;
     int three = 0;
-    int four  = 0;
+    int four = 0;
 
     CC_TreeTableIter iter;
     cc_treetable_iter_init(&iter, table);
 
     CC_TreeTableEntry entry;
     while (cc_treetable_iter_next(&iter, &entry) != CC_ITER_END) {
-        int const *key = entry.key;
+        int const* key = entry.key;
 
         if (*key == a)
             one++;
@@ -279,14 +337,20 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterNext)
             four++;
     }
 
-    CHECK_EQUAL_C_INT(1, one);
-    CHECK_EQUAL_C_INT(1, two);
-    CHECK_EQUAL_C_INT(1, three);
-    CHECK_EQUAL_C_INT(1, four);
-};
+    munit_assert_int(1, == , one);
+    munit_assert_int(1, == , two);
+    munit_assert_int(1, == , three);
+    munit_assert_int(1, == , four);
 
-TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterRemove)
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    CC_TreeTable* table;
+    cc_treetable_new(cmp, &table);
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -300,17 +364,47 @@ TEST_C(CC_TreeTableTestsWithDefaults, CC_TreeTableIterRemove)
 
     CC_TreeTableEntry entry;
     while (cc_treetable_iter_next(&iter, &entry) != CC_ITER_END) {
-        int const *key = entry.key;
+        int const* key = entry.key;
 
         if (*key == b) {
-            CHECK_EQUAL_C_INT(CC_OK,
-                              cc_treetable_iter_remove(&iter, NULL));
+            munit_assert_int(CC_OK, == ,
+                cc_treetable_iter_remove(&iter, NULL));
 
-            CHECK_EQUAL_C_INT(CC_ERR_KEY_NOT_FOUND,
-                              cc_treetable_iter_remove(&iter, NULL));
+            munit_assert_int(CC_ERR_KEY_NOT_FOUND, == ,
+                cc_treetable_iter_remove(&iter, NULL));
         }
     }
 
-    CHECK_EQUAL_C_INT(2, cc_treetable_size(table));
-    CHECK_EQUAL_C_INT(0, cc_treetable_contains_key(table, &b));
+    munit_assert_size(2, == , cc_treetable_size(table));
+    munit_assert_size(0, == , cc_treetable_contains_key(table, &b));
+
+    cc_treetable_destroy(table);
+    return MUNIT_OK;
+}
+
+
+static MunitTest test_suite_tests[] = {
+    { "/treetable/test_add", test_add, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_remove", test_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_remove_all", test_remove_all, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_get", test_get, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_size", test_size, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_get_first", test_get_first, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_get_last", test_get_last, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_remove_first", test_remove_first, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_remove_last", test_remove_last, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_get_greater_than", test_get_greater_than, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_get_lesser_than", test_get_lesser_than, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_iter_next", test_iter_next, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { "/treetable/test_iter_remove", test_iter_remove, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
+
+static const MunitSuite test_suite = {
+    (char*)"", test_suite_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
+};
+
+int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)])
+{
+    return munit_suite_main(&test_suite, (void*)"test", argc, argv);
+}
