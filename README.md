@@ -3,7 +3,6 @@ Collections-C
 
 > A library of generic data structures including a list, array, hashtable, deque etc..
 
-[![Build Status](https://travis-ci.org/srdja/Collections-C.svg?branch=master)](https://travis-ci.org/srdja/Collections-C)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)
 
 - [Examples](#examples)
@@ -11,11 +10,11 @@ Collections-C
 - [Using the library](#using-collections-c-in-your-programs)
 - [Contributing](#contributing)
 
-## Examples
+# Examples
 Check the [documentation page](https://srdja.github.io/Collections-C/) for mode detailed examples. (This is still in progress).
 The source of the documentation can be found [here](https://github.com/srdja/cc-doc-slate).
 
-#### HashTable
+### HashTable
 ```c
 
 // Create a new table
@@ -38,7 +37,7 @@ if (cc_hashtable_get(table, "some_key", (void*) &value) == CC_OK)
 cc_hashtable_remove(table, "foo", NULL);
 cc_hashtable_destroy(table);
 ```
-#### Array (dynamic array)
+### Array (dynamic array)
 ```c
 // Create a new array
 CC_Array *ar;
@@ -65,51 +64,60 @@ cc_array_remove_at(ar, 0, (void*) &removed);
 
 cc_array_destroy(ar);
 ```
-## Building and Installation
+# Building and Installation
 
-### Dependencies
+## Dependencies 
+### Linux
 
-- C compiler (gcc, clang, etc...)
+- C compiler (gcc or clang)
 - cmake (>= 3.5)
-- [testing only] cpputest (>=3.8)
 - pkg-config
 
 These packages can usually be installed through your distributions package manager.
 
-Building on windows requires [MinGW](http://mingw.org) which provides all the tools needed to build the project.
+### Windows
 
-### Building the project
+* [Visual Studio](https://visualstudio.microsoft.com) (recommended) ***or*** [MinGW](http://mingw.org)
+* [cmake](https://cmake.org/download/)
 
-To build the project, we first need to create a separate build directory:
+
+## Building the project
+### Linux
+
+To build the project, we first need to create a separate build directory (if it doesn't already exist):
 
 ```
 mkdir build
 ```
 
-Now that we've created our build directory (assuming it's created in the project root), we can `cd` into it and run `cmake` and pass the parent directory path to it, which is where the `CMakeLists.txt` file is located:
+From this directory we can run the `cmake` command and configure the build:
 
+* `cmake ..` or `cmake -DSHARED=True` to make Collections-C build as a shared library
+* `cmake -DSHARED=False` to build a static library
+
+Once `cmake` is done generating makefiles, we can build the library by running `make` inside our build directory.
+
+An example of cloning and building a static library:
 ```
+git clone https://github.com/Collections-C.git
+cd Collections-C
+mkdir build
 cd build
-cmake ..
-```
-
-Once `cmake` is done generating makefiles, we can build the library by running `make` inside our build directory:
-
-```
+cmake -DSHARED=False
 make
 ```
-This will build both the static and the dynamic library.
 
-### Running tests
+## Running tests
+
+To run tests (from the `build` directory):
 
 ```
 make test
 ```
 
-Running individual tests
+To run individual tests, simply run the appropriate executable. For example:
 ```
-make build
-build/test/array_test -c -v
+build/test/array_test
 ```
 ### Installing
 
@@ -119,8 +127,7 @@ sudo make install
 ```
 By default the libraries and headers will be installed in `/usr/local/lib/` and `/usr/local/include` directories.
 
-You have to make the system's runtime aware of the location of the new library to be able to run dynamically linked applications.
-This might be as simple as running the following command if your `/etc/ld.so.conf` contains the install directory.
+You have to make the system's runtime aware of the location of the new library to be able to run dynamically linked applications. This might be as simple as running the following command if your `/etc/ld.so.conf` contains the install directory.
 
 **Note: macOS doesn't support ldconfig.**
 ```
