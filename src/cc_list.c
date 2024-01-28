@@ -1159,7 +1159,7 @@ static INLINE void merge(Node **left, Node **right, size_t l_size,
 
     size_t i;
     for (i = 0; i < size; i++) {
-        int c = cmp(&(l_part->data), &(r_part->data));
+        int c = cmp(l_part->data, r_part->data);
 
         if ((c < 0 || c == 0)) {
             /* The two partitions are already sorted. */
