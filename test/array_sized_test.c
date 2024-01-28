@@ -932,7 +932,7 @@ static MunitResult test_filter2(const MunitParameter p[], void* fixture)
 void map_double(uint8_t* e)
 {
     int* val = (int*)e;
-    *e = *e * 2;
+    *val = *val * 2;
 }
 
 static MunitResult test_map(const MunitParameter p[], void* fixture)

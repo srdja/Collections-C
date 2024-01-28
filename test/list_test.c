@@ -1,6 +1,7 @@
 #include "munit.h"
 #include "cc_list.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 
 int cmp(void const* e1, void const* e2)
@@ -1075,13 +1076,30 @@ static MunitResult test_reduce1(const MunitParameter params[], void* fixture)
 
 static MunitResult test_reduce2(const MunitParameter params[], void* fixture)
 {
-    struct lists* l = (struct lists*)fixture;
+    CC_List* list;
+    cc_list_new(&list);
 
-    bool res;
+    bool* a = (bool*)malloc(sizeof(int));
+    bool* b = (bool*)malloc(sizeof(int));
+    bool* c = (bool*)malloc(sizeof(int));
+    bool* d = (bool*)malloc(sizeof(int));
 
-    cc_list_reduce(l->list1, bool_and, &res);
+    *a = true;
+    *b = true;
+    *c = true;
+    *d = true;
 
+    cc_list_add(list, a);
+    cc_list_add(list, b);
+    cc_list_add(list, c);
+    cc_list_add(list, d);
+
+    bool res = false;
+
+    cc_list_reduce(list, bool_and, &res);
     munit_assert_true(res);
+
+    cc_list_destroy(list);
 
     return MUNIT_OK;
 }
@@ -1126,7 +1144,7 @@ static MunitTest test_suite_tests[] = {
     {(char*)"/list/test_filter1", test_filter1, pre_filled_lists, lists_teardown, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*)"/list/test_filter2", test_filter2, pre_filled_lists, lists_teardown, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*)"/list/test_reduce1", test_reduce1, pre_filled_lists, lists_teardown, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*)"/list/test_reduce2", test_reduce2, pre_filled_lists, lists_teardown, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/list/test_reduce2", test_reduce2, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
