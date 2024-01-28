@@ -1,7 +1,7 @@
 project(collectc VERSION 0.0.1)
 
-file(GLOB source_files "*.c")
-file(GLOB header_files "include/*.h")
+file(GLOB source_files "*.c" "sized/*.c")
+file(GLOB header_files "include/*.h" "include/sized/*.h")
 
 include_directories("./include")
 
