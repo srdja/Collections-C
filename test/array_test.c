@@ -112,7 +112,7 @@ static MunitResult test_replace_at(const MunitParameter p[], void* f)
     munit_assert_int(*repl, !=, c);
     munit_assert_int(*repl, == , replacement);
     cc_array_destroy(array);
-
+    
     return MUNIT_OK;
 }
 
@@ -955,6 +955,42 @@ static MunitResult test_filter2(const MunitParameter p[], void* fixture)
     return MUNIT_OK;
 }
 
+void map_double(uint8_t* e)
+{
+    int* val = (int*)e;
+    *val = *val * 2;
+}
+
+static MunitResult test_map(const MunitParameter p[], void* fixture)
+{
+    CC_Array *array;
+    cc_array_new(&array);
+
+    int a = 1; 
+    int b = 2;
+    int c = 3;
+
+    cc_array_add(array, (void*)&a);
+    cc_array_add(array, (void*)&b);
+    cc_array_add(array, (void*)&c);
+
+    cc_array_map(array, map_double);
+    int *ra = 0;
+    int *rb = 0;
+    int *rc = 0;
+
+    cc_array_get_at(array, 0, (void*)&ra);
+    cc_array_get_at(array, 1, (void*)&rb);
+    cc_array_get_at(array, 2, (void*)&rc);
+
+    munit_assert_int(*ra, == , 2);
+    munit_assert_int(*rb, == , 4);
+    munit_assert_int(*rc, == , 6);
+
+    cc_array_destroy(array);
+    return MUNIT_OK;
+}
+
 static MunitTest test_suite_tests[] = {
 	{(char*)"/array/test_add", test_add, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*)"/array/test_add_out_of_range", test_add_out_of_range, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
@@ -985,6 +1021,7 @@ static MunitTest test_suite_tests[] = {
     {(char*)"/array/test_filter1", test_filter1, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*)"/array/test_filter2", test_filter2, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*)"/array/test_add_at", test_add_at, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/array/test_map", test_map, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
