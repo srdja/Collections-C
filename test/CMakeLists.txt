@@ -25,6 +25,8 @@ set(rbuf_test_sources munit.c "ring_buffer_test.c")
 set(tsttable_test_sources munit.c "tst_table_test.c")
 
 set(array_sized_test_sources munit.c array_sized_test.c)
+set(dynamic_pool_test_sources munit.c "dynamic_pool_test.c")
+set(static_pool_test_sources munit.c static_pool_test.c)
 
 include_directories(${PROJECT_SOURCE_DIR}/include ${collectc_INCLUDE_DIRS})
 message(${collectc_INCLUDE_DIRS})
@@ -44,6 +46,8 @@ add_executable(rbuf_test ${rbuf_test_sources})
 add_executable(tsttable_test ${tsttable_test_sources})
 
 add_executable(array_sized_test ${array_sized_test_sources})
+add_executable(dynamic_pool_test ${dynamic_pool_test_sources})
+add_executable(static_pool_test ${static_pool_test_sources})
 
 target_link_libraries(array_test collectc)
 target_link_libraries(deque_test collectc)
@@ -60,6 +64,8 @@ target_link_libraries(rbuf_test collectc)
 target_link_libraries(tsttable_test collectc)
 
 target_link_libraries(array_sized_test collectc)
+target_link_libraries(dynamic_pool_test collectc)
+target_link_libraries(static_pool_test collectc)
 
 add_test(ArrayTest array_test)
 add_test(DequeTest deque_test)
@@ -76,3 +82,5 @@ add_test(RbufTest rbuf_test)
 add_test(TSTTableTest tsttable_test)
 
 add_test(ArraySizedTest array_sized_test)
+add_test(DynamicPoolTest heap_pool_test)
+add_test(StaticPoolTest static_pool_test)
