@@ -22,20 +22,6 @@
 #include "cc_common.h"
 
 
-static CC_Allocators global_alloc = {
-    .mem_alloc  = malloc,
-    .mem_calloc = calloc,
-    .mem_free   = free
-};
-
-CC_Allocators* cc_global_alloc = &global_alloc;
-
-
-void cc_global_set_default_allocators(CC_Allocators* alloc)
-{
-    cc_global_alloc = alloc;
-}
-
 /**
  * String comparator function.
  *

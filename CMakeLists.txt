@@ -9,8 +9,8 @@ if(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
 
 elseif(MSVC)
-#    set(CFLAGS "/W4 /WX")
-#	set(CMAKE_C_FLAGS "$CMAKE_CFLAGS ${CFLAGS}")
+    set(CFLAGS "/W4 /WX")
+	set(CMAKE_C_FLAGS "$CMAKE_CFLAGS ${CFLAGS}")
 endif()
 
 
