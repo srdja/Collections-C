@@ -184,7 +184,7 @@ static enum cc_stat expand_capacity(CC_PQueue *pq)
     if (pq->capacity == CC_MAX_ELEMENTS)
         return CC_ERR_MAX_CAPACITY;
 
-    size_t new_capacity = pq->capacity * pq->exp_factor;
+    size_t new_capacity = (size_t)(pq->capacity * pq->exp_factor);
 
     /* As long as the capacity is greater that the expansion factor
      * at the point of overflow, this is check is valid. */

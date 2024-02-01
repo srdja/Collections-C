@@ -103,7 +103,7 @@ enum cc_stat cc_hashtable_new_conf(CC_HashTableConf const * const conf, CC_HashT
     table->mem_alloc   = conf->mem_alloc;
     table->mem_calloc  = conf->mem_calloc;
     table->mem_free    = conf->mem_free;
-    table->threshold   = table->capacity * table->load_factor;
+    table->threshold   = (size_t) (table->capacity * table->load_factor);
 
     *out = table;
     return CC_OK;
@@ -428,7 +428,7 @@ static enum cc_stat resize(CC_HashTable *t, size_t new_capacity)
 
     t->buckets   = new_buckets;
     t->capacity  = new_capacity;
-    t->threshold = t->load_factor * new_capacity;
+    t->threshold = (size_t) (t->load_factor * new_capacity);
 
     t->mem_free(old_buckets);
 
