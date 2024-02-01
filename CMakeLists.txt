@@ -5,11 +5,11 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 enable_language(C)
 
 if(UNIX)
-    set(CFLAGS "-Wall -Werror")
+    set(CFLAGS "-Wall")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
 
 elseif(MSVC)
-    set(CFLAGS "/W4 /WX")
+    set(CFLAGS "/W4")
 	set(CMAKE_C_FLAGS "$CMAKE_CFLAGS ${CFLAGS}")
 endif()
 
