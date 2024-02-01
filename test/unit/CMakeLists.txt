@@ -82,5 +82,5 @@ add_test(RbufTest rbuf_test)
 add_test(TSTTableTest tsttable_test)
 
 add_test(ArraySizedTest array_sized_test)
-add_test(DynamicPoolTest heap_pool_test)
+add_test(DynamicPoolTest dynamic_pool_test)
 add_test(StaticPoolTest static_pool_test)
