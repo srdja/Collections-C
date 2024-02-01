@@ -7,11 +7,15 @@ enable_language(C)
 if(UNIX)
     set(CFLAGS "-Wall -Werror")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
+
+elseif(MSVC)
+#    set(CFLAGS "/W4 /WX")
+#	set(CMAKE_C_FLAGS "$CMAKE_CFLAGS ${CFLAGS}")
 endif()
 
 
 enable_testing()
 
 add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(test/unit)
 add_subdirectory(examples)
