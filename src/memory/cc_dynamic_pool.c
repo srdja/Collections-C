@@ -20,6 +20,7 @@
 
 #include "memory/cc_dynamic_pool.h"
 
+
 struct cc_page_info_s {
     void  *previous;
     size_t size;
@@ -30,8 +31,10 @@ typedef struct cc_page_info_s PageInfo;
 
 struct cc_dynamic_pool_s {
     bool     is_fixed;
+    bool     is_packed;
     float    exp_factor;
     size_t   top_page_size;
+    size_t   alignment_boundary;
     
     uint8_t* page;
     uint8_t* high_ptr;  /*Start of the highest block*/
@@ -48,11 +51,13 @@ struct cc_dynamic_pool_s {
  */
 void cc_dynamic_pool_conf_init(CC_DynamicPoolConf *conf)
 {
-    conf->exp_factor = 1;
-    conf->is_fixed   = true;
-    conf->mem_alloc  = malloc;
-    conf->mem_calloc = calloc;
-    conf->mem_free   = free;
+    conf->exp_factor         = 1;
+    conf->is_fixed           = true;
+    conf->is_packed          = true;
+    conf->alignment_boundary = 1;
+    conf->mem_alloc          = malloc;
+    conf->mem_calloc         = calloc;
+    conf->mem_free           = free;
 }
 
 /**
@@ -88,6 +93,7 @@ enum cc_stat cc_dynamic_pool_new_conf(
     
     pool->exp_factor    = conf->exp_factor;
     pool->is_fixed      = conf->is_fixed;
+    pool->is_packed     = conf->is_packed;
     pool->top_page_size = size;    
     pool->page          = page;
     pool->high_ptr      = page + sizeof(PageInfo);
@@ -193,7 +199,12 @@ void* cc_dynamic_pool_malloc(size_t size, CC_DynamicPool* pool)
     }
     uint8_t* ptr   = pool->free_ptr;
     pool->high_ptr = ptr;
-    pool->free_ptr = ptr + size;
+
+    size_t padding = 0;
+    if (!pool->is_packed) {
+        padding = size % pool->alignment_boundary;
+    }
+    pool->free_ptr = ptr + size + padding;
     return ptr;
 }
 

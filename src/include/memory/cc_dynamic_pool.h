@@ -51,6 +51,9 @@ typedef struct cc_dynamic_pool_conf_s {
     * If true, the pool will not try to expand when full. */
     bool   is_fixed;
 
+    bool   is_packed;
+    size_t alignment_boundary;
+
     /**
      * Memory allocators used to allocate the Array structure and the
      * underlying data buffers. */
