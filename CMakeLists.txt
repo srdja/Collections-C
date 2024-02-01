@@ -6,11 +6,10 @@ enable_language(C)
 
 if(UNIX)
     set(CFLAGS "-Wall")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CFLAGS}")
-
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}	${CFLAGS}")
 elseif(MSVC)
     set(CFLAGS "/W4")
-	set(CMAKE_C_FLAGS "$CMAKE_C_FLAGS ${CFLAGS}")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}	${CFLAGS}")
 endif()
 
 
