@@ -10,7 +10,7 @@ if(UNIX)
 
 elseif(MSVC)
     set(CFLAGS "/W4")
-	set(CMAKE_C_FLAGS "$CMAKE_CFLAGS ${CFLAGS}")
+	set(CMAKE_C_FLAGS "$CMAKE_C_FLAGS ${CFLAGS}")
 endif()
 
 
