@@ -117,7 +117,7 @@ void* cc_static_pool_malloc(size_t size, CC_StaticPool* pool)
 void* cc_static_pool_calloc(size_t count, size_t size, CC_StaticPool* pool)
 {
     uint8_t* ptr = NULL; 
-    if (ptr = cc_static_pool_malloc(count * size, pool)) {
+    if ((ptr = cc_static_pool_malloc(count * size, pool))) {
         memset(ptr, 0, (count * size));
     }
     return ptr;

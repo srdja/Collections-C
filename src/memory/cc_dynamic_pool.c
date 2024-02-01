@@ -221,7 +221,7 @@ void* cc_dynamic_pool_malloc(size_t size, CC_DynamicPool* pool)
 void* cc_dynamic_pool_calloc(size_t count, size_t size, CC_DynamicPool* pool)
 {
     uint8_t* ptr;
-    if (ptr = cc_dynamic_pool_malloc(count * size, pool)) {
+    if ((ptr = cc_dynamic_pool_malloc(count * size, pool))) {
         memset(ptr, 0, (count * size));
     }
     return ptr;
