@@ -17,6 +17,9 @@ int cmp(const void* k1, const void* k2)
 
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
 
@@ -39,6 +42,9 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
 
@@ -61,6 +67,9 @@ static MunitResult test_remove(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
 
@@ -84,6 +93,9 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
 
@@ -103,6 +115,9 @@ static MunitResult test_size(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
 
@@ -150,6 +165,9 @@ static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeSet* set;
     cc_treeset_new(cmp, &set);
 

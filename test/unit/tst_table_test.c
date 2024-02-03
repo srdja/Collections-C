@@ -4,6 +4,9 @@
 
 static MunitResult test_new(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTableConf conf;
     CC_TSTTable* table;
 
@@ -19,6 +22,9 @@ static MunitResult test_new(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -43,6 +49,9 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_subkeys(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
     int stat;
@@ -87,6 +96,9 @@ static MunitResult test_add_subkeys(const MunitParameter params[], void* fixture
 
 static MunitResult test_replacing_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -112,6 +124,9 @@ static MunitResult test_replacing_add(const MunitParameter params[], void* fixtu
 
 static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -160,6 +175,9 @@ static MunitResult test_remove(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -182,6 +200,9 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -203,6 +224,9 @@ static MunitResult test_get(const MunitParameter params[], void* fixture)
 
 static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -220,6 +244,9 @@ static MunitResult test_size(const MunitParameter params[], void* fixture)
 
 static MunitResult test_contains_key(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
 
@@ -239,6 +266,9 @@ static MunitResult test_contains_key(const MunitParameter params[], void* fixtur
 
 static MunitResult test_iter_next_empty(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
     CC_TSTTableIter iter;
@@ -254,6 +284,9 @@ static MunitResult test_iter_next_empty(const MunitParameter params[], void* fix
 
 static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
     CC_TSTTableIter iter;
@@ -297,6 +330,9 @@ static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_remove_empty(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
     CC_TSTTableIter iter;
@@ -313,6 +349,9 @@ static MunitResult test_iter_remove_empty(const MunitParameter params[], void* f
 
 static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
     CC_TSTTableIter iter;
@@ -355,6 +394,9 @@ static MunitResult test_iter_remove(const MunitParameter params[], void* fixture
 
 static MunitResult test_loop(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TSTTable* tst;
     cc_tsttable_new(&tst);
     CC_TSTTableIter iter;

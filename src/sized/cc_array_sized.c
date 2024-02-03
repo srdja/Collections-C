@@ -800,7 +800,7 @@ static enum cc_stat expand_capacity(CC_ArraySized *ar)
         return CC_ERR_MAX_CAPACITY;
     }
 
-    size_t new_capacity = ar->capacity * ar->exp_factor;
+    size_t new_capacity = (size_t) (ar->capacity * ar->exp_factor);
 
     /* As long as the capacity is greater that the expansion factor
      * at the point of overflow, this is check is valid. */

@@ -8,6 +8,9 @@
  *****************************/
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_ArraySized *array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -38,6 +41,9 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_out_of_range(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -51,6 +57,9 @@ static MunitResult test_add_out_of_range(const MunitParameter p[], void* f)
 
 static MunitResult test_replace_at(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -80,6 +89,9 @@ static MunitResult test_replace_at(const MunitParameter p[], void* f)
 
 static MunitResult test_index_of(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -106,6 +118,9 @@ static MunitResult test_index_of(const MunitParameter p[], void* f)
 
 static MunitResult test_remove(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -134,6 +149,9 @@ static MunitResult test_remove(const MunitParameter p[], void* f)
 
 static MunitResult test_remove_at(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -162,6 +180,9 @@ static MunitResult test_remove_at(const MunitParameter p[], void* f)
 
 static MunitResult test_remove_all(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -185,6 +206,9 @@ static MunitResult test_remove_all(const MunitParameter p[], void* f)
 
 static MunitResult test_get_at(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -212,6 +236,9 @@ static MunitResult test_get_at(const MunitParameter p[], void* f)
 
 static MunitResult test_subarray(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -251,6 +278,9 @@ static MunitResult test_subarray(const MunitParameter p[], void* fixture)
 
 static MunitResult test_copy(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -280,6 +310,9 @@ static MunitResult test_copy(const MunitParameter p[], void* f)
 
 static MunitResult test_reverse(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -312,6 +345,9 @@ static MunitResult test_reverse(const MunitParameter p[], void* f)
 
 static MunitResult test_contains(const MunitParameter p[], void* f)
 {
+    (void)p;
+    (void)f;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -351,6 +387,9 @@ int comp(void const* e1, void const* e2)
 
 static MunitResult test_sort(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -377,6 +416,9 @@ static MunitResult test_sort(const MunitParameter p[], void* fixture)
 
 static MunitResult test_iter_remove(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -407,6 +449,9 @@ static MunitResult test_iter_remove(const MunitParameter p[], void* fixture)
 
 static MunitResult test_iter_add(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), &array);
 
@@ -448,6 +493,9 @@ static MunitResult test_iter_add(const MunitParameter p[], void* fixture)
 
 static MunitResult test_iter_replace(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -485,6 +533,9 @@ static MunitResult test_iter_replace(const MunitParameter p[], void* fixture)
 
 static MunitResult test_zip_iter_next(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -536,6 +587,9 @@ static MunitResult test_zip_iter_next(const MunitParameter p[], void* fixture)
 
 static MunitResult test_zip_iter_remove(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -561,10 +615,10 @@ static MunitResult test_zip_iter_remove(const MunitParameter p[], void* fixture)
     CC_ArraySizedZipIter zip;
     cc_array_sized_zip_iter_init(&zip, array, array2);
 
-    int* e1;
-    int* e2;
-    int r1;
-    int r2;
+    int* e1 = NULL;
+    int* e2 = NULL;
+    int r1  = 0;
+    int r2  = 0;
     while (cc_array_sized_zip_iter_next(&zip, (uint8_t**)&e1, (uint8_t**)&e2) != CC_ITER_END) {
         if (*e1 == b) {
             cc_array_sized_zip_iter_remove(&zip, (uint8_t*)&r1, (uint8_t*)&r2);
@@ -584,6 +638,9 @@ static MunitResult test_zip_iter_remove(const MunitParameter p[], void* fixture)
 
 static MunitResult test_zip_iter_add(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -641,6 +698,9 @@ static MunitResult test_zip_iter_add(const MunitParameter p[], void* fixture)
 
 static MunitResult test_zip_iter_replace(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     int a = 1;
     int b = 2;
     int c = 3;
@@ -705,6 +765,9 @@ void reduce_add(uint8_t* e1, uint8_t* e2, uint8_t* result)
 
 static MunitResult test_reduce(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -738,6 +801,9 @@ static MunitResult test_reduce(const MunitParameter p[], void* fixture)
 
 static MunitResult test_add_at(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), &array);
 
@@ -780,6 +846,9 @@ static MunitResult test_add_at(const MunitParameter p[], void* fixture)
 
 static MunitResult test_trim_capacity(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySizedConf conf;
     cc_array_sized_conf_init(&conf);
     conf.capacity = 20;
@@ -817,6 +886,9 @@ bool pred2(const uint8_t* e)
 
 static MunitResult test_filter_mut1(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), &array);
 
@@ -844,6 +916,9 @@ static MunitResult test_filter_mut1(const MunitParameter p[], void* fixture)
 
 static MunitResult test_filter_mut2(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), &array);
 
@@ -871,6 +946,9 @@ static MunitResult test_filter_mut2(const MunitParameter p[], void* fixture)
 
 static MunitResult test_filter1(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), &array);
 
@@ -901,6 +979,9 @@ static MunitResult test_filter1(const MunitParameter p[], void* fixture)
 
 static MunitResult test_filter2(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized* array;
     cc_array_sized_new(sizeof(int), & array);
 
@@ -937,6 +1018,9 @@ void map_double(uint8_t* e)
 
 static MunitResult test_map(const MunitParameter p[], void* fixture)
 {
+    (void)p;
+    (void)fixture;
+
     CC_ArraySized *array;
     cc_array_sized_new(sizeof(int), &array);
 

@@ -4,6 +4,9 @@
 
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     CC_HashTable *table;
     cc_hashtable_new(&table);
 

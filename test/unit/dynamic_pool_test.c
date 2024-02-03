@@ -26,6 +26,9 @@ void *pool_calloc(size_t count, size_t size)
 
 static MunitResult test_alignment(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint64_t control_val1 = 0xFFAABBCCDDEE0011;
     uint64_t control_val2 = 0xABCDEFF123456789;
     uint64_t control_val3 = 0x1110011100110011;
@@ -59,9 +62,8 @@ static MunitResult test_alignment(const MunitParameter params[], void* fixture)
 
 static MunitResult test_limit(const MunitParameter params[], void* fixture)
 {
-    uint64_t control_val1 = 0xFFAABBCCDDEE0011;
-    uint64_t control_val2 = 0xABCDEFF123456789;
-    uint64_t control_val3 = 0x1110011100110011;
+    (void)params;
+    (void)fixture;
 
     // Only allocate space for 2 x uint64_t
     munit_assert_int(CC_OK, ==, cc_dynamic_pool_new(sizeof(uint64_t) * 2, &pool));
@@ -92,9 +94,8 @@ static MunitResult test_limit(const MunitParameter params[], void* fixture)
 
 static MunitResult test_expansion(const MunitParameter params[], void* fixture)
 {
-    uint64_t control_val1 = 0xFFAABBCCDDEE0011;
-    uint64_t control_val2 = 0xABCDEFF123456789;
-    uint64_t control_val3 = 0x3310011100110011;
+    (void)params;
+    (void)fixture;
 
     // Make an expandable pool
     CC_DynamicPoolConf conf;
@@ -131,10 +132,10 @@ static MunitResult test_expansion(const MunitParameter params[], void* fixture)
 
 static MunitResult test_reset(const MunitParameter params[], void* fixture)
 {
-    uint64_t control_val1 = 0xFFAABBCCDDEE0011;
-    uint64_t control_val2 = 0xABCDEFF123456789;
-    uint64_t control_val3 = 0x1110011100110011;
-    size_t   pool_size    = sizeof(uint64_t) * 2;
+    (void)params;
+    (void)fixture;
+
+    size_t pool_size = sizeof(uint64_t) * 2;
 
     // Make an expandable pool
     CC_DynamicPoolConf conf;
@@ -189,6 +190,9 @@ static MunitResult test_reset(const MunitParameter params[], void* fixture)
 
 static MunitResult test_with_list(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     munit_assert_int(CC_OK, ==, cc_dynamic_pool_new(sizeof(size_t) * 100000, &pool));
     
     CC_ListConf conf;

@@ -30,7 +30,10 @@ struct queues {
 
 static void* default_pqueue(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
     struct queues* q = malloc(sizeof(struct queues));
+    munit_assert_not_null(q);
     cc_pqueue_new(&q->p1, comp2);
     cc_pqueue_new(&q->p2, comp);
     return (void*) q;
@@ -45,6 +48,7 @@ static void default_pqueue_teardown(void* fixture)
 
 static MunitResult test_push(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
 
     int a = 100, b = -10, c = 11;
@@ -84,6 +88,7 @@ static MunitResult test_push(const MunitParameter params[], void* fixture)
 
 static MunitResult test_pop(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
 
     int a = 100, b = -10, c = 11;
@@ -125,6 +130,7 @@ static MunitResult test_pop(const MunitParameter params[], void* fixture)
 
 static MunitResult test_pop_last_two(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
 
     int a = 1, b = 3, c = 5, d = -6, e = 7;

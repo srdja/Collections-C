@@ -12,18 +12,29 @@ int stat;
 /* a dummy hash function used to force collisions */
 static size_t collision_hash(const void* k, int l, uint32_t s)
 {
+    (void)k;
+    (void)l;
+    (void)s;
+
     return 1;
 }
 
 static size_t zero_hash(const void* k, int l, uint32_t s)
 {
+    (void)k;
+    (void)l;
+    (void)s;
     return 0;
 }
 
 
 static void* default_conf_table(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
+
     struct table* t = malloc(sizeof(struct table));
+    munit_assert_not_null(t);
     cc_hashtable_conf_init(&t->c);
     t->c.initial_capacity = 7;
     stat = cc_hashtable_new_conf(&t->c, &t->t);
@@ -38,6 +49,9 @@ static void default_conf_table_teardown(void* fixture)
 
 static void* default_table(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
+
     CC_HashTable* table;
     cc_hashtable_new(&table);
     return (void*)table;
@@ -51,7 +65,11 @@ static void default_table_teardown(void* fixture)
 
 static void* default_collision_table(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
+
     struct table* t = malloc(sizeof(struct table));
+    munit_assert_not_null(t);
     cc_hashtable_conf_init(&t->c);
     t->c.hash = collision_hash;
     cc_hashtable_new_conf(&t->c, &t->t);
@@ -66,7 +84,11 @@ static void default_collision_table_teardown(void* fixture)
 
 static void* default_zero_hash_table(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
+
     struct table* t = malloc(sizeof(struct table));
+    munit_assert_not_null(t);
     cc_hashtable_conf_init(&t->c);
     t->c.hash = zero_hash;
     cc_hashtable_new_conf(&t->c, &t->t);
@@ -85,6 +107,8 @@ static void default_zero_hash_table_teardown(void* fixture)
 
 static MunitResult test_new(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+
     struct table* t = (struct table*)fixture;
     munit_assert_int(CC_OK, == , stat);
     munit_assert_size(0, == , cc_hashtable_size(t->t));
@@ -97,6 +121,7 @@ static MunitResult test_new(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     CC_HashTable *table = (CC_HashTable*)fixture;
 
     char* a = "value";
@@ -118,6 +143,7 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_collision_get(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct table* t = (struct table*)fixture;
 
     char* a = "value";
@@ -137,6 +163,7 @@ static MunitResult test_collision_get(const MunitParameter params[], void* fixtu
 
 static MunitResult test_collision_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct table* t = (struct table*)fixture;
 
     char* a = "value";
@@ -159,6 +186,7 @@ static MunitResult test_collision_remove(const MunitParameter params[], void* fi
 
 static MunitResult test_null_key_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct table* t = (struct table*)fixture;
 
     char* a = "value";
@@ -180,6 +208,7 @@ static MunitResult test_null_key_add(const MunitParameter params[], void* fixtur
 
 static MunitResult test_null_key_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct table* t = (struct table*)fixture;
 
     char* a = "value";
@@ -211,6 +240,7 @@ static MunitResult test_null_key_remove(const MunitParameter params[], void* fix
 
 static MunitResult test_null_key_get(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct table* t = (struct table*)fixture;
 
     char* a = "value";
@@ -232,6 +262,7 @@ static MunitResult test_null_key_get(const MunitParameter params[], void* fixtur
 
 static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     CC_HashTable *table = (CC_HashTable*)fixture;
 
     char* a = "value";
@@ -257,6 +288,7 @@ static MunitResult test_remove(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     CC_HashTable* table = (CC_HashTable*)fixture;
 
     cc_hashtable_add(table, "key", "value");
@@ -275,6 +307,7 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_get(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     CC_HashTable* table = (CC_HashTable*)fixture;
 
     char* val = "567";
@@ -292,6 +325,7 @@ static MunitResult test_remove_get(const MunitParameter params[], void* fixture)
 
 static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     CC_HashTable* table = (CC_HashTable*)fixture;
 
     cc_hashtable_add(table, "key", "value");
@@ -305,6 +339,9 @@ static MunitResult test_size(const MunitParameter params[], void* fixture)
 
 static MunitResult test_capacity(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashTable* table;
     CC_HashTableConf conf;
 
@@ -331,6 +368,7 @@ static MunitResult test_capacity(const MunitParameter params[], void* fixture)
 
 static MunitResult test_contains_key(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     CC_HashTable* table = (CC_HashTable*)fixture;
 
     cc_hashtable_add(table, "key", "value");
@@ -361,6 +399,9 @@ static int cmp_k(const void* k1, const void* k2)
 
 static MunitResult test_memory_chunk_key(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashTable* table;
     CC_HashTableConf conf;
 
@@ -396,6 +437,8 @@ static MunitResult test_memory_chunk_key(const MunitParameter params[], void* fi
 
 static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+
     CC_HashTable* table = (CC_HashTable*)fixture;
 
     cc_hashtable_add(table, "one", "1");
@@ -444,6 +487,8 @@ static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+
     CC_HashTable* table = (CC_HashTable*)fixture;
 
     char* a = "foo";

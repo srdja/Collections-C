@@ -15,6 +15,9 @@ bool pred2(const void* e)
 
 static MunitResult test_push(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Stack* s;
     cc_stack_new(&s);
 
@@ -42,6 +45,9 @@ static MunitResult test_push(const MunitParameter params[], void* fixture)
 
 static MunitResult test_pop(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Stack* s;
     cc_stack_new(&s);
 
@@ -68,6 +74,9 @@ static MunitResult test_pop(const MunitParameter params[], void* fixture)
 
 static MunitResult test_filter(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Stack* s;
     cc_stack_new(&s);
 
@@ -94,6 +103,9 @@ static MunitResult test_filter(const MunitParameter params[], void* fixture)
 
 static MunitResult test_filter_mut(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Stack* s;
     cc_stack_new(&s);
 

@@ -9,7 +9,12 @@ struct queues {
 
 static void* default_queue(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
+
     struct queues* q = malloc(sizeof(struct queues));
+
+    munit_assert_not_null(q);
 
     cc_queue_new(&q->q1);
     cc_queue_new(&q->q2);
@@ -26,6 +31,7 @@ static void default_queue_teardown(void* fixture)
 
 static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
     int a = 1;
     int b = 2;
@@ -49,6 +55,7 @@ static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
 
 static MunitResult test_poll(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
 
     int a = 1;
@@ -78,6 +85,7 @@ static MunitResult test_poll(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
 
     int a = 1;
@@ -116,6 +124,7 @@ static MunitResult test_iter(const MunitParameter params[], void* fixture)
 
 static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct queues* q = (struct queues*)fixture;
 
     cc_queue_enqueue(q->q1, "a");

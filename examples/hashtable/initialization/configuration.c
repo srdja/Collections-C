@@ -7,6 +7,9 @@
 
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     CC_HashTableConf config;
     cc_hashtable_conf_init(&config);
 

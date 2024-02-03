@@ -4,6 +4,9 @@
 
 static MunitResult test_new(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashSet* set;
     CC_HashSetConf conf;
 
@@ -21,6 +24,9 @@ static MunitResult test_new(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashSet* set;
     munit_assert_int(CC_OK, == , cc_hashset_new(&set));
 
@@ -45,6 +51,9 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashSet* set;
     cc_hashset_new(&set);
 
@@ -69,6 +78,9 @@ static MunitResult test_remove(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashSet* set;
     cc_hashset_new(&set);
 
@@ -94,6 +106,9 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashSet* set;
     cc_hashset_new(&set);
 
@@ -134,6 +149,9 @@ static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_HashSet* set;
     cc_hashset_new(&set);
 

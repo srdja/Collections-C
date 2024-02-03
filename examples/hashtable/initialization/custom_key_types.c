@@ -26,6 +26,9 @@ int point_compare(const void *key1, const void *key2)
 
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     /* Define the config structure (for more details check the
        configuration example) */
     CC_HashTableConf config;

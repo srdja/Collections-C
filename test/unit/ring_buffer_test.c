@@ -5,21 +5,24 @@
 
 static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Rbuf* rbuf;
-    uint64_t range = 100;
+    int range = 100;
     cc_rbuf_new(&rbuf);
 
     uint64_t items[10];
     memset(items, 0, sizeof(uint64_t) * 10);
 
     for (int i = 0; i < 10; i++) {
-        uint64_t item = munit_rand_int_range(0, range);
+        uint64_t item = (uint64_t) munit_rand_int_range(0, range);
         cc_rbuf_enqueue(rbuf, item);
         items[i] = item;
     }
 
     for (int i = 0; i < 10; i++) {
-        munit_assert_int(cc_rbuf_peek(rbuf, i), == , items[i]);
+        munit_assert_uint64(cc_rbuf_peek(rbuf, i), == , items[i]);
     }
 
     cc_rbuf_destroy(rbuf);
@@ -28,8 +31,11 @@ static MunitResult test_enqueue(const MunitParameter params[], void* fixture)
 
 static MunitResult test_dequeue(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Rbuf* rbuf;
-    uint64_t range = 100;
+    int range = 100;
     cc_rbuf_new(&rbuf);
 
     uint64_t items[10];
@@ -44,7 +50,7 @@ static MunitResult test_dequeue(const MunitParameter params[], void* fixture)
     uint64_t out;
     for (int i = 0; i < 10; i++) {
         cc_rbuf_dequeue(rbuf, &out);
-        munit_assert_int(items[i], == , out);
+        munit_assert_uint64(items[i], == , out);
         memset(&out, 0, sizeof(uint64_t));
     }
 
@@ -54,8 +60,11 @@ static MunitResult test_dequeue(const MunitParameter params[], void* fixture)
 
 static MunitResult test_enqueue_past_capacity(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Rbuf* rbuf;
-    uint64_t range = 100;
+    int range = 100;
     cc_rbuf_new(&rbuf);
 
     uint64_t items[10];
@@ -67,8 +76,8 @@ static MunitResult test_enqueue_past_capacity(const MunitParameter params[], voi
         cc_rbuf_enqueue(rbuf, item);
     }
 
-    munit_assert_int(items[0], == , cc_rbuf_peek(rbuf, 0));
-    munit_assert_int(items[1], == , cc_rbuf_peek(rbuf, 1));
+    munit_assert_uint64(items[0], == , cc_rbuf_peek(rbuf, 0));
+    munit_assert_uint64(items[1], == , cc_rbuf_peek(rbuf, 1));
 
     uint64_t a = munit_rand_int_range(0, range + 1);
     uint64_t b = munit_rand_int_range(0, range + 1);
@@ -76,12 +85,12 @@ static MunitResult test_enqueue_past_capacity(const MunitParameter params[], voi
     cc_rbuf_enqueue(rbuf, a);
     cc_rbuf_enqueue(rbuf, b);
 
-    munit_assert_int(cc_rbuf_peek(rbuf, 0), == , a);
-    munit_assert_int(cc_rbuf_peek(rbuf, 1), == , b);
+    munit_assert_uint64(cc_rbuf_peek(rbuf, 0), == , a);
+    munit_assert_uint64(cc_rbuf_peek(rbuf, 1), == , b);
    
     uint64_t out;
     cc_rbuf_dequeue(rbuf, &out);
-    munit_assert_int(items[2], == , out);
+    munit_assert_uint64(items[2], == , out);
 
     cc_rbuf_destroy(rbuf);
     return MUNIT_OK;

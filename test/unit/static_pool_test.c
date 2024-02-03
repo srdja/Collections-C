@@ -23,6 +23,9 @@ void *pool_calloc(size_t count, size_t size)
 
 static MunitResult test_alignment(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint8_t  pool_alloc[100] = { 0 };
     uint64_t vals[3]         = { 0 };
 
@@ -56,12 +59,11 @@ static MunitResult test_alignment(const MunitParameter params[], void* fixture)
 
 static MunitResult test_limit(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint8_t  pool_alloc[100] = { 0 };
     uint64_t vals[3]         = { 0 };
-
-    uint64_t control_val1 = 0xFFAABBCCDDEE0011;
-    uint64_t control_val2 = 0xABCDEFF123456789;
-    uint64_t control_val3 = 0x1110011100110011;
 
     // Only allocate space for 2 x uint64_t
     cc_static_pool_new(sizeof(uint64_t) * 2, 0, (uint8_t*) vals, pool_alloc, &pool);
@@ -90,12 +92,11 @@ static MunitResult test_limit(const MunitParameter params[], void* fixture)
 
 static MunitResult test_buf_offset(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint8_t  pool_alloc[100] = { 0 };
     uint64_t vals[3]         = { 0 };
-
-    uint64_t control_val1 = 0xFFAABBCCDDEE0011;
-    uint64_t control_val2 = 0xABCDEFF123456789;
-    uint64_t control_val3 = 0x1110011100110011;
 
     // Space for 2 uint64_t with 3 byte offset
     cc_static_pool_new(sizeof(uint64_t) * 2, 3, (uint8_t*) vals, pool_alloc, &pool);
@@ -124,12 +125,11 @@ static MunitResult test_buf_offset(const MunitParameter params[], void* fixture)
 
 static MunitResult test_reset(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint8_t  pool_alloc[100] = { 0 };
     uint64_t vals[3]         = { 0 };
-
-    uint64_t control_val1 = 0xFFAABBCCDDEE0011;
-    uint64_t control_val2 = 0xABCDEFF123456789;
-    uint64_t control_val3 = 0x1110011100110011;
 
     cc_static_pool_new(sizeof(vals), 0, (uint8_t*)vals, pool_alloc, &pool);
         
@@ -174,6 +174,9 @@ static MunitResult test_reset(const MunitParameter params[], void* fixture)
 
 static MunitResult test_stack_list(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint64_t control_val = 0xFFAABBCCDDEE0011;
     uint8_t  pool_alloc[100] = { 0 };
     uint8_t  dbuf[10000]     = { 0 };
@@ -206,6 +209,9 @@ static MunitResult test_stack_list(const MunitParameter params[], void* fixture)
 
 static MunitResult test_free_rollback(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     uint64_t control_val     = 0xFFAABBCCDDEE0011;
     uint8_t  pool_alloc[100] = { 0 };
     uint8_t  dbuf[200]       = { 0 }; 

@@ -30,7 +30,7 @@ void bench_malloc()
     t_start = clock();
 
     CC_SLIST_FOREACH(v, list, {
-        (int*)v += 1;
+        *((int*)v) += 1;
     });
     t_end = clock();
     t_delta = (double)(t_end - t_start)/CLOCKS_PER_SEC;
@@ -85,7 +85,7 @@ void bench_pool_packed()
     t_start = clock();
 
     CC_SLIST_FOREACH(v, list, {
-        (int*)v += 1;
+        *((int*)v) += 1;
     });
     t_end = clock();
     t_delta = (double)(t_end - t_start)/CLOCKS_PER_SEC;
@@ -127,7 +127,7 @@ void bench_pool_aligned()
     t_start = clock();
 
     CC_SLIST_FOREACH(v, list, {
-        (int*)v += 1;
+        *((int*)v) += 1;
     });
     t_end = clock();
     t_delta = (double)(t_end - t_start)/CLOCKS_PER_SEC;
@@ -140,6 +140,9 @@ void bench_pool_aligned()
 
 int main(int argc, char** argv)
 {
+    (void)argc;
+    (void)argv;
+
     bench_pool_aligned();
     bench_pool_packed();
     bench_malloc();

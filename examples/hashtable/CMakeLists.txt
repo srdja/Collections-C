@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 project(collectc_hashtable_examples)
 
 include_directories(${PROJECT_SOURCE_DIR}/include ${collectc_INCLUDE_DIRS})

@@ -24,6 +24,7 @@ int zero_if_ptr_eq(void const* e1, void const* e2)
 void* copy(void* e1)
 {
     int* cp = (int*)malloc(sizeof(int));
+    munit_assert_not_null(cp);
     *cp = *((int*)e1);
     return cp;
 }
@@ -59,6 +60,9 @@ void bool_and(void* e1, void* e2, void* res)
  *****************************/
 static MunitResult test_new(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     CC_List* list2;
 
@@ -86,6 +90,9 @@ static MunitResult test_new(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -110,6 +117,9 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -144,6 +154,9 @@ static MunitResult test_add_last(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -178,6 +191,9 @@ static MunitResult test_add_first(const MunitParameter params[], void* fixture)
 
 static MunitResult test_contains(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -204,6 +220,9 @@ static MunitResult test_contains(const MunitParameter params[], void* fixture)
 
 static MunitResult test_index_of(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -231,6 +250,9 @@ static MunitResult test_index_of(const MunitParameter params[], void* fixture)
 
 static MunitResult test_sort(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -239,6 +261,7 @@ static MunitResult test_sort(const MunitParameter params[], void* fixture)
     int i;
     for (i = 0; i < size; i++) {
         int* e = malloc(sizeof(int));
+        munit_assert_not_null(e);
         *e = munit_rand_int_range(0, 1000001);
         cc_list_add(list1, e);
     }
@@ -263,6 +286,9 @@ static MunitResult test_sort(const MunitParameter params[], void* fixture)
 
 static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -310,6 +336,9 @@ static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixtu
 
 static MunitResult test_zip_iter_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -376,6 +405,9 @@ static MunitResult test_zip_iter_add(const MunitParameter params[], void* fixtur
 
 static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -394,12 +426,16 @@ static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fix
     CC_ListZipIter zip;
     cc_list_zip_iter_init(&zip, list1, list2);
 
-    void* e1, * e2;
-    void* r1, * r2;
+    void* e1 = NULL;
+    void* e2 = NULL;
+    void* r1 = NULL;
+    void* r2 = NULL;
     while (cc_list_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*)e1, "b") == 0)
             cc_list_zip_iter_remove(&zip, &r1, &r2);
     }
+    munit_assert_not_null(r1);
+    munit_assert_not_null(r2);
     munit_assert_string_equal("b", r1);
     munit_assert_string_equal("f", r2);
     munit_assert_size(0, == , cc_list_contains(list1, "b"));
@@ -415,6 +451,9 @@ static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fix
 
 static MunitResult test_zip_iter_replace(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list1;
     cc_list_new(&list1);
 
@@ -466,7 +505,12 @@ struct lists {
 
 static void* pre_filled_lists(const MunitParameter params[], void* user_data)
 {
+    (void)params;
+    (void)user_data;
+
     struct lists* l = malloc(sizeof(struct lists));
+
+    munit_assert_not_null(l);
 
     cc_list_new(&(l->list1));
     cc_list_new(&(l->list2));
@@ -475,6 +519,11 @@ static void* pre_filled_lists(const MunitParameter params[], void* user_data)
     int* b = (int*)malloc(sizeof(int));
     int* c = (int*)malloc(sizeof(int));
     int* d = (int*)malloc(sizeof(int));
+
+    munit_assert_not_null(a);
+    munit_assert_not_null(b);
+    munit_assert_not_null(c);
+    munit_assert_not_null(d);
 
     *a = 1;
     *b = 2;
@@ -490,6 +539,11 @@ static void* pre_filled_lists(const MunitParameter params[], void* user_data)
     b = (int*)malloc(sizeof(int));
     c = (int*)malloc(sizeof(int));
     d = (int*)malloc(sizeof(int));
+
+    munit_assert_not_null(a);
+    munit_assert_not_null(b);
+    munit_assert_not_null(c);
+    munit_assert_not_null(d);
 
     *a = 5;
     *b = 6;
@@ -514,6 +568,8 @@ static void lists_teardown(void* fixture)
 
 static MunitResult test_add_all_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+
     struct lists* l = (struct lists*)fixture;
 
     cc_list_add_all_at(l->list1, l->list2, 2);
@@ -535,9 +591,11 @@ static MunitResult test_add_all_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* ins = (int*)malloc(sizeof(int));
+    munit_assert_not_null(ins);
     *ins = 32;
 
     CC_ListIter iter;
@@ -563,6 +621,7 @@ static MunitResult test_iter_add(const MunitParameter params[], void* fixture)
     cc_list_iter_init(&iter, l->list1);
 
     ins = (int*)malloc(sizeof(int));
+    munit_assert_not_null(ins);
     *ins = 32;
 
     while (cc_list_iter_next(&iter, (void*)&el) != CC_ITER_END) {
@@ -580,6 +639,8 @@ static MunitResult test_iter_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+
     struct lists* l = (struct lists*)fixture;
 
     int* rm;
@@ -603,13 +664,15 @@ static MunitResult test_iter_remove(const MunitParameter params[], void* fixture
 
 static MunitResult test_iter_desc_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     CC_ListIter iter;
     cc_list_diter_init(&iter, l->list1);
 
-    int* i;
+    int* i = NULL;
     while (cc_list_diter_next(&iter, (void*)&i) != CC_ITER_END) {
+        munit_assert_not_null(i);
         if (*i == 1 || *i == 3) {
             cc_list_diter_remove(&iter, NULL);
             free(i);
@@ -635,10 +698,15 @@ static MunitResult test_iter_desc_remove(const MunitParameter params[], void* fi
 
 static MunitResult test_iter_desc_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* a = (int*)malloc(sizeof(int));
     int* b = (int*)malloc(sizeof(int));
+
+    munit_assert_not_null(a);
+    munit_assert_not_null(b);
+
     *a = 30;
     *b = 78;
 
@@ -673,6 +741,7 @@ static MunitResult test_iter_desc_add(const MunitParameter params[], void* fixtu
 
 static MunitResult test_reverse(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* last_old;
@@ -695,6 +764,7 @@ static MunitResult test_reverse(const MunitParameter params[], void* fixture)
 
 static MunitResult test_to_array(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int** array;
@@ -716,6 +786,7 @@ static MunitResult test_to_array(const MunitParameter params[], void* fixture)
 
 static MunitResult test_splice_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     cc_list_splice_at(l->list1, l->list2, 2);
@@ -738,6 +809,7 @@ static MunitResult test_splice_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_splice(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     cc_list_splice(l->list1, l->list2);
@@ -759,6 +831,7 @@ static MunitResult test_splice(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     cc_list_add_all(l->list2, l->list1);
@@ -777,6 +850,7 @@ static MunitResult test_add_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* e;
@@ -792,15 +866,19 @@ static MunitResult test_remove(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
-    int* el;
+    int* el = NULL;
     cc_list_remove_first(l->list1, (void*)&el);
+    munit_assert_not_null(el);
     free(el);
 
+    el = NULL;
     munit_assert_size(3, == , cc_list_size(l->list1));
 
     cc_list_get_first(l->list1, (void*)&el);
+    munit_assert_not_null(el);
     munit_assert_int(2, == , *el);
 
     return MUNIT_OK;
@@ -808,14 +886,18 @@ static MunitResult test_remove_first(const MunitParameter params[], void* fixtur
 
 static MunitResult test_remove_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
-    int* el;
+    int* el = NULL;
     cc_list_remove_last(l->list1, (void*)&el);
+    munit_assert_not_null(el);
     free(el);
     munit_assert_size(3, == , cc_list_size(l->list1));
 
+    el = NULL;
     munit_assert_int(CC_OK, == , cc_list_get_last(l->list1, (void*)&el));
+    munit_assert_not_null(el);
     munit_assert_int(3, == , *el);
 
     return MUNIT_OK;
@@ -823,19 +905,24 @@ static MunitResult test_remove_last(const MunitParameter params[], void* fixture
 
 static MunitResult test_remove_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
-    int* e;
+    int* e = NULL;
     cc_list_remove_at(l->list1, 2, (void*)&e);
     free(e);
 
+    e = NULL;
     cc_list_get_at(l->list1, 2, (void*)&e);
+    munit_assert_not_null(e);
     munit_assert_int(4, == , *e);
     munit_assert_size(3, == , cc_list_size(l->list1));
     cc_list_remove_at(l->list1, 0, (void*)&e);
     free(e);
 
+    e = NULL;
     cc_list_get_at(l->list1, 0, (void*)&e);
+    munit_assert_not_null(e);
     munit_assert_int(2, == , *e);
 
     return MUNIT_OK;
@@ -843,6 +930,7 @@ static MunitResult test_remove_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* e;
@@ -862,6 +950,7 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* e;
@@ -874,6 +963,7 @@ static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* e;
@@ -885,9 +975,11 @@ static MunitResult test_get_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_replace_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* replacement = (int*)malloc(sizeof(int));
+    munit_assert_not_null(replacement);
     *replacement = 32;
 
     int* r;
@@ -902,6 +994,7 @@ static MunitResult test_replace_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_copy_deep(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     CC_List* cp;
@@ -926,6 +1019,7 @@ static MunitResult test_copy_deep(const MunitParameter params[], void* fixture)
 
 static MunitResult test_sublist(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     CC_List* sub;
@@ -946,9 +1040,11 @@ static MunitResult test_sublist(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     int* ins = (int*)malloc(sizeof(int));
+    munit_assert_not_null(ins);
     *ins = 90;
 
     cc_list_add_at(l->list1, ins, 3);
@@ -963,6 +1059,7 @@ static MunitResult test_add_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_copy_shallow(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     CC_List* cp;
@@ -983,6 +1080,7 @@ static MunitResult test_copy_shallow(const MunitParameter params[], void* fixtur
 
 static MunitResult test_mut_filter1(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     munit_assert_size(4, == , cc_list_size(l->list1));
@@ -1001,6 +1099,7 @@ static MunitResult test_mut_filter1(const MunitParameter params[], void* fixture
 
 static MunitResult test_mut_filter2(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     munit_assert_size(4, == , cc_list_size(l->list1));
@@ -1020,6 +1119,7 @@ static MunitResult test_mut_filter2(const MunitParameter params[], void* fixture
 
 static MunitResult test_filter1(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     CC_List* filter = NULL;
@@ -1041,6 +1141,7 @@ static MunitResult test_filter1(const MunitParameter params[], void* fixture)
 
 static MunitResult test_filter2(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
 
     CC_List* filter = NULL;
@@ -1064,6 +1165,7 @@ static MunitResult test_filter2(const MunitParameter params[], void* fixture)
 
 static MunitResult test_reduce1(const MunitParameter params[], void* fixture)
 {
+    (void)params;
     struct lists* l = (struct lists*)fixture;
     int res;
 
@@ -1076,6 +1178,9 @@ static MunitResult test_reduce1(const MunitParameter params[], void* fixture)
 
 static MunitResult test_reduce2(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_List* list;
     cc_list_new(&list);
 
@@ -1083,6 +1188,11 @@ static MunitResult test_reduce2(const MunitParameter params[], void* fixture)
     bool* b = (bool*)malloc(sizeof(int));
     bool* c = (bool*)malloc(sizeof(int));
     bool* d = (bool*)malloc(sizeof(int));
+
+    munit_assert_not_null(a);
+    munit_assert_not_null(b);
+    munit_assert_not_null(c);
+    munit_assert_not_null(d);
 
     *a = true;
     *b = true;

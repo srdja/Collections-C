@@ -5,6 +5,9 @@
 
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     /* Define a new table pointer */
     CC_HashTable *string_table;
 

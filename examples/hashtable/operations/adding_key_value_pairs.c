@@ -3,6 +3,9 @@
 
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     /* Make a new string key table */
     CC_HashTable *table;
     cc_hashtable_new(&table);

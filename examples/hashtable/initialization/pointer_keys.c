@@ -16,6 +16,9 @@ int pointer_equality(const void *k1, const void *k2)
 
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     /* ************************************************************
       Config strcture
     ************************************************************/

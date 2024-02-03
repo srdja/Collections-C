@@ -7,6 +7,7 @@ void* cpy(void* e)
 {
     int  o = *((int*)e);
     int* c = malloc(sizeof(int));
+    munit_assert_not_null(c);
     *c = o;
     return (void*)c;
 }
@@ -32,6 +33,9 @@ bool pred3(const void* e)
  *****************************/
 static MunitResult test_add_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -63,6 +67,9 @@ static MunitResult test_add_first(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -94,6 +101,9 @@ static MunitResult test_add_last(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_at1(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -130,6 +140,9 @@ static MunitResult test_add_at1(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_at2(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -171,6 +184,9 @@ static MunitResult test_add_at2(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_at3(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -212,6 +228,9 @@ static MunitResult test_add_at3(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_at4(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -252,6 +271,9 @@ static MunitResult test_add_at4(const MunitParameter params[], void* fixture)
 
 static MunitResult test_add_at5(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -292,6 +314,9 @@ static MunitResult test_add_at5(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -323,6 +348,9 @@ static MunitResult test_remove_first(const MunitParameter params[], void* fixtur
 
 static MunitResult test_remove_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -354,6 +382,9 @@ static MunitResult test_remove_last(const MunitParameter params[], void* fixture
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -384,6 +415,9 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_at(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -410,6 +444,9 @@ static MunitResult test_get_at(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -432,6 +469,9 @@ static MunitResult test_get_first(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -455,6 +495,9 @@ static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 
 static MunitResult test_copy_shallow(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -493,12 +536,19 @@ static MunitResult test_copy_shallow(const MunitParameter params[], void* fixtur
 
 static MunitResult test_copy_deep(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
     int* a = malloc(sizeof(int));
     int* b = malloc(sizeof(int));
     int* c = malloc(sizeof(int));
+
+    munit_assert_not_null(a);
+    munit_assert_not_null(b);
+    munit_assert_not_null(c);
 
     *a = 1;
     *b = 2;
@@ -535,6 +585,9 @@ static MunitResult test_copy_deep(const MunitParameter params[], void* fixture)
 
 static MunitResult test_contains(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -565,6 +618,9 @@ static MunitResult test_contains(const MunitParameter params[], void* fixture)
 
 static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -587,6 +643,9 @@ static MunitResult test_size(const MunitParameter params[], void* fixture)
 
 static MunitResult test_capacity(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_DequeConf conf;
     cc_deque_conf_init(&conf);
 
@@ -614,6 +673,9 @@ static MunitResult test_capacity(const MunitParameter params[], void* fixture)
 
 static MunitResult test_trim_capacity(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -638,6 +700,9 @@ static MunitResult test_trim_capacity(const MunitParameter params[], void* fixtu
 
 static MunitResult test_reverse(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -669,6 +734,9 @@ static MunitResult test_reverse(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iterator_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -693,7 +761,7 @@ static MunitResult test_iterator_add(const MunitParameter params[], void* fixtur
 
     size_t i = 0;
 
-    int* el;
+    int* el = NULL;
 
     munit_assert_size(6, == , cc_deque_size(deque));
 
@@ -718,6 +786,9 @@ static MunitResult test_iterator_add(const MunitParameter params[], void* fixtur
 
 static MunitResult test_iterator_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -739,8 +810,8 @@ static MunitResult test_iterator_remove(const MunitParameter params[], void* fix
     cc_deque_iter_init(&iter, deque);
 
     size_t i = 0;
-    void* el;
-    int* removed;
+    void* el = NULL;
+    int* removed = NULL;
     while (cc_deque_iter_next(&iter, &el) != CC_ITER_END) {
         if (i == 3)
             cc_deque_iter_remove(&iter, (void**)&removed);
@@ -756,6 +827,7 @@ static MunitResult test_iterator_remove(const MunitParameter params[], void* fix
         }
         i++;
     }
+    munit_assert_not_null(removed);
     munit_assert_int(d, == , *removed);
 
     cc_deque_destroy(deque);
@@ -764,6 +836,9 @@ static MunitResult test_iterator_remove(const MunitParameter params[], void* fix
 
 static MunitResult test_iterator_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -802,6 +877,9 @@ static MunitResult test_iterator_next(const MunitParameter params[], void* fixtu
 
 static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -820,12 +898,16 @@ static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fix
     CC_DequeZipIter zip;
     cc_deque_zip_iter_init(&zip, deque, d2);
 
-    void* e1, * e2;
-    void* r1, * r2;
+    void* e1 = NULL;
+    void* e2 = NULL;
+    void* r1 = NULL;
+    void* r2 = NULL;
     while (cc_deque_zip_iter_next(&zip, &e1, &e2) != CC_ITER_END) {
         if (strcmp((char*)e1, "b") == 0)
             cc_deque_zip_iter_remove(&zip, &r1, &r2);
     }
+    munit_assert_not_null(r1);
+    munit_assert_not_null(r2);
     munit_assert_string_equal("b", (char*)r1);
     munit_assert_string_equal("f", (char*)r2);
     munit_assert_size(0, == , cc_deque_contains(deque, "b"));
@@ -840,6 +922,9 @@ static MunitResult test_zip_iter_remove(const MunitParameter params[], void* fix
 
 static MunitResult test_zip_iter_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -895,6 +980,9 @@ static MunitResult test_zip_iter_add(const MunitParameter params[], void* fixtur
 
 static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -936,6 +1024,9 @@ static MunitResult test_zip_iter_next(const MunitParameter params[], void* fixtu
 
 static MunitResult test_zip_iter_replace(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -982,6 +1073,9 @@ static MunitResult test_zip_iter_replace(const MunitParameter params[], void* fi
 
 static MunitResult test_deque_buffer_expansion(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_DequeConf conf;
     cc_deque_conf_init(&conf);
     conf.capacity = 4;
@@ -1047,6 +1141,9 @@ static MunitResult test_deque_buffer_expansion(const MunitParameter params[], vo
 
 static MunitResult test_filter1(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -1085,6 +1182,9 @@ static MunitResult test_filter1(const MunitParameter params[], void* fixture)
 
 static MunitResult test_filter2(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -1121,6 +1221,9 @@ static MunitResult test_filter2(const MunitParameter params[], void* fixture)
 
 static MunitResult test_filter3(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -1154,6 +1257,9 @@ static MunitResult test_filter3(const MunitParameter params[], void* fixture)
 
 static MunitResult test_filter_mut1(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -1192,6 +1298,9 @@ static MunitResult test_filter_mut1(const MunitParameter params[], void* fixture
 
 static MunitResult test_filter_mut2(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 
@@ -1230,6 +1339,9 @@ static MunitResult test_filter_mut2(const MunitParameter params[], void* fixture
 
 static MunitResult test_filter_mut3(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_Deque* deque;
     cc_deque_new(&deque);
 

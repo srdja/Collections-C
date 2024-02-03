@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.15)
+
 project(collectc VERSION 0.0.1)
 
 file(GLOB source_files "*.c" "sized/*.c" "memory/*.c")

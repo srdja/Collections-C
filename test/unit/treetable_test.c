@@ -19,6 +19,9 @@ int cmp(const void* k1, const void* k2)
 
 static MunitResult test_add(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -50,6 +53,9 @@ static MunitResult test_add(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -81,6 +87,9 @@ static MunitResult test_remove(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -108,6 +117,9 @@ static MunitResult test_remove_all(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -137,6 +149,9 @@ static MunitResult test_get(const MunitParameter params[], void* fixture)
 
 static MunitResult test_size(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -156,6 +171,9 @@ static MunitResult test_size(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -180,6 +198,9 @@ static MunitResult test_get_first(const MunitParameter params[], void* fixture)
 
 static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -204,6 +225,9 @@ static MunitResult test_get_last(const MunitParameter params[], void* fixture)
 
 static MunitResult test_remove_first(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -228,6 +252,9 @@ static MunitResult test_remove_first(const MunitParameter params[], void* fixtur
 
 static MunitResult test_remove_last(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -251,6 +278,9 @@ static MunitResult test_remove_last(const MunitParameter params[], void* fixture
 
 static MunitResult test_get_greater_than(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -275,6 +305,9 @@ static MunitResult test_get_greater_than(const MunitParameter params[], void* fi
 
 static MunitResult test_get_lesser_than(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -299,6 +332,9 @@ static MunitResult test_get_lesser_than(const MunitParameter params[], void* fix
 
 static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
@@ -348,6 +384,9 @@ static MunitResult test_iter_next(const MunitParameter params[], void* fixture)
 
 static MunitResult test_iter_remove(const MunitParameter params[], void* fixture)
 {
+    (void)params;
+    (void)fixture;
+
     CC_TreeTable* table;
     cc_treetable_new(cmp, &table);
 
