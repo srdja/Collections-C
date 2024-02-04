@@ -1,68 +1,116 @@
 Collections-C
 =============
 
-> A library of generic data structures including a list, array, hashtable, deque etc..
+Collections-C is a library of generic data structures for the C language.
 
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](http://www.gnu.org/licenses/lgpl-3.0)
 
-- [Examples](#examples)
+- [Features](#features)
 - [Building and Installing](#building-and-installation)
 - [Using the library](#using-collections-c-in-your-programs)
 - [Contributing](#contributing)
 
-# Examples
-Check the [documentation page](https://srdja.github.io/Collections-C/) for mode detailed examples. (This is still in progress).
-The source of the documentation can be found [here](https://github.com/srdja/cc-doc-slate).
+# Features
 
-### HashTable
-```c
+- [Pointer Containers](#pointer-containers)
+- [Sized Containers](#sized-containers)
+- [Memory Pools](#memory-pools)
 
-// Create a new table
-CC_HashTable *table;
-if (cc_hashtable_new(&table) != CC_OK) {
-    // something went wrong
-    ...
-}
-// Add key-value pair
-if (cc_hashtable_add(table, "some_key", "some_value") != CC_OK) {
-    // something went wrong
-    ...
-}
-// Retrieve a value associated with a key
-char *value;
-if (cc_hashtable_get(table, "some_key", (void*) &value) == CC_OK)
-    printf("%s", value);
+## Pointer Containers
+Structures that store data in the form of `void*`.
 
-// Remove a key
-cc_hashtable_remove(table, "foo", NULL);
-cc_hashtable_destroy(table);
+| Container | description |
+|-----------|-------------|
+| `CC_Array`     | A dynamic array that expands automatically as elements are added. |
+| `CC_List`    | Doubly Linked list. |
+| `CC_SList` | Singly linked list. |
+| `CC_Deque` |	A dynamic array that supports amortized constant time insertion and removal at both ends and constant time access. |
+| `CC_HashTable` | An unordered key-value map. Supports best case amortized constant time insertion, removal, and lookup of values. |
+| `CC_TreeTable` | An ordered key-value map. Supports logarithmic time insertion, removal and lookup of values. |
+| `CC_HashSet` | An unordered set. The lookup, deletion, and insertion are performed in amortized constant time and in the worst case in amortized linear time. |
+| `CC_TreeSet` | An ordered set. The lookup, deletion, and insertion are performed in logarithmic time. |
+| `CC_Queue`  | A FIFO (first in first out) structure. Supports constant time insertion, removal and lookup. |
+| `CC_Stack` | A LIFO (last in first out) structure. Supports constant time insertion, removal and lookup. |
+| `CC_PQueue` | A priority queue. |
+| `CC_RingBuffer` | A ring buffer. |
+| `CC_TSTTable`| A ternary search tree table. Supports insertion, search, iteration, and deletion. |
+
+### Example
 ```
-### Array (dynamic array)
-```c
-// Create a new array
-CC_Array *ar;
-if (cc_array_new(&ar) != CC_OK) {
-    // something went wrong
-    ...
-}
-// Add an element
-enum cc_stat status = cc_array_add(ar, "foo");
-if (status == CC_OK) {
-    ...
-} else if (status == CC_ERR_ALLOC) {
-    ...
-} else {
-    ...
-}
-// Retrieve a value
-char *foo;
-cc_array_get_at(ar, 0, (void*) &foo);
+int value = 20;
+CC_Array *array;
 
-// Remove a value
-char *removed;
-cc_array_remove_at(ar, 0, (void*) &removed);
+if (cc_array_new(&array) != CC_OK) { /*Create a new array.*/
+    // handle error
+}
+if (cc_array_add(&array, (void*) &value) != CC_OK) { /* Add the pointer to the value to the array */
+    // handle error
+}
+```
 
-cc_array_destroy(ar);
+
+## Sized Containers
+Structures that store data of arbitrary length directly. 
+
+| Container	| description |
+|-----------| ----------- |
+| `CC_ArraySized` | A dynamic array that expands automatically as elements are added. |
+
+### Example
+
+```
+int value = 20;
+CC_SizedArray *array;
+
+if (cc_sized_array_new(sizeof(int), &array) != CC_OK) { /* Create a new array that stores values the size of an int*/
+    // handle error
+}
+if (cc_sized_array_add(&array, &value) != CC_OK) { /* Copy the value into the array */
+    // handle error
+}
+```
+
+## Memory Pools
+
+Memory pools are pre-allocated blocks of contiguous memory 
+
+| Container | description |
+|-----------| ----------- |
+| `CC_DynamicPool` | On the heap, potentially expandable memory pool |
+| `CC_StaticPool`  | Fixed pool  |
+
+### Example
+
+```
+/* CC_StaticPool can enable the use of the structures on the stack */
+
+#include "memory/cc_static_pool.h"
+#include "cc_list.h"
+
+CC_StaticPool *pool;
+
+// Alloc wrappers
+void *pool_malloc(size_t size)               {cc_static_pool_malloc(size, pool);}
+void *pool_calloc(size_t count, size_t size) {cc_static_pool_calloc(count, size, pool);}
+void  pool_free(void* ptr)                   {cc_static_pool_free(ptr, pool);}
+
+int main(int argc, char **argv) {
+    uint8_t buffer[2000];            /* Large enough buffer. */
+    cc_static_pool_new(sizeof(buffer), 0, buffer, buffer, &pool); /* allocate the pool structure inside the buffer */
+
+    CC_ListConf conf;                /* Create a new list config */
+    cc_list_conf_init(&conf);        
+    conf.mem_alloc  = pool_malloc;   /* Set list memory allocators to pool allocators */
+    conf.mem_calloc = pool_calloc;
+    conf.mem_free   = pool_free;
+
+    CC_List* list;
+    cc_list_new_conf(&conf, &list);  /* The newly created list will be allocated inside the "buffer" array*/
+
+    // Use the list
+
+    return 0;
+}
 ```
 # Building and Installation
 
