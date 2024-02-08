@@ -615,3 +615,9 @@ enum cc_stat cc_tsttable_iter_remove (CC_TSTTableIter *iter, void **out)
 
     return CC_OK;
 }
+
+
+size_t cc_tsttable_struct_size()
+{
+    return sizeof(CC_TSTTable);
+}

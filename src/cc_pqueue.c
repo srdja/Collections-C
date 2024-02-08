@@ -328,3 +328,8 @@ static void cc_pqueue_heapify(CC_PQueue *pq, size_t index)
         cc_pqueue_heapify(pq, index);
     }
 }
+
+size_t cc_pqueue_struct_size()
+{
+    return sizeof(CC_PQueue);
+}

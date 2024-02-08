@@ -91,8 +91,10 @@ typedef struct array_sized_zip_iter_s {
 
 
 enum cc_stat  cc_array_sized_new             (size_t element_size, CC_ArraySized **out);
+enum cc_stat  cc_array_sized_new_reserved    (size_t element_size, size_t n_reserved, CC_ArraySized** out);
 enum cc_stat  cc_array_sized_new_conf        (size_t element_size, CC_ArraySizedConf const * const conf, CC_ArraySized **out);
 void          cc_array_sized_conf_init       (CC_ArraySizedConf *conf);
+size_t        cc_array_sized_struct_size     ();
 
 void          cc_array_sized_destroy         (CC_ArraySized *ar);
 

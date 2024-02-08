@@ -69,6 +69,7 @@ enum cc_stat  cc_pqueue_new             (CC_PQueue **out, int (*)(const void *, 
 enum cc_stat  cc_pqueue_new_conf        (CC_PQueueConf const * const conf, CC_PQueue **out);
 void          cc_pqueue_destroy         (CC_PQueue *pqueue);
 void          cc_pqueue_destroy_cb      (CC_PQueue *pqueue, void (*cb) (void*));
+size_t        cc_pqueue_struct_size     ();
 
 enum cc_stat  cc_pqueue_push            (CC_PQueue *pqueue, void *element);
 enum cc_stat  cc_pqueue_top             (CC_PQueue *pqueue, void **out);

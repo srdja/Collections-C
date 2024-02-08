@@ -52,6 +52,7 @@ typedef struct cc_treeset_iter_s {
 void          cc_treeset_conf_init        (CC_TreeSetConf *conf);
 enum cc_stat  cc_treeset_new              (int (*cmp) (const void*, const void*), CC_TreeSet **set);
 enum cc_stat  cc_treeset_new_conf         (CC_TreeSetConf const * const conf, CC_TreeSet **set);
+size_t        cc_treeset_struct_size      ();
 
 void          cc_treeset_destroy          (CC_TreeSet *set);
 

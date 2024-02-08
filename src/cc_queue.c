@@ -276,3 +276,9 @@ enum cc_stat cc_queue_zip_iter_replace(QueueZipIter *iter, void *e1, void *e2, v
 {
     return cc_deque_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
 }
+
+
+size_t cc_queue_struct_size()
+{
+    return cc_deque_struct_size();
+}

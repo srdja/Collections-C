@@ -63,6 +63,7 @@ enum cc_stat cc_queue_new             (CC_Queue **q);
 enum cc_stat cc_queue_new_conf        (CC_QueueConf const * const conf, CC_Queue **q);
 void         cc_queue_destroy         (CC_Queue *queue);
 void         cc_queue_destroy_cb      (CC_Queue *queue, void (*cb) (void*));
+size_t       cc_queue_struct_size     ();
 
 enum cc_stat cc_queue_peek            (CC_Queue const * const queue, void **out);
 enum cc_stat cc_queue_poll            (CC_Queue *queue, void **out);

@@ -1110,3 +1110,9 @@ size_t cc_array_sized_zip_iter_index(CC_ArraySizedZipIter *iter)
 {
     return iter->index - 1;
 }
+
+
+size_t cc_array_sized_struct_size()
+{
+    return sizeof(CC_ArraySized);
+}

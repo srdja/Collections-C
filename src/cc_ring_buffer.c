@@ -122,3 +122,9 @@ uint64_t cc_rbuf_peek(CC_Rbuf *rbuf, int index)
 {
     return rbuf->buf[index];
 }
+
+
+size_t cc_rbuf_struct_size()
+{
+    return sizeof(CC_Rbuf);
+}

@@ -87,6 +87,7 @@ typedef struct cc_deque_zip_iter_s {
 enum cc_stat  cc_deque_new             (CC_Deque **deque);
 enum cc_stat  cc_deque_new_conf        (CC_DequeConf const * const conf, CC_Deque **deque);
 void          cc_deque_conf_init       (CC_DequeConf *conf);
+size_t        cc_deque_struct_size     ();
 
 void          cc_deque_destroy         (CC_Deque *deque);
 void          cc_deque_destroy_cb      (CC_Deque *deque, void (*cb) (void*));

@@ -2049,3 +2049,9 @@ static Node *get_node(CC_List *list, void *element)
     }
     return NULL;
 }
+
+
+size_t cc_list_struct_size()
+{
+    return sizeof(CC_List);
+}

@@ -250,3 +250,9 @@ enum cc_stat cc_hashset_iter_remove(CC_HashSetIter *iter, void **out)
 {
     return cc_hashtable_iter_remove(&(iter->iter), out);
 }
+
+
+size_t cc_hashset_struct_size()
+{
+    return cc_hashtable_struct_size();
+}

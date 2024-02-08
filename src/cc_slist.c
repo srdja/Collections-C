@@ -1586,3 +1586,8 @@ get_node(CC_SList *list, void *element, SNode **node, SNode **prev)
     }
     return CC_ERR_VALUE_NOT_FOUND;
 }
+
+size_t cc_slist_struct_size()
+{
+    return sizeof(CC_SList);
+}

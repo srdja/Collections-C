@@ -54,6 +54,7 @@ void          cc_hashset_conf_init     (CC_HashSetConf *conf);
 enum cc_stat  cc_hashset_new           (CC_HashSet **hs);
 enum cc_stat  cc_hashset_new_conf      (CC_HashSetConf const * const conf, CC_HashSet **hs);
 void          cc_hashset_destroy       (CC_HashSet *set);
+size_t        cc_hashset_struct_size   ();
 
 enum cc_stat  cc_hashset_add           (CC_HashSet *set, void *element);
 enum cc_stat  cc_hashset_remove        (CC_HashSet *set, void *element, void **out);

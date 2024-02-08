@@ -272,3 +272,8 @@ size_t cc_dynamic_pool_free_bytes(CC_DynamicPool* pool)
 {
     return pool->top_page_size - (pool->free_ptr - pool->low_ptr);
 }
+
+size_t cc_dynamic_pool_struct_size()
+{
+    return sizeof(CC_DynamicPool);
+}

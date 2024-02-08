@@ -53,6 +53,7 @@ typedef struct cc_tsttable_iter_s {
 void          cc_tsttable_conf_init       (CC_TSTTableConf *conf);
 enum cc_stat  cc_tsttable_new             (CC_TSTTable **out);
 enum cc_stat  cc_tsttable_new_conf        (CC_TSTTableConf const * const conf, CC_TSTTable **out);
+size_t        cc_tsttable_struct_size     ();
 
 void          cc_tsttable_destroy         (CC_TSTTable *table);
 enum cc_stat  cc_tsttable_add             (CC_TSTTable *table, char *key, void *val);

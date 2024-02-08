@@ -76,6 +76,7 @@ void*        cc_dynamic_pool_malloc    (size_t size, CC_DynamicPool *pool);
 void*        cc_dynamic_pool_calloc    (size_t count, size_t size, CC_DynamicPool *pool);
 //void*        cc_dynamic_pool_realloc   (void* ptr, size_t size, CC_DynamicPool* pool);
 void         cc_dynamic_pool_free      (void* ptr, CC_DynamicPool* pool);
+size_t       cc_dynamic_pool_struct_size();
 
 #ifdef __cplusplus
 }

@@ -302,3 +302,9 @@ enum cc_stat cc_treeset_iter_remove(CC_TreeSetIter *iter, void **out)
 {
     return cc_treetable_iter_remove(&(iter->i), out);
 }
+
+
+size_t cc_treeset_struct_size()
+{
+    return cc_treetable_struct_size();
+}

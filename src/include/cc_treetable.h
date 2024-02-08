@@ -101,6 +101,7 @@ typedef struct cc_treetable_conf_s {
 void          cc_treetable_conf_init        (CC_TreeTableConf *conf);
 enum cc_stat  cc_treetable_new              (int (*cmp) (const void*, const void*), CC_TreeTable **tt);
 enum cc_stat  cc_treetable_new_conf         (CC_TreeTableConf const * const conf, CC_TreeTable **tt);
+size_t        cc_treetable_struct_size      ();
 
 void          cc_treetable_destroy          (CC_TreeTable *table);
 enum cc_stat  cc_treetable_add              (CC_TreeTable *table, void *key, void *val);

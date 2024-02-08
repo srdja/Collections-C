@@ -123,6 +123,7 @@ typedef struct cc_hashtable_conf_s {
 void          cc_hashtable_conf_init       (CC_HashTableConf *conf);
 enum cc_stat  cc_hashtable_new             (CC_HashTable **out);
 enum cc_stat  cc_hashtable_new_conf        (CC_HashTableConf const * const conf, CC_HashTable **out);
+size_t        cc_hashtable_struct_size     ();
 
 void          cc_hashtable_destroy         (CC_HashTable *table);
 enum cc_stat  cc_hashtable_add             (CC_HashTable *table, void *key, void *val);

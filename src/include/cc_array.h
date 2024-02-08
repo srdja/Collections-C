@@ -93,6 +93,7 @@ typedef struct array_zip_iter_s {
 enum cc_stat  cc_array_new             (CC_Array **out);
 enum cc_stat  cc_array_new_conf        (CC_ArrayConf const * const conf, CC_Array **out);
 void          cc_array_conf_init       (CC_ArrayConf *conf);
+size_t        cc_array_struct_size     ();
 
 void          cc_array_destroy         (CC_Array *ar);
 void          cc_array_destroy_cb      (CC_Array *ar, void (*cb) (void*));

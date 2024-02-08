@@ -1282,3 +1282,8 @@ size_t cc_deque_zip_iter_index(CC_DequeZipIter *iter)
 {
     return iter->index - 1;
 }
+
+size_t cc_deque_struct_size()
+{
+    return sizeof(CC_Deque);
+}

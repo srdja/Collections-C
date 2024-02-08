@@ -23,6 +23,8 @@ typedef struct ring_buffer CC_Rbuf;
 enum cc_stat  cc_rbuf_new           (CC_Rbuf **rbuf);
 void          cc_rbuf_conf_init     (CC_RbufConf *rconf);
 enum cc_stat  cc_rbuf_conf_new      (CC_RbufConf *rconf, CC_Rbuf **rbuf);
+size_t        cc_rbuf_struct_size   ();
+
 void          cc_rbuf_enqueue       (CC_Rbuf *rbuf, uint64_t item);
 enum cc_stat  cc_rbuf_dequeue       (CC_Rbuf *rbuf, uint64_t *out);
 bool          cc_rbuf_is_empty      (CC_Rbuf *rbuf);

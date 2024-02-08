@@ -1153,3 +1153,9 @@ size_t cc_array_zip_iter_index(CC_ArrayZipIter *iter)
 {
     return iter->index - 1;
 }
+
+
+size_t cc_array_struct_size()
+{
+    return sizeof(CC_Array);
+}

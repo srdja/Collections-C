@@ -332,3 +332,9 @@ enum cc_stat cc_stack_zip_iter_replace(CC_StackZipIter *iter, void *e1, void *e2
 {
     return cc_array_zip_iter_replace(&(iter->i), e1, e2, out1, out2);
 }
+
+
+size_t cc_stack_struct_size()
+{
+    return cc_array_struct_size();
+}

@@ -760,6 +760,14 @@ enum cc_stat cc_hashtable_iter_remove(CC_HashTableIter *iter, void **out)
     return cc_hashtable_remove(iter->table, iter->prev_entry->key, out);
 }
 
+/**
+ *
+ */
+size_t cc_hashtable_struct_size()
+{
+    return sizeof(CC_HashTable);
+}
+
 
 /*******************************************************************************
  *
