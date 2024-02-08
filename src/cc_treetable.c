@@ -937,6 +937,11 @@ enum cc_stat cc_treetable_iter_remove(CC_TreeTableIter *iter, void **out)
 }
 
 
+size_t cc_treetable_struct_size()
+{
+    return sizeof(CC_TreeTable);
+}
+
 #ifdef DEBUG
 static int cc_treetable_test(CC_TreeTable *table, RBNode *node, int *nb)
 {

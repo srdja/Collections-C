@@ -102,6 +102,7 @@ enum cc_stat  cc_list_new             (CC_List **list);
 enum cc_stat  cc_list_new_conf        (CC_ListConf const * const conf, CC_List **list);
 void          cc_list_destroy         (CC_List *list);
 void          cc_list_destroy_cb      (CC_List *list, void (*cb) (void*));
+size_t        cc_list_struct_size     ();
 
 enum cc_stat  cc_list_splice          (CC_List *list1, CC_List *list2);
 enum cc_stat  cc_list_splice_at       (CC_List *list, CC_List *list2, size_t index);

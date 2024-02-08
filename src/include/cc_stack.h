@@ -66,6 +66,7 @@ enum cc_stat  cc_stack_new             (CC_Stack **out);
 enum cc_stat  cc_stack_new_conf        (CC_StackConf const * const conf, CC_Stack **out);
 void          cc_stack_destroy         (CC_Stack *stack);
 void          cc_stack_destroy_cb      (CC_Stack *stack, void (*cb) (void*));
+size_t        cc_stack_struct_size     ();
 
 enum cc_stat  cc_stack_push            (CC_Stack *stack, void *element);
 enum cc_stat  cc_stack_peek            (CC_Stack *stack, void **out);
