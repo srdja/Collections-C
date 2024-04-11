@@ -81,7 +81,7 @@ Memory pools are pre-allocated blocks of contiguous memory
 
 ### Example
 
-```
+```c
 /* CC_StaticPool can enable the use of the structures on the stack */
 
 #include "memory/cc_static_pool.h"
