@@ -809,7 +809,7 @@ static enum cc_stat expand_capacity(CC_ArraySized *ar)
     } else {
         ar->capacity = new_capacity;
     }
-    uint8_t *new_buff = ar->mem_alloc(new_capacity * ar->data_length);
+    uint8_t *new_buff = ar->mem_alloc(ar->capacity * ar->data_length);
 
     if (!new_buff) {
         return CC_ERR_ALLOC;

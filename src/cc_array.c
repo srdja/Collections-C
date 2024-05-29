@@ -853,7 +853,7 @@ static enum cc_stat expand_capacity(CC_Array *ar)
     else
         ar->capacity = new_capacity;
 
-    void **new_buff = ar->mem_alloc(new_capacity * sizeof(void*));
+    void **new_buff = ar->mem_alloc(ar->capacity * sizeof(void*));
 
     if (!new_buff)
         return CC_ERR_ALLOC;
