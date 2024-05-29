@@ -980,12 +980,12 @@ static INLINE size_t upper_pow_two(size_t n)
         return MAX_POW_TWO;
 
     if (n == 0)
-        return 2;
+        return 1;
 
     /**
      * taken from:
      * http://graphics.stanford.edu/~seander/
-     * bithacks.html#RoundUpPowerOf2Float
+     * bithacks.html#RoundUpPowerOf2
      */
     n--;
     n |= n >> 1;
@@ -993,6 +993,9 @@ static INLINE size_t upper_pow_two(size_t n)
     n |= n >> 4;
     n |= n >> 8;
     n |= n >> 16;
+#ifdef ARCH_64
+    n |= n >> 32;
+#endif /* ARCH_64 */
     n++;
 
     return n;

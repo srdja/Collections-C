@@ -193,7 +193,7 @@ static enum cc_stat expand_capacity(CC_PQueue *pq)
     else
         pq->capacity = new_capacity;
 
-    void **new_buff = pq->mem_alloc(new_capacity * sizeof(void*));
+    void **new_buff = pq->mem_alloc(pq->capacity * sizeof(void*));
 
     if (!new_buff)
         return CC_ERR_ALLOC;
