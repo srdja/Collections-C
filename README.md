@@ -36,7 +36,7 @@ Structures that store data in the form of `void*`.
 | `CC_TSTTable`| A ternary search tree table. Supports insertion, search, iteration, and deletion. |
 
 ### Example
-```
+```c
 int value = 20;
 CC_Array *array;
 
@@ -58,7 +58,7 @@ Structures that store data of arbitrary length directly.
 
 ### Example
 
-```
+```c
 int value = 20;
 CC_SizedArray *array;
 
