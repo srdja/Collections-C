@@ -75,9 +75,9 @@ enum cc_stat cc_queue_new_conf(CC_QueueConf const * const conf, CC_Queue **q)
         return CC_ERR_ALLOC;
 
     CC_Deque *deque;
-    cc_deque_new_conf(conf, &deque);
+    enum cc_stat stat = cc_deque_new_conf(conf, &deque);
 
-    if (!deque) {
+    if (stat) {
         conf->mem_free(queue);
         return CC_ERR_ALLOC;
     }
