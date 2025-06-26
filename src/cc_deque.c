@@ -1209,7 +1209,7 @@ enum cc_stat cc_deque_zip_iter_add(CC_DequeZipIter *iter, void *e1, void *e2)
     /* While this check is performed by a call to cc_deque_add_at, it is necessary to know
        in advance whether both deque buffers have enough room before inserting new elements
        because this operation must insert either both elements, or none.*/
-    if ((iter->d1->capacity == iter->d1->size && expand_capacity(iter->d1) != CC_OK) &&
+    if ((iter->d1->capacity == iter->d1->size && expand_capacity(iter->d1) != CC_OK) ||
         (iter->d2->capacity == iter->d2->size && expand_capacity(iter->d2) != CC_OK)) {
         return CC_ERR_ALLOC;
     }
