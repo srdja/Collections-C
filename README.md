@@ -147,7 +147,7 @@ Once `cmake` is done generating makefiles, we can build the library by running `
 
 An example of cloning and building a static library:
 ```
-git clone https://github.com/Collections-C.git
+git clone https://github.com/srdja/Collections-C.git
 cd Collections-C
 mkdir build
 cd build
@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
     // Add a string to the array
     cc_array_add(ar, "Hello World!\n");
 
-    // Retreive the string and print it
+    // Retrieve the string and print it
     char *str;
     cc_array_get_at(ar, 0, (void*) &str);
     printf("%s", str);
